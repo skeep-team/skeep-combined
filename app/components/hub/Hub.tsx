@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./Hub.module.css";
 
 const DRAG_OFFSET_THRESHOLD = 80;
@@ -176,14 +176,9 @@ function DisplayIcon() {
   );
 }
 
-// Reads whichever slide was active when the user last left the hub (e.g.
-// clicked into a page and came back), instead of always starting over at
-// the first card. Read directly in useState's lazy initializer — not an
-// effect — so the restored index is there from this component's very first
-// commit. AnimatePresence only skips its enter/exit transition for children
-// present at that first commit; restoring a render (or two) later still
-// counts as a change and plays the slide transition, which read as an
-// unwanted snap/jerk on a page that had just loaded.
+// Reads whichever slide was active when the user last left the hub. This must
+// run after hydration: sessionStorage is unavailable to the server, and using
+// it in the initial state makes the server and client render different cards.
 function readStoredActive() {
   if (typeof window === "undefined") return 0;
   const stored = sessionStorage.getItem(ACTIVE_SLIDE_KEY);
@@ -193,8 +188,17 @@ function readStoredActive() {
 }
 
 export function Hub() {
-  const [active, setActive] = useState(readStoredActive);
+  const [active, setActive] = useState(0);
+  const [isRestoring, setIsRestoring] = useState(true);
   const total = SLIDES.length;
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      setActive(readStoredActive());
+      setIsRestoring(false);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // Persisted right at the point of each interaction (not reactively via a
   // useEffect keyed on `active`) — a separate write-effect would run once
@@ -351,7 +355,7 @@ export function Hub() {
           <CardContent
             slideKey={prev.href ?? `slot-${prevIndex}`}
             thumbnail={prev.thumbnail}
-            fast={isScrubbing}
+            fast={isScrubbing || isRestoring}
           />
         </button>
 
@@ -365,7 +369,7 @@ export function Hub() {
             <CardContent
               slideKey={current.href}
               thumbnail={current.thumbnail}
-              fast={isScrubbing}
+              fast={isScrubbing || isRestoring}
             />
             <span className={styles.enterButton}>
               <ArrowRightIcon />
@@ -381,7 +385,7 @@ export function Hub() {
             <CardContent
               slideKey={current.href}
               thumbnail={current.thumbnail}
-              fast={isScrubbing}
+              fast={isScrubbing || isRestoring}
             />
             <span className={styles.enterButton}>
               <ArrowRightIcon />
@@ -392,7 +396,7 @@ export function Hub() {
             <CardContent
               slideKey={`slot-${active}`}
               thumbnail={current.thumbnail}
-              fast={isScrubbing}
+              fast={isScrubbing || isRestoring}
             />
             <span className={`${styles.enterButton} ${styles.enterButtonDisabled}`} aria-hidden="true">
               <ArrowRightIcon />
@@ -409,7 +413,7 @@ export function Hub() {
           <CardContent
             slideKey={next.href ?? `slot-${nextIndex}`}
             thumbnail={next.thumbnail}
-            fast={isScrubbing}
+            fast={isScrubbing || isRestoring}
           />
         </button>
       </motion.div>
