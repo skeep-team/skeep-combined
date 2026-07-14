@@ -161,7 +161,7 @@
   display: flex;
   align-items: center;
   gap: clamp(8px, 0.8vw, 16px);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: clamp(10px, 1.1vw, 18px) clamp(14px, 1.6vw, 28px);
   z-index: 1;
@@ -178,7 +178,7 @@
   width: clamp(6px, 0.4vw, 8px);
   height: clamp(6px, 0.4vw, 8px);
   border-radius: 999px;
-  background: #59595d;
+  background: rgba(255, 255, 255, 0.2);
   transition: width 0.3s ease, background 0.3s ease;
 }
 
