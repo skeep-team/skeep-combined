@@ -90,7 +90,7 @@ function SlideThumbnail({ thumbnail }: { thumbnail?: Thumbnail }) {
   );
 }
 
-function AmbientBackdrop({ thumbnail, slideKey }: { thumbnail?: Thumbnail; slideKey: string }) {
+function AmbientBackdrop({ thumbnail, slideKey, dim }: { thumbnail?: Thumbnail; slideKey: string; dim?: boolean }) {
   if (!thumbnail) return null;
 
   const mediaSrc = thumbnail.kind === "video" ? thumbnail.poster ?? thumbnail.src : thumbnail.kind === "image" ? thumbnail.src : null;
@@ -101,7 +101,7 @@ function AmbientBackdrop({ thumbnail, slideKey }: { thumbnail?: Thumbnail; slide
         key={slideKey}
         className={styles.ambientBackdrop}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.78 }}
+        animate={{ opacity: dim ? 0.5 : 0.78 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
         aria-hidden
@@ -312,6 +312,7 @@ export function Hub() {
       <AmbientBackdrop
         slideKey={current.href ?? `slot-${active}`}
         thumbnail={current.thumbnail}
+        dim={active === 0}
       />
       {/* 모든 썸네일을 미리 로드해 슬라이드 전환 시 빈 프레임(리로드 깜빡임) 방지 */}
       <div aria-hidden style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
