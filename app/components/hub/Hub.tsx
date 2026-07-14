@@ -28,8 +28,7 @@ type Slide = {
 // placeholders for pages that haven't been built yet.
 const SLIDES: Slide[] = [
   {
-    href: `${BASE_PATH}/pages/index.html`,
-    external: true,
+    href: "/principles",
     thumbnail: { kind: "video", src: `${BASE_PATH}/hero/focus.mp4`, heading: ["When you need", "Focus"] },
   },
   {
@@ -53,6 +52,11 @@ const SLIDES: Slide[] = [
     },
   },
   {
+    href: `${BASE_PATH}/pages/index.html`,
+    external: true,
+    thumbnail: { kind: "color", color: "#0E1825", heading: ["프린시플"] },
+  },
+  {
     href: `${BASE_PATH}/pages/saegyeodeutda.html`,
     external: true,
     thumbnail: { kind: "color", color: "#111820", heading: ["새겨듣다"] },
@@ -62,7 +66,6 @@ const SLIDES: Slide[] = [
     external: true,
     thumbnail: { kind: "color", color: "#E3EBF2", heading: ["스며들다"] },
   },
-  {},
   {},
 ];
 
