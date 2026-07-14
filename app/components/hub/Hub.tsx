@@ -316,8 +316,8 @@ export function Hub() {
         className={styles.stage}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.45}
-        dragTransition={{ bounceStiffness: 420, bounceDamping: 32 }}
+        dragElastic={0.22}
+        dragTransition={{ bounceStiffness: 520, bounceDamping: 50 }}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
