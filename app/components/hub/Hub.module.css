@@ -159,7 +159,7 @@
 }
 
 .cardCenter {
-  width: min(58vw, 1140px);
+  width: min(62vw, 1220px);
   z-index: 2;
   box-shadow: 0 38px 112px rgba(0, 0, 0, 0.72);
 }
