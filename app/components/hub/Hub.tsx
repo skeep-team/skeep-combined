@@ -90,6 +90,34 @@ function SlideThumbnail({ thumbnail }: { thumbnail?: Thumbnail }) {
   );
 }
 
+function AmbientBackdrop({ thumbnail, slideKey }: { thumbnail?: Thumbnail; slideKey: string }) {
+  if (!thumbnail) return null;
+
+  const mediaSrc = thumbnail.kind === "video" ? thumbnail.poster ?? thumbnail.src : thumbnail.kind === "image" ? thumbnail.src : null;
+
+  return (
+    <AnimatePresence initial={false}>
+      <motion.div
+        key={slideKey}
+        className={styles.ambientBackdrop}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.44 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+        aria-hidden
+      >
+        {mediaSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className={styles.ambientMedia} src={mediaSrc} alt="" />
+        ) : (
+          <div className={styles.ambientMedia} style={{ background: thumbnail.kind === "color" ? thumbnail.color : "#000" }} />
+        )}
+        <div className={styles.ambientVeil} />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // Crossfade only: the stage owns all horizontal movement and its drag spring.
 // Giving the thumbnail another x transition makes the media lag behind the
 // card frame after release, so the card and its content no longer feel like
@@ -277,6 +305,10 @@ export function Hub() {
 
   return (
     <div className={styles.hub}>
+      <AmbientBackdrop
+        slideKey={current.href ?? `slot-${active}`}
+        thumbnail={current.thumbnail}
+      />
       {/* 모든 썸네일을 미리 로드해 슬라이드 전환 시 빈 프레임(리로드 깜빡임) 방지 */}
       <div aria-hidden style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
         {SLIDES.map((s, i) =>

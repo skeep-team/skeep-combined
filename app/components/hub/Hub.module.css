@@ -3,8 +3,37 @@
   height: 100vh;
   min-height: 560px;
   overflow: clip;
-  background: #0E1825;
+  isolation: isolate;
+  background: #000;
   color: #fff;
+}
+
+.ambientBackdrop {
+  position: absolute;
+  inset: 2% -10%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%);
+}
+
+.ambientMedia {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  object-fit: cover;
+  filter: blur(26px) brightness(0.68) saturate(0.82);
+  transform: scale(1.08);
+}
+
+.ambientVeil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.32) 72%, rgba(0, 0, 0, 0.78) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.56) 0%, transparent 42%, rgba(0, 0, 0, 0.62) 100%);
 }
 
 .header {
@@ -16,11 +45,11 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--edge-padding);
-  z-index: 1;
+  z-index: 3;
 }
 
 .logo {
-  height: clamp(26px, 2.8vw, 42px);
+  height: clamp(32px, 3.35vw, 52px);
   width: auto;
   display: block;
 }
@@ -60,10 +89,11 @@
 .stage {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(16px, 3.3vw, 64px);
+  gap: clamp(12px, 1.4vw, 28px);
   cursor: grab;
   touch-action: pan-y;
 }
@@ -79,6 +109,8 @@
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.2);
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.48);
 }
 
 .thumbnailAnimWrap {
@@ -127,11 +159,29 @@
 
 .cardCenter {
   width: min(68vw, 1312px);
+  z-index: 2;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 36px 110px rgba(0, 0, 0, 0.68),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .cardSide {
   width: min(63.9vw, 1227px);
-  opacity: 0.9;
+  z-index: 1;
+  opacity: 0.5;
+  transform: scale(0.93);
+  filter: brightness(0.6) saturate(0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.cardSide:first-child {
+  margin-inline-end: -4.5vw;
+}
+
+.cardSide:last-child {
+  margin-inline-start: -4.5vw;
 }
 
 .enterButton {
@@ -164,7 +214,7 @@
   background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
   padding: clamp(10px, 1.1vw, 18px) clamp(14px, 1.6vw, 28px);
-  z-index: 1;
+  z-index: 3;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -190,6 +240,7 @@
 @media (max-width: 720px) {
   .cardSide {
     display: none;
+    margin: 0;
   }
 
   .cardCenter {
