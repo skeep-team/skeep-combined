@@ -37,23 +37,42 @@ const SLIDES: Slide[] = [
   {},
 ];
 
+// Poster image sits behind the video and is always visible; the video starts
+// invisible and fades in only once it can actually play. During a slide change
+// (which remounts this and reloads the video) the preloaded poster shows
+// instantly, so the card never flashes an empty grey frame.
+function VideoThumb({ src, poster }: { src: string; poster?: string }) {
+  const [ready, setReady] = useState(false);
+  return (
+    <>
+      {poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className={styles.thumbnailMedia} src={poster} alt="" />
+      )}
+      <video
+        className={styles.thumbnailMedia}
+        style={{ opacity: ready ? 1 : 0, transition: "opacity 0.25s ease" }}
+        src={src}
+        preload="auto"
+        autoPlay
+        muted
+        loop
+        playsInline
+        onCanPlay={(e) => {
+          e.currentTarget.play().catch(() => {});
+          setReady(true);
+        }}
+      />
+    </>
+  );
+}
+
 function SlideThumbnail({ thumbnail }: { thumbnail?: Thumbnail }) {
   if (!thumbnail) return null;
   const isDark = thumbnail.kind !== "color";
   return (
     <div className={styles.thumbnail}>
-      {thumbnail.kind === "video" && (
-        <video
-          className={styles.thumbnailMedia}
-          src={thumbnail.src}
-          poster={thumbnail.poster}
-          preload="auto"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      )}
+      {thumbnail.kind === "video" && <VideoThumb src={thumbnail.src} poster={thumbnail.poster} />}
       {thumbnail.kind === "image" && (
         // eslint-disable-next-line @next/next/no-img-element
         <img className={styles.thumbnailMedia} src={thumbnail.src} alt="" />
