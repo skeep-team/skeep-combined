@@ -30,17 +30,17 @@ const SLIDES: Slide[] = [
   {
     href: `${BASE_PATH}/pages/index.html`,
     external: true,
-    thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, heading: ["프린시플"] },
+    thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, heading: ["새로운 시대를 위한", "새로운 기준"] },
   },
   {
     href: `${BASE_PATH}/pages/saegyeodeutda.html`,
     external: true,
-    thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/sensing-hero-bg.mp4`, heading: ["새겨듣다"] },
+    thumbnail: { kind: "image", src: `${BASE_PATH}/pages/assets/sensing-hero-people-3.png`, heading: ["어떤 형태의 의도든 완벽하게", "항상 준비되어 있으니까"] },
   },
   {
     href: `${BASE_PATH}/pages/smeureulda.html`,
     external: true,
-    thumbnail: { kind: "image", src: `${BASE_PATH}/pages/assets/smeur-cover-bg.jpg`, heading: ["스며들다"] },
+    thumbnail: { kind: "image", src: `${BASE_PATH}/pages/assets/smeur-cover-bg.jpg`, heading: ["낯선 곳이더라도 자연스럽게", "경계를 건너뛰는 유려함"] },
   },
   {
     href: "/principles",
