@@ -207,9 +207,8 @@
   display: flex;
   align-items: center;
   gap: clamp(6px, 0.55vw, 10px);
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  padding: clamp(11px, 0.9vw, 15px) clamp(16px, 1.25vw, 22px);
+  background: transparent;
+  padding: clamp(10px, 0.8vw, 14px) 0;
   z-index: 3;
   cursor: grab;
   touch-action: none;
