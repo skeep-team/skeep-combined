@@ -21,6 +21,8 @@
   inset: -8%;
   width: 116%;
   height: 116%;
+  max-width: none;
+  max-height: none;
   object-fit: cover;
   object-position: center;
   filter: blur(18px) brightness(0.58) saturate(0.76) contrast(0.96);
