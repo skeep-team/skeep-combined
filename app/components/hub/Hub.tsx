@@ -12,7 +12,7 @@ const ACTIVE_SLIDE_KEY = "hub-active-slide";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 type Thumbnail =
-  | { kind: "video"; src: string; heading: string[] }
+  | { kind: "video"; src: string; poster?: string; heading: string[] }
   | { kind: "image"; src: string; heading: string[] }
   | { kind: "color"; color: string; heading: string[] };
 
@@ -30,7 +30,7 @@ const SLIDES: Slide[] = [
   {
     href: `${BASE_PATH}/pages/index.html`,
     external: true,
-    thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, heading: ["새로운 시대를 위한", "새로운 기준"] },
+    thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, poster: `${BASE_PATH}/pages/assets/intro-hero-bg.poster.jpg`, heading: ["새로운 시대를 위한", "새로운 기준"] },
   },
   {
     href: `${BASE_PATH}/pages/saegyeodeutda.html`,
@@ -44,7 +44,7 @@ const SLIDES: Slide[] = [
   },
   {
     href: "/principles",
-    thumbnail: { kind: "video", src: `${BASE_PATH}/hero/focus.mp4`, heading: ["When you need", "Focus"] },
+    thumbnail: { kind: "video", src: `${BASE_PATH}/hero/focus.mp4`, poster: `${BASE_PATH}/hero/focus.poster.jpg`, heading: ["When you need", "Focus"] },
   },
   {
     href: "/service2",
@@ -56,13 +56,13 @@ const SLIDES: Slide[] = [
   },
   {
     href: "/service3",
-    thumbnail: { kind: "video", src: `${BASE_PATH}/service3/statement-bg.mp4`, heading: ["당신다운 경험의 시작"] },
+    thumbnail: { kind: "video", src: `${BASE_PATH}/service3/statement-bg.mp4`, poster: `${BASE_PATH}/service3/statement-bg.poster.jpg`, heading: ["당신다운 경험의 시작"] },
   },
   {
     href: "/negotiation",
     thumbnail: {
       kind: "video",
-      src: `${BASE_PATH}/negotiation/statement-bg.mp4`,
+      src: `${BASE_PATH}/negotiation/statement-bg.mp4`, poster: `${BASE_PATH}/negotiation/statement-bg.poster.jpg`,
       heading: ["당신이 원하는 그대로", "가장 자연스럽게"],
     },
   },
@@ -75,7 +75,16 @@ function SlideThumbnail({ thumbnail }: { thumbnail?: Thumbnail }) {
   return (
     <div className={styles.thumbnail}>
       {thumbnail.kind === "video" && (
-        <video className={styles.thumbnailMedia} src={thumbnail.src} autoPlay muted loop playsInline />
+        <video
+          className={styles.thumbnailMedia}
+          src={thumbnail.src}
+          poster={thumbnail.poster}
+          preload="auto"
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
       )}
       {thumbnail.kind === "image" && (
         // eslint-disable-next-line @next/next/no-img-element
