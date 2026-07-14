@@ -1,0 +1,159 @@
+.wrapper {
+  height: 240vh;
+  position: relative;
+  background: var(--color-bg);
+}
+
+.snapPoint {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 100vh;
+  scroll-snap-align: start;
+  pointer-events: none;
+}
+
+.section {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(56px, 8vw, 84px) var(--edge-padding);
+}
+
+.box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1600 / 900;
+  border-radius: 32px;
+  overflow: hidden;
+  background: var(--color-bg-soft);
+  /* Locked aspect-ratio lets every offset below be expressed in cqw (a % of
+     the box's own width) and land exactly on the Figma coordinates at any
+     size, even for vertical offsets — see NegotiationDiagram for the same
+     pattern. */
+  container-type: inline-size;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: var(--pillar-opacity, 1);
+}
+
+.backgroundVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  position: absolute;
+  inset: 0;
+}
+
+.textBlock {
+  position: absolute;
+  /* Figma node 4401:723's text block (left: 1121.3px, top: 312px within the
+     1600x900 frame), converted to cqw — shared by all three pillars. */
+  left: 70.081cqw;
+  top: 19.5cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(24px, 4vw, 54px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.24;
+  white-space: nowrap;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(14px, 1.8vw, 24px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  color: rgba(14, 24, 37, 0.8);
+  white-space: nowrap;
+}
+
+.headingOnVideo,
+.bodyOnVideo {
+  color: #ffffff;
+}
+
+.bodyOnVideo {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 720px) {
+  .wrapper {
+    height: auto;
+  }
+
+  .snapPoint {
+    display: none;
+  }
+
+  .section {
+    position: relative;
+    height: auto;
+  }
+
+  .box {
+    position: static;
+    width: 100%;
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: none;
+  }
+
+  .layer {
+    position: relative;
+    opacity: 1 !important;
+  }
+
+  .backgroundVideo {
+    position: absolute;
+    aspect-ratio: 1600 / 900;
+    border-radius: 32px;
+  }
+
+  .content {
+    position: relative;
+    aspect-ratio: 1600 / 900;
+    border-radius: 32px;
+    overflow: hidden;
+    background: var(--color-bg-soft);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 32px 24px;
+  }
+
+  .textBlock {
+    position: static;
+    max-width: 100%;
+  }
+
+  .heading,
+  .body {
+    opacity: 1 !important;
+    transform: none !important;
+    white-space: normal;
+  }
+}

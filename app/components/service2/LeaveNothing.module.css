@@ -1,0 +1,87 @@
+.wrapper {
+  height: 260vh;
+  position: relative;
+  background: #fff;
+}
+
+.section {
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(56px, 8vw, 84px) var(--edge-padding);
+  overflow: hidden;
+  background: #fff;
+}
+
+.bgPhoto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.whiteCard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: min(929px, 48vw);
+  aspect-ratio: 929.555 / 964.657;
+  background: #ffffff;
+  transition: box-shadow 0.1s linear;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.leave {
+  font-size: clamp(24px, 4vw, 54px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #0e1825;
+}
+
+.blobWrap {
+  position: relative;
+  height: min(704px, 36vw * (703.93 / 684.96), 46vh);
+  aspect-ratio: 684.96 / 703.93;
+  margin-top: 12px;
+}
+
+.blobImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.nothing {
+  position: relative;
+  margin-top: -20px;
+  font-size: clamp(24px, 4vw, 54px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #0e1825;
+}
+
+.body {
+  margin-top: 28px;
+  max-width: 600px;
+  font-size: clamp(14px, 1.8vw, 24px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--color-text-muted);
+}

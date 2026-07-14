@@ -1,0 +1,147 @@
+.section {
+  background: var(--color-bg);
+  padding: clamp(32px, 5vw, 56px) var(--edge-padding);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 36px);
+  scroll-margin-top: 24px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(24px, 4vw, 64px);
+}
+
+.heading {
+  font-size: clamp(22px, 3.6vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.body {
+  font-size: clamp(14px, 1.8vw, 24px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 640px;
+}
+
+.diagramWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.diagram {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1600 / 660;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #0e1825;
+  /* The box always keeps a locked 1600:660 ratio, so the stat overlay's
+     position/size can be expressed in cqw (a % of the box's own width) and
+     land exactly on top of the baked-in number in the image at any size. */
+  container-type: inline-size;
+}
+
+.diagramLayer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.4s ease;
+}
+
+.diagramImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cycles between the CFP/Bid/Award rows, matching each row's exact Figma
+   box (left/width/height fixed, only `top` animates between them). */
+.stepHighlight {
+  position: absolute;
+  left: 66.19cqw;
+  width: 26.37cqw;
+  height: 8.47cqw;
+  border-radius: 0.875cqw;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.statTickerCnp {
+  position: absolute;
+  left: 46.42cqw;
+  top: 11.05cqw;
+  font-size: clamp(22px, 3.75cqw, 60px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  color: #ff3385;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.statTickerDcop {
+  position: absolute;
+  left: 39.87cqw;
+  top: 14.02cqw;
+  font-size: clamp(26px, 4.375cqw, 70px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+  color: #ff3385;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(7px, 0.9vw, 14px);
+  background: #0e1825;
+  border-radius: 32px;
+  padding: clamp(11px, 1.44vw, 18px);
+  width: min(422px, 100%);
+}
+
+.labelCard {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: clamp(7px, 0.9vw, 14px);
+  border-radius: 12px;
+  text-align: left;
+  transition: background 0.25s ease;
+}
+
+.labelCardRaised {
+  background: #ffffff;
+}
+
+.labelIndex {
+  font-size: clamp(11px, 1.17vw, 17px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+}
+
+.labelName {
+  font-size: clamp(14px, 1.53vw, 29px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  transition: color 0.25s ease;
+}
+
+.labelCardRaised .labelName {
+  color: var(--color-text);
+}

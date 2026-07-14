@@ -1,0 +1,2384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>새겨듣다 — Skeep Intelligence System™</title>
+  <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      --edge-padding: clamp(24px, 8.3vw, 160px);
+      background: #fff; color: #0e1825;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    p { margin: 0; }
+
+    .fi { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .fi.vis { opacity: 1; transform: none; }
+    .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+    .d4{transition-delay:.32s}.d5{transition-delay:.40s}.d6{transition-delay:.48s}
+    .dd2{transition-delay:.30s}.dd3{transition-delay:.60s}
+
+    /* ── SENSING DETAIL ── */
+    .sd-section {
+      width: 100%;
+      padding: clamp(56px, 8vw, 116px) var(--edge-padding);
+      background: #fff;
+    }
+    .sd-section.sd-bg-grad {
+      background: #fff;
+    }
+    .sd-section.sd-bg-deep {
+      background: #fff;
+    }
+    .sd-card-section {
+      padding-top: clamp(56px, 8vw, 116px);
+      padding-bottom: clamp(56px, 8vw, 116px);
+    }
+    /* The summary text section right above already has its own bottom
+       padding, so stacking this section's top padding on top of it left an
+       oversized gap between the description and the cards. Collapse both
+       into a single, smaller controlled gap instead. */
+    .sd-bg-grad + .sd-card-section {
+      padding-top: 0;
+    }
+    .sd-bg-grad:has(+ .sd-card-section) {
+      padding-bottom: clamp(32px, 4vw, 64px);
+    }
+    .sd-hero + .sd-section {
+      margin-top: 180px;
+    }
+    .sd-hero {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    .sd-hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      /* fill the viewport responsively (cover) with a matching grey fallback */
+      background-color: #b9bec3;
+      background-image: url("assets/sensing-hero-people-3.png");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+    .sd-hero-bg video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.08);
+      transition: opacity 1.1s ease, transform 1.4s ease-out;
+    }
+    .sd-hero-bg video.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .sd-hero-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      z-index: 1;
+    }
+    .sd-hero h1 {
+      position: relative;
+      z-index: 2;
+      font-size: clamp(32px,4.8vw,72px);
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -0.04em;
+      max-width: 1220px;
+      word-break: keep-all;
+      color: #ffffff;
+    }
+    .sd-intro {
+      display: flex;
+      flex-direction: column;
+      gap: 52px;
+    }
+    .sd-copy-block {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 1.6vw, 28px);
+      max-width: 760px;
+    }
+    .sd-title {
+      font-size: clamp(24px,4vw,54px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+    }
+    .sd-body {
+      font-size: clamp(14px,1.8vw,24px);
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      color: #0e1825;
+    }
+    .sd-pill-row {
+      width: 100%;
+    }
+    .sd-pill-row video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .sd-pink { color: #ff076a; }
+    .sd-sensing-scene {
+      height: 800vh;
+      position: relative;
+      background: #fff;
+      padding: 0;
+      margin-top: 180px;
+    }
+    .sd-sensing-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      --sd-sensing-graphic-size: clamp(220px, 32vw, 370px);
+    }
+    .sd-sensing-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(24px, 5.4vw, 96px);
+      gap: clamp(24px, 4vw, 72px);
+      transition:
+        opacity .76s cubic-bezier(.22, 1, .36, 1),
+        transform .86s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-sensing-primary {
+      transition:
+        opacity 1s ease,
+        transform .86s cubic-bezier(.22, 1, .36, 1);
+    }
+    .sd-sensing-primary {
+      opacity: 0;   /* revealed with a fade once the section scrolls into view (JS) */
+    }
+    .sd-sensing-detail {
+      opacity: 0;
+      transform: translateY(42px);
+      background: linear-gradient(180deg, #fff 0%, #F4F8FC 100%);
+    }
+    .sd-sensing-detail .sd-two-col {
+      width: 100%;
+      align-items: center;
+      flex-direction: row;
+      min-width: 0;
+    }
+    .sd-sensing-detail .sd-visual-round,
+    .sd-sensing-detail .sd-text-right h2,
+    .sd-sensing-detail .sd-text-right p {
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    .sd-compass {
+      width: var(--sd-sensing-graphic-size);
+      height: var(--sd-sensing-graphic-size);
+      max-height: min(60vh, var(--sd-sensing-graphic-size));
+      object-fit: contain;
+      flex: 0 1 var(--sd-sensing-graphic-size);
+      min-width: 0;
+      transform-origin: center center;
+      transition:
+        opacity .82s cubic-bezier(.22, 1, .36, 1),
+        transform 1.35s cubic-bezier(.16, 1, .3, 1),
+        scale .72s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform, scale;
+    }
+    .sd-sensing-text {
+      flex: 1 1 0;
+      max-width: 1047px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      padding-left: 0;
+      transition: transform .72s cubic-bezier(.22, 1, .36, 1);
+      will-change: transform;
+    }
+    .sd-sensing-title {
+      font-size: clamp(32px,4.8vw,72px);
+      line-height: 1.4;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      max-width: 100%;
+      color: #0e1825;
+      transition:
+        font-size .72s cubic-bezier(.22, 1, .36, 1),
+        color .72s cubic-bezier(.22, 1, .36, 1);
+      will-change: font-size;
+    }
+    .sd-caption-scroll {
+      font-size: clamp(22px,3.6vw,48px);
+      line-height: 1.4;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #0e1825;
+      opacity: 0;
+      transform: translateY(16px);
+      margin-top: 34px;
+      white-space: nowrap;
+      transition:
+        opacity .72s cubic-bezier(.22, 1, .36, 1),
+        transform .72s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-scroll-cards {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      justify-content: flex-end;
+      gap: clamp(12px, 1.6vw, 28px);
+      margin-top: clamp(28px, 4vw, 58px);
+      opacity: 0;
+      transform: translateY(28px);
+      transition:
+        opacity .72s cubic-bezier(.22, 1, .36, 1),
+        transform .72s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-scroll-card {
+      flex: 0 1 296px;
+      min-width: 0;
+      height: clamp(96px, 10.4vw, 142px);
+      border-radius: clamp(14px, 1.5vw, 22.4px);
+      padding: clamp(14px, 1.8vw, 24px);
+      background: #ebf0f5;
+    }
+    .sd-scroll-card p {
+      font-size: clamp(13px, 1.6vw, 23.333px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -1.1667px;
+      background: linear-gradient(180deg, #3b0018 0%, #4b5869 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+    .sd-two-col {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: clamp(48px, 7vw, 120px);
+    }
+    .sd-visual-round {
+      width: var(--sd-sensing-graphic-size);
+      height: var(--sd-sensing-graphic-size);
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .sd-orbit-visual {
+      position: relative;
+      width: var(--sd-sensing-graphic-size);
+      height: var(--sd-sensing-graphic-size);
+      flex: 0 1 var(--sd-sensing-graphic-size);
+      min-width: 0;
+      transition: transform .9s cubic-bezier(.22, 1, .36, 1);
+      will-change: transform;
+    }
+    .sd-orbit-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transform-origin: center center;
+      transition:
+        opacity .82s cubic-bezier(.22, 1, .36, 1),
+        transform 1.35s cubic-bezier(.16, 1, .3, 1);
+      will-change: opacity, transform;
+    }
+    .sd-orbit-radar,
+    .sd-orbit-main-clock {
+      position: absolute;
+      inset: 0;
+    }
+    .sd-orbit-main-clock {
+      opacity: 0;
+    }
+    .sd-orbit-trail {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .95s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-orbit-trail img {
+      position: absolute;
+      inset: 0;
+    }
+    .sd-text-right {
+      flex: 1 1 0;
+      max-width: 1047px;
+      min-width: 0;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 1.6vw, 28px);
+      will-change: transform;
+    }
+    .sd-text-right h2 {
+      font-size: clamp(24px,4vw,54px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+      transition:
+        opacity .62s cubic-bezier(.22, 1, .36, 1),
+        transform .62s cubic-bezier(.22, 1, .36, 1);
+    }
+    .sd-text-right p:not(.sd-scene-eyebrow) {
+      font-size: clamp(14px,1.8vw,24px);
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+      transition:
+        opacity .62s cubic-bezier(.22, 1, .36, 1),
+        transform .62s cubic-bezier(.22, 1, .36, 1);
+    }
+    .sd-clock-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .sd-clock-row img {
+      width: var(--sd-sensing-graphic-size);
+      height: var(--sd-sensing-graphic-size);
+      object-fit: contain;
+    }
+    .sd-clock-row img:nth-child(2) { opacity: .8; }
+    .sd-clock-row img:nth-child(3) { opacity: .6; }
+    .sd-clock-row img:nth-child(4) { opacity: .4; }
+    .sd-tick {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 64px;
+      width: calc(100% - 240px);
+      opacity: 0;
+      transform: translateY(72px);
+      transition:
+        opacity .72s cubic-bezier(.22, 1, .36, 1),
+        transform .82s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-tick h2 {
+      font-size: clamp(32px,4.8vw,72px);
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      color: #0e1825;
+    }
+    .sd-tick h2 span { color: rgba(14, 24, 37, 0.26); }
+    .sd-tick-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sd-tick > p {
+      max-width: 760px;
+      text-align: right;
+      font-size: clamp(14px,1.8vw,24px);
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+    }
+    .sd-scene-eyebrow {
+      font-size: clamp(32px, 4.5vw, 48px);
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -0.04em;
+      color: rgb(216, 221, 226);
+      transition:
+        opacity .62s cubic-bezier(.22, 1, .36, 1),
+        transform .62s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity, transform;
+    }
+    .sd-sensing-tick {
+      position: absolute;
+      left: clamp(24px, 8.3vw, 120px);
+      right: clamp(24px, 8.3vw, 120px);
+      bottom: clamp(48px, 6.5vw, 96px);
+    }
+    .sd-walk-scene {
+      height: 500vh;
+      position: relative;
+      background: #fff;
+      margin-top: 160px;
+      margin-bottom: 160px;
+    }
+    .sd-walk-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      overflow: hidden;
+    }
+    .sd-walk-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 140px;
+      width: 100%;
+      position: relative;
+      transition: gap .85s cubic-bezier(.22, 1, .36, 1);
+    }
+    .sd-walk-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: min(calc(100% - 180px), 1800px);
+      height: 460px;
+      position: relative;
+      gap: clamp(24px, 2.7vw, 56px);
+      padding-inline: clamp(24px, 3vw, 56px);
+      box-sizing: border-box;
+      isolation: isolate;
+    }
+    /* full-bleed band behind the people; becomes a rounded blue card at the Input Logic step */
+    .sd-walk-box {
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      bottom: -18%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 92%;
+      background: #FFF3D1;
+      border-radius: 0;
+      pointer-events: none;
+      transition: background .7s ease,
+        width .85s cubic-bezier(.22, 1, .36, 1),
+        height .85s cubic-bezier(.22, 1, .36, 1),
+        bottom .85s cubic-bezier(.22, 1, .36, 1),
+        left .85s cubic-bezier(.22, 1, .36, 1),
+        border-radius .85s cubic-bezier(.22, 1, .36, 1),
+        transform .85s cubic-bezier(.22, 1, .36, 1);
+    }
+    /* pink gradient sits on a crossfading ::after layer so the yellow→pink change
+       eases in (CSS can't transition a gradient background directly) */
+    .sd-walk-box::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #FF0B6C 0%, #FF61A0 100%);
+      opacity: 0;
+      transition: opacity .8s ease;
+      pointer-events: none;
+    }
+    .sd-walk-scene.is-pre-final .sd-walk-box::after,
+    .sd-walk-scene.is-final .sd-walk-box::after {
+      opacity: 1;
+      transition-delay: .6s;
+    }
+    /* the row is slid right by translateX in .is-pre-final; center the box on the
+       person + "Input Logic" group (which sits left-of-row-center) so it wraps them */
+    .sd-walk-scene.is-pre-final .sd-walk-box,
+    .sd-walk-scene.is-final .sd-walk-box {
+      width: min(900px, 63vw);
+      height: clamp(320px, 44vh, 460px);
+      bottom: calc(50% - 95px);
+      left: calc(50% - clamp(220px, 17.2vw, 340px));
+      border-radius: clamp(24px, 2.5vw, 40px);
+      transform: translate(-50%, 50%);
+      transition-delay: .6s;
+    }
+    .sd-walk-person {
+      flex: 0 1 clamp(145px, 9.5vw, 195px);
+      width: clamp(145px, 9.5vw, 195px);
+      min-width: 0;
+      height: 100%;
+      object-fit: contain;
+      object-position: bottom center;
+      overflow: visible;
+      display: block;
+      position: relative;
+      z-index: 2;
+      filter: grayscale(1) saturate(.12) brightness(.94) contrast(.96);
+      opacity: 1;
+      transition:
+        filter 0.55s ease,
+        transform .85s cubic-bezier(.22, 1, .36, 1),
+        opacity .7s ease,
+        left .85s cubic-bezier(.22, 1, .36, 1),
+        top .85s cubic-bezier(.22, 1, .36, 1),
+        width .85s cubic-bezier(.22, 1, .36, 1),
+        height .85s cubic-bezier(.22, 1, .36, 1);
+      transform-origin: bottom center;
+    }
+    .sd-walk-scene.is-final .sd-walk-content {
+      gap: 0;
+    }
+    .sd-walk-scene.is-final .sd-walk-row {
+      width: 100%;
+      height: 100vh;
+      padding-inline: 0;
+      gap: 0;
+      align-items: center;
+    }
+    .sd-walk-scene.is-pre-final .sd-walk-person:not(.is-walk-final-person) {
+      opacity: 0;
+      transform: scale(.98);
+      pointer-events: none;
+    }
+    .sd-walk-scene.is-final .sd-walk-person:not(.is-walk-final-person) {
+      opacity: 0;
+      transform: translateY(12px) scale(.98);
+      pointer-events: none;
+    }
+    .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
+      position: absolute;
+      left: calc(50% - clamp(300px, 21vw, 440px));
+      top: 50%;
+      width: clamp(92px, 7.2vw, 148px);
+      height: auto;
+      opacity: 1;
+      filter: grayscale(0);
+      transform: translate(-50%, -50%) scale(1) !important;
+    }
+    .sd-walk-shadow {
+      position: absolute;
+      bottom: -12px;
+      width: 218px;
+      height: 34px;
+      z-index: 1;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      transition: left 0.35s ease, opacity .55s ease;
+      transform: translateX(-50%);
+    }
+    .sd-walk-scene.is-final .sd-walk-shadow {
+      opacity: 0;
+    }
+    .sd-walk-scene.is-pre-final .sd-walk-shadow {
+      opacity: 0;
+    }
+    .sd-walk-caption {
+      text-align: center;
+      padding-top: 0;
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .sd-walk-scene.is-pre-final .sd-walk-caption {
+      opacity: 0;
+      transform: none;
+      pointer-events: none;
+    }
+    .sd-walk-scene.is-final .sd-walk-caption {
+      position: absolute;
+      opacity: 0;
+      transform: none;
+      pointer-events: none;
+    }
+    .sd-walk-final-title {
+      position: absolute;
+      left: calc(50% - clamp(460px, 23vw, 640px));
+      top: calc(50% + 80px);
+      transform: translateY(-50%) translateX(32px);
+      display: block;
+      opacity: 0;
+      font-size: clamp(56px, 6.1vw, 120px);
+      line-height: 1.05;
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      color: #fff;
+      white-space: nowrap;
+      pointer-events: none;
+      transition: opacity .85s ease, transform .85s cubic-bezier(.22, 1, .36, 1);
+    }
+    .sd-walk-scene.is-final-moving .sd-walk-content,
+    .sd-walk-scene.is-final .sd-walk-content {
+      gap: 0;
+    }
+    .sd-walk-scene.is-final-moving .sd-walk-row,
+    .sd-walk-scene.is-final .sd-walk-row {
+      width: 100%;
+      height: 100vh;
+      padding-inline: 0;
+      gap: 0;
+      align-items: center;
+    }
+    .sd-walk-scene.is-final-moving .sd-walk-person:not(.is-walk-final-person) {
+      opacity: 0;
+      transform: scale(.98);
+      pointer-events: none;
+    }
+    .sd-walk-scene.is-pre-final .sd-walk-final-title {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+      transition-delay: .7s;
+    }
+    /* final: slide the whole person + "Input Logic" group to screen center */
+    .sd-walk-scene.is-pre-final .sd-walk-row {
+      transform: translateX(clamp(200px, 17vw, 340px));
+      transition-delay: .6s;
+    }
+    .sd-walk-row { transition: transform .9s cubic-bezier(.22, 1, .36, 1); }
+    @media (max-width: 900px) {
+      .sd-walk-content { gap: 92px; }
+      .sd-walk-row {
+        width: min(calc(100% - 56px), 1200px);
+        height: 360px;
+        gap: 12px;
+        padding-inline: 14px;
+      }
+      .sd-walk-person {
+        flex-basis: clamp(72px, 11.5vw, 104px);
+        width: clamp(72px, 11.5vw, 104px);
+      }
+      .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
+        left: calc(50% - clamp(150px, 24vw, 230px));
+        width: clamp(74px, 10vw, 104px);
+      }
+      .sd-walk-final-title {
+        left: calc(50% - clamp(50px, 7vw, 86px));
+        font-size: clamp(44px, 9vw, 78px);
+      }
+    }
+    .sd-walk-caption h2 {
+      font-size: clamp(24px,4vw,54px);
+      line-height: 1.3;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .sd-walk-caption p {
+      margin-top: 28px;
+      font-size: clamp(14px,1.8vw,24px);
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+    }
+    .sd-input-summary {
+      display: grid;
+      grid-template-columns: 365px 1fr;
+      gap: 355px;
+      align-items: start;
+    }
+    .sd-input-title-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .sd-input-kicker {
+      font-size: clamp(18px,2.2vw,32px);
+      line-height: 1.3;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: rgba(14, 24, 37, .42);
+    }
+    .sd-input-summary h2 {
+      font-size: clamp(24px,4vw,54px);
+      line-height: 1.3;
+      letter-spacing: -0.03em; font-weight: 600;}
+    .sd-input-summary p {
+      font-size: clamp(14px,1.8vw,24px);
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+      margin-top: clamp(42px, 4.8vw, 86px);
+    }
+    .sd-input-summary > p {
+      margin-top: clamp(112px, 7vw, 150px);
+    }
+    .sd-card-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      height: 640px;
+      align-items: stretch;
+    }
+    .sd-info-card {
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      background: #0E1825;
+      height: 100%;
+      isolation: isolate;
+      transform: translateZ(0);
+      clip-path: inset(0 round 44px);
+    }
+    .sd-card-img {
+      position: absolute;
+      inset: -2px;
+      overflow: hidden;
+      border-radius: inherit;
+      z-index: 0;
+    }
+    .sd-card-img img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      transform: scale(1.035);
+    }
+    .sd-info-card:nth-child(1) .sd-card-img img { object-position: 66% center; }
+    .sd-info-card:nth-child(3) .sd-card-img img { object-position: 54% center; }
+    .sd-card-img::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(14, 24, 37, .76) 0%, rgba(14, 24, 37, .64) 42%, rgba(14, 24, 37, .88) 100%),
+        radial-gradient(ellipse at 34% 88%, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .30) 35%, rgba(0, 0, 0, 0) 76%);
+    }
+    .sd-card-glow {
+      position: absolute;
+      left: -20%;
+      bottom: -25%;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,7,106,.55) 0%, rgba(255,7,106,0) 70%);
+      pointer-events: none;
+      z-index: 1;
+      display: none;
+    }
+    .sd-card-text {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: clamp(20px, 3vw, 40px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(16px, 2.5vw, 40px);
+      z-index: 2;
+    }
+    .sd-card-text h3 {
+      margin: 0;
+      font-size: clamp(20px,2.85vw,52px);
+      line-height: 1.3;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: #fff;
+    }
+    .sd-card-text h3 span {
+      display: block;
+      font-size: clamp(12px,1.4vw,24px);
+      font-weight: 500;
+      color: #D0D7E0;
+      letter-spacing: -0.02em;
+      margin-top: 4px;
+    }
+    .sd-card-text p {
+      margin: 0;
+      font-size: clamp(12px,1.25vw,21px);
+      line-height: 1.5;
+      font-weight: 500;
+      color: #C4CCD7;
+      letter-spacing: -0.02em;
+    }
+    .input-hero-scroll {
+      position: relative;
+      height: 150vh;
+      margin-top: clamp(640px, 75vh, 1120px);
+    }
+    .sd-summary-hero {
+      width: 100%;
+      height: 100vh;
+      padding: 0 var(--edge-padding);
+      background: #F4F8FC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: clamp(12px, 1.6vw, 22px);
+      overflow: hidden;
+      position: sticky;
+      top: 0;
+    }
+    .sd-summary-hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .sd-summary-hero::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: min(1080px, 78vw);
+      height: min(420px, 42vh);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .72);
+      filter: blur(76px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .sd-summary-hero-label,
+    .sd-summary-hero-body { position: relative; z-index: 2; }
+    .sd-summary-hero.sd-summary-dissolve {
+      opacity: 0;
+      transform: none;
+      transition: opacity 1s ease;
+    }
+    .sd-summary-hero.sd-summary-dissolve.vis {
+      opacity: 1;
+      transform: none;
+    }
+    .sd-summary-hero-label {
+      color: rgba(14,24,37,.72);
+      font-size: clamp(18px,2.2vw,32px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+    }
+    .sd-summary-hero-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(16px, 2vw, 28px);
+      max-width: 900px;
+    }
+    .sd-summary-hero h2 {
+      color: #0e1825;
+      font-size: clamp(28px,4.5vw,60px);
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+    }
+    .sd-summary-hero p {
+      color: rgba(14,24,37,.82);
+      font-size: clamp(14px,1.8vw,24px);
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+      max-width: 620px;
+    }
+    .sd-flow-scroll {
+      height: 270vh;
+      margin: 160px 0;
+      padding: 120px 0;
+      position: relative;
+      background: #fff;
+    }
+    .sd-flow-fadein { opacity: 0; transform: translateY(28px); transition: opacity .85s ease, transform .85s ease; }
+    .sd-flow-fadein.vis { opacity: 1; transform: none; }
+    .sd-flow-reveal-mark { position: absolute; top: 35vh; left: 0; width: 1px; height: 1px; pointer-events: none; }
+    .sd-flow-panel {
+      --sd-flow-scale: 1;
+      --flow-blur: 0px;
+      --flow-opacity: 1;
+      --flow-break: 0;
+      --flow-overlay: 0;
+      --flow-pause: 0;
+      --flow-active-opacity: 1;
+      --flow-pause-blur: 0px;
+      --flow-pause-in-blur: 12px;
+      width: min(calc(100% - 80px), 1480px);
+      height: calc(336px * var(--sd-flow-scale));
+      margin: 0 auto;
+      border-radius: 32px;
+      background: #0E1825;
+      transition: background .8s ease;
+      position: sticky;
+      top: 50%;
+      transform: translateY(-50%);
+      overflow: hidden;
+    }
+    .sd-flow-canvas {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1760px;
+      height: 336px;
+      transform: scale(var(--sd-flow-scale));
+      transform-origin: top left;
+      opacity: var(--flow-active-opacity);
+      filter: blur(var(--flow-pause-blur));
+      transition: opacity .28s ease, filter .28s ease;
+      z-index: 1;
+    }
+    .sd-flow-side,
+    .sd-flow-cards {
+      position: relative;
+      z-index: 1;
+      filter: grayscale(var(--flow-break)) blur(var(--flow-blur)) contrast(calc(1 + var(--flow-break) * .35));
+      opacity: var(--flow-opacity);
+      will-change: filter, opacity;
+      transition: filter .28s ease, opacity .28s ease;
+    }
+    .sd-flow-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 2;
+      opacity: var(--flow-overlay);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.26) 100%),
+        rgba(126, 130, 134, .46);
+      backdrop-filter: grayscale(1) blur(18px);
+      transition: opacity 1s ease;
+    }
+    .sd-flow-panel.is-flow-blurred {
+      --flow-blur: 90px;
+      --flow-opacity: .25;
+      --flow-break: 1;
+      --flow-overlay: .92;
+      --flow-active-opacity: 0;
+      --flow-pause-blur: 48px;
+    }
+    .sd-flow-panel.is-paused {
+      --flow-pause: 1;
+      --flow-active-opacity: 0;
+      --flow-pause-blur: 16px;
+      --flow-pause-in-blur: 0px;
+    }
+    .sd-flow-pause-state,
+    .sd-flow-time-state {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1760px;
+      height: 336px;
+      z-index: 3;
+      pointer-events: none;
+      transform: scale(var(--sd-flow-scale));
+      transform-origin: top left;
+    }
+    .sd-flow-pause-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 32px;
+      background: #0E1825;
+      opacity: var(--flow-pause);
+      filter: blur(var(--flow-pause-in-blur));
+      transition: opacity .45s ease, filter .45s ease;
+    }
+    .sd-flow-pause-mark {
+      width: 104px;
+      height: 122px;
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .sd-flow-pause-mark::before,
+    .sd-flow-pause-mark::after {
+      content: "";
+      width: 36px;
+      border-radius: 4px;
+      background: #ff076a;
+    }
+    .sd-flow-time-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 150px;
+      opacity: 0;
+      transition: opacity .5s ease;
+    }
+    .sd-flow-time-inner {
+      display: flex;
+      align-items: center;
+      gap: 78px;
+      transform: translateY(70px) scale(.96);
+      transition: transform .72s cubic-bezier(.22,1,.36,1), gap .72s cubic-bezier(.22,1,.36,1);
+    }
+    .sd-flow-panel.is-time-visible .sd-flow-pause-state {
+      opacity: 0;
+      filter: blur(10px);
+    }
+    .sd-flow-panel.is-time-visible {
+      background: transparent;
+    }
+    .sd-flow-panel.is-time-visible::after {
+      opacity: 0;
+    }
+    .sd-flow-panel.is-time-visible .sd-flow-time-state {
+      opacity: 1;
+      transition-delay: .28s;
+    }
+    .sd-flow-panel.is-time-visible .sd-flow-time-inner {
+      transform: translateY(0) scale(1);
+      transition-delay: .28s;
+    }
+    .sd-flow-time-avatar {
+      width: 240px;
+      height: 240px;
+      flex: 0 0 auto;
+      opacity: 1;
+      transition: opacity .35s ease;
+    }
+    .sd-flow-time-card {
+      width: 1180px;
+      height: 240px;
+      border-radius: 44px;
+      background: #EBF0F5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      transition: width .72s cubic-bezier(.22,1,.36,1), background .72s ease;
+    }
+    .sd-flow-rest-copy,
+    .sd-flow-card-logic-copy {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+    }
+    .sd-flow-rest-copy {
+      justify-content: center;
+      margin: 0;
+      font-size: 80px;
+      line-height: 1.5;
+      letter-spacing: -3.2px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #000;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .42s ease, transform .42s ease;
+    }
+    .sd-flow-card-logic-copy {
+      justify-content: center;
+      margin: 0;
+      font-size: 80px;
+      line-height: 1.5;
+      letter-spacing: -3.2px;
+      font-weight: 700;
+      white-space: nowrap;
+      color: #000;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
+    }
+    .sd-flow-logic-copy {
+      position: absolute;
+      left: 0;
+      bottom: 54px;
+      width: 1760px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding-left: 90px;
+      padding-right: 90px;
+      opacity: 0;
+      transform: translateY(48px);
+      transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
+    }
+    .sd-flow-logic-korean {
+      margin: 0;
+      font-size: 72px;
+      line-height: 1.3;
+      letter-spacing: -2.16px;
+      font-weight: 600;
+      color: #000;
+      text-align: right;
+      white-space: nowrap;
+      transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1);
+    }
+    .sd-flow-time-card .sd-flow-card-logic-copy,
+    .sd-flow-logic-copy {
+      display: none;
+    }
+    .sd-pause-logic-standalone {
+      background: #fff;
+      padding-top: clamp(40px, 5vw, 72px);
+      padding-bottom: clamp(24px, 3vw, 44px);
+    }
+    .sd-pause-logic-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: clamp(48px, 8vw, 160px);
+      min-height: clamp(180px, 18vw, 260px);
+    }
+    .sd-summary-section {
+      padding-top: clamp(24px, 3.5vw, 52px);
+    }
+    .sd-pause-logic-en {
+      font-size: clamp(48px, 5.6vw, 60pt);
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      font-weight: 700;
+      color: #000;
+      white-space: nowrap;
+    }
+    .sd-pause-logic-ko {
+      font-size: clamp(36px, 4.2vw, 48pt);
+      line-height: 1.28;
+      letter-spacing: -0.045em;
+      font-weight: 600;
+      color: #000;
+      text-align: right;
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) {
+      .sd-pause-logic-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .sd-pause-logic-ko {
+        text-align: left;
+      }
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-time-inner {
+      position: absolute;
+      left: 0;
+      bottom: 54px;
+      width: 1760px;
+      gap: 0;
+      transform: translateY(0) scale(1);
+      display: flex;
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-time-avatar {
+      width: 240px;
+      opacity: 0;
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-time-card {
+      width: 1760px;
+      margin-left: -240px;
+      background: transparent;
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-rest-copy {
+      opacity: 0;
+      transform: translateY(-24px);
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-card-logic-copy {
+      opacity: 1;
+      transform: translateY(0);
+      justify-content: flex-start;
+      box-sizing: border-box;
+      padding-left: 90px;
+    }
+    .sd-flow-panel.is-logic-visible .sd-flow-logic-copy {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: .18s;
+    }
+    .sd-flow-side {
+      position: absolute;
+      left: 43px;
+      top: 41px;
+      width: 213px;
+    }
+    .sd-flow-side .label {
+      color: #ff076a;
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 0 0 3px 5px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .sd-flow-side h3 {
+      font-size: 40px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin: 0 0 26px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sd-flow-side p {
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+      margin: 0;
+      font-weight: 400;
+      color: #fff;
+    }
+    .sd-flow-cards {
+      position: absolute;
+      left: 356px;
+      top: 33.75px;
+      width: 1362px;
+      height: 322px;
+      display: flex;
+      gap: 25px;
+    }
+    .sd-flow-card {
+      flex: 0 0 250px;
+      width: 250px;
+      height: 249.916px;
+      border-radius: 24.64px;
+      padding: 35.825px 28.66px;
+      display: flex;
+      flex-direction: column;
+      gap: 17.913px;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      will-change: filter, opacity;
+    }
+    .sd-flow-card.c1 { background: rgba(255,255,255,.10); }
+    .sd-flow-card.c2 { background: rgba(255,255,255,.15); }
+    .sd-flow-card.c3 { background: rgba(255,255,255,.20); }
+    .sd-flow-card.c4 { background: rgba(255,255,255,.25); }
+    .sd-flow-card.c5 { background: rgba(255,255,255,.30); }
+    .sd-flow-card h4 {
+      font-size: 36px;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      font-weight: 600;
+      margin: 0;
+      color: #fff;
+      opacity: .6;
+    }
+    .sd-flow-card.c1 h4 { font-weight: 700; }
+    .sd-flow-card span {
+      font-family: 'Bebas Neue', 'Arial Narrow', 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: 36px;
+      line-height: .96;
+      letter-spacing: -0.04em;
+      color: #fff;
+      opacity: .2;
+    }
+    .sd-flow-card.c1 span { color: #b5babf; opacity: .56; }
+
+    /* ── flow card grouping (목적 연산/달성 구간) ── */
+    .sd-flow-cards.grouped {
+      display: block;
+    }
+    .sd-flow-group {
+      position: absolute;
+      left: 65.308px;
+      top: 0;
+      width: 760.308px;
+      height: 322px;
+    }
+    .sd-flow-group.strong {
+      left: 840.308px;
+      width: 505.112px;
+    }
+    .sd-flow-group-row {
+      position: absolute;
+      left: 8.8px;
+      top: 9.23px;
+      display: flex;
+      gap: 22.884px;
+      width: auto;
+    }
+    .sd-flow-group-row::before {
+      content: '';
+      position: absolute;
+      left: -8.8px;
+      top: -9.23px;
+      width: 760.308px;
+      height: 265.756px;
+      border: 3.583px dashed #6e6e6e;
+      border-radius: 35.199px;
+      background: rgba(0,0,0,.05);
+      opacity: .5;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .sd-flow-group.strong .sd-flow-group-row::before {
+      width: 505.112px;
+      opacity: 1;
+    }
+    .sd-flow-caption {
+      position: absolute;
+      left: 19.36px;
+      top: 265.756px;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding-left: 0;
+    }
+    .sd-flow-caption .bracket {
+      width: 17.6px;
+      height: 36.96px;
+      border-left: 1.2px solid rgba(0,0,0,.18);
+      border-bottom: 1.2px solid rgba(0,0,0,.18);
+      flex-shrink: 0;
+    }
+    .sd-flow-caption-text {
+      padding-top: 16px;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: rgba(0,0,0,.5);
+    }
+    .sd-summary-video-band {
+      width: min(100%, 520px);
+      height: auto;
+      aspect-ratio: 1 / 1;
+      background: #FFE8F5;
+      border-radius: clamp(24px, 2.4vw, 40px);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto clamp(32px, 4vw, 64px);
+    }
+    .sd-summary-video {
+      flex: 0 0 auto;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      background: #FFE8F5;
+    }
+    .sd-summary-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .sd-summary-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(18px, 2.2vw, 32px);
+      text-align: center;
+      color: #000;
+    }
+    .sd-summary-copy h2,
+    .sd-summary-copy p { width: 100%; }
+    .sd-summary-copy h2 {
+      font-size: clamp(16px,3.6vw,58px);
+      line-height: 1.35;
+      letter-spacing: -0.04em;
+      font-weight: 600;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .sd-summary-copy h2 span {
+      color: #ff076a;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+    .sd-summary-copy p {
+      font-size: clamp(15px,1.5vw,22px);
+      line-height: 1.55;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+    .sd-summary-visuals {
+      display: flex;
+      flex-direction: row;
+      gap: clamp(16px, 1.5vw, 24px);
+      width: 100%;
+      margin: clamp(36px, 4.5vw, 72px) 0 0;
+    }
+    .sd-summary-box {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      height: clamp(180px, 16vw, 250px);
+      border-radius: 28px;
+      background: #F4F8FC;
+      padding: clamp(30px, 3.2vw, 48px) clamp(28px, 3vw, 48px) clamp(26px, 2.6vw, 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sd-summary-box .kicker {
+      font-size: clamp(15px,1.4vw,22px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+      color: #ff076a;
+    }
+    .sd-summary-box h3 {
+      font-size: clamp(20px,1.9vw,30px);
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -0.03em;
+      color: #0e1825;
+    }
+    .sd-summary-box p {
+      font-size: clamp(13px,1.15vw,18px);
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -0.03em;
+      color: #0e1825;
+    }
+
+    @media (max-width: 1100px) {
+      .sd-card-list {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 24px;
+      }
+      .sd-info-card {
+        height: clamp(360px, 70vw, 480px);
+      }
+      .sd-summary {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+      }
+      .sd-summary {
+        align-items: stretch;
+      }
+      .sd-summary-box {
+        height: clamp(280px, 52vw, 466px);
+      }
+      .sd-summary-visuals {
+        width: 100%;
+        flex-basis: auto;
+        flex-direction: column;
+      }
+      .sd-summary-video-band { width: min(100%, 440px); }
+      .sd-summary-copy {
+        flex-direction: column;
+        gap: clamp(14px, 3vw, 22px);
+      }
+      .sd-sensing-detail .sd-two-col {
+        flex-direction: row;
+        align-items: center;
+        gap: clamp(28px, 6vw, 64px);
+      }
+      .sd-sensing-detail .sd-text-right {
+        flex: 1 1 0;
+      }
+      .sd-sensing-detail .sd-text-right h2 {
+        font-size: clamp(26px, 4.4vw, 48px);
+      }
+      .sd-sensing-detail .sd-text-right p:not(.sd-scene-eyebrow) {
+        font-size: clamp(13px, 2.1vw, 20px);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .sd-sensing-sticky {
+        --sd-sensing-graphic-size: clamp(150px, 30vw, 190px);
+      }
+      .sd-sensing-layer {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: clamp(18px, 4vw, 28px);
+      }
+      .sd-compass {
+        width: var(--sd-sensing-graphic-size);
+        height: var(--sd-sensing-graphic-size);
+        flex: 0 1 var(--sd-sensing-graphic-size);
+      }
+      .sd-sensing-text {
+        align-items: flex-end;
+        text-align: right;
+        width: auto;
+        max-width: 100%;
+      }
+      .sd-caption-scroll {
+        white-space: nowrap;
+        font-size: clamp(18px, 3.4vw, 28px);
+      }
+      .sd-scroll-cards {
+        max-width: 100%;
+        justify-content: flex-end;
+      }
+      .sd-sensing-detail .sd-two-col {
+        flex-direction: row;
+        gap: clamp(18px, 4vw, 28px);
+      }
+      .sd-orbit-visual,
+      .sd-visual-round {
+        width: var(--sd-sensing-graphic-size);
+        height: var(--sd-sensing-graphic-size);
+        flex-basis: var(--sd-sensing-graphic-size);
+      }
+      .sd-sensing-detail .sd-text-right h2 {
+        font-size: clamp(22px, 4.2vw, 32px);
+      }
+      .sd-sensing-detail .sd-text-right p:not(.sd-scene-eyebrow) {
+        font-size: clamp(12px, 2vw, 15px);
+        line-height: 1.45;
+      }
+      .sd-tick {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 16px;
+      }
+      .sd-tick h2 {
+        white-space: normal;
+        text-align: right;
+        font-size: clamp(24px, 6vw, 32px);
+      }
+      .sd-flow-panel {
+        width: calc(100% - 48px);
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<section class="sd-hero">
+  <div class="sd-hero-bg"></div>
+  <div class="sd-hero-dim"></div>
+  <h1>어떤 형태의 의도든 완벽하게<br>항상 준비되어 있으니까</h1>
+</section>
+
+<section class="sd-section sd-intro sd-bg-grad fi">
+  <div class="sd-copy-block">
+    <h2 class="sd-title">24/7, 365<br>Always Awake</h2>
+    <p class="sd-body">말하기 전, 스킵은 이미 귀 기울이고 있죠.<br>언제든 주변을 살피며 다음을 준비합니다.</p>
+  </div>
+  <div class="sd-pill-row fi">
+    <video src="assets/sensing-input-pause.mp4" autoplay muted playsinline id="pillVideo"></video>
+  </div>
+</section>
+
+<section class="sd-sensing-scene" id="sensing-scene-scroll">
+  <div class="sd-sensing-sticky">
+    <div class="sd-sensing-layer sd-sensing-primary">
+      <img class="sd-compass" src="assets/sensing-compass-v3.png" alt="탐지를 상징하는 나침반 모티프">
+      <div class="sd-sensing-text">
+        <h2 class="sd-sensing-title">Sensing Logic</h2>
+        <p class="sd-caption-scroll">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
+        <div class="sd-scroll-cards">
+          <div class="sd-scroll-card fi"><p>주변 공간의<br>물리적 도메인을<br>상시 탐색</p></div>
+          <div class="sd-scroll-card fi dd2"><p>지능형<br>반사 표면<br>제어</p></div>
+          <div class="sd-scroll-card fi dd3"><p>스킵은 패킷을<br>통해 자신을<br>환경에 모핑함</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="sd-sensing-layer sd-sensing-detail">
+      <div class="sd-two-col">
+        <div class="sd-orbit-visual">
+          <img class="sd-orbit-radar" src="assets/sensing-radar-v3.png" alt="발견을 상징하는 레이더 모티프">
+          <img class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png" alt="24시간 센싱을 상징하는 시계 모티프">
+          <div class="sd-orbit-trail" aria-hidden="true">
+            <img src="assets/sensing-clock-v3.png" alt="">
+            <img src="assets/sensing-clock-v3.png" alt="">
+            <img src="assets/sensing-clock-v3.png" alt="">
+            <img src="assets/sensing-clock-v3.png" alt="">
+          </div>
+        </div>
+        <div class="sd-text-right">
+          <p class="sd-scene-eyebrow">Sensing Logic</p>
+          <h2>돌다리도 두드려보고 건너는 꼼꼼함<br>스킵이 완성하는 경험의 디딤돌</h2>
+          <p>스킵은 당신이 발을 내딛기도 전에 공간의 돌다리를 먼저 두드려봅니다. <br>첨단 RIS* 기술과 정밀 무선 통신으로 주변을 탐색하여, <br>안전하게 디딜 수 있는 주변 환경과 그 기능들을 실시간으로 리스트업하죠.<br>이제 철저하게 확인된 디딤돌 위에서, 그저 물수제비를 뜨듯 가볍게 흐름을 이어가기만 하면 됩니다.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sd-tick sd-sensing-tick">
+      <div class="sd-tick-left">
+        <p class="sd-scene-eyebrow">Sensing Logic</p>
+        <h2>째깍째깍 <span>재깍재깍</span></h2>
+      </div>
+      <p>스킵의 패시브 레이어는 배경에서 끊임없이 움직이고 있습니다.<br>당신이 깊이 잠든 새벽이든, 분주하게 움직이는 낮이든, 어디에 있든 말이죠.<br>덕분에 목적이 생기는 그 찰나, 곧바로 완벽한 실행 경로가 완성됩니다.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sd-walk-scene" id="walk-scene">
+  <div class="sd-walk-sticky">
+    <div class="sd-walk-content">
+      <div class="sd-walk-row">
+        <div class="sd-walk-box" aria-hidden="true"></div>
+        <img class="sd-walk-shadow" id="walk-shadow" src="assets/walk-shadow.svg" alt="">
+        <img class="sd-walk-person is-walk-final-person" data-foot-x="0.554" src="assets/walk-person-1.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.png" alt="">
+        <img class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.png" alt="">
+        <div class="sd-walk-final-title" aria-hidden="true">Input Logic</div>
+      </div>
+      <div class="sd-walk-caption">
+        <h2>한 발짝 한 발짝 센스있게, 센싱</h2>
+        <p>당신의 모든 걸음은 스킵의 새로운 기준이자 세상이 됩니다.<br>걸음을 옮길 때마다, 센싱 로직이 배경에서 끊임없이 함께하니까요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sd-section sd-bg-grad fi">
+  <div class="sd-input-summary">
+    <div class="sd-input-title-stack">
+      <p class="sd-input-kicker">Input Logic</p>
+      <h2>말은 새겨듣고,<br>마음은 헤아리는</h2>
+    </div>
+    <p>완벽하게 다듬어진 지시나 명령은 필요 없습니다. 스킵은 발화의 운율과 문장 속 섬세한 단서에서 맥락을 완벽하게 파악하니까요. 때로는 말하지 않더라도, 당신의 마음을 찰떡같이 알아줍니다.</p>
+  </div>
+</section>
+
+<section class="sd-section sd-card-section fi">
+  <div class="sd-card-list">
+    <article class="sd-info-card">
+      <div class="sd-card-img"><img src="1.png" alt="음성 발화 입력 예시"></div>
+      <div class="sd-card-glow"></div>
+      <div class="sd-card-text">
+        <h3>음성 발화<span>Voice Input</span></h3>
+        <p>사용자가 직접 건네는 발화 신호의 경우 음성 데이터와 함께 목소리의 톤, 높낮이, 속도 등 미세한 운율 모두를 명시적 인풋으로 포착합니다.</p>
+      </div>
+    </article>
+    <article class="sd-info-card">
+      <div class="sd-card-img"><img src="2.png" alt="텍스트 입력 예시"></div>
+      <div class="sd-card-glow"></div>
+      <div class="sd-card-text">
+        <h3>텍스트 입력<span>Text Input</span></h3>
+        <p>타이핑을 통해 입력된 문자 신호의 경우 구두점이나 부사처럼 사용자가 텍스트에 남긴 미세한 흔적들을 명시적 인풋으로 획득합니다.</p>
+      </div>
+    </article>
+    <article class="sd-info-card">
+      <div class="sd-card-img"><img src="3.png" alt="행동 및 맥락 입력 예시"></div>
+      <div class="sd-card-glow"></div>
+      <div class="sd-card-text">
+        <h3>행동 및 맥락<span>Contextual Input</span></h3>
+        <p>사용자가 직접 말하지 않은 암묵적 신호로, 스키퍼블에 있는 외재적 데이터와 사용자 고유의 내재적 루틴을 입체적으로 종합해 받아들입니다.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div class="input-hero-scroll">
+<section class="sd-summary-hero sd-summary-dissolve" id="inputHeroSec">
+  <video class="sd-summary-hero-video" id="inputHeroVideo" src="assets/input-logic-hero-bg.mp4" autoplay muted playsinline preload="auto" aria-hidden="true"></video>
+  <p class="sd-summary-hero-label fi d1">Input Logic</p>
+  <div class="sd-summary-hero-body">
+    <h2 class="fi dd2">액티브 레이어를 여는 첫 단추</h2>
+    <p class="fi dd3">목적이 시작되는 이 순간은 액티브 레이어라는 거대한 시공간적 바운더리가 열리는 시점입니다. 이제 사용자의 목적은 A2A 연산 형태로 변환되며 본격적인 연산이 시작되죠.</p>
+  </div>
+</section>
+</div>
+
+<section class="sd-flow-scroll sd-flow-fadein" id="flowScrollSec">
+<div class="sd-flow-reveal-mark" aria-hidden="true"></div>
+<div class="sd-flow-panel">
+  <div class="sd-flow-canvas">
+    <div class="sd-flow-side">
+      <p class="label">Active Layer</p>
+      <h3>사용자<br>목적 구간</h3>
+      <p>사용자의 목적이 최초로 발생한 시점부터 달성되는 시점까지의 시공간적 바운더리</p>
+    </div>
+    <div class="sd-flow-cards">
+      <div class="sd-flow-card c1"><h4>사용자<br>목적 전달</h4><span>User Input</span></div>
+      <div class="sd-flow-card c2"><h4>의도<br>구조화</h4><span>Parsing</span></div>
+      <div class="sd-flow-card c3"><h4>실행 블록<br>생성</h4><span>Mapping</span></div>
+      <div class="sd-flow-card c4"><h4>실행 블록<br>처리</h4><span>Execution</span></div>
+      <div class="sd-flow-card c5"><h4>종료 및<br>개인화</h4><span>Feedback</span></div>
+    </div>
+  </div>
+  <div class="sd-flow-pause-state" aria-hidden="true">
+    <span class="sd-flow-pause-mark" aria-hidden="true"></span>
+  </div>
+  <div class="sd-flow-time-state" aria-hidden="true">
+      <div class="sd-flow-time-inner">
+        <img class="sd-flow-time-avatar" src="assets/pause-avatar.svg" alt="">
+        <div class="sd-flow-time-card">
+          <p class="sd-flow-rest-copy">스킵, 우리 시간 좀 갖자</p>
+          <p class="sd-flow-card-logic-copy" aria-hidden="true">Pause Logic</p>
+        </div>
+      </div>
+      <div class="sd-flow-logic-copy" aria-hidden="true">
+        <p class="sd-flow-logic-korean">2보 전진을 위한<br>1보 후퇴</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Refresh should always start at the top, not wherever the user left off.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', () => window.scrollTo(0, 0));
+</script>
+
+<script>
+(() => {
+  const sec = document.getElementById('flowScrollSec');
+  if (!sec) return;
+  const mark = sec.querySelector('.sd-flow-reveal-mark');
+  const io = new IntersectionObserver((es) => {
+    if (es[0].isIntersecting) { sec.classList.add('vis'); io.disconnect(); }
+  }, { rootMargin: '-42% 0px -42% 0px', threshold: 0 });
+  io.observe(mark);
+})();
+</script>
+
+<script>
+(() => {
+  const hero = document.getElementById('inputHeroSec');
+  if (!hero) return;
+  const io = new IntersectionObserver((es) => {
+    if (es[0].isIntersecting) { hero.classList.add('vis'); io.disconnect(); }
+  }, { rootMargin: '0px 0px -90% 0px', threshold: 0 });
+  io.observe(hero);
+})();
+</script>
+
+<section class="sd-section sd-pause-logic-standalone fi">
+  <div class="sd-pause-logic-row">
+    <p class="sd-pause-logic-en">Pause Logic</p>
+    <p class="sd-pause-logic-ko">2보 전진을 위한<br>1보 후퇴</p>
+  </div>
+</section>
+
+<section class="sd-section sd-summary-section fi">
+  <div class="sd-summary-video-band">
+    <div class="sd-summary-video">
+      <video src="assets/pause-motion.mp4" autoplay loop muted playsinline></video>
+    </div>
+  </div>
+  <div class="sd-summary-copy">
+    <h2>Skip the noise Skeep the <span>pause</span></h2>
+    <p>완벽한 스킵에게도 때로는 쉴 틈이 필요합니다.<br>명시적인 명령이 있거나 스킵 불가 영역을 마주할 때<br>작동하는 일시중단 로직은 시스템을 완전히 종료하는<br>대신에 목적 단위로 잠시 숨을 고르게 만들죠.</p>
+  </div>
+  <div class="sd-summary-visuals">
+    <div class="sd-summary-box">
+      <p class="kicker">Principle 01</p>
+      <h3>인풋은 스킵, 센싱은 킵</h3>
+      <p>스킵과의 직접 상호작용은 잠시 멈추지만,<br>여전히 센싱을 통해 준비 상태를 유지합니다.</p>
+    </div>
+    <div class="sd-summary-box">
+      <p class="kicker">Principle 02</p>
+      <h3>맥락적 예측 대기</h3>
+      <p>스킵은 사용자의 발화 단서를 미리 추론하여<br>예측되는 다음 시공간 속에서 기다립니다.</p>
+    </div>
+    <div class="sd-summary-box">
+      <p class="kicker">Principle 03</p>
+      <h3>심리스한 온앤 오프</h3>
+      <p>새로운 목적 구간이 시작되는 순간 별도의<br>조작 없이 깨어나며, 흐름을 복구합니다.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Sensing/Input/Pause pill video: plays forward then backward (boomerang),
+  // so the loop point is seamless instead of jump-cutting back to frame 0.
+  (function () {
+    const v = document.getElementById('pillVideo');
+    if (!v) return;
+    let rafId = null;
+    let reverseStart = null;
+    let reverseFromTime = 0;
+
+    // Target currentTime is computed from wall-clock elapsed time since the
+    // reverse began (not accumulated per-frame deltas), so it stays correctly
+    // paced even if requestAnimationFrame fires unevenly.
+    function stepReverse(ts) {
+      if (reverseStart === null) {
+        reverseStart = ts;
+        reverseFromTime = v.currentTime;
+      }
+      const elapsed = (ts - reverseStart) / 1000;
+      const t = reverseFromTime - elapsed;
+      if (t <= 0) {
+        v.currentTime = 0;
+        reverseStart = null;
+        v.play();
+        return;
+      }
+      v.currentTime = t;
+      rafId = requestAnimationFrame(stepReverse);
+    }
+
+    v.addEventListener('ended', () => {
+      reverseStart = null;
+      rafId = requestAnimationFrame(stepReverse);
+    });
+  })();
+
+  // Input Logic hero: play to the end, then seek backward frame-by-frame
+  // before starting forward playback again for a seamless ping-pong loop.
+  (function () {
+    const v = document.getElementById('inputHeroVideo');
+    if (!v) return;
+    let reverseStart = null;
+    let reverseFromTime = 0;
+
+    function stepReverse(ts) {
+      if (reverseStart === null) {
+        reverseStart = ts;
+        reverseFromTime = v.currentTime;
+      }
+      const elapsed = (ts - reverseStart) / 1000;
+      const targetTime = reverseFromTime - elapsed;
+      if (targetTime <= 0) {
+        v.currentTime = 0;
+        reverseStart = null;
+        v.play().catch(() => {});
+        return;
+      }
+      v.currentTime = targetTime;
+      requestAnimationFrame(stepReverse);
+    }
+
+    v.addEventListener('ended', () => {
+      reverseStart = null;
+      requestAnimationFrame(stepReverse);
+    });
+  })();
+
+  // Hero background: 5 scenes, one plays at a time, crossfading in a loop.
+  (function () {
+    const bg = document.querySelector('.sd-hero-bg');
+    if (!bg) return;
+    const videos = [...bg.querySelectorAll('video')];
+    if (videos.length < 2) return;
+    let current = 0;
+    let switching = false;
+
+    function activate(index) {
+      videos.forEach((v, i) => {
+        if (i === index) {
+          v.currentTime = 0;
+          v.play();
+          v.classList.add('active');
+        } else {
+          v.classList.remove('active');
+        }
+      });
+    }
+
+    function next() {
+      if (switching) return;
+      switching = true;
+      current = (current + 1) % videos.length;
+      activate(current);
+      setTimeout(() => { switching = false; }, 600);
+    }
+
+    videos.forEach(v => {
+      v.addEventListener('timeupdate', () => {
+        if (v === videos[current] && v.duration && v.currentTime >= v.duration - 0.4) next();
+      });
+      v.addEventListener('ended', () => {
+        if (v === videos[current]) next();
+      });
+    });
+
+    activate(0);
+  })();
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+  // Sensing Logic scroll animation
+  const sensingScene = document.getElementById('sensing-scene-scroll');
+  if (sensingScene) {
+    const sPrimary = sensingScene.querySelector('.sd-sensing-primary');
+    const sDetail  = sensingScene.querySelector('.sd-sensing-detail');
+    const sTitle   = sensingScene.querySelector('.sd-sensing-title');
+    const sText    = sensingScene.querySelector('.sd-sensing-text');
+    const sCaption = sensingScene.querySelector('.sd-caption-scroll');
+    const sCards   = sensingScene.querySelector('.sd-scroll-cards');
+    const sCompass = sensingScene.querySelector('.sd-compass');
+    const sRadar   = sensingScene.querySelector('.sd-orbit-radar');
+    const sMainClock = sensingScene.querySelector('.sd-orbit-main-clock');
+    const sTrail = sensingScene.querySelector('.sd-orbit-trail');
+    const sTrailClocks = [...sensingScene.querySelectorAll('.sd-orbit-trail img')];
+    const sTick = sensingScene.querySelector('.sd-sensing-tick');
+    const sDetailText = sensingScene.querySelector('.sd-sensing-detail .sd-text-right');
+    const sDetailTitle = sensingScene.querySelector('.sd-sensing-detail .sd-text-right h2');
+    const sDetailBody  = sensingScene.querySelector('.sd-sensing-detail .sd-text-right p:not(.sd-scene-eyebrow)');
+    const sDetailEyebrow = sensingScene.querySelector('.sd-sensing-detail .sd-scene-eyebrow');
+    function mix(a, b, t) { return Math.round(a + (b - a) * t); }
+    function responsiveTitleSize(large) {
+      const vw = window.innerWidth;
+      return large
+        ? Math.min(124, Math.max(54, vw * 0.08))
+        : Math.min(48, Math.max(32, vw * 0.045));
+    }
+    const sOrbitVisual = sensingScene.querySelector('.sd-orbit-visual');
+    // Same left inset the icon already sits at (.sd-sensing-layer's own padding),
+    // reused so the clock trail and the tick text keep symmetric left/right margins.
+    function edgeGap() {
+      const layer = sensingScene.querySelector('.sd-sensing-detail');
+      return parseFloat(getComputedStyle(layer).paddingLeft) || 96;
+    }
+    // The last trail clock is rotated 174deg; a rotated square's bounding box
+    // is wider than the unrotated one, so this growth has to be accounted for
+    // or the right margin ends up smaller than the left.
+    function lastClockExtraHalfWidth(size) {
+      const lastAngle = (3 * 58) * Math.PI / 180;
+      return size * (Math.abs(Math.cos(lastAngle)) + Math.abs(Math.sin(lastAngle)) - 1) / 2;
+    }
+    function clockGapValue() {
+      const rect = sTrail.getBoundingClientRect();
+      const margin = edgeGap();
+      const available = window.innerWidth - rect.left - rect.width - margin - lastClockExtraHalfWidth(rect.width);
+      return Math.max(0, available / 3);
+    }
+    // Analytical target position of the last trail clock's right edge. Reading
+    // it live via getBoundingClientRect() can catch it mid CSS transition
+    // (animating out from the stacked start position), which is unreliable.
+    function lastClockTargetRight() {
+      const rect = sTrail.getBoundingClientRect();
+      return rect.right + 3 * clockGapValue() + lastClockExtraHalfWidth(rect.width);
+    }
+    function centerClockBundle(active) {
+      if (!active) {
+        sOrbitVisual.style.transform = '';
+        return;
+      }
+      sOrbitVisual.style.transform = '';
+      const orbitRect = sOrbitVisual.getBoundingClientRect();
+      const gapY = Math.max(44, Math.min(80, window.innerHeight * 0.07));
+      const tickHeight = sTick.offsetHeight || 160;
+      const bundleHeight = orbitRect.height + gapY + tickHeight;
+      const idealTop = (window.innerHeight - bundleHeight) / 2;
+      const offset = idealTop - orbitRect.top;
+      sOrbitVisual.style.transform = `translateY(${offset}px)`;
+    }
+    function setClockTrail(visible) {
+      const clockGap = clockGapValue();
+      sTrail.style.opacity = visible ? 1 : 0;
+      sTrail.style.transform = 'translateX(0)';
+      sTrailClocks.forEach((clock, index) => {
+        // Stay stacked at the main clock's starting spot while hidden, and only
+        // animate out to the spread position once visible, so each afterimage
+        // actually travels (in sync with the main clock's own slide) instead
+        // of just fading in already sitting at its final spot.
+        const offset = visible ? index * clockGap : 0;
+        const angle = visible ? index * 58 : 0;
+        clock.style.opacity = visible ? 1 : 0;
+        clock.style.transform = `translateX(${offset}px) rotate(${angle}deg) scale(1)`;
+      });
+      positionTick();
+    }
+    function positionTick() {
+      const clockRect = sTrail.getBoundingClientRect();
+      const stickyRect = sTick.parentElement.getBoundingClientRect();
+      const gapY = Math.max(44, Math.min(80, window.innerHeight * 0.07));
+      const tickHeight = sTick.offsetHeight || 160;
+      const wantedTop = clockRect.bottom - stickyRect.top + gapY;
+      const maxTop = window.innerHeight - stickyRect.top - tickHeight - 72;
+      const top = Math.max(clockRect.bottom - stickyRect.top + 28, Math.min(wantedTop, maxTop));
+      const margin = edgeGap();
+      sTick.style.top = `${top}px`;
+      sTick.style.left = `${margin}px`;
+      sTick.style.right = `${stickyRect.right - lastClockTargetRight()}px`;
+      sTick.style.bottom = 'auto';
+      sTick.style.width = 'auto';
+    }
+    let sensingVisualStage = -1;
+    let rollDoneTimer = null;
+    let autoSettled = false;
+    const ROLL_DURATION_MS = 1350;
+
+    function setSensingVisualStage(stage) {
+      const enteringRoll = stage === 3 && sensingVisualStage !== 3;
+      sensingVisualStage = stage;
+      if (stage < 3) {
+        autoSettled = false;
+      }
+      if (rollDoneTimer && stage !== 3) {
+        clearTimeout(rollDoneTimer);
+        rollDoneTimer = null;
+      }
+      const clockGap = clockGapValue();
+      const clockTravel = clockGap * 3;
+
+      if (stage === 0) {
+        sPrimary.style.opacity = 1;
+        sPrimary.style.transform = 'translateY(0)';
+        sCompass.style.opacity = 1;
+        sCompass.style.transform = 'rotate(0deg) scale(1)';
+
+        sDetail.style.opacity = 0;
+        sDetail.style.transform = 'translateY(0)';
+        sRadar.style.opacity = 0;
+        sRadar.style.transform = 'rotate(-360deg) scale(1)';
+        sMainClock.style.opacity = 0;
+        sMainClock.style.transform = 'translateX(0) rotate(-360deg) scale(1)';
+        sDetailTitle.style.opacity = 0;
+        sDetailTitle.style.transform = 'translateY(34px)';
+        sDetailBody.style.opacity = 0;
+        sDetailBody.style.transform = 'translateY(34px)';
+        sDetailEyebrow.style.opacity = 0;
+        sDetailEyebrow.style.transform = 'translateY(34px)';
+        sDetailText.style.transform = 'translateY(72px)';
+        setClockTrail(false);
+        centerClockBundle(false);
+        sTick.style.opacity = 0;
+        sTick.style.transform = 'translateY(72px)';
+        return;
+      }
+
+      if (stage === 1) {
+        sPrimary.style.opacity = 0;
+        sPrimary.style.transform = 'translateY(0)';
+        sCompass.style.opacity = 0;
+        sCompass.style.transform = 'rotate(360deg) scale(1)';
+
+        sDetail.style.opacity = 1;
+        sDetail.style.transform = 'translateY(0)';
+        sRadar.style.opacity = 1;
+        sRadar.style.transform = 'rotate(0deg) scale(1)';
+        sMainClock.style.opacity = 0;
+        sMainClock.style.transform = 'translateX(0) rotate(-360deg) scale(1)';
+        sDetailTitle.style.opacity = 1;
+        sDetailTitle.style.transform = 'translateY(0)';
+        sDetailBody.style.opacity = 1;
+        sDetailBody.style.transform = 'translateY(0)';
+        sDetailEyebrow.style.opacity = 1;
+        sDetailEyebrow.style.transform = 'translateY(0)';
+        sDetailText.style.transform = 'translateY(-42px)';
+        setClockTrail(false);
+        centerClockBundle(false);
+        sTick.style.opacity = 0;
+        sTick.style.transform = 'translateY(72px)';
+        return;
+      }
+
+      sPrimary.style.opacity = 0;
+      sPrimary.style.transform = 'translateY(0)';
+      sCompass.style.opacity = 0;
+      sCompass.style.transform = 'rotate(360deg) scale(1)';
+
+      sDetail.style.opacity = 1;
+      sDetail.style.transform = 'translateY(0)';
+      sRadar.style.opacity = 0;
+      sRadar.style.transform = 'rotate(360deg) scale(1)';
+      sMainClock.style.opacity = 1;
+      sMainClock.style.transform = stage >= 3
+        ? `translateX(${clockTravel}px) rotate(1440deg) scale(1)`
+        : 'translateX(0) rotate(360deg) scale(1)';
+      sDetailTitle.style.opacity = 0;
+      sDetailTitle.style.transform = 'translateY(-24px)';
+      sDetailBody.style.opacity = 0;
+      sDetailBody.style.transform = 'translateY(-24px)';
+      sDetailEyebrow.style.opacity = 0;
+      sDetailEyebrow.style.transform = 'translateY(-24px)';
+      sDetailText.style.transform = 'translateY(-42px)';
+      setClockTrail(stage >= 3);
+      // Only recenter the clock (shifting it up to make room for the tick
+      // text) once the roll has actually finished, so it doesn't move
+      // vertically while it's still traveling horizontally.
+      centerClockBundle(stage >= 4);
+      positionTick();
+      if (stage >= 4) {
+        sTick.style.opacity = 1;
+        sTick.style.transform = 'translateY(0)';
+      } else {
+        sTick.style.opacity = 0;
+        sTick.style.transform = 'translateY(72px)';
+      }
+
+      // Once the clocks finish rolling, settle into the centered/text-visible
+      // state automatically after the roll's own transition duration, rather
+      // than waiting for the user to keep scrolling to reach it.
+      if (enteringRoll) {
+        rollDoneTimer = setTimeout(() => {
+          rollDoneTimer = null;
+          if (sensingVisualStage === 3) {
+            autoSettled = true;
+            setSensingVisualStage(4);
+          }
+        }, ROLL_DURATION_MS);
+      }
+    }
+
+    function updateSensing() {
+      const rect  = sensingScene.getBoundingClientRect();
+      const total = sensingScene.offsetHeight - window.innerHeight;
+      const sc    = Math.max(0, -rect.top);
+      const progress = total > 0 ? sc / total : 0;
+
+      // Phase 1-2: reveal the Korean caption and cards as one smooth group.
+      const firstGroupOn = progress > 0.11 ? 1 : 0;
+      const p1 = firstGroupOn;
+      const titleLarge = responsiveTitleSize(true);
+      const titleSmall = responsiveTitleSize(false);
+      sTitle.style.fontSize = (titleLarge - p1 * (titleLarge - titleSmall)) + 'px';
+      const gray = firstGroupOn;
+      sTitle.style.color = `rgb(${mix(14, 216, gray)}, ${mix(24, 221, gray)}, ${mix(37, 226, gray)})`;
+
+      // Compass starts smaller while only the title is showing, and grows
+      // back to its full size once the heading + cards reveal.
+      const compassSmallScale = 0.72;
+      sCompass.style.scale = (compassSmallScale + p1 * (1 - compassSmallScale)).toFixed(3);
+
+      const groupIn = firstGroupOn;
+      // In the closed (title-only) state, .sd-sensing-text auto-centers as a
+      // block that still includes the hidden caption+cards' height, which
+      // pushes the visible title below the compass's true center. Compute
+      // the offset needed to bring the title's own optical center back in
+      // line with the compass, instead of a hardcoded pixel value that only
+      // happened to work at one viewport size.
+      let closedTextY = 220;
+      if (!groupIn) {
+        const wrapHeight = sText.getBoundingClientRect().height;
+        const titleHeight = sTitle.getBoundingClientRect().height;
+        const naturalTop = (window.innerHeight - wrapHeight) / 2;
+        const naturalTitleCenter = naturalTop + titleHeight / 2;
+        closedTextY = (window.innerHeight / 2) - naturalTitleCenter;
+      }
+      const textY = groupIn ? -42 : closedTextY;
+      sCaption.style.opacity   = groupIn;
+      sCaption.style.transform = `translateY(${groupIn ? 0 : 34}px)`;
+      sCards.style.opacity     = groupIn;
+      sCards.style.transform   = `translateY(${groupIn ? 0 : 34}px)`;
+      sText.style.transform = `translateY(${textY}px)`;
+
+      // Phase 4: visual changes are triggered by scroll thresholds, then animated by CSS.
+      let nextStage = progress >= 0.95 ? 4 : progress >= 0.84 ? 3 : progress >= 0.78 ? 2 : progress >= 0.21 ? 1 : 0;
+      // Once the roll has auto-settled into stage 4 on its own timer, keep it
+      // there while the user is still within the roll/settle scroll range,
+      // instead of snapping back down to stage 3 because progress hasn't
+      // caught up to the 0.95 threshold yet.
+      if (autoSettled) {
+        if (progress >= 0.84) nextStage = Math.max(nextStage, 4);
+        else autoSettled = false;
+      }
+      if (nextStage !== sensingVisualStage) setSensingVisualStage(nextStage);
+
+      // Fade the closed form (left compass + big title) in as the section rises
+      // into view — before it pins and expands into the caption + cards.
+      if (sensingVisualStage === 0) {
+        sPrimary.style.opacity = (rect.top < window.innerHeight * 0.55) ? '1' : '0';
+      }
+    }
+
+    window.addEventListener('scroll', updateSensing, { passive: true });
+    window.addEventListener('resize', () => {
+      if (sensingVisualStage >= 0) setSensingVisualStage(sensingVisualStage);
+      updateSensing();
+    }, { passive: true });
+    updateSensing();
+  }
+
+  // Walk scene: right→left color spotlight, gated so fast scrolling can't skip past it
+  // before every person has been stepped through.
+  (function () {
+    const scene  = document.getElementById('walk-scene');
+    if (!scene) return;
+    const persons = Array.from(scene.querySelectorAll('.sd-walk-person'));
+    const shadow  = document.getElementById('walk-shadow');
+    const n = persons.length;
+    const totalSteps = n - 1;
+    const stepDuration = 350;
+    let current  = totalSteps;
+    let walkComplete = false;
+    let stepping = false;
+    let finalTimer = null;
+    let finalMoveStarted = false;
+
+    function applyActive(idx) {
+      persons.forEach((p, i) => {
+        const on = (i === idx);
+        p.style.filter    = on
+          ? 'grayscale(0)'
+          : 'grayscale(1) saturate(.12) brightness(.94) contrast(.96)';
+        p.style.transform = on ? 'scale(1.04)'  : 'scale(1)';
+      });
+      // PNG 캔버스 중앙이 아니라 실제 인물의 발 중심으로 그림자를 이동한다.
+      if (shadow) {
+        const row = scene.querySelector('.sd-walk-row');
+        const rowRect = row.getBoundingClientRect();
+        const personRect = persons[idx].getBoundingClientRect();
+        const footX = Number(persons[idx].dataset.footX || .5);
+        shadow.style.left = (personRect.left - rowRect.left + personRect.width * footX) + 'px';
+      }
+    }
+    applyActive(current);
+
+    function isPinned() {
+      const rect = scene.getBoundingClientRect();
+      return rect.top <= 0.5 && rect.bottom > window.innerHeight + 0.5;
+    }
+
+    // Advance one person per gated scroll gesture, and nudge real scroll
+    // position forward in lockstep so the pinned range is consumed evenly.
+    function startFinalMove() {
+      if (stepping || finalMoveStarted || current !== 0) return;
+      stepping = true;
+      finalMoveStarted = true;
+      if (finalTimer) window.clearTimeout(finalTimer);
+      const finalPerson = scene.querySelector('.sd-walk-person.is-walk-final-person');
+      if (!finalPerson) {
+        stepping = false;
+        finalMoveStarted = false;
+        return;
+      }
+      scene.classList.add('is-pre-final');
+      if (shadow) shadow.style.opacity = '0';
+      finalPerson.style.transform = 'scale(1.04)';
+      window.setTimeout(() => {
+        walkComplete = true;
+        stepping = false;
+      }, 260);
+    }
+
+    function advanceStep() {
+      if (stepping || current <= 0) return;
+      stepping = true;
+      current -= 1;
+      applyActive(current);
+      const rect  = scene.getBoundingClientRect();
+      const sceneTop = rect.top + window.scrollY;
+      const total = scene.offsetHeight - window.innerHeight;
+      if (total > 0) {
+        window.scrollTo(0, sceneTop + ((totalSteps - current) / (totalSteps + 1)) * total);
+      }
+      setTimeout(() => { stepping = false; }, stepDuration);
+    }
+
+    function gateForward(e) {
+      if (walkComplete || !isPinned()) return;
+      e.preventDefault();
+      if (current === 0) {
+        startFinalMove();
+        return;
+      }
+      advanceStep();
+    }
+
+    window.addEventListener('wheel', e => {
+      if (e.deltaY > 0) gateForward(e);
+    }, { passive: false });
+
+    let touchStartY = null;
+    window.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if (touchStartY === null) return;
+      const dy = touchStartY - e.touches[0].clientY;
+      if (dy > 8) {
+        gateForward(e);
+        touchStartY = e.touches[0].clientY;
+      }
+    }, { passive: false });
+
+    window.addEventListener('keydown', e => {
+      if (e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ') {
+        gateForward(e);
+      }
+    });
+  })();
+
+  // Active layer flow: timed sticky transition
+  (function () {
+    const panels = Array.from(document.querySelectorAll('.sd-flow-panel'));
+    if (!panels.length) return;
+    const flowDesignWidth = 1760;
+    const sequenceTimers = new WeakMap();
+    const flowLock = { active: false, y: 0 };
+
+    function resizeFlowPanels() {
+      panels.forEach(panel => {
+        const width = panel.getBoundingClientRect().width || flowDesignWidth;
+        const scale = Math.min(1, width / flowDesignWidth);
+        panel.style.setProperty('--sd-flow-scale', scale.toFixed(4));
+      });
+    }
+
+    function clearSequence(panel) {
+      const timers = sequenceTimers.get(panel);
+      if (timers) {
+        timers.forEach(timer => window.clearTimeout(timer));
+        sequenceTimers.delete(panel);
+      }
+      panel.dataset.flowState = 'idle';
+      panel.classList.remove('is-flow-blurred', 'is-paused', 'is-time-visible', 'is-logic-visible');
+      if (flowLock.active) flowLock.active = false;
+    }
+
+    function startSequence(panel, host) {
+      if (panel.dataset.flowState && panel.dataset.flowState !== 'idle') return;
+      const lockOffset = Math.min(300, Math.max(0, host.offsetHeight - window.innerHeight - 1));
+      panel.dataset.flowState = 'ready';
+      flowLock.active = true;
+      flowLock.y = host.offsetTop + lockOffset;
+      window.scrollTo(0, flowLock.y);
+    }
+
+    function runSequence(panel) {
+      if (panel.dataset.flowState !== 'ready') return;
+      panel.dataset.flowState = 'running';
+
+      const timers = [
+        // Dissolve the flow out first (blur + fade), then fade the chat bubble in.
+        // No is-paused during the run, so the standalone pause (⏸) never appears.
+        window.setTimeout(() => {
+          panel.classList.add('is-flow-blurred');
+        }, 80),
+        window.setTimeout(() => {
+          panel.classList.add('is-time-visible');
+        }, 430),
+        window.setTimeout(() => {
+          panel.dataset.flowState = 'time';
+          sequenceTimers.delete(panel);
+        }, 1050),
+      ];
+      sequenceTimers.set(panel, timers);
+    }
+
+    function releaseFlow(panel) {
+      if (panel.dataset.flowState !== 'time') return false;
+      panel.dataset.flowState = 'done';
+      panel.classList.remove('is-flow-blurred', 'is-logic-visible');
+      panel.classList.add('is-paused', 'is-time-visible');
+      flowLock.active = false;
+      return true;
+    }
+
+    function updateFlowState() {
+      const vh = window.innerHeight || 1;
+      panels.forEach(panel => {
+        const host = panel.closest('.sd-flow-scroll') || panel;
+        const rect = host.getBoundingClientRect();
+        if (rect.top > vh * 0.45) {
+          clearSequence(panel);
+          return;
+        }
+        if (rect.top <= vh * 0.08 && rect.bottom > 0) startSequence(panel, host);
+      });
+    }
+
+    function keepFlowLocked() {
+      if (!flowLock.active) return;
+      if (Math.abs(window.scrollY - flowLock.y) > 1) window.scrollTo(0, flowLock.y);
+    }
+
+    function preventLockedScroll(event) {
+      if (!flowLock.active) return;
+      const isForward = event.deltaY === undefined || event.deltaY > 0;
+      if (isForward) {
+        const timePanel = panels.find(item => item.dataset.flowState === 'time');
+        if (timePanel && releaseFlow(timePanel)) return;
+      }
+      event.preventDefault();
+      window.scrollTo(0, flowLock.y);
+      if (!isForward) return;
+      const panel = panels.find(item => item.dataset.flowState === 'ready');
+      if (panel) runSequence(panel);
+    }
+
+    window.addEventListener('wheel', preventLockedScroll, { passive: false });
+    window.addEventListener('touchmove', preventLockedScroll, { passive: false });
+    window.addEventListener('keydown', event => {
+      if (!flowLock.active) return;
+      if (!['PageDown', 'ArrowDown', ' '].includes(event.key)) return;
+      preventLockedScroll(event);
+    });
+    window.addEventListener('scroll', () => {
+      keepFlowLocked();
+      updateFlowState();
+    }, { passive: true });
+    window.addEventListener('resize', () => {
+      resizeFlowPanels();
+      updateFlowState();
+    });
+    resizeFlowPanels();
+    updateFlowState();
+  })();
+</script>
+</body>
+</html>

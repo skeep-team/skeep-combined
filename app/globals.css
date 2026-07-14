@@ -1,0 +1,62 @@
+:root {
+  --color-bg: #ffffff;
+  --color-bg-soft: #f5fafe;
+  --color-text: #0e1825;
+  --color-text-muted: rgba(0, 0, 0, 0.55);
+  --color-accent: #ff076a;
+  --edge-padding: clamp(24px, 8.3vw, 160px);
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+html {
+  /* "proximity" (not "mandatory") so this only gently pulls scroll toward a
+     snap point when already close to one — it never fights normal scrolling
+     through the rest of the page. */
+  scroll-snap-type: y proximity;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont, sans-serif;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+@media (pointer: fine) {
+  *,
+  button,
+  a {
+    cursor: none;
+  }
+}

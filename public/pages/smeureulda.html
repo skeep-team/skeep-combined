@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스며들다 — Skeep Intelligence System™</title>
+  <script>
+    const isMorphEmbed = new URLSearchParams(window.location.search).get('embed') === 'morph';
+    if (isMorphEmbed) {
+      document.documentElement.classList.add('embed-morph');
+    } else {
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (navigation?.type === 'reload') {
+        history.scrollRestoration = 'manual';
+        window.addEventListener('pageshow', () => {
+          if (window.scrollY < window.innerHeight) window.scrollTo(0, 0);
+        }, { once: true });
+      }
+    }
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable.css" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+    body {
+      --edge-padding: clamp(24px, 8.3vw, 160px);
+      background: #fff; color: #0e1825;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    p { margin: 0; }
+
+    html.embed-morph,
+    html.embed-morph body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+      background: #E3EBF2;
+    }
+    html.embed-morph body > *:not(.morph-anim-band) {
+      display: none !important;
+    }
+    html.embed-morph body > .morph-anim-band {
+      display: block !important;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+      margin: 0;
+      border-radius: 0;
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+      background: transparent;
+      overflow: hidden;
+    }
+    html.embed-morph body > .morph-anim-band canvas {
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      transform: translate(-2px, -2px);
+    }
+
+    .sec-parsing-intro, .sec-detail, .pill-btn-wrap, .sec-ai-banner,
+    .sec-ai-figma-summary, .sec-3cards, .sec-multilang, .sec-exec-card,
+    .sec-ai-gradient, .sec-principles-v, .sec-skip-banner,
+    .sec-morphing-detail, footer {
+      margin-top: clamp(48px, 6vw, 112px);
+      margin-bottom: clamp(48px, 6vw, 112px);
+    }
+
+    .fi { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
+    .fi.vis { opacity: 1; transform: none; }
+    .d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+    .d4{transition-delay:.32s}.d5{transition-delay:.40s}.d6{transition-delay:.48s}
+
+    /* ── 1. HERO ── */
+    .hero {
+      height: 100vh;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('assets/smeur-cover-bg.jpg') center center / cover no-repeat;
+      z-index: 0;
+    }
+    .hero-dim {
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(8, 17, 29, .72) 0%, rgba(10, 18, 29, .68) 55%, rgba(12, 18, 27, .66) 100%);
+      z-index: 1;
+    }
+    .hero-title {
+      position: relative; z-index: 2;
+      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
+      max-width: 1220px; word-break: keep-all;
+      color: #ffffff;
+    }
+
+    /* ── 2. KEEP ON KEEPIN' ON ── */
+    .sec-keepon {
+      background: #fff; width: 100%;
+      padding: 0 var(--edge-padding);
+      text-align: center;
+    }
+    .keepon-title-scene,
+    .keepon-panel-page {
+      position: relative;
+      height: 190svh;
+    }
+    .keepon-title-sticky,
+    .keepon-panel-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+    }
+    .skeep-ai-label { font-size: 40px; font-weight: 700; line-height: 1.5; letter-spacing: -0.04em; }
+    .keepon-title {
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4;
+      letter-spacing: -0.04em; color: #0e1825; white-space: nowrap;
+    }
+    .keepon-title,
+    .keepon-panel {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .72s ease, transform .82s cubic-bezier(.22,1,.36,1);
+    }
+    .keepon-title-scene.is-entered .keepon-title,
+    .keepon-panel-page.is-entered .keepon-panel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .keepon-cursor {
+      color: #ff0b6c; margin-left: 2px; display: inline-block;
+      animation: keeponBlink .9s step-end infinite;
+    }
+    @keyframes keeponBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    .keepon-panel-page {
+      min-height: 0;
+      padding: 0;
+    }
+    .keepon-panel {
+      width: 100%;
+      max-width: 1600px;
+      height: clamp(520px, 68vh, 680px);
+      max-height: calc(100svh - 160px);
+      min-height: 0;
+      border-radius: 32px;
+      background: #F4F8FC;
+      box-shadow: inset 0 4px 37.3px rgba(205,218,233,0.22);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    [data-center-reveal] {
+      opacity: 0;
+      transform: translateY(36px) scale(.985);
+      transition: opacity .8s ease, transform .9s cubic-bezier(.22,1,.36,1);
+    }
+    [data-center-reveal].is-centered {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .keepon-chain {
+      display: flex; flex-direction: row; align-items: center; justify-content: center;
+      gap: 14px; margin: 0;
+    }
+    .chain-prefix {
+      font-size: clamp(22px,3.6vw,48px); font-weight: 600; line-height: 60px; letter-spacing: -0.03em; white-space: nowrap;
+    }
+    .chain-prefix strong { font-weight: 700; }
+    .keepon-chain-viewport {
+      width: 200px; height: 300px; overflow: hidden; position: relative;
+      mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 70%, transparent 100%);
+    }
+    .keepon-chain-track {
+      width: 100%; margin: 0;
+      transition: transform .55s cubic-bezier(.16,1,.3,1);
+      will-change: transform;
+    }
+    .chain-word {
+      height: 60px; line-height: 60px; margin: 0; flex-shrink: 0;
+      font-size: clamp(22px,3.6vw,48px); font-weight: 400; letter-spacing: -0.03em; white-space: nowrap;
+      text-align: left; transition: opacity .55s ease;
+    }
+
+    /* ── 3-4. sticky transition: 목적은 행동으로 → TWO-COL ── */
+    .logic-transition {
+      position: relative;
+      height: 230svh;
+      background: #fff;
+      margin-top: 0;
+    }
+    .logic-transition-sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      overflow: hidden;
+      background: #fff;
+    }
+    .logic-transition-sticky::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: none;
+      opacity: var(--pink-opacity, 0);
+      pointer-events: none;
+    }
+    /* The photo card and the pink "Keep on Keepin' on" card used to be two
+       separately-sized elements that crossfaded in place. That reads as a
+       fade, not a "the box itself grows" motion. They're now one element
+       (.morph-card) whose rect is driven every frame by JS (see
+       updateLogicTransition), so it visually expands from the small photo
+       card into the full-bleed pink area and then docks back down into the
+       two-col layout, with its background layers crossfading as it moves. */
+    .morph-card {
+      position: absolute;
+      border-radius: 70px;
+      overflow: hidden;
+      color: #fff;
+      will-change: top, left, width, height, border-radius;
+    }
+    .morph-bg {
+      position: absolute; inset: -10%;
+      background-size: cover;
+      background-position: center center;
+    }
+    .morph-bg-photo-a {
+      inset: 0;
+      background: #2B3542 url('assets/morph-logic-background.png') center center / cover no-repeat;
+      opacity: 1;
+    }
+    .morph-bg-pink {
+      inset: 0;
+      background: none;
+      opacity: 0;
+    }
+    .morph-overlay {
+      position: absolute; inset: -10%;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.10) 58%, rgba(0,0,0,.28) 100%);
+      opacity: var(--morph-overlay-opacity, 1);
+    }
+    /* Final resting composition (Figma node 3845:2565): the domino/hand
+       photo fills the left ~71%, a solid pink block fills the remaining
+       right ~29%, with two soft color-glow blobs and a pink multiply tint
+       over the top. This crossfades in on top of morph-bg-pink instead of
+       replacing the card's shape, since the card no longer docks/shrinks
+       for this final phase. */
+    .morph-bg-final {
+      position: absolute; inset: 0;
+      background: transparent;
+      overflow: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .morph-final-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      opacity: 0;
+      transform: scale(1.46) translateY(-22%);
+      transform-origin: center center;
+      filter: saturate(1.12) contrast(1.03) brightness(1.04);
+    }
+    .morph-final-pinkblock {
+      position: absolute; inset: 0;
+      background: none;
+    }
+    .morph-final-glow-1 {
+      position: absolute; left: -26%; top: 36%; width: 102%; height: 82%;
+      background: none;
+      filter: none;
+    }
+    .morph-final-glow-2 {
+      position: absolute; left: 4%; top: 66%; width: 82%; height: 58%;
+      background: none;
+      filter: none;
+    }
+    .morph-final-tint {
+      position: absolute; inset: 0;
+      background: none;
+    }
+    .morph-text {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: clamp(46px, 6.7vw, 128px);
+      z-index: 1;
+    }
+    .morph-text-b {
+      opacity: 0;
+      top: 0;
+      bottom: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: clamp(24px, 3.6vh, 34px) clamp(48px, 6.25vw, 102px) clamp(34px, 3.2vw, 54px);
+    }
+    .full-card-title { font-size: clamp(22px,3.45vw,48px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; margin-bottom: 18px; }
+    .full-card-desc { font-size: clamp(13px,1.55vw,21px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; opacity: .70; }
+    .two-left-video {
+      display: block;
+      width: clamp(560px, 52vw, 980px);
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: clamp(20px, 1.8vw, 32px);
+      margin-bottom: clamp(24px, 2.4vw, 44px);
+    }
+    .two-left-overline { font-size: clamp(14px,1.35vw,22px); font-weight: 600; line-height: 1.4; letter-spacing: -0.03em; margin-bottom: clamp(16px,1.7vw,28px); color: #ff0b6c; }
+    .two-left-h { font-size: clamp(26px,2.55vw,46px); font-weight: 700; line-height: 1.25; letter-spacing: -0.04em; margin-bottom: clamp(16px,1.7vw,26px); color: #0e1825; white-space: nowrap; }
+    .two-left-p { font-size: clamp(14px,1.2vw,21px); font-weight: 500; line-height: 1.55; letter-spacing: -0.03em; color: #0e1825; }
+
+    /* ── 4. 3 white logic cards floating on the right of the final frame ── */
+    .two-right {
+      position: absolute;
+      display: flex; flex-direction: column; gap: clamp(14px,1.45vw,26px);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .logic-card {
+      flex: 1; background: #fff; border-radius: clamp(20px,1.8vw,28px);
+      padding: clamp(28px,2.35vw,48px); display: flex; flex-direction: column;
+      justify-content: flex-start;
+      box-shadow: none;
+      backdrop-filter: none;
+      will-change: opacity, transform;
+    }
+    .logic-card:nth-child(1) {
+      background: #40B875;
+      opacity: var(--logic-item-2-opacity, 0);
+      transform: translateY(var(--logic-item-2-y, 56px));
+    }
+    .logic-card:nth-child(2) {
+      background: #48B8F5;
+      opacity: var(--logic-item-3-opacity, 0);
+      transform: translateY(var(--logic-item-3-y, 56px));
+    }
+    .logic-card:nth-child(3) {
+      background: #4E5968;
+      opacity: var(--logic-item-4-opacity, 0);
+      transform: translateY(var(--logic-item-4-y, 56px));
+    }
+    .logic-card-top { display: none; }
+    .logic-card-tag {
+      font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #ff0b6c;
+      letter-spacing: -0.03em; text-transform: uppercase;
+    }
+    .logic-card-desc { font-size: clamp(12px,1.35vw,22px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+    .logic-card-num { font-size: clamp(14px,1.2vw,20px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; color: rgba(255,255,255,.75); margin-bottom: clamp(8px,.7vw,14px); }
+    .logic-card-name { font-size: clamp(20px,1.85vw,32px); font-weight: 700; line-height: 1.15; letter-spacing: -0.04em; color: #ffffff; margin-bottom: clamp(30px,3.2vw,56px); }
+    .logic-card-sub { font-size: clamp(14px,1.2vw,21px); font-weight: 500; line-height: 1.48; letter-spacing: -0.03em; color: rgba(255,255,255,.9); }
+
+
+    /* ── "Parsing" letter-wave: each letter's own font-weight animates
+       (thin -> black -> thin) on Pretendard Variable's wght axis, staggered
+       per letter so the weight change sweeps across the word on a loop.
+       The whole word fills one full screen, then scroll-morphs (position +
+       font-size, measured live from the real .parsing-big target) into the
+       Parsing Intro heading below — see updateWordScene(). ── */
+    .sec-word-morph-scene {
+      position: relative;
+      height: 220vh;
+      background: #fff;
+    }
+    .word-scene-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .parsing-wave {
+      display: flex;
+      justify-content: center;
+      gap: 0.03em;
+      font-size: clamp(56px, 9vw, 160px);
+      will-change: font-size, transform;
+    }
+    .parsing-wave.is-morphing {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+    }
+    .parsing-wave span {
+      display: inline-block;
+      font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+      font-size: inherit;
+      font-variation-settings: 'wght' 200;
+      letter-spacing: -0.02em;
+      color: #0e1825;
+      animation: parsingWave 1.15s cubic-bezier(.32, 0, .18, 1) infinite;
+      animation-delay: calc(var(--i) * 0.09s);
+    }
+    @keyframes parsingWave {
+      0%, 100% { font-variation-settings: 'wght' 150; }
+      35% { font-variation-settings: 'wght' 900; }
+      55% { font-variation-settings: 'wght' 900; }
+    }
+    /* Once the morph into the Parsing Intro heading begins, snap the wave
+       to a stop instead of letting it keep animating mid-transform. */
+    .parsing-wave.is-settled span {
+      animation: none;
+      font-variation-settings: 'wght' 600;
+      transition: font-variation-settings .32s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    /* ── 6. PARSING INTRO ── */
+    .sec-parsing-intro {
+      background: #fff; width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 48px;
+    }
+    .parsing-num {
+      font-size: 40px; font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity .5s ease, transform .5s cubic-bezier(.22,1,.36,1);
+    }
+    .parsing-big {
+      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
+      opacity: 0;
+    }
+    .parsing-desc-right {
+      font-size: clamp(15px,1.7vw,32px); font-weight: 600; line-height: 1.3;
+      letter-spacing: -0.02em; max-width: 643px;
+      text-align: right; align-self: flex-end;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity .5s ease, transform .5s cubic-bezier(.22,1,.36,1);
+    }
+
+    /* ── 7. DETAIL (Parsing / Mapping) ── */
+    .sec-detail { background: #fff; width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding); }
+    .detail-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; margin-bottom: 28px; }
+    .detail-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; margin-bottom: 28px; }
+    .detail-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 64px; }
+    .sec-detail.parsing-detail-visual {
+      margin-top: clamp(12px, 1.4vw, 28px);
+      padding-top: clamp(24px, 3vw, 48px);
+    }
+    .parsing-detail-visual .detail-head-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(36px, 4vw, 72px);
+      margin-bottom: 64px;
+      text-align: center;
+    }
+    .parsing-detail-visual .detail-desc {
+      margin-bottom: 0;
+    }
+    .parsing-detail-video-wrap {
+      width: 100%;
+      max-width: min(820px, 64vw);
+      border-radius: 36px;
+      overflow: hidden;
+      margin-left: 0;
+      margin-right: 0;
+      background: linear-gradient(180deg,
+        #FF267C 0%,
+        #FF267C 68%,
+        #FF60A0 100%);
+      isolation: isolate;
+    }
+    .parsing-detail-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      mix-blend-mode: screen;
+    }
+    .principle-grid { display: flex; gap: clamp(12px, 1.6vw, 28px); align-items: stretch; }
+    .principle-card {
+      flex: 1; background: #F4F8FC; border-radius: 24px;
+      padding: 48px 40px; display: flex; flex-direction: column; gap: 17px;
+    }
+    .pr-num { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.3; letter-spacing: -0.02em; opacity: 0.5; }
+    .pr-title { font-size: clamp(17px,2.35vw,36px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
+    .pr-body { font-size: clamp(12px,1.35vw,22px); font-weight: 500; line-height: 1.5; letter-spacing: -0.03em; }
+    .sec-detail.mapping-photo {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(4, 9, 18, .92) 0%, rgba(9, 12, 28, .72) 48%, rgba(9, 12, 28, .38) 100%),
+        url('assets/mapping-path-bg.jpg') center center / cover no-repeat;
+      color: #fff;
+      padding-top: clamp(96px, 10vw, 180px);
+      padding-bottom: clamp(96px, 10vw, 180px);
+    }
+    .sec-detail.mapping-photo .detail-label { color: #ff2b80; }
+    .sec-detail.mapping-photo .detail-desc { color: rgba(255,255,255,.78); }
+    .sec-detail.mapping-photo .principle-grid {
+      display: flex;
+      gap: clamp(24px, 2.4vw, 44px);
+      align-items: stretch;
+      margin-top: clamp(132px, 11vw, 220px);
+    }
+    .sec-detail.mapping-photo .principle-card {
+      min-height: clamp(210px, 17vw, 300px);
+      padding: clamp(28px, 2.45vw, 44px);
+      background: rgba(255,255,255,.15);
+      border: 0;
+      color: #fff;
+      box-shadow: 0 24px 80px rgba(0,0,0,.22);
+      backdrop-filter: blur(18px);
+    }
+    .sec-detail.mapping-photo .pr-num,
+    .sec-detail.mapping-photo .pr-body {
+      color: rgba(255,255,255,.72);
+      opacity: 1;
+    }
+    .sec-detail.mapping-photo .pr-num {
+      font-size: clamp(12px, 1.15vw, 18px);
+    }
+    .sec-detail.mapping-photo .pr-title {
+      font-size: clamp(16px, 1.75vw, 28px);
+    }
+    .sec-detail.mapping-photo .pr-body {
+      font-size: clamp(12px, 1.2vw, 19px);
+    }
+    /* ── PILL BTN ── */
+    .pill-btn-wrap {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 0 var(--edge-padding) clamp(200px, 20vw, 300px);
+      margin-top: clamp(-180px, -8vw, -96px);
+    }
+    .pill-detail {
+      display: inline-block; background: #000; border-radius: 100px;
+      padding: 16px 30px; font-size: 32px; font-weight: 600; line-height: 1.1;
+      letter-spacing: -0.04em; color: #fff; cursor: default;
+    }
+
+    /* ── 8. SKEEP AI™ BANNER ── */
+    .sec-ai-banner.fi { transition: opacity 1.5s ease, transform 1.5s ease; }
+    .sec-ai-banner {
+      width: min(calc(100% - (var(--edge-padding) * 2)), 1800px);
+      min-height: clamp(190px, 25vw, 360px);
+      margin: 0 auto clamp(56px, 8vw, 116px);
+      padding: clamp(26px, 3.4vw, 56px) clamp(28px, 4vw, 64px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+      border-radius: clamp(14px, 1.7vw, 28px);
+      overflow: hidden;
+      background: #000 url('assets/pc_main_image-smeur-banner.png') center center / cover no-repeat;
+    }
+    .ai-name {
+      font-size: clamp(28px,3.2vw,56px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .ai-sub {
+      font-size: clamp(17px,1.75vw,32px);
+      font-weight: 500;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      color: rgba(255,255,255,.42);
+      opacity: 1;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .ai-sphere-scroll {
+      position: relative;
+      height: 180vh;
+      margin-top: clamp(360px, 62vh, 820px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+    .sec-ai-figma-summary {
+      background: linear-gradient(to bottom, #0E1825 0%, #000000 100%);
+      width: 100%;
+      padding: clamp(44px, 6vw, 88px) var(--edge-padding);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+    .sec-ai-figma-summary .ai-figma-label { margin-top: auto; }
+    .sec-ai-figma-summary.sec-dissolve { opacity: 0; transition: opacity 1s ease; }
+    .sec-ai-figma-summary.sec-dissolve.vis { opacity: 1; }
+    .ai-sphere { width: 100%; height: clamp(340px, 54vh, 660px); margin-bottom: 0; flex: 0 0 auto; }
+    .ai-sphere canvas { display: block; width: 100%; height: 100%; }
+    .sec-ai-figma-summary .ai-figma-label,
+    .sec-ai-figma-summary .ai-figma-h,
+    .sec-ai-figma-summary .ai-figma-p { color: #ffffff; }
+    .ai-figma-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .ai-figma-row { display: flex; align-items: center; justify-content: space-between; gap: 64px; }
+    .ai-figma-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; white-space: nowrap; }
+    .ai-figma-p { width: min(839px, 48vw); font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; }
+
+    /* ── 9. FEATURE CARDS (text-only) ── */
+    .sec-3cards {
+      background: #fff;
+      width: 100%;
+      margin-top: 0;
+      padding: clamp(86px, 8.5vw, 148px) var(--edge-padding) clamp(132px, 12vw, 216px);
+    }
+    .cards-row { display: flex; gap: clamp(16px, 1.8vw, 32px); min-height: 0; }
+    .feat-card {
+      flex: 1; background: #F4F8FC; border-radius: 32px;
+      padding: 56px 48px; display: flex; flex-direction: column;
+      gap: clamp(12px, 1.6vw, 28px); min-height: 640px; justify-content: space-between;
+    }
+    .feat-card-num { font-size: clamp(32px,4.8vw,72px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: rgba(0,0,0,0.08); }
+    .feat-card-body { display: flex; flex-direction: column; gap: 16px; }
+    .feat-card-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #0e1825; }
+    .feat-card-sub { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.02em; }
+    .feat-card-p { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+    .sec-3cards .feat-card {
+      min-height: clamp(300px, 27vw, 430px);
+      padding: clamp(28px, 2.2vw, 40px);
+    }
+    .sec-3cards .feat-card-num {
+      font-size: clamp(22px, 2.7vw, 44px);
+    }
+    .sec-3cards .feat-card-body {
+      gap: 0;
+    }
+    .sec-3cards .feat-card-h {
+      font-size: clamp(15px, 1.18vw, 22px);
+      font-weight: 600;
+      line-height: 1.55;
+      letter-spacing: -0.04em;
+      word-break: keep-all;
+    }
+
+    /* ── 10. MULTILINGUAL ── */
+    .sec-multilang {
+      background: var(--ml-bg, #D0ECFF); width: 100%; height: 520px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 var(--edge-padding);
+      transition: background-color .82s cubic-bezier(.22, 1, .36, 1);
+    }
+    .ml-track { position: absolute; inset: 0; overflow: hidden; }
+    .ml-track.is-resetting .ml-slot { transition: none; }
+    .ml-slot {
+      position: absolute; top: 50%; left: 50%;
+      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4;
+      letter-spacing: -0.075em; color: #0e1825; white-space: nowrap;
+      transform: translate(-50%, -50%);
+      transition:
+        transform .82s cubic-bezier(.22, 1, .36, 1),
+        opacity .82s cubic-bezier(.22, 1, .36, 1),
+        color .82s cubic-bezier(.22, 1, .36, 1),
+        filter .82s cubic-bezier(.22, 1, .36, 1);
+      will-change: transform, opacity;
+    }
+    .ml-slot.is-left {
+      transform: translate(-50%, -50%) translateX(-30vw) scale(.82);
+      opacity: .42; color: rgba(14,24,37,.44); filter: blur(.2px);
+    }
+    .ml-slot.is-center {
+      transform: translate(-50%, -50%) translateX(0) scale(1.12);
+      opacity: 1; color: #0e1825; filter: none;
+    }
+    .ml-slot.is-right {
+      transform: translate(-50%, -50%) translateX(26vw) scale(.82);
+      opacity: .42; color: rgba(14,24,37,.44); filter: blur(.2px);
+    }
+    .ml-slot.is-out-left {
+      transform: translate(-50%, -50%) translateX(-64vw) scale(.72);
+      opacity: 0; color: rgba(14,24,37,.1); filter: blur(1px);
+    }
+    .ml-slot.is-out-right {
+      transform: translate(-50%, -50%) translateX(46vw) scale(.72);
+      opacity: 0; color: rgba(14,24,37,.1); filter: blur(1px);
+    }
+    .ml-fade-l { position: absolute; left: 0; top: 0; bottom: 0; width: min(24vw, 360px); background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,.72) 32%, rgba(255,255,255,0) 100%); z-index: 2; pointer-events: none; }
+    .ml-fade-r { position: absolute; right: 0; top: 0; bottom: 0; width: min(24vw, 360px); background: linear-gradient(270deg, #fff 0%, rgba(255,255,255,.72) 32%, rgba(255,255,255,0) 100%); z-index: 2; pointer-events: none; }
+
+    /* ── 12. 실행 블록 CARD ── */
+    .sec-exec-card { background: #fff; width: 100%; padding: clamp(56px, 8vw, 84px) var(--edge-padding); }
+    .exec-card {
+      width: 100%; min-height: 960px; background: #fff; border-radius: 0;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 80px 0; position: relative; overflow: hidden;
+    }
+    .exec-overline,
+    .exec-h,
+    .exec-p { position: relative; z-index: 1; }
+    .exec-overline { font-size: clamp(12px,1.3vw,19px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 22px; }
+    .exec-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; margin-bottom: 22px; }
+    .exec-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 707px; }
+
+    /* 8 tiles arranged in a ring that continuously orbits around the
+       center (matching the reference recording), while each tile's own
+       image stays upright via a counter-rotation of the same speed. */
+    .exec-ring {
+      position: absolute;
+      top: clamp(24px, 4vw, 64px);
+      right: clamp(12px, 1.5vw, 28px);
+      width: clamp(390px, 36vw, 600px);
+      height: clamp(390px, 36vw, 600px);
+      z-index: 0;
+      animation: execRingDrift 11s ease-in-out infinite;
+    }
+    .exec-ring-spin {
+      position: absolute;
+      inset: 0;
+      animation: execRingSpin 26s linear infinite;
+    }
+    .exec-ring-tile {
+      position: absolute;
+      width: 31%;
+      height: 31%;
+      left: calc(50% + 36% * sin(calc(var(--i) * 45deg)));
+      top: calc(50% - 36% * cos(calc(var(--i) * 45deg)));
+      transform: translate(-50%, -50%);
+    }
+    .exec-ring-tile-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(14,24,37,.16);
+      animation: execRingSpinReverse 26s linear infinite;
+    }
+    .exec-ring-tile-inner img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    @keyframes execRingSpin { to { transform: rotate(360deg); } }
+    @keyframes execRingSpinReverse { to { transform: rotate(-360deg); } }
+    @keyframes execRingDrift {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.035) translateY(-10px); }
+    }
+    @media (max-width: 900px) {
+      .exec-ring {
+        position: relative;
+        top: auto; right: auto;
+        width: min(72vw, 380px);
+        height: min(72vw, 380px);
+        margin: 0 auto clamp(24px, 5vw, 40px);
+      }
+    }
+
+    /* ── 13. MORPHING BRIDGE ── */
+    .sec-morphing-bridge {
+      background: #fff; width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 40px;
+    }
+    .morphing-pill {
+      font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; flex-shrink: 0; margin-top: clamp(4px, 0.6vw, 14px);
+    }
+    .morphing-pill-word {
+      display: inline-flex;
+      align-items: baseline;
+      gap: .005em;
+    }
+    .morphing-pill-word span {
+      display: inline-block;
+    }
+    @keyframes morphingBlob {
+      0%, 100% {
+        transform: translateY(0) scaleX(1) scaleY(1) skewX(0deg);
+        font-variation-settings: 'wght' 560;
+      }
+      18% {
+        transform: translateY(.06em) scaleX(1.22) scaleY(.78) skewX(-7deg);
+        font-variation-settings: 'wght' 850;
+      }
+      38% {
+        transform: translateY(-.08em) scaleX(.78) scaleY(1.28) skewX(5deg);
+        font-variation-settings: 'wght' 760;
+      }
+      58% {
+        transform: translateY(.035em) scaleX(1.12) scaleY(.9) skewX(-3deg);
+        font-variation-settings: 'wght' 900;
+      }
+      76% {
+        transform: translateY(0) scaleX(.96) scaleY(1.06) skewX(2deg);
+        font-variation-settings: 'wght' 620;
+      }
+    }
+    .morphing-bridge-text {
+      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4;
+      letter-spacing: -0.04em; text-align: right;
+    }
+
+    .morph-anim-band { width: min(560px, 80vw); aspect-ratio: 1 / 1; margin: clamp(28px, 4vw, 72px) auto; border-radius: clamp(28px, 3vw, 48px); background: #FB3DAD; overflow: hidden; }
+    .morph-anim-band canvas { display: block; width: 100%; height: 100%; }
+
+    /* ── 14. 스킵하다 스며들다 BANNER ── */
+    .sec-skip-banner {
+      background: #d8e8f5 url('assets/smeur-skip-banner-bg.png') center center / cover no-repeat;
+      width: 100%; padding: clamp(52px, 5.5vw, 96px) var(--edge-padding);
+      margin-top: clamp(80px, 10vw, 160px);
+      display: flex; align-items: center; justify-content: space-between; gap: 48px;
+    }
+    .skip-banner-t { font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em; flex-shrink: 0; }
+    .skip-banner-t .dim { color: rgba(0, 0, 0, .5); }
+    .skip-banner-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; text-align: right; max-width: 757px; }
+
+    /* ── 15. MORPHING DETAIL ── */
+    .morphing-detail-left.fi { transition: opacity 1.5s ease, transform 1.5s ease; }
+    .sec-morphing-detail { background: #fff; width: 100%; padding: clamp(170px, 17vw, 260px) var(--edge-padding) clamp(56px, 8vw, 116px); }
+    .morphing-detail-row { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(48px, 7vw, 120px); }
+    .morphing-detail-left { display: flex; flex-direction: column; gap: clamp(12px, 1.6vw, 28px); flex-shrink: 0; max-width: 760px; }
+    .morphing-detail-h { font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em; }
+    .morphing-detail-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; }
+    .morphing-detail-right { flex: 0 0 560px; display: flex; flex-direction: column; gap: 20px; }
+    .morphing-img-card {
+      background: #F4F8FC; border-radius: 32px;
+      padding: clamp(34px, 3.1vw, 48px); display: flex; flex-direction: column; gap: 16px;
+      min-height: clamp(230px, 24vw, 320px); justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .morphing-img-card:nth-child(1) { background: #FF93DD; }
+    .morphing-img-card:nth-child(2) { background: #67D4E3; }
+    .morphing-img-card:nth-child(3) { background: #FFDA45; }
+    .morphing-img-card::before {
+      display: none;
+    }
+    .morphing-img-card > * { position: relative; z-index: 1; }
+    .mic-label { font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #ff0b6c; letter-spacing: -0.03em; text-transform: uppercase; }
+    .mic-title { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
+    .mic-body { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+
+    /* ── 16. PRINCIPLES VERTICAL ── */
+    .sec-principles-v { background: #fff; width: 100%; padding: 0 var(--edge-padding) clamp(56px, 8vw, 116px); }
+    .principle-v-block {
+      padding: 80px 0; border-top: 1px solid rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; gap: 17px;
+    }
+    .principle-v-block:last-child { border-bottom: 1px solid rgba(0,0,0,0.08); }
+    .pv-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; }
+    .pv-title { font-size: clamp(22px,3.6vw,48px); font-weight: 600; line-height: 1.4; letter-spacing: -0.03em; }
+    .pv-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 600px; }
+
+    /* ── 17. SKEEP AI™ GRADIENT ── */
+    .sec-ai-gradient {
+      background: linear-gradient(180deg, #F4F8FC 0%, rgba(244,248,252,0) 100%);
+      width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding);
+    }
+    .ai-grad-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 48px; }
+    .ai-grad-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 48px; margin-bottom: 80px; }
+    .ai-grad-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; flex-shrink: 0; }
+    .ai-grad-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 839px; }
+    .ai-grad-cards { display: flex; gap: 40px; padding-bottom: 116px; }
+    .ai-grad-card {
+      flex: 1; background: rgba(255,255,255,0.7); border-radius: 32px;
+      padding: 56px 48px; display: flex; flex-direction: column;
+      gap: clamp(12px, 1.6vw, 28px); min-height: 460px; justify-content: space-between;
+    }
+    .agc-num { font-size: clamp(32px,4.8vw,72px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: rgba(0,0,0,0.08); }
+    .agc-body { display: flex; flex-direction: column; gap: 16px; }
+    .agc-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #0e1825; }
+    .agc-sub { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.02em;}
+    .agc-p { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+
+    /* ── FOOTER ── */
+    footer { background: #F4F8FC; width: 100%; padding: clamp(56px, 8vw, 84px) var(--edge-padding); text-align: center; }
+    .ft-logo { font-size: clamp(22px,3.6vw,48px); font-weight: 600; letter-spacing: -0.03em; margin-bottom: 12px; line-height: 1.4;}
+    .ft-tag  { font-size: clamp(13px,1.4vw,24px); font-weight: 400; color: rgba(0,0,0,.55); margin-bottom: 40px; letter-spacing: -0.02em;}
+    .ft-meta { font-size: 14px; color: rgba(0,0,0,0.25); line-height: 1.8; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1400px) {
+      .hero, .sec-keepon,
+      .sec-parsing-intro, .sec-detail, .pill-btn-wrap, .sec-ai-banner,
+      .sec-ai-figma-summary, .sec-3cards, .sec-exec-card,
+      .sec-morphing-bridge, .sec-skip-banner, .sec-morphing-detail,
+      .sec-principles-v, .sec-ai-gradient, footer {
+        padding-left: 80px; padding-right: 80px;
+      }
+      .morphing-detail-right { flex: 0 0 460px; }
+    }
+    @media (max-width: 1100px) {
+      .cards-row { flex-wrap: wrap; }
+      .feat-card { flex: 1 1 calc(50% - 20px); }
+      .principle-grid { flex-direction: column; }
+      .sec-ai-banner { flex-direction: column; gap: 0; }
+      .sec-ai-banner { width: min(calc(100% - 160px), 1800px); }
+      .ai-sub { text-align: right; }
+      .sec-skip-banner { flex-direction: column; }
+      .skip-banner-desc { text-align: left; }
+      .morphing-detail-row { flex-direction: column; }
+      .morphing-detail-right { flex: none; width: 100%; }
+      .ai-grad-cards { flex-wrap: wrap; }
+      .ai-grad-card { flex: 1 1 calc(50% - 20px); }
+      .ai-figma-row { flex-direction: column; align-items: flex-start; }
+      .ai-figma-p { width: 100%; }
+      .parsing-detail-video-wrap {
+        max-width: 100%;
+        margin-left: 0;
+      }
+      .parsing-big { font-size: clamp(32px,4.8vw,72px); }
+    }
+    @media (max-width: 768px) {
+      .hero, .sec-keepon,
+      .sec-parsing-intro, .sec-detail, .pill-btn-wrap, .sec-ai-banner,
+      .sec-ai-figma-summary, .sec-3cards, .sec-exec-card,
+      .sec-morphing-bridge, .sec-skip-banner, .sec-morphing-detail,
+      .sec-principles-v, .sec-ai-gradient, footer {
+        padding-left: 24px; padding-right: 24px;
+      }
+      .hero-title { font-size: clamp(24px,4vw,54px); }
+      .ml-center { font-size: clamp(32px,4.8vw,72px); }
+      .ml-left, .ml-right { font-size: clamp(22px,3.6vw,48px); }
+      .skip-banner-t { font-size: clamp(32px,4.8vw,72px); }
+      .sec-ai-banner {
+        width: calc(100% - 48px);
+        min-height: 180px;
+        padding: 28px 26px;
+        gap: 18px;
+        flex-direction: row;
+      }
+      .ai-name { font-size: clamp(24px,8vw,34px); }
+      .ai-sub { font-size: clamp(14px,4.6vw,20px); white-space: normal; }
+      .ai-figma-h { font-size: clamp(24px,4vw,54px); white-space: normal; }
+      .ai-figma-p { font-size: clamp(14px,1.8vw,24px); }
+      .feat-card { flex: 1 1 100%; }
+      .ai-grad-card { flex: 1 1 100%; }
+      .sec-morphing-bridge { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ 1. HERO ══ -->
+<section class="hero fi">
+  <div class="hero-bg"></div>
+  <div class="hero-dim"></div>
+  <h1 class="hero-title">
+    낯선 곳이더라도 자연스럽게<br>
+    경계를 건너뛰는 유려함
+  </h1>
+</section>
+
+<!-- ══ 2. KEEP ON KEEPIN' ON ══ -->
+<section class="sec-keepon">
+  <div class="keepon-title-scene">
+    <div class="keepon-title-sticky">
+      <p class="keepon-title" id="keeponTitle"><span class="keepon-typed"></span><span class="keepon-cursor">|</span></p>
+    </div>
+  </div>
+  <div class="keepon-panel-page">
+    <div class="keepon-panel-sticky">
+      <div class="keepon-panel">
+        <div class="keepon-chain">
+          <span class="chain-prefix">That's How <strong>Skeep AI™</strong></span>
+          <div class="keepon-chain-viewport">
+            <div class="keepon-chain-track" id="keeponChainTrack">
+              <p class="chain-word">Plans</p>
+              <p class="chain-word">Acts</p>
+              <p class="chain-word">Reads</p>
+              <p class="chain-word">Thinks</p>
+              <p class="chain-word">Works</p>
+              <p class="chain-word">Plans</p>
+              <p class="chain-word">Acts</p>
+              <p class="chain-word">Reads</p>
+              <p class="chain-word">Thinks</p>
+              <p class="chain-word">Works</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 3-4. 목적은 행동으로 → TWO-COL sticky transition ══ -->
+<section class="logic-transition" data-logic-transition>
+  <div class="logic-transition-sticky">
+    <div class="morph-card" data-morph-card>
+      <div class="morph-bg morph-bg-photo-a" data-morph-photo-a></div>
+      <div class="morph-bg morph-bg-pink" data-morph-pink></div>
+      <div class="morph-overlay"></div>
+      <div class="morph-bg-final" data-morph-final>
+        <video class="morph-final-photo" src="assets/domino-fall.mp4" autoplay loop muted playsinline></video>
+        <div class="morph-final-pinkblock"></div>
+        <div class="morph-final-glow-1"></div>
+        <div class="morph-final-glow-2"></div>
+        <div class="morph-final-tint"></div>
+      </div>
+      <div class="morph-text morph-text-a" data-morph-text-a>
+        <p class="full-card-title">
+          목적은 행동으로<br>
+          행동은 온전한 기능으로
+        </p>
+        <p class="full-card-desc">
+          스킵이 없었던 시절 우리는 새로운 환경을 마주할 때마다<br>
+          무엇을 어떻게 조작해야 하는지 스스로 헤매고 고민해야 했죠.
+        </p>
+      </div>
+      <div class="morph-text morph-text-b" data-morph-text-b>
+        <video class="two-left-video" src="assets/ball-domino.mp4" autoplay loop muted playsinline></video>
+        <p class="two-left-overline">Keep on Keepin' on</p>
+        <p class="two-left-h">
+          이해하고 생각하고 계획하고<br>
+          도미노처럼 끊김없이
+        </p>
+        <p class="two-left-p">
+          모든 자원을 영리하게 결합하여, 우리가 미처 생각하지 못한<br>
+          창의적인 해결책을 물밑에서 묵묵히 완수하는 Skeep AI™
+        </p>
+      </div>
+    </div>
+    <div class="two-right" data-logic-cards>
+      <div class="logic-card">
+        <div>
+          <p class="logic-card-num">01</p>
+          <p class="logic-card-name">Parsing Logic</p>
+          <p class="logic-card-sub">사용자 의도를 기반으로 목적을 태스크로<br>구조화하는 단계</p>
+        </div>
+      </div>
+      <div class="logic-card">
+        <div>
+          <p class="logic-card-num">02</p>
+          <p class="logic-card-name">Mapping Logic</p>
+          <p class="logic-card-sub">구조화된 태스크를 실행 가능한 형태로<br>변환하는 단계</p>
+        </div>
+      </div>
+      <div class="logic-card">
+        <div>
+          <p class="logic-card-num">03</p>
+          <p class="logic-card-name">Morphing Logic</p>
+          <p class="logic-card-sub">실행 블록이 담긴 패킷을 스키퍼블에<br>전송하는 단계</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5. PARSING LETTER WAVE (scroll-morphs into the Parsing Intro heading) ══ -->
+<section class="sec-word-morph-scene" data-word-scene>
+  <div class="word-scene-sticky">
+    <p class="parsing-wave" data-parsing-wave aria-label="Parsing">
+      <span style="--i:0">P</span><span style="--i:1">a</span><span style="--i:2">r</span><span style="--i:3">s</span><span style="--i:4">i</span><span style="--i:5">n</span><span style="--i:6">g</span>
+    </p>
+  </div>
+</section>
+
+<!-- ══ 6. PARSING INTRO ══ -->
+<section class="sec-parsing-intro" data-parsing-intro>
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <p class="parsing-num" data-parsing-num>01</p>
+    <p class="parsing-big" data-parsing-big>Parsing</p>
+  </div>
+  <p class="parsing-desc-right" data-parsing-desc>
+    거시적인 목적과 목표를 작고 관리하기 쉬운 미시적 목적 및 기능의 범위로 쪼개는 과정
+  </p>
+</section>
+
+<!-- ══ 7. PARSING DETAIL ══ -->
+<section class="sec-detail parsing-detail-visual fi">
+  <div class="detail-head-row">
+    <div class="parsing-detail-video-wrap">
+      <video class="parsing-detail-video" src="assets/parsing-detail-shape.mp4" autoplay loop muted playsinline></video>
+    </div>
+    <div>
+      <p class="detail-h">
+        툭 던진 생각 너머,<br>내 안의 진짜 목적을 읽다
+      </p>
+      <p class="detail-desc">
+        복잡한 맥락 속에 숨겨진 진짜 의도를 파싱하여,<br>
+        시스템이 처리할 수 있는 논리적 규격으로 변환하는 단계
+      </p>
+    </div>
+  </div>
+  <div class="principle-grid">
+    <div class="principle-card fi d1">
+      <p class="pr-num">Principle 01</p>
+      <p class="pr-title">사용자의 의도 추출</p>
+      <p class="pr-body">사용자의 인풋에서 불필요한 수식어를 걷어내고, 핵심 명사와 동사 위주로 목적을 잘게 쪼갭니다.</p>
+    </div>
+    <div class="principle-card fi d2">
+      <p class="pr-num">Principle 02</p>
+      <p class="pr-title">맥락과 암묵적 목적 반영</p>
+      <p class="pr-body">명시하지 않은 공간적 단서와 사용 패턴을 분석하여, 생략된 암묵적 목적까지 명확하게 찾습니다.</p>
+    </div>
+    <div class="principle-card fi d3">
+      <p class="pr-num">Principle 03</p>
+      <p class="pr-title">데이터 트리플 생성</p>
+      <p class="pr-body">파싱된 모든 파라미터는 스킵 아키텍처의 최상위 트리거인 목적-행위-기능 트리플로 구성됩니다.</p>
+    </div>
+  </div>
+</section>
+<div class="pill-btn-wrap fi"><span class="pill-detail">자세한 파싱 원리</span></div>
+
+<!-- ══ 8. SKEEP AI™ BANNER ══ -->
+<section class="sec-ai-banner fi">
+  <p class="ai-name">Skeep AI™</p>
+  <p class="ai-sub">Physically-Feasible Thinking AI</p>
+</section>
+
+<!-- ══ 8-1. SKEEP AI™ SUMMARY ══ -->
+<div class="ai-sphere-scroll">
+<section class="sec-ai-figma-summary sec-dissolve" id="aiSphereSec">
+  <div class="ai-sphere"><canvas id="aiSphereCanvas"></canvas></div>
+  <p class="ai-figma-label">Skeep AI™</p>
+  <div class="ai-figma-row">
+    <p class="ai-figma-h">
+      수만 가지 제약 아래,<br>
+      단 하나의 완벽한 현실만
+    </p>
+    <p class="ai-figma-p">
+      스킵은 물리적 실체가 없더라도 공간, 기기, 거리, 사람 수 같은 물리적 제약을 이해하는 것을 전제로 생각합니다. 현실을 필터링하는 이 정밀한 감각이야말로 스킵이 세상을 이해하는 핵심 능력입니다.
+    </p>
+  </div>
+</section>
+</div>
+
+<script>
+/* Skeep AI™ dot-sphere: gather → rotate → zoom into red core */
+(() => {
+  const cv = document.getElementById('aiSphereCanvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  let W = 0, H = 0, cx = 0, cy = 0, DPR = 1, SCALE = 60, FOCAL = 900, DOT = 8;
+  const R = 4.2, BG = '#0E1825';
+
+  const STOPS = [
+    [0.00, [255, 86, 153]],   // pink #FF5699 (center)
+    [0.34, [242, 233, 107]],  // yellow
+    [0.67, [149, 232, 126]],  // green
+    [1.00, [209, 236, 255]],  // sky   (outer edge)
+  ];
+  function rampColor(t) {
+    t = Math.max(0, Math.min(1, t));
+    for (let i = 0; i < STOPS.length - 1; i++) {
+      const a = STOPS[i], b = STOPS[i + 1];
+      if (t <= b[0]) {
+        const k = (t - a[0]) / (b[0] - a[0]);
+        return [
+          Math.round(a[1][0] + (b[1][0] - a[1][0]) * k),
+          Math.round(a[1][1] + (b[1][1] - a[1][1]) * k),
+          Math.round(a[1][2] + (b[1][2] - a[1][2]) * k),
+        ];
+      }
+    }
+    return STOPS[STOPS.length - 1][1];
+  }
+
+  let seed = 20260712;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  const pts = [];
+  for (let x = -5; x <= 5; x++) for (let y = -5; y <= 5; y++) for (let z = -5; z <= 5; z++) {
+    const d = Math.hypot(x, y, z);
+    if (d <= R + 1e-6) pts.push({ x, y, z, d, col: rampColor(d / R), sf: 0.42 + rnd() * 1.05, isCore: (x === 0 && y === 0 && z === 0) });
+  }
+
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight;
+    if (!W || !H) return;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    cx = W / 2; cy = H / 2;
+    const minD = Math.min(W, H);
+    SCALE = (minD * 0.28) / R; FOCAL = SCALE * 15; DOT = SCALE * 0.14;
+  }
+  new ResizeObserver(resize).observe(cv);
+  resize();
+
+  let visible = true;
+  new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(cv);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeIO = t => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (!visible || !W || !H) return;
+    const t = now / 1000;
+
+    const CYCLE = 8;
+    const ph = reduce ? 0.35 : (t % CYCLE) / CYCLE;
+    let expand = 1, gatherA = 1, fadeOthers = 1, coreMix = 0, coreA = 1;
+    if (ph < 0.14) { const k = easeIO(ph / 0.14); expand = 1.7 - 0.7 * k; gatherA = k; }
+    else if (ph < 0.55) { /* hold + rotate */ }
+    else if (ph < 0.90) {
+      // dots spread outward & fade FIRST, then the pink core grows AFTER they're gone
+      const kSpread = easeIO(Math.min(1, (ph - 0.55) / 0.26));
+      const kCore   = easeIO(Math.max(0, (ph - 0.74) / 0.16));
+      expand = 1 + 0.7 * kSpread; fadeOthers = 1 - kSpread; coreMix = kCore;
+    }
+    else { const k = easeIO((ph - 0.90) / 0.10); expand = 2.4; fadeOthers = 0; coreMix = 1; coreA = 1 - k; }
+
+    const ax = reduce ? 0.5 : t * 0.28;
+    const ay = reduce ? 0.7 : t * 0.5;
+    const sinx = Math.sin(ax), cosx = Math.cos(ax), siny = Math.sin(ay), cosy = Math.cos(ay);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // soft radial glow behind the sphere (fades to transparent -> no box edge)
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(W, H) * 0.55);
+    glow.addColorStop(0.0, 'rgba(255,105,165,0.15)');
+    glow.addColorStop(0.4, 'rgba(150,150,235,0.09)');
+    glow.addColorStop(0.7, 'rgba(95,205,225,0.05)');
+    glow.addColorStop(1.0, 'rgba(14,24,37,0)');
+    ctx.globalAlpha = 1 - coreMix;   // fades out as the core zooms up, fades back in each loop
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+
+    const proj = [];
+    let core = null;
+    for (const p of pts) {
+      const x1 = p.x * cosy - p.z * siny;
+      const z1 = p.x * siny + p.z * cosy;
+      const y2 = p.y * cosx - z1 * sinx;
+      const z2 = p.y * sinx + z1 * cosx;
+      if (p.isCore) { core = p; continue; }
+      const zp = z2 * SCALE * expand;
+      const persp = FOCAL / (FOCAL - zp);
+      if (persp <= 0) continue;
+      proj.push({
+        sx: cx + x1 * SCALE * expand * persp,
+        sy: cy + y2 * SCALE * expand * persp,
+        r: Math.max(0.5, DOT * p.sf * persp),
+        col: p.col,
+        a: gatherA * fadeOthers * (0.35 + 0.65 * Math.min(1.5, persp) / 1.5),
+        z: z2,
+      });
+    }
+    proj.sort((a, b) => a.z - b.z);
+
+    for (const q of proj) {
+      if (q.a <= 0.004) continue;
+      ctx.beginPath();
+      const c = q.col;
+      ctx.fillStyle = `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${q.a})`;
+      ctx.shadowBlur = q.r * 1.7;
+      ctx.shadowColor = `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${q.a})`;
+      ctx.arc(q.sx, q.sy, q.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    if (core) {
+      const bc = core.col;   // pink at rest → fades to white as it zooms up
+      const cc = [bc[0] + (255 - bc[0]) * coreMix, bc[1] + (255 - bc[1]) * coreMix, bc[2] + (255 - bc[2]) * coreMix];
+      const cr = Math.max(2, DOT * 0.95) * (1 + coreMix * 22);
+      const caph = Math.min(1, gatherA * coreA);
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${cc[0]}, ${cc[1]}, ${cc[2]}, ${caph})`;
+      ctx.shadowBlur = 0;
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+
+<!-- ══ 9. 4 FEATURE CARDS ══ -->
+<section class="sec-3cards fi">
+  <div class="cards-row">
+    <div class="feat-card fi d1">
+      <p class="feat-card-num">01</p>
+      <div class="feat-card-body">
+        <p class="feat-card-h">파싱은 거시적인 목적과 목표를 작고 관리하기 쉬운 하위 단위(미시적 목적 및 실행 블록)로 쪼개기 위해 입력된 발화·행동·맥락을 분석하는 과정이다.</p>
+      </div>
+    </div>
+    <div class="feat-card fi d2">
+      <p class="feat-card-num">02</p>
+      <div class="feat-card-body">
+        <p class="feat-card-h">인식된 Goal은 복수의 Action으로, 각 Action은 하나의 Function으로 재귀적으로 분해된다.</p>
+      </div>
+    </div>
+    <div class="feat-card fi d3">
+      <p class="feat-card-num">03</p>
+      <div class="feat-card-body">
+        <p class="feat-card-h">파싱 후 최소 1개 이상의 [G→A→F] 데이터 트리플이 생성되며, 데이터 트리플 하나가 하나의 실행 블록에 대응된다.</p>
+      </div>
+    </div>
+    <div class="feat-card fi d4">
+      <p class="feat-card-num">04</p>
+      <div class="feat-card-body">
+        <p class="feat-card-h">SKEEP은 물리적 실체가 없어도 공간·기기·거리·사람 수 같은 물리적 제약을 이해하는 것을 전제로 파싱을 진행한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 10. 매핑 Mapping マッピング ══ -->
+<div class="sec-multilang fi">
+  <div class="ml-fade-l"></div>
+  <div class="ml-track" data-ml-carousel aria-label="Mapping multilingual carousel">
+    <span class="ml-slot is-left" data-ml-slot="left">映射</span>
+    <span class="ml-slot is-center" data-ml-slot="center">매핑</span>
+    <span class="ml-slot is-right" data-ml-slot="right">マッピング</span>
+  </div>
+  <div class="ml-fade-r"></div>
+</div>
+
+<!-- ══ 12. 실행 블록 CARD ══ -->
+<section class="sec-exec-card fi">
+  <div class="exec-card">
+    <div class="exec-ring" aria-hidden="true">
+      <div class="exec-ring-spin">
+        <div class="exec-ring-tile" style="--i:0">
+          <div class="exec-ring-tile-inner"><img src="assets/domino-hand.jpg" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:1">
+          <div class="exec-ring-tile-inner"><img src="assets/morph-keep-action-bg.png" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:2">
+          <div class="exec-ring-tile-inner"><img src="assets/morph-keep-action-person.png" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:3">
+          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-1.png" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:4">
+          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-2.png" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:5">
+          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-3.png" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:6">
+          <div class="exec-ring-tile-inner"><img src="assets/sensing-hero-bg.jpg" alt=""></div>
+        </div>
+        <div class="exec-ring-tile" style="--i:7">
+          <div class="exec-ring-tile-inner"><img src="assets/smeur-morph-visual-1.png" alt=""></div>
+        </div>
+      </div>
+    </div>
+    <p class="exec-overline">실행 블록</p>
+    <p class="exec-h">
+      하나의 목적<br>모두의 언어로
+    </p>
+    <p class="exec-p">
+      스마트폰부터 자동차, 피지컬 AI까지. 사용자의 목적은 물밑에서 각 환경의 눈높이에 맞는 프로토콜로 완벽하게 동시 통역됩니다. 아무리 파편화된 환경이라도 상관없습니다. 스킵을 거치는 순간, 세상의 모든 기기는 마치 모국어를 듣듯 당신의 의도를 읽고 움직이기 시작하니까요.
+    </p>
+  </div>
+</section>
+
+<!-- ══ 13. MAPPING DETAIL ══ -->
+<section class="sec-detail mapping-photo fi">
+  <p class="detail-label">Mapping</p>
+  <p class="detail-h">
+    수백만 개의 경로 중,<br>가장 완벽한 궤적을 찾아서
+  </p>
+  <p class="detail-desc">
+    파싱을 통해 구조화된 개별 태스크 트리플을<br>
+    실제 환경과 소통 가능한 실행 블록으로 변환하는 단계
+  </p>
+  <div class="principle-grid">
+    <div class="principle-card fi d1">
+      <p class="pr-num">Principle 01</p>
+      <p class="pr-title">도메인 컴포넌트 매칭</p>
+      <p class="pr-body">현재 제어 가능한 스키퍼블의 API 명세를 동적으로 스캔하여 매칭 가능한 리소스를 선별합니다.</p>
+    </div>
+    <div class="principle-card fi d2">
+      <p class="pr-num">Principle 02</p>
+      <p class="pr-title">물리 법칙 시뮬레이션</p>
+      <p class="pr-body">실제 물리 세계의 제약 조건을 반영하여 실행할 수 있는 경로만을 초고속으로 필터링합니다.</p>
+    </div>
+    <div class="principle-card fi d3">
+      <p class="pr-num">Principle 03</p>
+      <p class="pr-title">실행 블록 변환</p>
+      <p class="pr-body">필터링을 거쳐 살아남은 최적의 기능을 결합하여, 하나의 완벽한 '실행 블록' 구조로 정형화합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 14. MORPHING BRIDGE ══ -->
+<section class="sec-morphing-bridge fi">
+  <div class="morphing-pill" aria-label="Morphing">
+    <span class="morphing-pill-word" aria-hidden="true">
+      <span style="--i:0">M</span><span style="--i:1">o</span><span style="--i:2">r</span><span style="--i:3">p</span><span style="--i:4">h</span><span style="--i:5">i</span><span style="--i:6">n</span><span style="--i:7">g</span>
+    </span>
+  </div>
+  <p class="morphing-bridge-text">
+    선명해진 스킵의 청사진<br>이제 현실로 도약할 시간
+  </p>
+</section>
+
+<!-- ══ 14-1. MORPHING OBJECTS ANIMATION BAND ══ -->
+<div class="morph-anim-band fi"><canvas id="morphCanvas"></canvas></div>
+
+<script>
+(() => {
+  const cv=document.getElementById('morphCanvas'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const DATA={"headphones":{"outer":[[-0.0466,-0.9944],[0.0396,-0.9944],[0.1257,-0.9944],[0.2028,-0.9832],[0.2828,-0.9683],[0.3596,-0.9458],[0.4334,-0.9162],[0.5043,-0.8794],[0.5739,-0.8395],[0.6409,-0.7933],[0.7055,-0.7414],[0.7664,-0.6805],[0.8194,-0.6164],[0.8622,-0.548],[0.899,-0.4771],[0.9255,-0.402],[0.9445,-0.3237],[0.958,-0.2432],[0.9628,-0.159],[0.959,-0.0745],[0.9479,0.007],[0.9292,0.0854],[0.9069,0.1623],[0.909,0.233],[0.962,0.2972],[0.9888,0.3722],[1.0,0.4493],[0.9971,0.5326],[0.9739,0.6064],[0.9441,0.6802],[0.9026,0.7491],[0.847,0.8122],[0.7796,0.8573],[0.704,0.8827],[0.6229,0.8706],[0.5554,0.9027],[0.488,0.9478],[0.415,0.9795],[0.3394,0.9944],[0.2623,0.9832],[0.187,0.9572],[0.1111,0.9324],[0.0379,0.9013],[-0.0259,0.8475],[-0.0689,0.7791],[-0.0987,0.7054],[-0.1173,0.627],[-0.121,0.5424],[-0.1173,0.4578],[-0.1061,0.3763],[-0.0838,0.2994],[-0.054,0.2257],[-0.0184,0.1543],[0.0242,0.0858],[0.0797,0.0227],[0.1417,-0.0356],[0.2102,-0.078],[0.2842,-0.1073],[0.367,-0.1155],[0.4464,-0.0992],[0.5207,-0.0708],[0.5976,-0.0484],[0.635,-0.1124],[0.6499,-0.1923],[0.6574,-0.2754],[0.6499,-0.3584],[0.635,-0.4383],[0.6118,-0.5148],[0.5772,-0.5866],[0.5321,-0.6541],[0.4726,-0.7076],[0.3957,-0.73],[0.3154,-0.7441],[0.2327,-0.7449],[0.1497,-0.7374],[0.0706,-0.7205],[-0.0045,-0.6938],[-0.0752,-0.6566],[-0.1427,-0.6115],[-0.2079,-0.5612],[-0.2688,-0.5003],[-0.3244,-0.4372],[-0.3669,-0.3686],[-0.2967,-0.3352],[-0.2269,-0.2958],[-0.1702,-0.2354],[-0.1304,-0.1658],[-0.1037,-0.0907],[-0.0912,-0.0097],[-0.0875,0.0749],[-0.0987,0.1563],[-0.1148,0.2358],[-0.1397,0.3116],[-0.1734,0.3838],[-0.2158,0.4523],[-0.2662,0.5176],[-0.3282,0.5758],[-0.3956,0.6209],[-0.469,0.6518],[-0.5504,0.6629],[-0.6319,0.6518],[-0.7073,0.6257],[-0.7775,0.5875],[-0.8358,0.5255],[-0.8734,0.4549],[-0.8994,0.3796],[-0.9131,0.2991],[-0.9187,0.2153],[-0.9739,0.1564],[-1.0,0.0855],[-1.0,-0.0006],[-0.9812,-0.0746],[-0.9467,-0.1464],[-0.8937,-0.2106],[-0.8252,-0.2533],[-0.7691,-0.2941],[-0.7451,-0.3703],[-0.7132,-0.4432],[-0.676,-0.5139],[-0.6335,-0.5825],[-0.5832,-0.6477],[-0.5276,-0.7108],[-0.4667,-0.7717],[-0.4036,-0.8273],[-0.3383,-0.8777],[-0.2687,-0.9175],[-0.1959,-0.9497],[-0.1191,-0.9721]]},"lamp":{"outer":[[-0.2331,-0.7112],[-0.1698,-0.6974],[-0.1022,-0.6902],[-0.0358,-0.68],[0.0302,-0.6687],[0.0944,-0.6534],[0.1574,-0.635],[0.2169,-0.6082],[0.274,-0.5757],[0.3267,-0.5322],[0.3742,-0.4813],[0.4113,-0.4261],[0.4439,-0.369],[0.47,-0.3092],[0.4939,-0.2485],[0.5153,-0.1867],[0.533,-0.1235],[0.5482,-0.0591],[0.5613,0.006],[0.5743,0.0713],[0.5859,0.1371],[0.6259,0.1687],[0.6965,0.1687],[0.7646,0.1748],[0.8278,0.1928],[0.8867,0.221],[0.9353,0.2697],[0.9636,0.3286],[0.9896,0.3884],[1.0,0.4511],[0.9847,0.5118],[0.9589,0.5717],[0.922,0.627],[0.8764,0.6788],[0.8276,0.727],[0.7743,0.7687],[0.7189,0.8056],[0.6618,0.8382],[0.6036,0.8681],[0.5432,0.8926],[0.4815,0.9141],[0.4185,0.9325],[0.353,0.9448],[0.2898,0.954],[0.2192,0.954],[0.156,0.9448],[0.0917,0.9294],[0.0329,0.901],[-0.0167,0.8545],[-0.046,0.796],[-0.071,0.7358],[-0.0798,0.6688],[-0.0668,0.6036],[-0.0399,0.5441],[-0.0016,0.4893],[0.044,0.4376],[0.0948,0.3899],[0.1483,0.3486],[0.2036,0.3117],[0.2608,0.2791],[0.3197,0.2509],[0.3795,0.2248],[0.4018,0.1775],[0.3926,0.1108],[0.3776,0.0464],[0.365,-0.019],[0.3494,-0.0831],[0.3313,-0.1463],[0.3098,-0.208],[0.2842,-0.268],[0.2538,-0.326],[0.2125,-0.3795],[0.1608,-0.4251],[0.1022,-0.454],[0.0403,-0.4751],[-0.0251,-0.4877],[-0.0919,-0.4969],[-0.1063,-0.4621],[-0.0737,-0.405],[-0.0412,-0.3479],[-0.0086,-0.2908],[0.024,-0.2337],[0.0566,-0.1766],[0.089,-0.1194],[0.1087,-0.057],[0.1043,0.0104],[0.0736,0.0683],[0.0266,0.1176],[-0.0288,0.1545],[-0.0884,0.181],[-0.1501,0.2025],[-0.2144,0.2178],[-0.2812,0.227],[-0.3492,0.2331],[-0.4198,0.2331],[-0.4879,0.227],[-0.5549,0.2182],[-0.6202,0.2055],[-0.6835,0.1877],[-0.7451,0.166],[-0.8041,0.138],[-0.8611,0.1052],[-0.9146,0.0639],[-0.9602,0.0122],[-0.9908,-0.0457],[-1.0,-0.1089],[-0.9847,-0.1696],[-0.9493,-0.2256],[-0.9015,-0.2764],[-0.8581,-0.329],[-0.816,-0.3821],[-0.7734,-0.4351],[-0.73,-0.4878],[-0.6871,-0.5406],[-0.6454,-0.5939],[-0.6019,-0.6465],[-0.5585,-0.6992],[-0.552,-0.7545],[-0.5767,-0.8149],[-0.5687,-0.8822],[-0.5226,-0.9283],[-0.4663,-0.954],[-0.3957,-0.954],[-0.3282,-0.9508],[-0.2687,-0.9282],[-0.2134,-0.8913],[-0.1871,-0.8316],[-0.1935,-0.7636]]},"hanger":{"outer":[[0.0111,-0.467],[0.0457,-0.5084],[0.0999,-0.501],[0.1468,-0.4692],[0.1943,-0.439],[0.2405,-0.4052],[0.2866,-0.3714],[0.3327,-0.3377],[0.3788,-0.3039],[0.4253,-0.2711],[0.4717,-0.2382],[0.5179,-0.2044],[0.564,-0.1707],[0.6101,-0.1369],[0.6562,-0.1032],[0.7029,-0.0709],[0.7487,-0.0363],[0.7953,-0.0037],[0.8414,0.0301],[0.8875,0.0638],[0.9336,0.0976],[0.9765,0.1356],[0.9852,0.19],[0.9728,0.245],[1.0,0.2881],[0.9802,0.3371],[0.9604,0.389],[0.9128,0.407],[0.8853,0.4542],[0.8309,0.4631],[0.7836,0.4322],[0.7343,0.4063],[0.6762,0.4063],[0.6185,0.412],[0.5612,0.4186],[0.5031,0.4236],[0.4451,0.4285],[0.388,0.4359],[0.33,0.4409],[0.2719,0.4458],[0.2149,0.4532],[0.1569,0.4582],[0.0988,0.4631],[0.0415,0.4698],[-0.0162,0.4755],[-0.0743,0.4804],[-0.1323,0.4854],[-0.1894,0.4928],[-0.241,0.5084],[-0.2926,0.5005],[-0.3028,0.4488],[-0.2559,0.4211],[-0.2047,0.3996],[-0.1511,0.384],[-0.0944,0.3758],[-0.0381,0.3667],[0.0188,0.359],[0.0749,0.3494],[0.132,0.342],[0.188,0.3321],[0.2446,0.3236],[0.301,0.3148],[0.3578,0.3068],[0.414,0.2975],[0.471,0.29],[0.5265,0.279],[0.5652,0.2378],[0.5773,0.1827],[0.5748,0.1236],[0.5748,0.0635],[0.5357,0.028],[0.4925,0.0583],[0.471,0.1095],[0.4352,0.1541],[0.3823,0.1714],[0.3273,0.159],[0.2785,0.1318],[0.2301,0.1036],[0.1811,0.0768],[0.1328,0.0483],[0.0842,0.0206],[0.0355,-0.007],[-0.0128,-0.0355],[-0.0564,-0.0717],[-0.0729,-0.125],[-0.0721,-0.1813],[-0.1041,-0.2281],[-0.1577,-0.2439],[-0.2106,-0.2266],[-0.262,-0.2056],[-0.3134,-0.1846],[-0.3644,-0.1626],[-0.4162,-0.1426],[-0.4675,-0.1213],[-0.5189,-0.1005],[-0.5698,-0.0783],[-0.6217,-0.0585],[-0.6729,-0.037],[-0.7245,-0.0165],[-0.7754,0.0058],[-0.8272,0.0258],[-0.8748,0.056],[-0.9033,0.1043],[-0.9184,0.1581],[-0.9525,0.1986],[-1.0,0.1779],[-0.9926,0.1237],[-0.9778,0.0698],[-0.9629,0.0158],[-0.931,-0.031],[-0.8844,-0.0635],[-0.8345,-0.0882],[-0.7847,-0.1131],[-0.735,-0.1381],[-0.686,-0.1648],[-0.6361,-0.1895],[-0.5863,-0.2143],[-0.5368,-0.2399],[-0.4871,-0.2649],[-0.4373,-0.2899],[-0.3876,-0.3149],[-0.338,-0.3403],[-0.2882,-0.3651],[-0.2384,-0.39],[-0.1894,-0.4167],[-0.1396,-0.4417],[-0.0834,-0.4373],[-0.0287,-0.4293]]},"laptop":{"outer":[[0.0349,-0.5059],[0.0745,-0.5138],[0.1141,-0.5217],[0.1536,-0.5296],[0.1932,-0.5375],[0.2288,-0.5493],[0.2716,-0.5493],[0.3085,-0.5406],[0.3429,-0.5201],[0.3708,-0.49],[0.3873,-0.454],[0.4043,-0.4182],[0.4201,-0.3819],[0.4363,-0.3458],[0.4526,-0.3097],[0.4689,-0.2737],[0.4852,-0.2376],[0.5016,-0.2015],[0.5179,-0.1655],[0.5343,-0.1294],[0.5503,-0.0932],[0.5661,-0.0569],[0.5833,-0.0212],[0.5996,0.0148],[0.6154,0.0511],[0.6312,0.0874],[0.6472,0.1236],[0.6647,0.1592],[0.6805,0.1955],[0.7181,0.1963],[0.7576,0.1884],[0.798,0.1824],[0.8376,0.1746],[0.8773,0.1671],[0.9175,0.1607],[0.9571,0.1529],[0.99,0.1645],[1.0,0.2009],[0.9859,0.2321],[0.9487,0.2456],[0.9115,0.2594],[0.8744,0.2732],[0.8373,0.287],[0.7998,0.2998],[0.7623,0.3126],[0.7244,0.3245],[0.6858,0.3349],[0.6469,0.3442],[0.6073,0.3521],[0.5669,0.358],[0.5274,0.3659],[0.4876,0.3733],[0.4474,0.3797],[0.4079,0.3876],[0.3675,0.3935],[0.328,0.4014],[0.2883,0.409],[0.248,0.4152],[0.2085,0.4231],[0.1681,0.429],[0.1285,0.4369],[0.0889,0.4446],[0.0486,0.4507],[0.009,0.4586],[-0.0313,0.4645],[-0.0709,0.4724],[-0.1105,0.4803],[-0.1508,0.4862],[-0.1904,0.4941],[-0.2308,0.5],[-0.2703,0.5079],[-0.3099,0.5158],[-0.3503,0.5217],[-0.3898,0.5296],[-0.4301,0.5357],[-0.4698,0.5434],[-0.5078,0.5493],[-0.5426,0.5354],[-0.583,0.5335],[-0.6222,0.5248],[-0.6571,0.5056],[-0.6846,0.4742],[-0.7022,0.4387],[-0.7179,0.4024],[-0.7337,0.3661],[-0.7513,0.3305],[-0.7673,0.2943],[-0.783,0.258],[-0.7989,0.2218],[-0.8153,0.1857],[-0.8323,0.15],[-0.8481,0.1137],[-0.8643,0.0775],[-0.8806,0.0415],[-0.8969,0.0054],[-0.9132,-0.0307],[-0.9296,-0.0667],[-0.946,-0.1028],[-0.9623,-0.1388],[-0.9783,-0.175],[-0.9941,-0.2113],[-1.0,-0.2494],[-0.9854,-0.2838],[-0.9536,-0.3077],[-0.9145,-0.3166],[-0.8749,-0.3245],[-0.8353,-0.3323],[-0.7958,-0.3402],[-0.7562,-0.3481],[-0.7167,-0.356],[-0.6771,-0.3639],[-0.6375,-0.3718],[-0.598,-0.3797],[-0.5584,-0.3876],[-0.5189,-0.3955],[-0.4793,-0.4034],[-0.4398,-0.4112],[-0.4002,-0.4191],[-0.3606,-0.427],[-0.3211,-0.4349],[-0.2815,-0.4428],[-0.242,-0.4507],[-0.2024,-0.4586],[-0.1628,-0.4665],[-0.1233,-0.4744],[-0.0837,-0.4822],[-0.0442,-0.4901],[-0.0046,-0.498]]},"bar":{"outer":[[-0.1306,-0.7025],[-0.098,-0.6735],[-0.0663,-0.6419],[-0.0342,-0.6115],[-0.0021,-0.5812],[0.0295,-0.5496],[0.0622,-0.5206],[0.0938,-0.489],[0.1264,-0.4599],[0.158,-0.4283],[0.1907,-0.3992],[0.2223,-0.3676],[0.2549,-0.3386],[0.2865,-0.307],[0.3192,-0.2779],[0.3508,-0.2463],[0.3835,-0.2173],[0.4151,-0.1857],[0.4477,-0.1566],[0.4793,-0.125],[0.511,-0.0935],[0.5436,-0.0643],[0.5752,-0.0327],[0.6078,-0.0037],[0.6394,0.0279],[0.6721,0.057],[0.7037,0.0886],[0.7363,0.1176],[0.768,0.1492],[0.8006,0.1783],[0.8322,0.2099],[0.8649,0.239],[0.8965,0.2706],[0.9291,0.2996],[0.9607,0.3312],[0.9822,0.367],[1.0,0.4001],[1.0,0.4448],[0.9926,0.4822],[0.9737,0.5191],[0.9446,0.5518],[0.913,0.5834],[0.8814,0.615],[0.8498,0.6466],[0.8208,0.6792],[0.7892,0.7108],[0.7576,0.7424],[0.726,0.774],[0.6944,0.8056],[0.6628,0.8372],[0.6337,0.8699],[0.6011,0.8989],[0.5654,0.9209],[0.5294,0.9317],[0.4847,0.9317],[0.4522,0.9126],[0.4163,0.8912],[0.3826,0.8646],[0.3489,0.8381],[0.3163,0.8091],[0.2847,0.7775],[0.2531,0.7459],[0.2204,0.7168],[0.1888,0.6852],[0.1572,0.6536],[0.1256,0.622],[0.0929,0.5929],[0.0613,0.5613],[0.0297,0.5297],[-0.0026,0.5],[-0.0345,0.4691],[-0.0661,0.4375],[-0.0977,0.4059],[-0.1293,0.3743],[-0.162,0.3452],[-0.1936,0.3136],[-0.2252,0.282],[-0.2568,0.2504],[-0.2894,0.2213],[-0.321,0.1897],[-0.3526,0.1581],[-0.3843,0.1265],[-0.4169,0.0975],[-0.4485,0.0659],[-0.4801,0.0343],[-0.5117,0.0027],[-0.5434,-0.0288],[-0.576,-0.058],[-0.6076,-0.0896],[-0.6392,-0.1212],[-0.6708,-0.1528],[-0.7034,-0.1819],[-0.735,-0.2135],[-0.7666,-0.2451],[-0.7982,-0.2767],[-0.8298,-0.3083],[-0.8625,-0.3373],[-0.8941,-0.3689],[-0.9257,-0.4005],[-0.9573,-0.4321],[-0.982,-0.4666],[-1.0,-0.4996],[-1.0,-0.5443],[-0.9833,-0.5779],[-0.964,-0.6146],[-0.9379,-0.6484],[-0.9032,-0.6727],[-0.8675,-0.6942],[-0.8317,-0.7158],[-0.796,-0.7374],[-0.7602,-0.759],[-0.7245,-0.7806],[-0.6893,-0.8035],[-0.6535,-0.825],[-0.6176,-0.8464],[-0.5818,-0.8678],[-0.546,-0.8892],[-0.5102,-0.9107],[-0.4784,-0.9317],[-0.4337,-0.9317],[-0.389,-0.9317],[-0.3571,-0.911],[-0.3234,-0.8845],[-0.2907,-0.8555],[-0.2591,-0.8239],[-0.2265,-0.7948],[-0.1949,-0.7632],[-0.1622,-0.7342]]}};
+  const ORDER=["headphones","bar","laptop","lamp","hanger"];   // 바(핸드폰)→노트북 인접(둘 다 각져서 깔끔), 헤드폰↔바 인접 유지
+  const RAW_SH=ORDER.map(k=>DATA[k]);
+  const M=RAW_SH.length, NP=256;
+  const START_INDEX=ORDER.indexOf('bar');
+  let animationStart=performance.now();
+  window.addEventListener('message',event=>{
+    if(event.data?.type==='restartMorphAnimation') animationStart=performance.now();
+  });
+  const MAIN=[251,61,173], LITE=[227,235,242];
+  const figCol=i=>((((i%M)+M)%M)%2===0)?LITE:MAIN;
+  const bgCol =i=>((((i%M)+M)%M)%2===0)?MAIN:LITE;
+  const ROT=[-0.05,-0.04,0.03,-0.07,0.05];   // 새 순서에 맞춰 각 도형 회전값 유지
+  let W=0,H=0,cx=0,cy=0,DPR=1;
+  function resize(){DPR=Math.min(4,(devicePixelRatio||1)*2);W=cv.clientWidth;H=cv.clientHeight;   // 슈퍼샘플링(2~4x)으로 계단현상 제거
+    if(!W||!H)return; cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);cx=W/2;cy=H/2;}
+  new ResizeObserver(resize).observe(cv); resize();
+  let visible=true;
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{rootMargin:'200px'}).observe(cv);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lerp=(a,b,k)=>a+(b-a)*k;
+  const easeIO=t=>t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  const mixC=(a,b,k)=>[lerp(a[0],b[0],k),lerp(a[1],b[1],k),lerp(a[2],b[2],k)];
+  const rgb=c=>`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
+  function subpath(P){const mid=(p,q)=>[(p[0]+q[0])*0.5,(p[1]+q[1])*0.5];const n=P.length;
+    let m0=mid(P[n-1],P[0]);ctx.moveTo(m0[0],m0[1]);
+    for(let j=0;j<n;j++){const c=P[j],nx=P[(j+1)%n],mm=mid(c,nx);ctx.quadraticCurveTo(c[0],c[1],mm[0],mm[1]);}
+    ctx.closePath();}
+  function resampleClosed(P,count){
+    const n=P.length,cumulative=[0];
+    let total=0;
+    for(let j=0;j<n;j++){
+      const a=P[j],b=P[(j+1)%n];
+      total+=Math.hypot(b[0]-a[0],b[1]-a[1]);
+      cumulative.push(total);
+    }
+    if(total<1e-6)return P.slice();
+    const out=[];
+    let segment=0;
+    for(let j=0;j<count;j++){
+      const target=total*j/count;
+      while(segment<n-1&&cumulative[segment+1]<target)segment++;
+      const start=cumulative[segment],end=cumulative[segment+1];
+      const amount=end-start<1e-6?0:(target-start)/(end-start);
+      const a=P[segment],b=P[(segment+1)%n];
+      out.push([a[0]+(b[0]-a[0])*amount,a[1]+(b[1]-a[1])*amount]);
+    }
+    return out;
+  }
+  function smoothClosed(P,amount,passes){
+    if(amount<=0)return P;
+    const sourceCenter=P.reduce((sum,p)=>[sum[0]+p[0],sum[1]+p[1]],[0,0]).map(v=>v/P.length);
+    const sourceRadius=P.reduce((sum,p)=>sum+Math.hypot(p[0]-sourceCenter[0],p[1]-sourceCenter[1]),0)/P.length;
+    let out=P.map(p=>[p[0],p[1]]);
+    for(let pass=0;pass<passes;pass++){
+      out=out.map((p,j)=>{
+        const prev=out[(j+out.length-1)%out.length],next=out[(j+1)%out.length];
+        return [
+          p[0]+((prev[0]+next[0])*0.5-p[0])*amount,
+          p[1]+((prev[1]+next[1])*0.5-p[1])*amount
+        ];
+      });
+    }
+    const center=out.reduce((sum,p)=>[sum[0]+p[0],sum[1]+p[1]],[0,0]).map(v=>v/out.length);
+    const radius=out.reduce((sum,p)=>sum+Math.hypot(p[0]-center[0],p[1]-center[1]),0)/out.length;
+    const scale=radius>1e-6?sourceRadius/radius:1;
+    return out.map(p=>[
+      sourceCenter[0]+(p[0]-center[0])*scale,
+      sourceCenter[1]+(p[1]-center[1])*scale
+    ]);
+  }
+  const SH=RAW_SH.map(shape=>({outer:resampleClosed(shape.outer,NP)}));
+  function draw(now){
+    requestAnimationFrame(draw);
+    if(!visible||!W||!H)return;
+    const HOLD=0.6,MORPH=1.0,SEG=HOLD+MORPH,TOTAL=M*SEG;
+    const t=reduce?0:(now-animationStart)/1000;
+    let tt=(((t+START_INDEX*SEG)%TOTAL)+TOTAL)%TOTAL, i=Math.floor(tt/SEG), local=tt-i*SEG;
+    let k=local<HOLD?0:easeIO((local-HOLD)/MORPH);
+    const A=SH[i],B=SH[(i+1)%M];
+    const fig=mixC(figCol(i),figCol(i+1),k), bg=mixC(bgCol(i),bgCol(i+1),k);
+    const rot=lerp(ROT[i],ROT[(i+1)%M],k)+Math.sin(t*0.55)*0.015;
+    const S=Math.min(W,H)*0.34*(1+Math.sin(t*0.8)*0.01);
+    const co=Math.cos(rot),si=Math.sin(rot);
+    ctx.fillStyle='#FF5BBB';ctx.fillRect(0,0,W,H);
+    const P=new Array(NP);
+    const alignLaptopPoints=ORDER[i]==='laptop'||ORDER[(i+1)%M]==='laptop';   // 노트북이 낀 모든 전환에 강한 스무딩
+    for(let j=0;j<NP;j++){
+      const x=lerp(A.outer[j][0],B.outer[j][0],k),y=lerp(A.outer[j][1],B.outer[j][1],k);
+      P[j]=[cx+(x*co-y*si)*S,cy+(x*si+y*co)*S];}
+    const middleWeight=alignLaptopPoints?Math.sin(Math.PI*k):0;
+    // 항상 외곽선을 부드럽게(잔물결/울퉁불퉁 제거) + 노트북 정렬 순간엔 더 강하게
+    const smoothAmt=Math.max(0.17,0.24*middleWeight);
+    const renderPath=resampleClosed(smoothClosed(P,smoothAmt,4),NP);
+    const grd=ctx.createLinearGradient(cx-S,cy-S,cx+S,cy+S);
+    grd.addColorStop(0,'rgba(255,255,255,1)');
+    grd.addColorStop(1,'rgba(255,255,255,0.55)');
+    ctx.beginPath();subpath(renderPath);ctx.fillStyle=grd;ctx.fill();
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+
+<!-- ══ 15. 스킵하다 스며들다 BANNER ══ -->
+<section class="sec-skip-banner fi">
+  <p class="skip-banner-t">스킵하다&nbsp;<span class="dim">스며들다</span></p>
+  <p class="skip-banner-desc">
+    각 스키퍼블의 눈높이에 맞춰 완벽하게 변신하는 것<br>
+    그 어떤 공간에 가더라도 마치 처음부터 그곳에 있었던 것처럼<br>
+    자연스럽게 동화되는 스킵만의 영리한 공간 이동 방식, 모핑
+  </p>
+</section>
+
+<!-- ══ 16. MORPHING DETAIL (로마에 가면) ══ -->
+<section class="sec-morphing-detail">
+  <div class="morphing-detail-row">
+    <div class="morphing-detail-left fi">
+      <p class="morphing-detail-h">
+        로마에 가면<br>로바 법을 따르듯, 모핑
+      </p>
+      <p class="morphing-detail-p">
+        스킵은 세상 모든 기기에 무작정 모핑하지 않습니다.<br>
+        당신의 움직임을 미리 읽고, 다음에 도착할 그 공간에만<br>
+        정확하게 패킷을 던지는 물수제비 스페셜리스트죠.
+      </p>
+    </div>
+    <div class="morphing-detail-right">
+      <div class="morphing-img-card fi d1">
+        <span class="mic-label">Principle 01</span>
+        <p class="mic-title">연계준비 감지</p>
+        <p class="mic-body">사용자가 특정 목적을 수행하기 직전의 전조 행동을 포착합니다.</p>
+      </div>
+      <div class="morphing-img-card fi d2">
+        <span class="mic-label">Principle 02</span>
+        <p class="mic-title">명시적 움직임 라우팅</p>
+        <p class="mic-body">유추가 필요 없는, 겉으로 명확하게 드러나는 행동적 확신을 읽어냅니다.&nbsp;</p>
+      </div>
+      <div class="morphing-img-card fi d3">
+        <span class="mic-label">Principle 03</span>
+        <p class="mic-title">비명시적 움직임 동적 보정</p>
+        <p class="mic-body">명확한 신호가 없을 때도&nbsp;표정, 제스처, 생체 신호를 통해 다음 행동을 추론합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="fi">
+  <p class="ft-logo">Skeep</p>
+  <p class="ft-tag">Skip the intro, Keep the flow</p>
+  <p class="ft-meta">Skeep Intelligence System™ &nbsp;·&nbsp; 2026 MEP UX · Samsung<br>가장 매끄러운 경험은 가장 치밀한 설계에서 완성됩니다.</p>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.fi').forEach(el => io.observe(el));
+
+  // Fade each of the first two sticky scenes in once roughly 45% of the
+  // viewport has been occupied by that scene.
+  const stickyIntroScenes = document.querySelectorAll('.keepon-title-scene, .keepon-panel-page');
+  const stickyIntroIo = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-entered');
+      stickyIntroIo.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -45% 0px', threshold: 0 });
+  stickyIntroScenes.forEach(scene => stickyIntroIo.observe(scene));
+
+  // delayed dissolve for the dot-sphere section (reveal when centered)
+  const aiSphereSec = document.getElementById('aiSphereSec');
+  if (aiSphereSec) {
+    const io2 = new IntersectionObserver((es) => {
+      if (es[0].isIntersecting) { aiSphereSec.classList.add('vis'); io2.disconnect(); }
+    }, { rootMargin: '0px 0px -90% 0px', threshold: 0 });
+    io2.observe(aiSphereSec);
+  }
+
+  // Reveal the first three scenes only when their visual center reaches
+  // the viewport center, then let each sticky wrapper hold the scene.
+  const centerRevealItems = [...document.querySelectorAll('[data-center-reveal]')];
+  if (centerRevealItems.length) {
+    let centerRevealTicking = false;
+
+    const updateCenterReveals = () => {
+      centerRevealTicking = false;
+      const viewportCenter = window.innerHeight * .54;
+      centerRevealItems.forEach(item => {
+        if (item.classList.contains('is-centered')) return;
+        const rect = item.getBoundingClientRect();
+        const itemCenter = rect.top + rect.height / 2;
+        if (itemCenter <= viewportCenter && rect.bottom > 0) {
+          item.classList.add('is-centered');
+        }
+      });
+    };
+
+    const requestCenterRevealUpdate = () => {
+      if (centerRevealTicking) return;
+      centerRevealTicking = true;
+      requestAnimationFrame(updateCenterReveals);
+    };
+
+    updateCenterReveals();
+    window.addEventListener('scroll', requestCenterRevealUpdate, { passive: true });
+    window.addEventListener('resize', requestCenterRevealUpdate);
+  }
+
+  const keeponTitle = document.getElementById('keeponTitle');
+  if (keeponTitle) {
+    const typedEl = keeponTitle.querySelector('.keepon-typed');
+    const fullText = "Keep on Keepin' on";
+    let started = false;
+    let i = 0;
+    let deleting = false;
+
+    const step = () => {
+      typedEl.textContent = fullText.slice(0, i);
+      let delay = deleting ? 40 : 55;
+      if (!deleting && i === fullText.length) {
+        deleting = true;
+        delay = 1100;
+      } else if (deleting && i === 0) {
+        deleting = false;
+        delay = 500;
+      } else {
+        i += deleting ? -1 : 1;
+      }
+      setTimeout(step, delay);
+    };
+
+    const typeIo = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !started) {
+          started = true;
+          step();
+          typeIo.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    typeIo.observe(keeponTitle);
+  }
+
+  const chainTrack = document.getElementById('keeponChainTrack');
+  if (chainTrack) {
+    const itemHeight = 60;
+    const visibleRows = 5;
+    const centerRow = 2;
+    const cycleLen = 5;
+    const items = [...chainTrack.children];
+    let chainIdx = 2;
+
+    function applyChainOpacity() {
+      items.forEach((el, i) => {
+        const dist = Math.abs(i - chainIdx);
+        if (dist === 0) el.style.opacity = 1;
+        else if (dist === 1) el.style.opacity = 0.45;
+        else if (dist === 2) el.style.opacity = 0.18;
+        else el.style.opacity = 0;
+      });
+    }
+    function applyChainWeight() {
+      items.forEach((el, i) => {
+        el.style.fontWeight = i === chainIdx ? 700 : 400;
+      });
+    }
+    function applyChainTransform() {
+      chainTrack.style.transform = `translateY(-${(chainIdx - centerRow) * itemHeight}px)`;
+    }
+
+    chainTrack.style.transition = 'none';
+    applyChainTransform();
+    applyChainOpacity();
+    applyChainWeight();
+    void chainTrack.offsetHeight;
+    chainTrack.style.transition = '';
+
+    function snapChainBack() {
+      chainTrack.style.transition = 'none';
+      chainIdx = 2;
+      applyChainTransform();
+      applyChainOpacity();
+      applyChainWeight();
+      void chainTrack.offsetHeight;
+      chainTrack.style.transition = '';
+    }
+    setInterval(() => {
+      // safety: if a wrap was ever missed (e.g. tab backgrounded), never run off
+      if (chainIdx >= 2 + cycleLen) snapChainBack();
+      chainIdx++;
+      applyChainTransform();
+      applyChainOpacity();
+      applyChainWeight();
+      // deterministic wrap that does not depend on transitionend firing
+      if (chainIdx === 2 + cycleLen) {
+        setTimeout(snapChainBack, 600);
+      }
+    }, 1600);
+  }
+
+  const mlCarousel = document.querySelector('[data-ml-carousel]');
+  if (mlCarousel) {
+    const mlWords = ['매핑', 'マッピング', 'Mapping', '映射'];
+    const mlBgByWord = {
+      '매핑': '#D0ECFF',
+      'マッピング': '#FFD0E3',
+      'Mapping': '#FFF3D1',
+      '映射': '#D0FFFD',
+    };
+    const mlSlots = {
+      left: mlCarousel.querySelector('[data-ml-slot="left"]'),
+      center: mlCarousel.querySelector('[data-ml-slot="center"]'),
+      right: mlCarousel.querySelector('[data-ml-slot="right"]'),
+    };
+    let mlIndex = 0;
+    let mlMoving = false;
+    const setMappingBg = (idx) => {
+      const word = mlWords[idx % mlWords.length];
+      const bg = mlBgByWord[word];
+      mlCarousel.closest('.sec-multilang')?.style.setProperty('--ml-bg', bg);
+    };
+
+    function setMappingText() {
+      mlSlots.left.textContent = mlWords[(mlIndex - 1 + mlWords.length) % mlWords.length];
+      mlSlots.center.textContent = mlWords[mlIndex % mlWords.length];
+      mlSlots.right.textContent = mlWords[(mlIndex + 1) % mlWords.length];
+      setMappingBg(mlIndex);
+    }
+
+    function resetMappingSlots() {
+      mlCarousel.classList.add('is-resetting');
+      mlSlots.left.className = 'ml-slot is-left';
+      mlSlots.center.className = 'ml-slot is-center';
+      mlSlots.right.className = 'ml-slot is-right';
+      setMappingText();
+      void mlCarousel.offsetHeight;
+      mlCarousel.classList.remove('is-resetting');
+    }
+
+    function advanceMappingWords() {
+      if (mlMoving) return;
+      mlMoving = true;
+      setMappingBg(mlIndex + 1);
+
+      const next = document.createElement('span');
+      next.className = 'ml-slot is-out-right';
+      next.textContent = mlWords[(mlIndex + 2) % mlWords.length];
+      next.setAttribute('aria-hidden', 'true');
+      mlCarousel.appendChild(next);
+
+      requestAnimationFrame(() => {
+        mlSlots.left.className = 'ml-slot is-out-left';
+        mlSlots.center.className = 'ml-slot is-left';
+        mlSlots.right.className = 'ml-slot is-center';
+        next.className = 'ml-slot is-right';
+      });
+
+      window.setTimeout(() => {
+        mlIndex = (mlIndex + 1) % mlWords.length;
+        next.remove();
+        resetMappingSlots();
+        mlMoving = false;
+      }, 860);
+    }
+
+    resetMappingSlots();
+    window.setInterval(advanceMappingWords, 1850);
+  }
+
+  const wordScene = document.querySelector('[data-word-scene]');
+  if (wordScene) {
+    const wave = wordScene.querySelector('[data-parsing-wave]');
+    const introSection = document.querySelector('[data-parsing-intro]');
+    const targetBig = document.querySelector('[data-parsing-big]');
+    const targetNum = document.querySelector('[data-parsing-num]');
+    const targetDesc = document.querySelector('[data-parsing-desc]');
+    const startFontSize = parseFloat(getComputedStyle(wave).fontSize);
+
+    // "01" and the description are real, normally-flowing elements — they
+    // only reach their final on-screen spot through actual scrolling, at a
+    // strict 1:1 pace, and can't be nudged ahead of that like the wave's
+    // font-size can. Pinning them to a computed fixed position too (same
+    // trick as the wave) keeps everything arriving together instead of the
+    // wave finishing early while these two are still scrolling up from
+    // below.
+    // Cache each rider's natural, undisturbed position relative to the
+    // intro section's own top edge *before* ever touching position:fixed —
+    // once fixed, getBoundingClientRect() would just report the fixed
+    // coordinates back, which would corrupt the target on every later call.
+    // This offset is otherwise constant regardless of scroll position,
+    // since both elements move together in normal document flow.
+    function makeFixedRider(el) {
+      const home = document.createElement('div');
+      home.setAttribute('aria-hidden', 'true');
+      home.style.display = 'none';
+      el.parentNode.insertBefore(home, el);
+      const introRect0 = introSection.getBoundingClientRect();
+      const rect0 = el.getBoundingClientRect();
+      return { home, left: rect0.left, topOffset: rect0.top - introRect0.top, w: rect0.width, h: el.offsetHeight };
+    }
+    const numRider = makeFixedRider(targetNum);
+    const descRider = makeFixedRider(targetDesc);
+    const waveHome = document.createComment('wave-home');
+    wave.parentNode.insertBefore(waveHome, wave);
+
+    let wsTicking = false;
+    const clamp01 = (v) => Math.max(0, Math.min(1, v));
+    const smoothstep = (e0, e1, x) => {
+      const t = clamp01((x - e0) / (e1 - e0));
+      return t * t * (3 - 2 * t);
+    };
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    function rideAlong(el, rider, active, t) {
+      if (!active) {
+        if (el.parentNode !== rider.home.parentNode) {
+          rider.home.parentNode.insertBefore(el, rider.home);
+        }
+        rider.home.style.display = 'none';
+        el.style.position = '';
+        el.style.left = '';
+        el.style.top = '';
+        el.style.margin = '';
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(16px)';
+        return;
+      }
+      rider.home.style.display = 'block';
+      rider.home.style.width = `${rider.w}px`;
+      rider.home.style.height = `${rider.h}px`;
+      if (el.parentNode !== document.body) {
+        document.body.appendChild(el);
+      }
+      // topOffset is where this element sits once introRect.top reaches 0 —
+      // a fixed landing spot, not something that should keep tracking the
+      // still-moving live scroll position.
+      el.style.position = 'fixed';
+      el.style.margin = '0';
+      el.style.left = `${rider.left}px`;
+      el.style.top = `${rider.topOffset}px`;
+      el.style.opacity = t;
+      el.style.transform = `translateY(${(1 - t) * 16}px)`;
+    }
+
+    function updateWordScene() {
+      wsTicking = false;
+      // Drive everything off the intro heading's live position instead of
+      // the wordScene's own internal scroll range. The sticky pin releases
+      // well before the intro section actually reaches the top of the
+      // screen (there's still ~1 viewport of normal scrolling left), so
+      // timing the morph and the "01"/description reveal off the same
+      // wordScene-relative progress made them finish at different real
+      // scroll positions and drift out of sync with each other.
+      const introRect = introSection.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const morphP = smoothstep(vh * 1.7, 0, introRect.top);
+      const revealP = smoothstep(vh * 1.3, 0, introRect.top);
+      const arrived = introRect.top <= 2;
+
+      wave.classList.toggle('is-settled', morphP > 0.02);
+      rideAlong(targetNum, numRider, revealP > 0 && !arrived, revealP);
+      rideAlong(targetDesc, descRider, revealP > 0 && !arrived, revealP);
+      if (arrived) {
+        targetNum.style.opacity = 1;
+        targetNum.style.transform = 'none';
+        targetDesc.style.opacity = 1;
+        targetDesc.style.transform = 'none';
+      }
+
+      if (morphP <= 0) {
+        wave.classList.remove('is-morphing');
+        if (wave.parentNode !== waveHome.parentNode) {
+          waveHome.parentNode.insertBefore(wave, waveHome);
+        }
+        wave.style.position = '';
+        wave.style.left = '';
+        wave.style.top = '';
+        wave.style.transform = '';
+        wave.style.fontSize = '';
+        wave.style.opacity = '';
+        targetBig.style.opacity = 0;
+      } else {
+        wave.classList.add('is-morphing');
+        // The sticky's own overflow:hidden clips a fixed-position child once
+        // its ancestor has scrolled away, so move the wave to <body> for the
+        // duration of the morph.
+        if (wave.parentNode !== document.body) {
+          document.body.appendChild(wave);
+        }
+        // Measure the real heading live so this stays correct at any
+        // viewport size: its offset from the intro section's own top edge
+        // never changes with scroll, so that offset tells us exactly where
+        // it will sit once the intro section reaches the top of the screen.
+        const bigRect = targetBig.getBoundingClientRect();
+        const bigFontSize = parseFloat(getComputedStyle(targetBig).fontSize);
+        const targetCenterX = bigRect.left + bigRect.width / 2;
+        const targetCenterY = (bigRect.top - introRect.top) + bigRect.height / 2;
+
+        const cx = lerp(window.innerWidth / 2, targetCenterX, morphP);
+        const cy = lerp(window.innerHeight / 2, targetCenterY, morphP);
+        const fs = lerp(startFontSize, bigFontSize, morphP);
+
+        wave.style.left = `${cx}px`;
+        wave.style.top = `${cy}px`;
+        wave.style.transform = 'translate(-50%, -50%)';
+        wave.style.fontSize = `${fs}px`;
+
+        // Only swap to the real static heading once it has actually
+        // scrolled into that same spot — swapping earlier (as soon as the
+        // morph's own progress hits 1) leaves a blank gap, since the real
+        // element can still be off-screen below at that point.
+        const handOff = morphP >= 0.999 && arrived;
+        wave.style.opacity = handOff ? 0 : 1;
+        targetBig.style.opacity = handOff ? 1 : 0;
+      }
+    }
+
+    function requestWordSceneUpdate() {
+      if (!wsTicking) { wsTicking = true; requestAnimationFrame(updateWordScene); }
+    }
+
+    updateWordScene();
+    window.addEventListener('scroll', requestWordSceneUpdate, { passive: true });
+    window.addEventListener('resize', requestWordSceneUpdate);
+  }
+
+  const logicTransition = document.querySelector('[data-logic-transition]');
+  if (logicTransition) {
+    const morphCard   = logicTransition.querySelector('[data-morph-card]');
+    const morphPhotoA = logicTransition.querySelector('[data-morph-photo-a]');
+    const morphFinal  = logicTransition.querySelector('[data-morph-final]');
+    const morphPink   = logicTransition.querySelector('[data-morph-pink]');
+    const morphTextA  = logicTransition.querySelector('[data-morph-text-a]');
+    const morphTextB  = logicTransition.querySelector('[data-morph-text-b]');
+    const leftVideoEl = logicTransition.querySelector('.two-left-video');
+    const leftParaEl  = logicTransition.querySelector('.two-left-p');
+    const stickyEl    = logicTransition.querySelector('.logic-transition-sticky');
+    const logicCards  = logicTransition.querySelector('[data-logic-cards]');
+
+    let logicTicking = false;
+    const clampNum = (v, min, max) => Math.min(max, Math.max(min, v));
+    const clamp = (v, min = 0, max = 1) => clampNum(v, min, max);
+    const smoothstep = (edge0, edge1, x) => {
+      const t = clamp((x - edge0) / (edge1 - edge0));
+      return t * t * (3 - 2 * t);
+    };
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    function updateLogicTransition() {
+      logicTicking = false;
+      const rect = logicTransition.getBoundingClientRect();
+      const scrollable = Math.max(1, logicTransition.offsetHeight - window.innerHeight);
+      const p = clamp(-rect.top / scrollable);
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const edgePad = clampNum(vw * 0.083, 24, 160);
+
+      const smallW = clampNum(vw * 0.573, 420, 1100);
+      const smallH = clampNum(vh * 0.80, 380, 900);
+      const small = { top: (vh - smallH) / 2, left: (vw - smallW) / 2, width: smallW, height: smallH, radius: 70 };
+      const full  = { top: 0, left: 0, width: vw, height: vh, radius: 0 };
+      const rightPanelW = clampNum(vw * 0.36, 480, 640);
+      const finalPadX = clampNum(vw * 0.0415, 54, 80);
+      const finalGap = clampNum(vw * 0.011, 10, 18);
+      const cardsHeight = clampNum(vh * 0.80, 640, 790);
+      const cardTop = clampNum((vh - cardsHeight) / 2, 34, 260);
+      const finalLeft = {
+        top: 0,
+        left: 0,
+        width: vw - rightPanelW,
+        height: vh,
+        radius: 0
+      };
+
+      const grow = smoothstep(0.14, 0.48, p);
+      const dock = smoothstep(0.54, 0.74, p);
+
+      const grownTop = lerp(small.top, full.top, grow);
+      const grownLeft = lerp(small.left, full.left, grow);
+      const grownWidth = lerp(small.width, full.width, grow);
+      const grownHeight = lerp(small.height, full.height, grow);
+      const grownRadius = lerp(small.radius, full.radius, grow);
+
+      const top    = lerp(grownTop, finalLeft.top, dock);
+      const left   = lerp(grownLeft, finalLeft.left, dock);
+      const width  = lerp(grownWidth, finalLeft.width, dock);
+      const height = lerp(grownHeight, finalLeft.height, dock);
+      const radius = lerp(grownRadius, finalLeft.radius, dock);
+
+      morphCard.style.top = `${top}px`;
+      morphCard.style.left = `${left}px`;
+      morphCard.style.width = `${width}px`;
+      morphCard.style.height = `${height}px`;
+      morphCard.style.borderRadius = `${radius}px`;
+
+      const textAOut = 1 - smoothstep(0.14, 0.24, p);
+      const pinkIn   = smoothstep(0.20, 0.46, p);
+      const textBIn  = smoothstep(0.58, 0.72, p);
+      const finalPhotoIn = smoothstep(0.50, 0.66, p);
+      const stickyPink = smoothstep(0.38, 0.52, p);
+      const itemProgress = [
+        smoothstep(0.70, 0.78, p),
+        smoothstep(0.74, 0.82, p),
+        smoothstep(0.78, 0.86, p),
+      ];
+
+      morphPhotoA.style.opacity = textAOut.toFixed(3);
+      morphPink.style.opacity = pinkIn.toFixed(3);
+      morphFinal.style.opacity = finalPhotoIn.toFixed(3);
+      morphTextA.style.opacity = textAOut.toFixed(3);
+      morphTextB.style.opacity = textBIn.toFixed(3);
+      morphCard.style.setProperty('--morph-overlay-opacity', (1 - smoothstep(0.50, 0.66, p)).toFixed(3));
+
+      logicTransition.style.setProperty('--pink-opacity', stickyPink.toFixed(3));
+      itemProgress.forEach((v, i) => {
+        logicTransition.style.setProperty(`--logic-item-${i + 2}-opacity`, v.toFixed(3));
+        logicTransition.style.setProperty(`--logic-item-${i + 2}-y`, `${((1 - v) * 40).toFixed(2)}px`);
+      });
+
+      const stacked = vw <= 1100;
+      logicCards.style.flexDirection = stacked ? 'row' : 'column';
+      logicCards.style.gap = stacked ? '12px' : `${finalGap}px`;
+      if (stacked) {
+        // .morph-text is normally pinned to the card's bottom edge, which
+        // would put it directly behind a bottom card strip. Anchor the card
+        // strip to the true bottom, then push the text up to sit above it
+        // instead of overlapping.
+        const pad = edgePad;
+        const stripH = clampNum(vh * 0.30, 200, 320);
+        morphTextB.style.top = 'auto';
+        morphTextB.style.bottom = `${stripH + 32}px`;
+        logicCards.style.top = 'auto';
+        logicCards.style.bottom = `${pad}px`;
+        logicCards.style.left = `${pad}px`;
+        logicCards.style.width = `${vw - pad * 2}px`;
+        logicCards.style.height = `${stripH}px`;
+      } else {
+        morphTextB.style.top = '0';
+        morphTextB.style.bottom = '0';
+        // Align the cards column to the left content's top/bottom edges
+        // (domino video top → body-copy bottom) so both columns end evenly.
+        let alignTop = cardTop, alignHeight = cardsHeight;
+        if (leftVideoEl && leftParaEl && stickyEl) {
+          const stickyTop = stickyEl.getBoundingClientRect().top;
+          const vTop = leftVideoEl.getBoundingClientRect().top - stickyTop;
+          const pBot = leftParaEl.getBoundingClientRect().bottom - stickyTop;
+          if (pBot > vTop) { alignTop = vTop; alignHeight = (pBot - vTop) * 0.93; }
+        }
+        logicCards.style.top = `${alignTop}px`;
+        logicCards.style.bottom = 'auto';
+        logicCards.style.left = `${finalLeft.width + finalPadX}px`;
+        logicCards.style.width = `${rightPanelW - finalPadX * 2}px`;
+        logicCards.style.height = `${alignHeight}px`;
+      }
+    }
+
+    function requestLogicTransitionUpdate() {
+      if (!logicTicking) {
+        logicTicking = true;
+        requestAnimationFrame(updateLogicTransition);
+      }
+    }
+
+    updateLogicTransition();
+    window.addEventListener('scroll', requestLogicTransitionUpdate, { passive: true });
+    window.addEventListener('resize', requestLogicTransitionUpdate);
+  }
+</script>
+</body>
+</html>
