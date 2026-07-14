@@ -294,7 +294,7 @@ export function Hub() {
     <div className={styles.hub}>
       <header className={styles.header}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.logo} src={`${BASE_PATH}/brand/skeep-logo.png`} alt="skeep" />
+        <img className={styles.logo} src={`${BASE_PATH}/brand/skeep-logo-white.png`} alt="skeep" />
         <div className={styles.controls}>
           <button type="button" className={styles.langPill}>
             English

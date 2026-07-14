@@ -20,11 +20,9 @@
 }
 
 .logo {
-  height: clamp(48px, 6vw, 88px);
+  height: clamp(26px, 2.8vw, 42px);
   width: auto;
   display: block;
-  /* 로고 이미지의 좌측 여백(글로우 패딩)을 상쇄해 왼쪽 정렬 */
-  margin-left: clamp(-34px, -2.4vw, -18px);
 }
 
 .controls {
