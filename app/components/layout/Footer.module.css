@@ -88,10 +88,10 @@
 
 .copyright {
   color: #8390a2;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: 0;
+  line-height: normal;
+  letter-spacing: -0.03em;
 }
 
 @media (max-width: 1180px) {
