@@ -35,6 +35,18 @@ function easeInCubic(t: number) {
   return t * t * t;
 }
 
+// Stable references (not recreated per render) — StatTicker's effect keys
+// off `randomize`, so an inline arrow here would restart the tick loop on
+// every parent re-render (e.g. each step-cycle tick) and the number would
+// never settle.
+function randomizePercent() {
+  return `${Math.floor(Math.random() * 100)}%`;
+}
+
+function randomizeDigit() {
+  return `${Math.floor(Math.random() * 10)}`;
+}
+
 // Rapidly cycles random values before settling on the real one, like an
 // odometer/slot-machine reel — the tick interval grows over time so it
 // visibly decelerates into the landing value instead of stopping abruptly.
@@ -128,7 +140,7 @@ export function NegotiationDiagram() {
                   <StatTicker
                     trigger={inView && active === 0}
                     finalText="90%"
-                    randomize={() => `${Math.floor(Math.random() * 100)}%`}
+                    randomize={randomizePercent}
                     className={styles.statTickerCnp}
                   />
                 </>
@@ -137,7 +149,7 @@ export function NegotiationDiagram() {
                 <StatTicker
                   trigger={inView && active === 1}
                   finalText="0"
-                  randomize={() => `${Math.floor(Math.random() * 10)}`}
+                  randomize={randomizeDigit}
                   className={styles.statTickerDcop}
                 />
               )}
