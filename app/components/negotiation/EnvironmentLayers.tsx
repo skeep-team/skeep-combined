@@ -39,10 +39,13 @@ export function EnvironmentLayers() {
       onMouseLeave={() => setCursorVariant("default")}
     >
       <Reveal className={styles.textBlock}>
-        <h2 className={styles.heading}>
-          주력환경
-          <br />: Passive Layer
-        </h2>
+        <div className={styles.headingGroup}>
+          <p className={styles.eyebrow}>Environment States</p>
+          <h2 className={styles.heading}>
+            환경 활성화
+            <br />: Skeep on
+          </h2>
+        </div>
         <p className={styles.body}>
           사용자가 현재 상호작용 중인 환경입니다.
           <br />
