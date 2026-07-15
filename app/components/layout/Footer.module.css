@@ -31,10 +31,10 @@
 .headline {
   color: #000;
   font-family: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, var(--font-pretendard), sans-serif;
-  font-size: 56px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0;
+  font-size: 52px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.03em;
   white-space: nowrap;
 }
 
@@ -108,7 +108,7 @@
   }
 
   .headline {
-    font-size: clamp(40px, 7vw, 56px);
+    font-size: clamp(40px, 7vw, 52px);
     white-space: normal;
   }
 
