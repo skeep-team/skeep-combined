@@ -34,7 +34,7 @@
     items.map(function (_, index) { return '<span class="skeep-site-index__marker' + (index === activeIndex ? ' is-active' : '') + '"></span>'; }).join(''),
     '</span></button>',
     '<div class="skeep-site-index__expanded" aria-hidden="true">',
-    '<div class="skeep-site-index__header"><button class="skeep-site-index__title" type="button" aria-label="페이지 인덱스 닫기">인덱스</button></div>',
+    '<div class="skeep-site-index__header"><a class="skeep-site-index__title" href="' + basePath + '/" aria-label="메인 인덱스로 이동">인덱스</a></div>',
     '<div class="skeep-site-index__divider" aria-hidden="true"></div>',
     '<ul class="skeep-site-index__list">',
     items.map(function (item, index) {
@@ -49,7 +49,6 @@
 
   var compact = nav.querySelector('.skeep-site-index__compact');
   var expanded = nav.querySelector('.skeep-site-index__expanded');
-  var closeButton = nav.querySelector('.skeep-site-index__title');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   var scrollThreshold = Math.min(180, Math.max(72, window.innerHeight * .12));
   var open = false;
@@ -83,7 +82,6 @@
   }
 
   compact.addEventListener('click', function () { setOpen(true, false); });
-  closeButton.addEventListener('click', function () { setOpen(false, true); });
   nav.addEventListener('click', function (event) {
     if (event.target.closest('[aria-disabled="true"]')) event.preventDefault();
   });
