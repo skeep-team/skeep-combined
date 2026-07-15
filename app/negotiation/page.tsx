@@ -7,6 +7,7 @@ import { MoreStory } from "../components/negotiation/MoreStory";
 import { NegotiationDiagram } from "../components/negotiation/NegotiationDiagram";
 import { NegotiationPillars } from "../components/negotiation/NegotiationPillars";
 import { ProtectionPrinciples } from "../components/negotiation/ProtectionPrinciples";
+import { Footer } from "../components/layout/Footer";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -29,6 +30,7 @@ export default function NegotiationPage() {
       <MoreStory />
       <NegotiationDiagram />
       <ProtectionPrinciples />
+      <Footer />
     </main>
   );
 }

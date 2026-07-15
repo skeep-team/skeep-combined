@@ -1519,6 +1519,43 @@
       }
     }
 
+    /* ── FOOTER ── */
+    .site-footer {
+      background: #fff; width: 100%; min-height: 800px;
+      padding: 86px var(--edge-padding) 90px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
+    .footer-headline {
+      color: #000; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", sans-serif;
+      font-size: 56px; font-weight: 500; line-height: 1.2; letter-spacing: 0; white-space: nowrap;
+    }
+    .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
+    .footer-group { width: 170px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-title { color: #8390a2; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
+    .footer-links { display: flex; flex-direction: column; gap: 12px; }
+    .footer-link {
+      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      color: #0e1825; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+    }
+    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-copy { color: #8390a2; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
+
+    @media (max-width: 1100px) {
+      .site-footer { min-height: 0; padding: 72px 80px 64px; gap: 96px; }
+      .footer-inner { flex-direction: column; gap: 56px; }
+      .footer-headline { font-size: clamp(40px, 7vw, 56px); white-space: normal; }
+      .footer-nav { width: 100%; justify-content: space-between; gap: 32px; }
+    }
+
+    @media (max-width: 760px) {
+      .site-footer { padding: 56px 24px 48px; gap: 72px; }
+      .footer-headline { font-size: 36px; }
+      .footer-nav { flex-direction: column; gap: 36px; }
+      .footer-group { width: 100%; }
+      .footer-link, .footer-title, .footer-copy { font-size: 16px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1754,6 +1791,44 @@
     </div>
   </div>
 </section>
+
+<footer class="site-footer fi">
+  <div class="footer-inner">
+    <p class="footer-headline">Skip the Intro<br>Keep the Flow</p>
+    <nav class="footer-nav" aria-label="Footer">
+      <div class="footer-group">
+        <p class="footer-title">About</p>
+        <div class="footer-links">
+          <a class="footer-link" href="index.html">SKEEP 소개</a>
+          <a class="footer-link" href="index.html">전시 웹사이트</a>
+          <a class="footer-link" href="index.html">자주 묻는 질문</a>
+          <a class="footer-link" href="index.html">팀 소개</a>
+        </div>
+      </div>
+      <div class="footer-group">
+        <p class="footer-title">Experience</p>
+        <div class="footer-links">
+          <a class="footer-link" href="saegyeodeutda.html">새겨듣다</a>
+          <a class="footer-link" href="smeureulda.html">스며들다</a>
+          <a class="footer-link" href="/skeep-combined/negotiation">조율하다</a>
+          <a class="footer-link" href="/skeep-combined/principles">빌려쓰다</a>
+          <a class="footer-link" href="/skeep-combined/service2">지켜주다</a>
+          <a class="footer-link" href="/skeep-combined/service3">기억하다</a>
+        </div>
+      </div>
+      <div class="footer-group">
+        <p class="footer-title">Skeepable</p>
+        <div class="footer-links">
+          <a class="footer-link" href="/skeep-combined/principles">장소 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">제품 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">서비스 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">비즈니스</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <p class="footer-copy">© 2026 SKEEP. All rights reserved.</p>
+</footer>
 
 <script>
   // Sensing/Input/Pause pill video: plays forward then backward (boomerang),

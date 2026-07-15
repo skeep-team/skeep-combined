@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "../components/layout/Footer";
 import { ContextSummary } from "../components/service2/ContextSummary";
 import { ImageTextCard } from "../components/service2/ImageTextCard";
 import { LeaveNothing } from "../components/service2/LeaveNothing";
@@ -23,6 +24,7 @@ export default function Service2Page() {
       <ResetSequence />
       <ContextSummary />
       <ImageTextCard />
+      <Footer />
     </main>
   );
 }

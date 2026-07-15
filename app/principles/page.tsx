@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "../components/layout/Footer";
 import { CTA } from "../components/sections/CTA";
 import { Detour } from "../components/sections/Detour";
 import { EnvironmentCollage } from "../components/sections/EnvironmentCollage";
@@ -99,6 +100,7 @@ export default function PrinciplesPage() {
       />
       <EnvironmentCollage />
       <CTA />
+      <Footer />
     </main>
   );
 }

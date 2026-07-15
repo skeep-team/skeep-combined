@@ -2606,13 +2606,26 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     /* ── FOOTER ──────────────────────────────────── */
-    footer {
-      background: #F4F8FC; width: 100%;
-      padding: clamp(56px, 8vw, 116px) var(--edge-padding); text-align: center;
+    .site-footer {
+      background: #fff; width: 100%; min-height: 800px;
+      padding: 86px var(--edge-padding) 90px;
+      display: flex; flex-direction: column; justify-content: space-between;
     }
-    .ft-logo { width: 188px; margin: 0 auto 18px; }
-    .ft-tag  { font-size: clamp(13px,1.4vw,24px); font-weight: 400; color: rgba(0,0,0,.55); margin-bottom: 48px; letter-spacing: -0.02em; }
-    .ft-meta { font-size: 13px; color: rgba(0,0,0,0.3); line-height: 2; letter-spacing: 0.01em; }
+    .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
+    .footer-headline {
+      color: #000; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", sans-serif;
+      font-size: 56px; font-weight: 500; line-height: 1.2; letter-spacing: 0; white-space: nowrap;
+    }
+    .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
+    .footer-group { width: 170px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-title { color: #8390a2; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
+    .footer-links { display: flex; flex-direction: column; gap: 12px; }
+    .footer-link {
+      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      color: #0e1825; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+    }
+    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-copy { color: #8390a2; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; }
 
     /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 1400px) {
@@ -2645,6 +2658,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
     }
     @media (max-width: 1100px) {
+      .site-footer { min-height: 0; padding-top: 72px; padding-bottom: 64px; gap: 96px; }
+      .footer-inner { flex-direction: column; gap: 56px; }
+      .footer-headline { font-size: clamp(40px, 7vw, 56px); white-space: normal; }
+      .footer-nav { width: 100%; justify-content: space-between; gap: 32px; }
       .phil-sticky { flex-direction: column; }
       .phil-left { flex: none; max-width: 100%; }
       .phil-media-row { flex: none; width: 100%; max-width: 620px; }
@@ -2712,6 +2729,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .phil-side-morph { width: min(100%, 460px); }
       .phil-card .blob-wrap { inset-bottom: 112px; }
       .phil-card .card-footer { left: 28px; right: 28px; bottom: 30px; }
+      .site-footer { padding-top: 56px; padding-bottom: 48px; gap: 72px; }
+      .footer-headline { font-size: 36px; }
+      .footer-nav { flex-direction: column; gap: 36px; }
+      .footer-group { width: 100%; }
+      .footer-link, .footer-title, .footer-copy { font-size: 16px; }
       .phil-card .card-name { font-size: clamp(18px,2.8vw,42px); }
       .phil-card .card-sub { font-size: 16px; }
       .phil-card svg { width: 380px; height: auto; }
@@ -4408,10 +4430,42 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <!-- ═══════════════════════
   FOOTER
 ═══════════════════════ -->
-<footer class="fi">
-  <img class="ft-logo logo-img" src="assets/skeep-logo.svg" alt="Skeep">
-  <p class="ft-tag">Skip the intro, Keep the flow</p>
-  <p class="ft-meta">Skeep Intelligence System™ &nbsp;·&nbsp; 2026 MEP UX · Samsung<br>가장 매끄러운 경험은 가장 치밀한 설계에서 완성됩니다.</p>
+<footer class="site-footer fi">
+  <div class="footer-inner">
+    <p class="footer-headline">Skip the Intro<br>Keep the Flow</p>
+    <nav class="footer-nav" aria-label="Footer">
+      <div class="footer-group">
+        <p class="footer-title">About</p>
+        <div class="footer-links">
+          <a class="footer-link" href="index.html">SKEEP 소개</a>
+          <a class="footer-link" href="index.html">전시 웹사이트</a>
+          <a class="footer-link" href="index.html">자주 묻는 질문</a>
+          <a class="footer-link" href="index.html">팀 소개</a>
+        </div>
+      </div>
+      <div class="footer-group">
+        <p class="footer-title">Experience</p>
+        <div class="footer-links">
+          <a class="footer-link" href="saegyeodeutda.html">새겨듣다</a>
+          <a class="footer-link" href="smeureulda.html">스며들다</a>
+          <a class="footer-link" href="/skeep-combined/negotiation">조율하다</a>
+          <a class="footer-link" href="/skeep-combined/principles">빌려쓰다</a>
+          <a class="footer-link" href="/skeep-combined/service2">지켜주다</a>
+          <a class="footer-link" href="/skeep-combined/service3">기억하다</a>
+        </div>
+      </div>
+      <div class="footer-group">
+        <p class="footer-title">Skeepable</p>
+        <div class="footer-links">
+          <a class="footer-link" href="/skeep-combined/principles">장소 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">제품 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">서비스 찾기</a>
+          <a class="footer-link" href="/skeep-combined/principles">비즈니스</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <p class="footer-copy">© 2026 SKEEP. All rights reserved.</p>
 </footer>
 
 <script>

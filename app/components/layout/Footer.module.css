@@ -1,0 +1,135 @@
+.footer {
+  width: 100%;
+  min-height: 800px;
+  background: #fff;
+  padding: 86px var(--edge-padding) 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.inner {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(64px, 10vw, 160px);
+}
+
+.headline {
+  color: #000;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", var(--font-pretendard), sans-serif;
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(56px, 5.2vw, 100px);
+}
+
+.group {
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.title {
+  color: #8390a2;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.link {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #0e1825;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.link::after {
+  content: "↗";
+  color: #8390a2;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.copyright {
+  color: #8390a2;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+@media (max-width: 1180px) {
+  .footer {
+    min-height: 0;
+    padding-top: 72px;
+    padding-bottom: 64px;
+    gap: 96px;
+  }
+
+  .inner {
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .headline {
+    font-size: clamp(40px, 7vw, 56px);
+    white-space: normal;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 720px) {
+  .footer {
+    padding-top: 56px;
+    padding-bottom: 48px;
+    gap: 72px;
+  }
+
+  .headline {
+    font-size: 36px;
+  }
+
+  .nav {
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .group {
+    width: 100%;
+  }
+
+  .link,
+  .title,
+  .copyright {
+    font-size: 16px;
+  }
+}

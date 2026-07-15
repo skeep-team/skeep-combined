@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "../components/layout/Footer";
 import { StatementBlock } from "../components/service2/StatementBlock";
 import { ClosingCard } from "../components/service3/ClosingCard";
 import { GrowthCycle } from "../components/service3/GrowthCycle";
@@ -23,6 +24,7 @@ export default function Service3Page() {
       <GrowthCycle />
       <SkeepExperience />
       <ClosingCard />
+      <Footer />
     </main>
   );
 }
