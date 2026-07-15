@@ -8,6 +8,7 @@
   var basePath = path === '/skeep-combined' || path.indexOf('/skeep-combined/') === 0 ? '/skeep-combined' : '';
   var relativePath = basePath ? path.slice(basePath.length) || '/' : path;
   var items = [
+    { label: '인덱스', href: basePath + '/', match: ['/'] },
     { label: '오버뷰', href: basePath + '/pages/index.html', match: ['/pages/index.html'] },
     { label: '새겨듣다', href: basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
     { label: '스며들다', href: basePath + '/pages/smeureulda.html', match: ['/pages/smeureulda.html'] },
@@ -34,8 +35,6 @@
     items.map(function (_, index) { return '<span class="skeep-site-index__marker' + (index === activeIndex ? ' is-active' : '') + '"></span>'; }).join(''),
     '</span></button>',
     '<div class="skeep-site-index__expanded" aria-hidden="true">',
-    '<div class="skeep-site-index__header"><a class="skeep-site-index__title" href="' + basePath + '/" aria-label="메인 인덱스로 이동">인덱스</a></div>',
-    '<div class="skeep-site-index__divider" aria-hidden="true"></div>',
     '<ul class="skeep-site-index__list">',
     items.map(function (item, index) {
       var active = index === activeIndex ? ' is-active' : '';

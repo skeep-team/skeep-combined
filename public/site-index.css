@@ -43,7 +43,7 @@
 }
 
 .skeep-site-index.is-open {
-  width: min(132px, calc(100vw - 16px));
+  width: min(112px, calc(100vw - 16px));
   height: min(315px, calc(100dvh - 16px));
   border-radius: 16px;
 }
@@ -101,7 +101,7 @@
 .skeep-site-index__expanded {
   display: flex;
   flex-direction: column;
-  padding: clamp(13px, 1.9vh, 19px) 12px clamp(12px, 1.6vh, 17px);
+  padding: clamp(13px, 1.9vh, 19px) 10px clamp(12px, 1.6vh, 17px);
   opacity: 0;
   visibility: hidden;
   transform: translateX(8px);
@@ -113,35 +113,6 @@
   visibility: visible;
   transform: translateX(0);
   transition-delay: .2s, 0s, .18s;
-}
-
-.skeep-site-index__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 18px;
-}
-
-.skeep-site-index__title {
-  padding: 0;
-  border: 0;
-  margin: 0;
-  color: var(--index-ink);
-  background: transparent;
-  font-family: inherit;
-  font-size: clamp(12px, .82vw, 14px);
-  font-weight: 500;
-  letter-spacing: -.055em;
-  line-height: 1;
-  text-align: left;
-}
-
-.skeep-site-index__divider {
-  width: 100%;
-  height: 1px;
-  margin: 11px 0 10px;
-  border-radius: 999px;
-  background: rgba(129, 145, 165, .28);
 }
 
 .skeep-site-index__list {
@@ -189,16 +160,15 @@
 @media (max-height: 720px) {
   .skeep-site-index.is-open { height: min(315px, calc(100dvh - 12px)); }
   .skeep-site-index__expanded { padding-block: 12px; }
-  .skeep-site-index__divider { margin-block: 8px 6px; }
   .skeep-site-index__link { min-height: 17px; font-size: clamp(9px, 1.45vh, 11px); }
 }
 
 @media (max-width: 720px) {
   .skeep-site-index { right: 6px; width: 46px; height: min(180px, calc(100dvh - 16px)); border-radius: 15px; }
-  .skeep-site-index.is-open { width: min(128px, calc(100vw - 12px)); height: min(300px, calc(100dvh - 12px)); border-radius: 15px; }
+  .skeep-site-index.is-open { width: min(108px, calc(100vw - 12px)); height: min(300px, calc(100dvh - 12px)); border-radius: 15px; }
   .skeep-site-index__compact { padding: 14px 4px; }
   .skeep-site-index__marker { width: 19px; height: 2.5px; }
-  .skeep-site-index__expanded { padding-inline: 11px; }
+  .skeep-site-index__expanded { padding-inline: 9px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
