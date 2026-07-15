@@ -1,7 +1,7 @@
 .wrapper {
   height: 260vh;
   position: relative;
-  background: #0e1825;
+  background: #000000;
 }
 
 .section {
@@ -13,7 +13,7 @@
   justify-content: center;
   padding: clamp(56px, 8vw, 84px) var(--edge-padding);
   overflow: hidden;
-  background: #0e1825;
+  background: #000000;
 }
 
 .content {
@@ -42,7 +42,7 @@
 
 .body {
   margin-top: 28px;
-  max-width: 600px;
+  max-width: 760px;
   font-size: clamp(14px, 1.8vw, 24px);
   font-weight: 400;
   letter-spacing: -0.03em;
