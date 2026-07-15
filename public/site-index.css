@@ -127,6 +127,22 @@
   padding: 0;
 }
 
+.skeep-site-index__list > li:nth-child(2) {
+  position: relative;
+  margin-top: 3px;
+  padding-top: 7px;
+}
+
+.skeep-site-index__list > li:nth-child(2)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(129, 145, 165, .32);
+}
+
 .skeep-site-index__link {
   position: relative;
   display: flex;
