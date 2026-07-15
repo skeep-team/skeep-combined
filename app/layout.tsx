@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { CursorProvider } from "./components/ui/Cursor";
 import { pretendard } from "./fonts/pretendard";
 import "./globals.css";
@@ -13,10 +14,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
   return (
     <html lang="ko" className={pretendard.variable}>
+      <head>
+        <link rel="stylesheet" href={`${basePath}/site-index.css`} />
+      </head>
       <body>
         <CursorProvider>{children}</CursorProvider>
+        <Script src={`${basePath}/site-index.js`} strategy="afterInteractive" />
       </body>
     </html>
   );
