@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useMotionValueEvent, useScroll } from "framer-motion";
+import { DustText } from "../ui/DustText";
 import styles from "./LeaveNothing.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -88,7 +89,7 @@ export function LeaveNothing() {
           }}
         />
         <div ref={contentRef} className={styles.content}>
-          <p className={styles.leave}>LEAVE</p>
+          <DustText text="LEAVE" tag="p" className={styles.leave} playMode="enter" />
           <div className={styles.blobWrap}>
             <img
               className={styles.blobImage}
@@ -103,7 +104,7 @@ export function LeaveNothing() {
               style={{ opacity: rockOpacity }}
             />
           </div>
-          <p className={styles.nothing}>NOTHING.</p>
+          <DustText text="NOTHING." tag="p" className={styles.nothing} playMode="enter" />
           <p className={styles.body}>
             환경은 특정 순간에만 사용자를 알게 됩니다.
             <br />
