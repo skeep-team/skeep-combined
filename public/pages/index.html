@@ -2607,9 +2607,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── FOOTER ──────────────────────────────────── */
     .site-footer {
+      position: relative;
       background: #fff; width: 100%; min-height: 800px;
       padding: 86px var(--edge-padding) 90px;
       display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .site-footer::before {
+      content: ""; position: absolute; top: 40px; left: 50%;
+      width: min(1520px, calc(100% - 48px)); height: 1px;
+      background: #e2e8ef; transform: translateX(-50%);
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
@@ -2730,6 +2736,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .phil-card .blob-wrap { inset-bottom: 112px; }
       .phil-card .card-footer { left: 28px; right: 28px; bottom: 30px; }
       .site-footer { padding-top: 56px; padding-bottom: 48px; gap: 72px; }
+      .site-footer::before { top: 28px; }
       .footer-headline { font-size: 36px; }
       .footer-nav { flex-direction: column; gap: 36px; }
       .footer-group { width: 100%; }
