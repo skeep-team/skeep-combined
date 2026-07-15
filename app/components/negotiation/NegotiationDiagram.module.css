@@ -78,7 +78,7 @@
 .statTickerCnp {
   position: absolute;
   left: 46.42cqw;
-  top: 11.05cqw;
+  top: 12.8cqw;
   font-size: clamp(18px, 2.9cqw, 46px);
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -91,7 +91,7 @@
 .statTickerDcop {
   position: absolute;
   left: 39.87cqw;
-  top: 14.02cqw;
+  top: 17cqw;
   font-size: clamp(18px, 2.9cqw, 46px);
   font-weight: 600;
   letter-spacing: -0.03em;
