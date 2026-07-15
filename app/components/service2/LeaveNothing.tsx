@@ -20,8 +20,8 @@ export function LeaveNothing() {
     <div ref={wrapperRef} className={styles.wrapper}>
       <div className={styles.section}>
         <div className={styles.content}>
-          <DustText text="LEAVE" tag="p" className={styles.leave} progress={formProgress} />
-          <DustText text="NOTHING." tag="p" className={styles.nothing} progress={formProgress} />
+          <DustText text="LEAVE" tag="p" className={styles.leave} progress={formProgress} noise={260} />
+          <DustText text="NOTHING" tag="p" className={styles.nothing} progress={formProgress} noise={260} />
           <p className={styles.body}>
             환경은 특정 순간에만 사용자를 알게 됩니다.
             <br />
