@@ -6,14 +6,14 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 export function AnchorEnvironment() {
   return (
     <section className={styles.section}>
-      <Reveal className={styles.textBlock}>
-        <div className={styles.headingGroup}>
-          <p className={styles.eyebrow}>Environment States</p>
-          <h2 className={styles.heading}>
-            앵커 지정
-            <br />: Anchor on
-          </h2>
-        </div>
+      <Reveal className={styles.header}>
+        <p className={styles.eyebrow}>Environment States</p>
+      </Reveal>
+      <Reveal delay={0.05} className={styles.textBlock}>
+        <h2 className={styles.heading}>
+          앵커 지정
+          <br />: Anchor on
+        </h2>
         <p className={styles.body}>
           사용자가 소유한 환경을 앵커 환경으로 지정하면, 환경에 SKEEP을
           부여해 사용자의 규칙을 설정하고 관리할 수 있습니다. 만약 당신이
