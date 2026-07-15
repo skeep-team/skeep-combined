@@ -662,7 +662,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── 7. MIGRATABLE AGENT DETAIL ──────────────── */
     .sec-agent-detail {
-      background: #fff; width: 100%;
+      background: #000; width: 100%;
       height: 360vh;
       padding: 0;
       position: relative;
@@ -674,6 +674,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: sticky;
       top: 0;
       height: 100vh;
+      background: #000;
       display: flex;
       align-items: flex-start;
       padding: clamp(72px, 12vh, 160px) var(--edge-padding) 0;
@@ -683,6 +684,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       isolation: isolate;
     }
     .agent-bg-video {
+      display: none;
       position: absolute;
       inset: 0;
       width: 100%;
@@ -737,9 +739,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .agent-title {
       font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
-      color: #000;
+      color: #fff;
       background: none;
-      -webkit-text-fill-color: #000;
+      -webkit-text-fill-color: #fff;
       --agent-gradient-opacity: 1;
       --agent-black-opacity: 0;
       margin-bottom: clamp(12px, 1.6vw, 28px);
@@ -784,7 +786,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: -0.03em;
-      color: rgba(17,27,42,.76);
+      color: rgba(255,255,255,.74);
       width: max-content;
     }
     .agent-sub-line {
@@ -803,18 +805,54 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       will-change: opacity, transform;
     }
     .pill-sm {
-      background: #111; border-radius: 100px;
+      background: #fff; border-radius: 100px;
       padding: 12px 32px;
       width: 190px;
       font-size: 28px; font-weight: 600; line-height: 1.1;
-      letter-spacing: -0.03em; color: #fff;
+      letter-spacing: -0.03em; color: #111;
       border: 0;
       cursor: pointer;
       font-family: inherit;
       text-align: center;
       transition: background .2s ease, color .2s ease;
     }
-    .pill-sm.dim { background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.4); }
+    .pill-sm.dim { background: rgba(255,255,255,0.14); color: rgba(255,255,255,0.55); }
+
+    /* ── Migratable Agent 3D box carousel (above the title) ── */
+    .agent-cube-stage {
+      align-self: center;
+      width: clamp(260px, 34vw, 520px);
+      height: clamp(150px, 20vw, 300px);
+      margin-bottom: clamp(28px, 3.2vw, 56px);
+      perspective: 1400px;
+      perspective-origin: 50% 50%;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .agent-cube {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform var(--cube-dur, 1.2s) cubic-bezier(0.44, 0, 0.56, 1);
+    }
+    .agent-cube-face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #0a0a0a;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+    .agent-cube-face img,
+    .agent-cube-face video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
 
     .agent-q-col,
     .agent-principles-col {
@@ -3179,6 +3217,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <video class="agent-bg-video" src="assets/input-hero-bg.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
     <div class="agent-row">
       <div class="agent-left" data-agent-left>
+        <div class="agent-cube-stage" data-agent-cube aria-hidden="true">
+          <div class="agent-cube" data-cube>
+            <div class="agent-cube-face"><img alt="" decoding="async"></div>
+            <div class="agent-cube-face"><img alt="" decoding="async"></div>
+            <div class="agent-cube-face"><img alt="" decoding="async"></div>
+            <div class="agent-cube-face"><img alt="" decoding="async"></div>
+          </div>
+        </div>
         <p class="agent-title" data-title="Migratable Agent">Migratable Agent</p>
         <div class="agent-sub">
           <p class="agent-sub-line">사용자의 현재 맥락과 아이덴티티를 유지한 채</p>
@@ -4970,6 +5016,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     const agentBgVideo = agentScroll.querySelector('.agent-bg-video');
     const agentLeft = agentScroll.querySelector('[data-agent-left]');
     const agentTitle = agentScroll.querySelector('.agent-title');
+    const agentCube = agentScroll.querySelector('[data-agent-cube]');
     const agentSub = agentScroll.querySelector('.agent-sub');
     const agentLines = [...agentScroll.querySelectorAll('.agent-sub-line')];
     const agentPills = agentScroll.querySelector('.pills-row');
@@ -5020,6 +5067,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const detailClean = smooth((move - 0.12) / 0.38);
 
       agentTitle.style.opacity = titleIn;
+      if (agentCube) agentCube.style.opacity = (titleIn * (1 - move)).toFixed(3);
       agentTitle.style.setProperty('--agent-gradient-opacity', (1 - move).toFixed(3));
       agentTitle.style.setProperty('--agent-black-opacity', move.toFixed(3));
       agentSticky.style.setProperty('--agent-bg-opacity', titleIn * 0.58 * (1 - bgDrift * 0.58) * (1 - detailClean));
@@ -5199,5 +5247,86 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   });
 </script>
 <script src="../site-index.js"></script>
+<script>
+  /* Migratable Agent — 3D box (cube) carousel above the title.
+     Vanilla port of the Framer BoxCarousel (autoplay, horizontal). Four cube
+     faces rotate around Y; the incoming face is repopulated with the next
+     image before it swings into view, so it reads as an endless reel. */
+  (function () {
+    const stage = document.querySelector('[data-agent-cube]');
+    if (!stage) return;
+    const cube = stage.querySelector('[data-cube]');
+    const faces = Array.prototype.slice.call(stage.querySelectorAll('.agent-cube-face'));
+    const imgs = faces.map((f) => f.querySelector('img'));
+    if (faces.length < 4) return;
+
+    const SRCS = [
+      'assets/morphing-gem-2.png',
+      'assets/morphing-gem-1.png',
+      'assets/morphing-gem-3.png',
+      'assets/pc_main_image-1.png',
+    ];
+    const N = SRCS.length;
+    const STEP = -90;   // rotate left (forward)
+    const DUR = 1150;   // ms per quarter turn
+    const DWELL = 1500; // ms each face rests before the next turn
+
+    let rotation = 0;
+    let frontSlot = 0;
+    let curIdx = 0;
+    let animating = false;
+    let timer = null;
+
+    const mod = (i, n) => ((i % n) + n) % n;
+    function incoming(delta, fs) {
+      const norm = ((delta % 360) + 360) % 360;
+      if (norm === 90) return (fs + 3) % 4;
+      if (norm === 270) return (fs + 1) % 4;
+      if (norm === 180) return (fs + 2) % 4;
+      return fs;
+    }
+    const setFace = (slot, idx) => { imgs[slot].src = SRCS[mod(idx, N)]; };
+    function buildFaces(ci) {
+      const fs = frontSlot;
+      setFace(fs, ci);
+      setFace(incoming(STEP, fs), ci + 1);
+      setFace(incoming(-STEP, fs), ci - 1);
+      setFace((fs + 2) % 4, ci + 2);
+    }
+    function layout() {
+      const half = stage.offsetWidth / 2;
+      faces.forEach((f, k) => {
+        f.style.transform = 'rotateY(' + (k * 90) + 'deg) translateZ(' + half + 'px)';
+      });
+    }
+
+    layout();
+    window.addEventListener('resize', layout);
+    buildFaces(0);
+    cube.style.transition = 'none';
+    cube.style.transform = 'rotateY(0deg)';
+
+    function step() {
+      if (animating) return;
+      animating = true;
+      rotation += STEP;
+      cube.style.transition = 'transform ' + (DUR / 1000) + 's cubic-bezier(0.44,0,0.56,1)';
+      cube.style.transform = 'rotateY(' + rotation + 'deg)';
+      window.setTimeout(() => {
+        frontSlot = incoming(STEP, frontSlot);
+        curIdx = mod(curIdx + 1, N);
+        buildFaces(curIdx);
+        animating = false;
+      }, DUR + 40);
+    }
+    function start() { if (!timer) timer = window.setInterval(step, DUR + DWELL); }
+    function stop() { if (timer) { window.clearInterval(timer); timer = null; } }
+
+    start();
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+  })();
+</script>
 </body>
 </html>
