@@ -1,0 +1,93 @@
+.footer {
+  background: var(--color-bg);
+  padding: clamp(48px, 8vw, 120px) var(--edge-padding) clamp(32px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(48px, 10vw, 160px);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: clamp(32px, 6vw, 120px);
+}
+
+.tagline {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-size: clamp(28px, 4.5vw, 56px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+}
+
+.tagline p {
+  margin: 0;
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(40px, 6vw, 100px);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  width: 170px;
+  min-width: 140px;
+}
+
+.columnTitle {
+  width: 100%;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: #8390a2;
+}
+
+.linkList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.linkLabel {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+.linkLabel:hover {
+  opacity: 0.6;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #8390a2;
+}
+
+.copyright {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: #8390a2;
+}

@@ -4,6 +4,7 @@ import { ClosingCard } from "../components/service3/ClosingCard";
 import { GrowthCycle } from "../components/service3/GrowthCycle";
 import { SkeepExperience } from "../components/service3/SkeepExperience";
 import { TodayStandard } from "../components/service3/TodayStandard";
+import { Footer } from "../components/sections/Footer";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -23,6 +24,7 @@ export default function Service3Page() {
       <GrowthCycle />
       <SkeepExperience />
       <ClosingCard />
+      <Footer />
     </main>
   );
 }

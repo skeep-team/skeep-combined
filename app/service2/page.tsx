@@ -4,6 +4,7 @@ import { ImageTextCard } from "../components/service2/ImageTextCard";
 import { LeaveNothing } from "../components/service2/LeaveNothing";
 import { ResetSequence } from "../components/service2/ResetSequence";
 import { StatementBlock } from "../components/service2/StatementBlock";
+import { Footer } from "../components/sections/Footer";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -23,6 +24,7 @@ export default function Service2Page() {
       <ResetSequence />
       <ContextSummary />
       <ImageTextCard />
+      <Footer />
     </main>
   );
 }

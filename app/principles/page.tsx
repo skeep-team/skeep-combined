@@ -5,6 +5,7 @@ import { EnvironmentCollage } from "../components/sections/EnvironmentCollage";
 import { FeaturePillar } from "../components/sections/FeaturePillar";
 import { Hero } from "../components/sections/Hero";
 import { IcebreakSkip } from "../components/sections/IcebreakSkip";
+import { Footer } from "../components/sections/Footer";
 import { Principles } from "../components/sections/Principles";
 import { RoleFlow } from "../components/sections/RoleFlow";
 
@@ -99,6 +100,7 @@ export default function PrinciplesPage() {
       />
       <EnvironmentCollage />
       <CTA />
+      <Footer />
     </main>
   );
 }
