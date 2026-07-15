@@ -8,6 +8,9 @@ import styles from "./NegotiationDiagram.module.css";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const TICKER_DURATION = 900;
 const STEP_HOLD_DURATION = 1800;
+// Bounce settle time for the label row's spring pop-in — the sideways
+// unfold only starts once the pop has visibly landed (matches MoreStory).
+const LABEL_POP_SETTLE_DELAY = 480;
 // Top offset (cqw, matching the Figma step-row coordinates) of each step row.
 const STEP_TOPS = ["7.96cqw", "16.39cqw", "24.82cqw"];
 
@@ -83,9 +86,18 @@ const LABELS = [
 
 export function NegotiationDiagram() {
   const [active, setActive] = useState(0);
+  const [labelExpanded, setLabelExpanded] = useState(false);
   const diagramRef = useRef<HTMLDivElement>(null);
+  const labelRowRef = useRef<HTMLDivElement>(null);
   const inView = useInView(diagramRef, { amount: 0.5 });
+  const labelInView = useInView(labelRowRef, { once: true, amount: 0.6 });
   const currentStep = useStepCycle(inView && active === 0);
+
+  useEffect(() => {
+    if (!labelInView) return;
+    const id = setTimeout(() => setLabelExpanded(true), LABEL_POP_SETTLE_DELAY);
+    return () => clearTimeout(id);
+  }, [labelInView]);
 
   return (
     <section id="negotiation-diagram" className={styles.section}>
@@ -132,20 +144,40 @@ export function NegotiationDiagram() {
             </div>
           ))}
         </div>
-        <div className={styles.labelRow}>
-          {LABELS.map((label, i) => (
-            <button
-              key={label.name}
-              type="button"
-              className={i === active ? `${styles.labelCard} ${styles.labelCardRaised}` : styles.labelCard}
-              onClick={() => setActive(i)}
-              aria-pressed={i === active}
+        <motion.div
+          ref={labelRowRef}
+          layout
+          className={labelExpanded ? styles.labelRow : `${styles.labelRow} ${styles.labelRowCollapsed}`}
+          initial={{ opacity: 0, scale: 0.3 }}
+          animate={labelInView ? { opacity: 1, scale: 1 } : undefined}
+          transition={{
+            scale: { type: "spring", stiffness: 260, damping: 14, mass: 0.9 },
+            opacity: { duration: 0.2 },
+            layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
+          }}
+        >
+          {labelExpanded && (
+            <motion.div
+              className={styles.labelRowInner}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
             >
-              <span className={styles.labelIndex}>{label.index}</span>
-              <span className={styles.labelName}>{label.name}</span>
-            </button>
-          ))}
-        </div>
+              {LABELS.map((label, i) => (
+                <button
+                  key={label.name}
+                  type="button"
+                  className={i === active ? `${styles.labelCard} ${styles.labelCardRaised}` : styles.labelCard}
+                  onClick={() => setActive(i)}
+                  aria-pressed={i === active}
+                >
+                  <span className={styles.labelIndex}>{label.index}</span>
+                  <span className={styles.labelName}>{label.name}</span>
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
       </Reveal>
     </section>
   );
