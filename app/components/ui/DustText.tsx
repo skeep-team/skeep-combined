@@ -5,7 +5,7 @@
 // then drift as noise until scrolled into view, when they converge into the
 // word and hand off to a real (selectable) text node.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, type MotionValue } from "framer-motion";
 
 type Tag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "div" | "span";
 type PlayMode = "hover" | "enter";
@@ -232,6 +232,10 @@ type DustTextProps = {
   startAlign?: "top" | "center" | "bottom";
   replay?: boolean;
   resetOnMouseLeave?: boolean;
+  // When set, the form/dissolve timeline is driven directly by this value
+  // (e.g. a scroll-linked useTransform output, 1 = formed, 0 = dispersed)
+  // instead of the internal hover/enter chase — for scroll-scrubbed effects.
+  progress?: MotionValue<number>;
 };
 
 export function DustText({
@@ -246,6 +250,7 @@ export function DustText({
   startAlign = "center",
   replay = true,
   resetOnMouseLeave = true,
+  progress,
 }: DustTextProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   // Untyped: the ref target's element type varies with `tag`.
@@ -333,11 +338,19 @@ export function DustText({
         return;
       }
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      const target = active ? 1 : 0;
-      const rate = deltaTime / Math.max(0.05, duration);
-      const cur = formProgressRef.current;
-      formProgressRef.current = cur < target ? Math.min(target, cur + rate) : Math.max(target, cur - rate);
-      const p = easeFn(formProgressRef.current);
+      let p: number;
+      if (progress) {
+        // Controlled: the caller's motion value (e.g. scroll progress) is the
+        // single source of truth, already continuous — no chase/ease needed.
+        p = Math.min(1, Math.max(0, progress.get()));
+        formProgressRef.current = p;
+      } else {
+        const target = active ? 1 : 0;
+        const rate = deltaTime / Math.max(0.05, duration);
+        const cur = formProgressRef.current;
+        formProgressRef.current = cur < target ? Math.min(target, cur + rate) : Math.max(target, cur - rate);
+        p = easeFn(formProgressRef.current);
+      }
       updateParticles(particlesRef.current, deltaTime, p, noise, derivedSpeed, showTextRef, setShowText);
       renderParticles(ctx, particlesRef.current, dpr);
       rafRef.current = requestAnimationFrame(animate);
@@ -346,11 +359,11 @@ export function DustText({
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [isInView, active, duration, easeFn, noise, derivedSpeed, dpr]);
+  }, [isInView, active, duration, easeFn, noise, derivedSpeed, dpr, progress]);
 
-  // Scroll-triggered reveal.
+  // Scroll-triggered reveal (ignored when `progress` drives the timeline directly).
   useEffect(() => {
-    if (playMode !== "enter") return;
+    if (progress || playMode !== "enter") return;
     const el = wrapperRef.current;
     if (!el) return;
     setEntered(false);
