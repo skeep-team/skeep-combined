@@ -1,4 +1,5 @@
 .footer {
+  --footer-content-inset: var(--edge-padding);
   position: relative;
   width: 100%;
   min-height: 800px;
@@ -13,11 +14,10 @@
   content: "";
   position: absolute;
   top: 40px;
-  left: 50%;
-  width: min(1520px, calc(100% - 48px));
+  left: var(--footer-content-inset);
+  right: var(--footer-content-inset);
   height: 1px;
   background: #e2e8ef;
-  transform: translateX(-50%);
 }
 
 .inner {
