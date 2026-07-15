@@ -25,6 +25,10 @@ type Particle = {
   floatingAngle: number;
   targetOpacity: number;
   sparkleSpeed: number;
+  // Per-particle drift multiplier so the dispersed cloud has a soft, uneven
+  // edge instead of every particle expanding the same amount (which reads as
+  // a hard rectangle matching the sampled text's bounding box).
+  radiusMult: number;
 };
 
 // Density slider (1..10) -> particle sampling multiplier (lower = denser).
@@ -132,6 +136,10 @@ function createParticles(
           floatingAngle: Math.random() * Math.PI * 2,
           targetOpacity: Math.random() * originalAlpha * 0.5,
           sparkleSpeed: Math.random() * 2 + 1,
+          // Skewed toward small values (squared) so most particles drift a
+          // modest amount and a minority drift much further — a soft,
+          // wispy edge rather than every particle hitting the same radius.
+          radiusMult: 0.25 + Math.pow(Math.random(), 2) * 2.1,
         });
       }
     }
@@ -168,8 +176,8 @@ function updateParticles(
         Math.cos((time + uniqueOffset) * 0.5) * 0.4 +
         (Math.random() - 0.5) * CHAOS_FACTOR) *
       NOISE_SCALE;
-    const floatX = particle.originalX + FLOAT_RADIUS * noiseX;
-    const floatY = particle.originalY + FLOAT_RADIUS * noiseY;
+    const floatX = particle.originalX + FLOAT_RADIUS * particle.radiusMult * noiseX;
+    const floatY = particle.originalY + FLOAT_RADIUS * particle.radiusMult * noiseY;
     const targetX = floatX + (particle.originalX - floatX) * p;
     const targetY = floatY + (particle.originalY - floatY) * p;
     const dx = targetX - particle.x;

@@ -25,6 +25,7 @@
 }
 
 .leave {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   font-size: clamp(32px, 6vw, 84px);
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -34,6 +35,7 @@
 .nothing {
   position: relative;
   margin-top: -8px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   font-size: clamp(32px, 6vw, 84px);
   font-weight: 600;
   letter-spacing: -0.03em;
