@@ -19,49 +19,22 @@ export function ImageTextCard() {
         </p>
       </Reveal>
       <Reveal delay={0.1} className={styles.box}>
-        <div className={styles.artwork} aria-label="SKEEP이 이전 환경의 맥락을 안전히 보관하고 다음 환경으로 이어주는 아트워크">
-          <div className={styles.environmentBefore}>
-            <span className={styles.deviceTop} />
-            <span className={styles.deviceLine} />
-            <span className={styles.deviceLine} />
-            <span className={styles.deviceDot} />
-          </div>
-          <div className={styles.environmentAfter}>
-            <span className={styles.deviceTop} />
-            <span className={styles.deviceLine} />
-            <span className={styles.deviceLine} />
-            <span className={styles.deviceDot} />
-          </div>
-          <svg className={styles.flow} viewBox="0 0 1200 620" role="presentation" aria-hidden="true">
-            <path className={styles.flowBase} d="M190 330 C 360 210, 485 245, 600 310 S 835 410, 1010 290" />
-            <path className={styles.flowActive} d="M190 330 C 360 210, 485 245, 600 310 S 835 410, 1010 290" />
-            <path className={styles.flowSoft} d="M220 395 C 380 500, 492 445, 610 370 S 815 240, 980 345" />
-          </svg>
-          <div className={styles.archive}>
-            <span className={styles.archiveLabel}>SKEEP CLOUD</span>
-            <span className={styles.archiveTitle}>Context saved</span>
-            <div className={styles.archiveRows}>
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <div className={`${styles.contextCard} ${styles.contextCardOne}`}>
-            <span>Intent</span>
-            <strong>protected</strong>
-          </div>
-          <div className={`${styles.contextCard} ${styles.contextCardTwo}`}>
-            <span>Trace</span>
-            <strong>cleared</strong>
-          </div>
-          <div className={`${styles.contextCard} ${styles.contextCardThree}`}>
-            <span>Next</span>
-            <strong>ready</strong>
-          </div>
-          <div className={styles.transferDots} aria-hidden="true">
+        <div className={styles.artwork} aria-label="END가 START로 이어지는 글로우 모션 아트워크">
+          <div className={styles.scanField} aria-hidden="true">
             <span />
             <span />
             <span />
+          </div>
+          <div className={styles.wordStack}>
+            <span className={`${styles.kineticWord} ${styles.endWord}`} data-text="END">
+              END
+            </span>
+            <span className={`${styles.kineticWord} ${styles.startWord}`} data-text="START">
+              START
+            </span>
+          </div>
+          <div className={styles.waveBand} aria-hidden="true" />
+          <div className={styles.motionDots} aria-hidden="true">
             <span />
             <span />
           </div>
