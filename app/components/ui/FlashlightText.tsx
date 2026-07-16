@@ -16,6 +16,10 @@ type FlashlightTextProps = {
   transition?: Transition;
   className?: string;
   style?: React.CSSProperties;
+  // "hover" (default): spotlight follows the cursor. "scroll": the spotlight
+  // opens on its own, centered over the text, the first time it scrolls into
+  // view — no pointer tracking.
+  trigger?: "hover" | "scroll";
 };
 
 export function FlashlightText({
@@ -27,9 +31,10 @@ export function FlashlightText({
   transition = { type: "tween", duration: 0.3, ease: "easeInOut" },
   className,
   style,
+  trigger = "hover",
 }: FlashlightTextProps) {
   const prefersReducedMotion = useReducedMotion();
-  const interactive = !prefersReducedMotion;
+  const interactive = trigger === "hover" && !prefersReducedMotion;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -73,14 +78,50 @@ export function FlashlightText({
 
   // Reduced-motion: show the spotlight centered and open, no cursor tracking.
   useEffect(() => {
-    if (interactive) return;
+    if (interactive || trigger !== "hover") return;
     const el = contentRef.current;
     const w = el?.clientWidth ?? 720;
     const h = el?.clientHeight ?? 240;
     maskX.set(w / 2);
     maskY.set(h / 2);
     maskSizeMV.set(maskSize);
-  }, [interactive, maskSize, maskX, maskY, maskSizeMV]);
+  }, [interactive, trigger, maskSize, maskX, maskY, maskSizeMV]);
+
+  // Scroll trigger: open the spotlight from the text's own center, once, the
+  // first time it scrolls into view. The radius grows to the box diagonal so
+  // it fully clears regardless of reduced motion or text length.
+  useEffect(() => {
+    if (trigger !== "scroll") return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    const reveal = () => {
+      const target = contentRef.current ?? el;
+      const w = target.clientWidth;
+      const h = target.clientHeight;
+      maskX.set(w / 2);
+      maskY.set(h / 2);
+      const radius = Math.hypot(w, h) / 2 + 40;
+      if (prefersReducedMotion) {
+        maskSizeMV.set(radius);
+      } else {
+        animate(maskSizeMV, radius, transition);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          reveal();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [trigger, prefersReducedMotion, transition, maskX, maskY, maskSizeMV]);
 
   const textTypography: React.CSSProperties = {
     margin: 0,

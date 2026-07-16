@@ -34,6 +34,7 @@ export function ResetSequence() {
         brightColor="#ffffff"
         dimColor="#3a3f47"
         className={styles.heading}
+        trigger="scroll"
       />
       <PacketRecallSequence />
     </section>
