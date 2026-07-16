@@ -25,9 +25,15 @@ type Particle = {
   floatingAngle: number;
   targetOpacity: number;
   sparkleSpeed: number;
-  // Per-particle drift multiplier so the dispersed cloud has a soft, uneven
-  // edge instead of every particle expanding the same amount (which reads as
-  // a hard rectangle matching the sampled text's bounding box).
+  // Unit vector from the glyph block's center to this particle's origin, and
+  // how far out it sits (0 = center, 1 = at the block's bounding radius).
+  // Drift is biased along this direction and scaled by distNorm, so corner/
+  // edge particles blow outward (rounding the block into a cloud) while
+  // center particles barely move — an explosion, not a uniform expansion.
+  dirX: number;
+  dirY: number;
+  distNorm: number;
+  // Extra per-particle variance on top of the radial bias, for an uneven edge.
   radiusMult: number;
 };
 
@@ -114,6 +120,9 @@ function createParticles(
     }
   }
   const spreadRadius = Math.max(maxX - minX, maxY - minY) * 0.1;
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const maxDist = Math.hypot(maxX - centerX, maxY - centerY) || 1;
 
   for (let y = 0; y < canvas.height; y += sampleRate) {
     for (let x = 0; x < canvas.width; x += sampleRate) {
@@ -123,6 +132,9 @@ function createParticles(
         const originalAlpha = alpha / 255;
         const angle = Math.random() * Math.PI * 2;
         const distance = Math.random() * spreadRadius;
+        const dx = x - centerX;
+        const dy = y - centerY;
+        const dist = Math.hypot(dx, dy);
         particles.push({
           x: x + Math.cos(angle) * distance,
           y: y + Math.sin(angle) * distance,
@@ -136,10 +148,10 @@ function createParticles(
           floatingAngle: Math.random() * Math.PI * 2,
           targetOpacity: Math.random() * originalAlpha * 0.5,
           sparkleSpeed: Math.random() * 2 + 1,
-          // Skewed toward small values (squared) so most particles drift a
-          // modest amount and a minority drift much further — a soft,
-          // wispy edge rather than every particle hitting the same radius.
-          radiusMult: 0.25 + Math.pow(Math.random(), 2) * 2.1,
+          dirX: dist > 0 ? dx / dist : Math.cos(angle),
+          dirY: dist > 0 ? dy / dist : Math.sin(angle),
+          distNorm: Math.min(1, dist / maxDist),
+          radiusMult: 0.7 + Math.random() * 0.9,
         });
       }
     }
@@ -166,18 +178,22 @@ function updateParticles(
   particles.forEach((particle) => {
     particle.floatingAngle += deltaTime * particle.floatingSpeed * (1 + Math.random() * CHAOS_FACTOR);
     const uniqueOffset = particle.floatingSpeed * 2e3;
-    const noiseX =
+    const wobbleX =
       (Math.sin(time * particle.floatingSpeed + particle.floatingAngle) * 1.2 +
         Math.sin((time + uniqueOffset) * 0.5) * 0.8 +
         (Math.random() - 0.5) * CHAOS_FACTOR) *
       NOISE_SCALE;
-    const noiseY =
+    const wobbleY =
       (Math.cos(time * particle.floatingSpeed + particle.floatingAngle * 1.5) * 0.6 +
         Math.cos((time + uniqueOffset) * 0.5) * 0.4 +
         (Math.random() - 0.5) * CHAOS_FACTOR) *
       NOISE_SCALE;
-    const floatX = particle.originalX + FLOAT_RADIUS * particle.radiusMult * noiseX;
-    const floatY = particle.originalY + FLOAT_RADIUS * particle.radiusMult * noiseY;
+    // Outward radial push (scaled by how far from center this particle
+    // started) rounds the sampled rectangle into a soft cloud/blob instead
+    // of expanding uniformly; the small wobble on top keeps it feeling alive.
+    const radialPush = FLOAT_RADIUS * particle.radiusMult * (0.5 + particle.distNorm * 1.6);
+    const floatX = particle.originalX + particle.dirX * radialPush + FLOAT_RADIUS * 0.3 * wobbleX;
+    const floatY = particle.originalY + particle.dirY * radialPush + FLOAT_RADIUS * 0.3 * wobbleY;
     const targetX = floatX + (particle.originalX - floatX) * p;
     const targetY = floatY + (particle.originalY - floatY) * p;
     const dx = targetX - particle.x;
