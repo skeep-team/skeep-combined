@@ -20,6 +20,7 @@ type Slide = {
   href?: string;
   external?: boolean; // true = 정적 HTML 페이지(내 프린시플 페이지)로 <a> 이동
   thumbnail?: Thumbnail;
+  tag?: string; // 카드 좌측 상단 라벨 (Overview / Principle N / Business)
 };
 
 // Each thumbnail mirrors that page's first section, so the slide preview
@@ -27,14 +28,14 @@ type Slide = {
 // Slots 0-3 have real destinations today; the rest are reserved
 // placeholders for pages that haven't been built yet.
 const SLIDES: Slide[] = [
-  { href: `${BASE_PATH}/pages/index.html`, external: true, thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, poster: `${BASE_PATH}/thumbs/principle.jpg`, heading: ["새로운 시대를 위한", "새로운 기준"] } },
-  { href: `${BASE_PATH}/pages/saegyeodeutda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/sensing.jpg`, heading: ["어떤 형태의 의도든 완벽하게", "항상 준비되어 있으니까"] } },
-  { href: `${BASE_PATH}/pages/smeureulda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/smeur.jpg`, heading: ["낯선 곳이더라도 자연스럽게", "경계를 건너뛰는 유려함"] } },
-  { href: "/principles", thumbnail: { kind: "video", src: `${BASE_PATH}/hero/focus.mp4`, poster: `${BASE_PATH}/thumbs/focus.jpg`, heading: ["When you need", "Focus"] } },
-  { href: "/service2", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/service2.jpg`, heading: ["기기에는 흔적 없이", "내 맥락은 끊김 없이"] } },
-  { href: "/service3", thumbnail: { kind: "video", src: `${BASE_PATH}/service3/statement-bg.mp4`, poster: `${BASE_PATH}/thumbs/service3.jpg`, heading: ["당신다운 경험의 시작"] } },
-  { href: "/negotiation", thumbnail: { kind: "video", src: `${BASE_PATH}/negotiation/statement-bg.mp4`, poster: `${BASE_PATH}/thumbs/negotiation.jpg`, heading: ["당신이 원하는 그대로", "가장 자연스럽게"] } },
-  {},
+  { tag: "Overview", href: `${BASE_PATH}/pages/index.html`, external: true, thumbnail: { kind: "video", src: `${BASE_PATH}/pages/assets/intro-hero-bg.mp4`, poster: `${BASE_PATH}/thumbs/principle.jpg`, heading: ["새로운 시대를 위한", "새로운 기준"] } },
+  { tag: "Principle 1", href: `${BASE_PATH}/pages/saegyeodeutda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/sensing.jpg`, heading: ["어떤 형태의 의도든 완벽하게", "항상 준비되어 있으니까"] } },
+  { tag: "Principle 2", href: `${BASE_PATH}/pages/smeureulda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/smeur.jpg`, heading: ["낯선 곳이더라도 자연스럽게", "경계를 건너뛰는 유려함"] } },
+  { tag: "Principle 3", href: "/principles", thumbnail: { kind: "video", src: `${BASE_PATH}/hero/focus.mp4`, poster: `${BASE_PATH}/thumbs/focus.jpg`, heading: ["When you need", "Focus"] } },
+  { tag: "Principle 4", href: "/service2", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/service2.jpg`, heading: ["기기에는 흔적 없이", "내 맥락은 끊김 없이"] } },
+  { tag: "Principle 5", href: "/service3", thumbnail: { kind: "video", src: `${BASE_PATH}/service3/statement-bg.mp4`, poster: `${BASE_PATH}/thumbs/service3.jpg`, heading: ["당신다운 경험의 시작"] } },
+  { tag: "Principle 6", href: "/negotiation", thumbnail: { kind: "video", src: `${BASE_PATH}/negotiation/statement-bg.mp4`, poster: `${BASE_PATH}/thumbs/negotiation.jpg`, heading: ["당신이 원하는 그대로", "가장 자연스럽게"] } },
+  { tag: "Business" },
 ];
 
 // Poster image sits behind the video and is always visible; the video starts
@@ -125,10 +126,12 @@ function AmbientBackdrop({ thumbnail, slideKey, dim }: { thumbnail?: Thumbnail; 
 function CardContent({
   slideKey,
   thumbnail,
+  tag,
   fast,
 }: {
   slideKey: string;
   thumbnail?: Thumbnail;
+  tag?: string;
   fast?: boolean;
 }) {
   const duration = fast ? 0.06 : 0.14;
@@ -143,6 +146,7 @@ function CardContent({
         transition={{ duration, ease: "easeOut" }}
       >
         <SlideThumbnail thumbnail={thumbnail} />
+        {tag && <span className={styles.cardTag}>{tag}</span>}
       </motion.div>
     </AnimatePresence>
   );
@@ -356,6 +360,7 @@ export function Hub() {
           <CardContent
             slideKey={prev.href ?? `slot-${prevIndex}`}
             thumbnail={prev.thumbnail}
+            tag={prev.tag}
             fast={isScrubbing || isRestoring}
           />
         </button>
@@ -370,6 +375,7 @@ export function Hub() {
             <CardContent
               slideKey={current.href}
               thumbnail={current.thumbnail}
+              tag={current.tag}
               fast={isScrubbing || isRestoring}
             />
             <span className={styles.enterButton}>
@@ -386,6 +392,7 @@ export function Hub() {
             <CardContent
               slideKey={current.href}
               thumbnail={current.thumbnail}
+              tag={current.tag}
               fast={isScrubbing || isRestoring}
             />
             <span className={styles.enterButton}>
@@ -397,6 +404,7 @@ export function Hub() {
             <CardContent
               slideKey={`slot-${active}`}
               thumbnail={current.thumbnail}
+              tag={current.tag}
               fast={isScrubbing || isRestoring}
             />
             <span className={`${styles.enterButton} ${styles.enterButtonDisabled}`} aria-hidden="true">
@@ -414,6 +422,7 @@ export function Hub() {
           <CardContent
             slideKey={next.href ?? `slot-${nextIndex}`}
             thumbnail={next.thumbnail}
+            tag={next.tag}
             fast={isScrubbing || isRestoring}
           />
         </button>
