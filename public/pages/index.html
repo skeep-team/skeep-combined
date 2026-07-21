@@ -526,7 +526,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       top: calc(50% + clamp(52px, 4.2vw, 72px));
       width: calc(100% - (var(--edge-padding) * 2));
       transform: translate(-50%, -50%);
-      font-size: clamp(22px,2.6vw,40px); font-weight: 600; line-height: 1.3;
+      font-size: clamp(22px,2.6vw,40px); font-weight: 500; line-height: 1.3;
       letter-spacing: -0.03em; color: rgba(255,255,255,0.68);
       opacity: 0;   /* 숨김 → finish에서 t1과 동시에 goo-blur morph-in */
       will-change: top, font-size, color, opacity;
@@ -709,7 +709,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: sticky;
       top: 0;
       height: 100vh;
-      background: #000;
+      background: #0B192B;
       display: flex;
       align-items: flex-start;
       padding: clamp(72px, 12vh, 160px) var(--edge-padding) 0;
@@ -785,23 +785,28 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 150%;
       height: 210%;
       background: radial-gradient(ellipse at center,
-        rgba(0,0,0,0.92) 0%,
-        rgba(0,0,0,0.74) 36%,
-        rgba(0,0,0,0.4) 58%,
+        rgba(4,11,21,0.68) 0%,
+        rgba(4,11,21,0.46) 36%,
+        rgba(4,11,21,0.22) 58%,
         transparent 78%);
       filter: blur(32px);
       opacity: var(--dim-opacity, 1);
       z-index: -1;
       pointer-events: none;
     }
+    @keyframes agentTitlePulse {
+      0%, 100% { -webkit-text-fill-color: rgba(255,255,255,1);   color: rgba(255,255,255,1); }
+      50%      { -webkit-text-fill-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.3); }
+    }
     .agent-title {
       font-size: clamp(30px,4.4vw,66px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
       color: #fff;
       background: none;
       -webkit-text-fill-color: #fff;
+      animation: agentTitlePulse 3.4s ease-in-out infinite;
       --agent-gradient-opacity: 1;
       --agent-black-opacity: 0;
-      margin-bottom: clamp(2px, 0.4vw, 8px);
+      margin-bottom: clamp(12px, 1.5vw, 26px);
       position: relative;
       align-self: center;
       text-align: center;
@@ -882,6 +887,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-sticky.is-light .agent-title {
       color: #000;
       -webkit-text-fill-color: #000;
+      animation: none;
       align-self: flex-start;
       text-align: left;
       transform-origin: left center;   /* 축소 시 왼쪽 끝 고정 → 자막과 좌측 플러시 */
@@ -900,7 +906,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: rgba(14,24,37,.45);
     }
 
-    /* ── Kinetic Grid 배경 (큐브 대체): 커서 반경 내 점들이 끌려오고 트레일 라인이 따라옴 ── */
+    /* ── Prism Grid 배경 (큐브 대체): hover 시 칸이 파스텔로 켜졌다 1s 페이드아웃 ── */
     .agent-grid-bg {
       position: absolute;
       inset: 0;
@@ -908,39 +914,22 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: none;
       overflow: hidden;
       opacity: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: 0 0;
       transition: opacity .4s ease;
       will-change: opacity;
     }
-.agent-gallery-scene {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  perspective: 1200px;
-  transform-style: preserve-3d;
-}
-
-.agent-tunnel-card {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  overflow: hidden;
-  border-radius: clamp(12px, 1.1vw, 24px);
-  transform-origin: center;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform, opacity, filter;
-  pointer-events: none;
-}
-
-.agent-tunnel-card img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  user-select: none;
-  pointer-events: none;
-}
+    .agent-grid-lit { position: absolute; inset: 0; }
+    .agent-grid-cell {
+      position: absolute;
+      width: 41px; height: 41px;   /* 격자선 완전히 덮어 단색·끊김 없이 이어지게 (1px 오버랩) */
+      opacity: 1;                  /* 불투명 단색 (선 비침 없음) */
+      pointer-events: none;
+      transition: opacity 1s linear;
+    }
 
     /* ── Migratable Agent 3D box carousel (removed — replaced by Prism Grid) ── */
     .agent-cube-stage {
@@ -1007,7 +996,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: auto;
       min-width: 0;
       aspect-ratio: 1 / 1;
-      border-radius: 24px;
+      border-radius: 16px;
       padding: clamp(20px, 2vw, 28px);
       position: relative;
       overflow: hidden;
@@ -1018,10 +1007,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: clamp(12px, 1.1vw, 18px);
       text-align: center;
       background:
-        radial-gradient(circle at 22px 22px, var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 22px) 22px, var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at 22px calc(100% - 22px), var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 22px) calc(100% - 22px), var(--card-dot) 0 4px, transparent 4.5px),
+        radial-gradient(circle at 13px 13px, var(--card-dot) 0 4px, transparent 4.5px),
+        radial-gradient(circle at calc(100% - 13px) 13px, var(--card-dot) 0 4px, transparent 4.5px),
+        radial-gradient(circle at 13px calc(100% - 13px), var(--card-dot) 0 4px, transparent 4.5px),
+        radial-gradient(circle at calc(100% - 13px) calc(100% - 13px), var(--card-dot) 0 4px, transparent 4.5px),
         var(--card-bg);
     }
     .principle-mini-title {
@@ -1059,12 +1048,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-q-col { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 16px; }
     .q-card {
       background:
-        radial-gradient(circle at 22px 22px, #FFFFFF 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 22px) 22px, #FFFFFF 0 4px, transparent 4.5px),
-        radial-gradient(circle at 22px calc(100% - 22px), #FFFFFF 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 22px) calc(100% - 22px), #FFFFFF 0 4px, transparent 4.5px),
+        radial-gradient(circle at 13px 13px, #FFFFFF 0 4px, transparent 4.5px),
+        radial-gradient(circle at calc(100% - 13px) 13px, #FFFFFF 0 4px, transparent 4.5px),
+        radial-gradient(circle at 13px calc(100% - 13px), #FFFFFF 0 4px, transparent 4.5px),
+        radial-gradient(circle at calc(100% - 13px) calc(100% - 13px), #FFFFFF 0 4px, transparent 4.5px),
         #0B192B;
-      border-radius: 24px;
+      border-radius: 16px;
       padding: clamp(22px, 2.2vw, 30px) clamp(24px, 2.4vw, 34px); flex: 0 0 auto;
       border: none; cursor: pointer; overflow: hidden;
       transition: background .25s ease;
@@ -1162,14 +1151,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sec-system-diagram {
       background: #fff; width: 100%;
-      padding: clamp(40px, 6vh, 68px) var(--edge-padding);
+      padding: clamp(40px, 6vh, 68px) 0;
       display: flex; flex-direction: column;
       justify-content: center;
       align-items: center; gap: clamp(26px, 4vh, 48px);
     }
     .diagram-card {
       width: 100%;
-      background: #F4F8FC; border-radius: 8px;
+      background: #F4F8FC; border-radius: 0;
       min-height: 0;
       aspect-ratio: 3958 / 936;              /* 왼쪽 패널(546)+오른쪽(3412) 합친 비율 — 정확히 타일링 */
       display: flex; align-items: center; justify-content: center;
@@ -1284,12 +1273,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: 20px; font-weight: 400; letter-spacing: -0.02em;
     }
     .diagram-tabs {
-      background: #F4F8FC; border-radius: 18px;
+      background: #F4F8FC; border-radius: 0;
       display: flex; gap: 6px; padding: 8px 10px;
       border: none;
+      margin-top: clamp(40px, 7vh, 96px);
     }
     .diagram-tab {
-      border-radius: 10px; padding: 7px 16px; min-width: 148px;
+      border-radius: 0; padding: 7px 16px; min-width: 148px;
     }
     .diagram-tab.active { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .diagram-tab .tab-n { font-size: 14px; font-weight: 700; color: #ff0b6c; line-height: 1.5; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -1299,7 +1289,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sec-layers {
       background: linear-gradient(180deg, #F4F8FC 0%, rgba(244,248,252,0) 100%);
       width: 100%;
-      padding: clamp(40px, 6vh, 68px) var(--edge-padding);
+      padding: clamp(40px, 6vh, 68px) 0;
       min-height: 0;
       display: flex; flex-direction: column;
       justify-content: center;
@@ -1309,7 +1299,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 100%;
       aspect-ratio: 3861 / 936;
       margin-bottom: clamp(28px, 4vw, 56px);
-      border-radius: 24px;
+      border-radius: 0;
       overflow: hidden;
       background: #000;
     }
@@ -1332,9 +1322,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .layers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.8vw, 28px);
+      padding: 0 var(--edge-padding);
     }
     .layer-card {
-      background: #F4F8FC; border-radius: 24px;
+      background: #F4F8FC; border-radius: 20px;
       padding: clamp(24px, 2.6vw, 40px) clamp(20px, 2.2vw, 36px) clamp(20px, 2vw, 34px);
       min-height: clamp(140px, 13vw, 224px);
       display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px);
@@ -1348,6 +1339,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-name { font-size: clamp(19px,1.55vw,24px); font-weight: 750; line-height: 1.25; letter-spacing: -0.025em; color: #0e1825; }
     .layer-en   { margin-top: 3px; font-size: clamp(13px,1vw,15px); font-weight: 500; line-height: 1.4; letter-spacing: -0.02em; color: rgba(0,0,0,.58); }
     .layer-desc { font-size: clamp(13px,1.05vw,15px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; color: rgba(0,0,0,.55); }
+    /* 컬러 카드: 상시=파랑 / 활성=초록 / 데이터베이스=핑크 (Image #38 색상코드) */
+    .layer-card[data-layer]            { background: #FFD1E2; border-color: transparent; }
+    /* 선택된(활성) 카드: 연핑크 배경 + 검정 텍스트 */
+    .layer-card[data-layer]:not(.faded) .layer-name { color: #111111; }
+    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(17,17,17,.7); }
+    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(17,17,17,.68); }
+    .layer-card[data-layer] .layer-name { color: #fff; }
+    .layer-card[data-layer] .layer-en   { color: rgba(255,255,255,.82); }
+    .layer-card[data-layer] .layer-desc { color: rgba(255,255,255,.78); }
+    /* 비선택(선택 색상이 아닌) 카드는 회색 처리 */
+    .layer-card.faded[data-layer] { background: #E7EAEE; opacity: 1; }
+    .layer-card.faded[data-layer] .layer-name { color: #6B7280; }
+    .layer-card.faded[data-layer] .layer-en   { color: #9CA3AF; }
+    .layer-card.faded[data-layer] .layer-desc { color: #A6ACB6; }
 
     @media (min-width: 769px) and (max-width: 1100px) {
       .system-flow-sequence .layers-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1651,7 +1656,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* compact right-side card column */
     @media (min-width: 900px) {
       .ux-right-holder {
-        flex: 0 1 clamp(380px, 38vw, 560px);
+        flex: 0 1 clamp(360px, 35vw, 520px);
       }
       .ux-right-panel.active {
         gap: 16px;
@@ -3176,7 +3181,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       t1.classList.remove('sk-anim');               // 이제부터 스크롤 중 transform 지연 방지
       sticky.classList.remove('sk-risen');
       locked = false;
-      slowScrollBy(window.innerHeight * 1.7, 3800);   // 크로스페이드 더 천천히
+      slowScrollBy(window.innerHeight * 1.7, 900);    // 홀딩 구간 추가 단축
     }, 0);   // 대기 없이 즉시 전환 → eee가 멈추는 지점 없이 바로 모프로 흐름
   }
 
@@ -3732,7 +3737,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   </div>
 </div>
 <style>
-  .wm-band { position: relative; width: 100%; height: clamp(620px, 70vh, 780px); overflow: hidden; }
+  .wm-band { position: relative; width: 100%; height: clamp(620px, 70vh, 780px); overflow: visible; }
   .wm-stage {
     position: absolute; inset: 0;
     display: grid;
@@ -3798,7 +3803,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     right: 20px;
     text-align: center;
     font-size: clamp(24px, 2.5vw, 40px);
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1;
   }
   .wm-peel-fallback-desc {
@@ -3830,6 +3835,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     opacity: 1;
     transform: translateY(0);
   }
+  /* 흩뿌린(회전 + 상하 오프셋) 배치 — SERVICE / PRODUCT / SPACE (타겟 배치) */
+  .wm-peel-grid .wm-peel-card:nth-child(1),
+  .wm-peel-grid .wm-peel-card:nth-child(1).is-ready { transform: translateY(84px) rotate(-30deg); }
+  .wm-peel-grid .wm-peel-card:nth-child(2),
+  .wm-peel-grid .wm-peel-card:nth-child(2).is-ready { transform: translateY(-48px) rotate(-5deg); }
+  .wm-peel-grid .wm-peel-card:nth-child(3),
+  .wm-peel-grid .wm-peel-card:nth-child(3).is-ready { transform: translateY(44px) rotate(-27deg); }
   .wm-peel-card.is-peel-pending,
   .wm-peel-card.is-initializing-peel { opacity: 0; }
   .wm-peel-card.is-webgl-ready {
@@ -3934,7 +3946,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = '600 112px "Helvetica Neue", Arial, sans-serif';
+    ctx.font = '500 112px "Helvetica Neue", Arial, sans-serif';
     ctx.fillText(slide.where.toUpperCase(), width / 2, 160);
 
     ctx.font = '400 43px "Pretendard", "Helvetica Neue", Arial, sans-serif';
@@ -4838,7 +4850,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transitionMetrics = {
         start: pageTop(skipTransition),
         initialHold: 0,   // 밴드에서 멈춤 없이 바로 progress 진행 (eee 멈추는 지점 제거)
-        transitionRange: height * 1.5,
+        // 텍스트 몰핑에 2.6개 뷰포트 높이만큼의 스크롤을 배정해
+        // 두 문장이 겹쳐 변형되는 과정을 이전보다 천천히 보여준다.
+        transitionRange: height * 2.6,
         sourceSize,
         targetSize,
         sourceLine,
@@ -4865,15 +4879,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       skipTransitionSticky.style.setProperty('--skip-p', progress.toFixed(4));
       window.__skipP = progress; // 3D 링 배경이 중앙정렬 정도를 읽음
       // ── Text Morph (progress 기반 → 영상과 완전 동기) ──
-      const o1 = Math.max(0, Math.min(1, progress / 0.4));            // t1(eee) 흩어짐: 0 → 0.4
-      const o2 = Math.max(0, Math.min(1, (progress - 0.15) / 0.4));   // t2(skip) 맺힘: 0.15 → 0.55 (t1과 크게 겹침)
+      const o1 = Math.max(0, Math.min(1, progress / 0.55));           // t1(eee) 흩어짐: 0 → 0.55
+      const o2 = Math.max(0, Math.min(1, (progress - 0.08) / 0.47));  // t2(skip) 맺힘: 0.08 → 0.55
+      const videoOpacity = Math.max(0, Math.min(1, (progress - 0.15) / 0.4));
 
-      // 사진 밴드(세로30%)→전체 확장. 영상 opacity는 skip 텍스트(o2)와 '같은 타이밍'에 등장.
+      // 영상이 완전히 나타나는 0.55에 텍스트 몰핑도 끝내 마지막 장면은 원래 글꼴로 보여준다.
       if (progress > 0) {
         const ex = Math.min(1, progress / 0.4);
         const clip = 'inset(' + (30 * (1 - ex)).toFixed(1) + '% 0%)';
         if (skipPhoto) skipPhoto.style.clipPath = clip;
-        if (skipVideo) { skipVideo.style.clipPath = clip; skipVideo.style.opacity = o2.toFixed(3); }
+        if (skipVideo) { skipVideo.style.clipPath = clip; skipVideo.style.opacity = videoOpacity.toFixed(3); }
       } else if (skipVideo) {
         skipVideo.style.opacity = '0';
       }
@@ -5313,303 +5328,37 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let agentTicking = false;
     let agentIntroStartedAt = null;
 
-    // ── Infinity Canvas / InfiniteGallery 배경 (Originkit 이식) ──
-    // 무한 평면에 이미지 타일이 흩뿌려지고, 사용자 조작 없이 자동으로 흐름(auto-pan).
+    // ── Prism Grid 배경 (Originkit 이식): hover 시 칸이 파스텔로 켜졌다 1s 페이드아웃 ──
+    const AGENT_GRID_BOX = 40;
+    const AGENT_GRID_COLORS = ['#FFFFFF'];  /* 흰색 셀 */
     const agentGrid = document.createElement('div');
     agentGrid.className = 'agent-grid-bg';
     agentGrid.setAttribute('aria-hidden', 'true');
-    const agentGalleryScene = document.createElement('div');
-    agentGalleryScene.className = 'agent-gallery-scene';
-    agentGrid.appendChild(agentGalleryScene);
+    const agentGridLit = document.createElement('div');
+    agentGridLit.className = 'agent-grid-lit';
+    agentGrid.appendChild(agentGridLit);
     agentSticky.insertBefore(agentGrid, agentSticky.firstChild);
-    (function initAgentTunnel() {
-      const scene = agentGalleryScene;
-      const imageQuery = '?w=600&h=600&fit=crop&q=80&auto=format';
-      const images = [
-        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853',
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
-        'https://images.unsplash.com/photo-1526738549149-8e07eca6c147',
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
-        'https://images.unsplash.com/photo-1498049794561-7780e7231661',
-        'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
-        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c',
-        'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0',
-        'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace',
-        'https://images.unsplash.com/photo-1497366811353-6870744d04b2',
-        'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
-        'https://images.unsplash.com/photo-1531973576160-7125cd663d86'
-      ].map((url) => url + imageQuery);
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const cardCount = 36;
-      let sceneWidth = agentGrid.clientWidth || window.innerWidth;
-      let sceneHeight = agentGrid.clientHeight || window.innerHeight;
-      let pointerX = 0;
-      let pointerY = 0;
-      let startedAt = performance.now();
-
-      function seededRandom(seed) {
-        let value = seed >>> 0;
-        return function () {
-          value |= 0;
-          value = (value + 0x6D2B79F5) | 0;
-          let mixed = Math.imul(value ^ (value >>> 15), 1 | value);
-          mixed = (mixed + Math.imul(mixed ^ (mixed >>> 7), 61 | mixed)) ^ mixed;
-          return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;
-        };
-      }
-
-      const random = seededRandom(0x534b4545);
-      const cards = Array.from({ length: cardCount }, (_, index) => {
-        const cardElement = document.createElement('div');
-        cardElement.className = 'agent-tunnel-card';
-        const image = document.createElement('img');
-        image.src = images[index % images.length];
-        image.alt = '';
-        image.draggable = false;
-        cardElement.appendChild(image);
-        scene.appendChild(cardElement);
-
-        const portrait = random() > 0.55;
-        const baseSize = portrait ? 118 + random() * 90 : 150 + random() * 125;
-        const ratio = portrait ? 0.7 + random() * 0.18 : 1.18 + random() * 0.55;
-        cardElement.style.width = baseSize + 'px';
-        cardElement.style.height = baseSize / ratio + 'px';
-
-        return {
-          element: cardElement,
-          angle: random() * Math.PI * 2,
-          lane: 0.52 + random() * 0.55,
-          phase: (index / cardCount + random() * 0.08) % 1,
-          speed: 0.000055 + random() * 0.000028,
-          rotation: -16 + random() * 32,
-          drift: -0.18 + random() * 0.36
-        };
-      });
-
-      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-      const easeOut = (value) => 1 - Math.pow(1 - value, 3);
-
-      function resizeTunnel() {
-        sceneWidth = agentGrid.clientWidth || window.innerWidth;
-        sceneHeight = agentGrid.clientHeight || window.innerHeight;
-      }
-
-      function renderTunnel(now) {
-        requestAnimationFrame(renderTunnel);
-
-        const visibleOpacity = parseFloat(agentGrid.style.opacity);
-        if (!Number.isNaN(visibleOpacity) && visibleOpacity < 0.01) {
-          startedAt = now;
-          return;
-        }
-
-        const elapsed = now - startedAt;
-        const maxRadius = Math.hypot(sceneWidth, sceneHeight) * 0.73;
-        cards.forEach((card, index) => {
-          const progress = reduceMotion
-            ? 0.38 + (index % 8) * 0.055
-            : (card.phase + elapsed * card.speed) % 1;
-          const travel = Math.pow(progress, 2.1);
-          const radius = maxRadius * card.lane * travel;
-          const angle = card.angle + card.drift * progress;
-          const x = Math.cos(angle) * radius + pointerX * (14 + 34 * progress);
-          const y = Math.sin(angle) * radius * 0.78 + pointerY * (10 + 24 * progress);
-          const scale = 0.045 + Math.pow(progress, 2.16) * 3.15;
-          const fadeIn = clamp(progress / 0.12, 0, 1);
-          const fadeOut = 1 - clamp((progress - 0.84) / 0.16, 0, 1);
-          const opacity = easeOut(fadeIn) * fadeOut;
-          const blur = Math.max(0, (1 - progress) * 4.5);
-          const z = -920 + travel * 1120;
-
-          card.element.style.opacity = opacity.toFixed(3);
-          card.element.style.filter = `blur(${blur.toFixed(2)}px)`;
-          card.element.style.transform =
-            `translate(-50%, -50%) translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, ${z.toFixed(2)}px) ` +
-            `scale(${scale.toFixed(3)}) rotate(${(card.rotation * (0.35 + progress)).toFixed(2)}deg)`;
-          card.element.style.zIndex = String(Math.round(progress * 1000));
-        });
-      }
-
-      if ('ResizeObserver' in window) {
-        new ResizeObserver(resizeTunnel).observe(agentGrid);
-      } else {
-        window.addEventListener('resize', resizeTunnel);
-      }
-      window.addEventListener('pointermove', (event) => {
-        pointerX = event.clientX / Math.max(1, window.innerWidth) - 0.5;
-        pointerY = event.clientY / Math.max(1, window.innerHeight) - 0.5;
-      }, { passive: true });
-
-      resizeTunnel();
-      requestAnimationFrame(renderTunnel);
-    })();
-
-    if (false) (function () {
-      const scene = agentGalleryScene;
-      // Unsplash 전자기기 + 실내 공간 사진들 (600×600 square crop)
-      const UNSPLASH_Q = '?w=600&h=600&fit=crop&q=80&auto=format';
-      const IMAGES = [
-        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853',
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8',
-        'https://images.unsplash.com/photo-1526738549149-8e07eca6c147',
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
-        'https://images.unsplash.com/photo-1498049794561-7780e7231661',
-        'https://images.unsplash.com/photo-1531297484001-80022131f5a1',
-        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c',
-        'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0',
-        'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace',
-        'https://images.unsplash.com/photo-1497366811353-6870744d04b2',
-        'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
-        'https://images.unsplash.com/photo-1531973576160-7125cd663d86'
-      ].map((u) => u + UNSPLASH_Q);
-      // 컴포넌트 기본값
-      const PX_PER_UNIT = 6, CELL_SIZE = 110, MAX_RANGE = 20;
-      const SCALE_MIN = 0.45, SCALE_MAX = 1.6;
-      const DENSITY = 5, IMG_W = 150, IMG_H = 150, ROUNDED = 3;
-      const subN = Math.max(1, Math.ceil(Math.sqrt(DENSITY)));
-      const subSize = CELL_SIZE / subN;
-      const SUBCELL_INNER_PAD = 0.1;
-      const effectivePerCell = Math.min(DENSITY, subN * subN);
-      const wWorld = IMG_W / PX_PER_UNIT, hWorld = IMG_H / PX_PER_UNIT;
-
-      function hash3(cx, cy, cz, salt) {
-        let h = (cx | 0) * 0x8da6b343;
-        h ^= Math.imul(cy | 0, 0xd8163841);
-        h ^= Math.imul(cz | 0, 0xcb1ab31f);
-        h ^= salt | 0;
-        h ^= h >>> 16; h = Math.imul(h, 0x7feb352d);
-        h ^= h >>> 15; h = Math.imul(h, 0x846ca68b);
-        h ^= h >>> 16;
-        return h >>> 0;
-      }
-      function mulberry32(seed) {
-        let a = seed >>> 0;
-        return () => {
-          a = (a + 0x6d2b79f5) >>> 0;
-          let t = a;
-          t = Math.imul(t ^ (t >>> 15), t | 1);
-          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-        };
-      }
-      const lerp = (a, b, t) => a + (b - a) * t;
-
-      function generateCell(gx, gy) {
-        const rand = mulberry32(hash3(gx, gy, 0, 0x9e3779b1));
-        const totalSubs = subN * subN;
-        const subs = new Array(totalSubs);
-        for (let i = 0; i < totalSubs; i++) subs[i] = i;
-        for (let i = totalSubs - 1; i > 0; i--) {
-          const j = Math.floor(rand() * (i + 1));
-          const tmp = subs[i]; subs[i] = subs[j]; subs[j] = tmp;
-        }
-        const tiles = [];
-        const count = Math.min(effectivePerCell, totalSubs);
-        const pad = subSize * SUBCELL_INNER_PAD;
-        const innerRange = Math.max(0, subSize - pad * 2);
-        const cellX0 = gx * CELL_SIZE, cellY0 = gy * CELL_SIZE;
-        for (let slot = 0; slot < count; slot++) {
-          const subIdx = subs[slot];
-          const sx = subIdx % subN, sy = Math.floor(subIdx / subN);
-          const wx = cellX0 + sx * subSize + pad + rand() * innerRange;
-          const wy = cellY0 + sy * subSize + pad + rand() * innerRange;
-          const bakedScale = SCALE_MIN + rand() * (SCALE_MAX - SCALE_MIN);
-          const imgIdx = Math.floor(rand() * IMAGES.length) % IMAGES.length;
-          tiles.push({ wx, wy, cx: gx, cy: gy, slot, imgIdx, bakedScale });
-        }
-        return tiles;
-      }
-
-      const tileEls = new Map(), imgEls = new Map();
-      function ensureTile(t) {
-        const key = t.cx + ',' + t.cy + ',' + t.slot;
-        let el = tileEls.get(key);
-        if (!el) {
-          el = document.createElement('div');
-          el.style.position = 'absolute';
-          el.style.left = '50%';
-          el.style.top = '50%';
-          el.style.transformOrigin = '0 0';
-          el.style.willChange = 'transform, opacity';
-          el.style.pointerEvents = 'none';
-          const img = document.createElement('img');
-          img.src = IMAGES[t.imgIdx];
-          img.alt = '';
-          img.draggable = false;
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.objectFit = 'cover';
-          img.style.display = 'block';
-          img.style.pointerEvents = 'none';
-          img.style.userSelect = 'none';
-          el.appendChild(img);
-          scene.appendChild(el);
-          tileEls.set(key, el);
-          imgEls.set(key, img);
-        }
-        return el;
-      }
-      function removeTile(key) {
-        const el = tileEls.get(key);
-        if (el && el.parentNode === scene) scene.removeChild(el);
-        tileEls.delete(key); imgEls.delete(key);
-      }
-
-      let cW = agentGrid.clientWidth || 900, cH = agentGrid.clientHeight || 600;
-      if (typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(() => { cW = agentGrid.clientWidth || cW; cH = agentGrid.clientHeight || cH; }).observe(agentGrid);
-      }
-
-      // 단일 평면(octave 0) 프로젝션 — layerScale 1, alpha 1
-      function project(cx, cy) {
-        const camCellX = Math.floor(cx / CELL_SIZE), camCellY = Math.floor(cy / CELL_SIZE);
-        const worldHalfX = cW / 2 / PX_PER_UNIT, worldHalfY = cH / 2 / PX_PER_UNIT;
-        const rangeX = Math.min(MAX_RANGE, Math.ceil(worldHalfX / CELL_SIZE) + 1);
-        const rangeY = Math.min(MAX_RANGE, Math.ceil(worldHalfY / CELL_SIZE) + 1);
-        const visibleKeys = new Set();
-        const frameTiles = [];
-        for (let dy = -rangeY; dy <= rangeY; dy++)
-          for (let dx = -rangeX; dx <= rangeX; dx++) {
-            const tiles = generateCell(camCellX + dx, camCellY + dy);
-            for (let i = 0; i < tiles.length; i++) frameTiles.push(tiles[i]);
-          }
-        const orderKeys = new Array(frameTiles.length), orderScale = new Array(frameTiles.length);
-        const wPx = wWorld * PX_PER_UNIT, hPx = hWorld * PX_PER_UNIT;
-        const radiusPx = (ROUNDED / 20) * (Math.min(wPx, hPx) / 2);
-        for (let i = 0; i < frameTiles.length; i++) {
-          const t = frameTiles[i];
-          const key = t.cx + ',' + t.cy + ',' + t.slot;
-          visibleKeys.add(key);
-          const dxPx = (t.wx - cx) * PX_PER_UNIT;
-          const dyPx = (t.wy - cy) * PX_PER_UNIT;
-          const el = ensureTile(t);
-          const img = imgEls.get(key);
-          el.style.transform = 'translate3d(' + dxPx + 'px,' + dyPx + 'px,0) scale(' + t.bakedScale + ') translate(' + (-wPx / 2) + 'px,' + (-hPx / 2) + 'px)';
-          el.style.width = wPx + 'px';
-          el.style.height = hPx + 'px';
-          if (img) img.style.borderRadius = radiusPx + 'px';
-          orderKeys[i] = key; orderScale[i] = t.bakedScale;
-        }
-        for (const key of Array.from(tileEls.keys())) if (!visibleKeys.has(key)) removeTile(key);
-        const idxs = orderKeys.map((_, i) => i);
-        idxs.sort((a, b) => orderScale[a] - orderScale[b]);
-        for (let k = 0; k < idxs.length; k++) { const el = tileEls.get(orderKeys[idxs[k]]); if (el) el.style.zIndex = String(k); }
-      }
-
-      // 자동 스크롤(팬) — 사용자 조작 없이 카메라가 계속 흐름
-      let camX = 0, camY = 0, targetX = 0, targetY = 0;
-      const PAN_VX = 0.28, PAN_VY = 0.16;
-      function loop() {
-        requestAnimationFrame(loop);
-        targetX += PAN_VX; targetY += PAN_VY;
-        camX = lerp(camX, targetX, 0.18);
-        camY = lerp(camY, targetY, 0.18);
-        const op = parseFloat(agentGrid.style.opacity);
-        if (!isNaN(op) && op < 0.01) return;   // 안 보일 때는 DOM 갱신 스킵
-        project(camX, camY);
-      }
-      requestAnimationFrame(loop);
-    })();
+    let agentGridLastKey = '';
+    agentSticky.addEventListener('pointermove', (event) => {
+      const rect = agentSticky.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
+      const col = Math.floor(x / AGENT_GRID_BOX);
+      const row = Math.floor(y / AGENT_GRID_BOX);
+      const key = col + '_' + row;
+      if (key === agentGridLastKey) return;
+      agentGridLastKey = key;
+      const cell = document.createElement('div');
+      cell.className = 'agent-grid-cell';
+      cell.style.left = (col * AGENT_GRID_BOX) + 'px';
+      cell.style.top = (row * AGENT_GRID_BOX) + 'px';
+      cell.style.background = AGENT_GRID_COLORS[Math.floor(Math.random() * AGENT_GRID_COLORS.length)];
+      agentGridLit.appendChild(cell);
+      requestAnimationFrame(() => { cell.style.opacity = '0'; });
+      window.setTimeout(() => cell.remove(), 1050);
+    });
+    agentSticky.addEventListener('pointerleave', () => { agentGridLastKey = ''; });
 
     // ── Scramble Text (Originkit GlitchCharReveal 이식) — "Migratable Agent" 타이틀 ──
     // 등장: 글자가 글리치되며 좌→우로 확정. hover: 커서 근처 글자 diffusion 스크램블(radius 2).
