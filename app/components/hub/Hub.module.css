@@ -124,8 +124,8 @@
   top: clamp(16px, 1.9vw, 34px);
   left: clamp(20px, 2.6vw, 48px);
   z-index: 3;
-  padding: 6px 14px;
-  border-radius: 999px;
+  padding: 6px 13px;
+  border-radius: 8px;
   background: rgba(0, 0, 0, 0.42);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
