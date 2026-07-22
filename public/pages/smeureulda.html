@@ -502,84 +502,23 @@
       mix-blend-mode: screen;
     }
     /* 레퍼런스 영상의 3.14초 리듬: 정지 → 응집 → 단일 원 → 정지 */
-    /* SVG goo 필터 제거(무스 미지원) → 같은색 원 겹침 + 코어 border-radius 출렁임으로 액체 융합 표현 */
+    /* 원본 영상을 프레임 스프라이트(CSS 플립북)로 재생 → 무스에서도 영상과 동일한 메타볼 goo.
+       SVG필터/canvas/영상 없음, 정적 이미지 + steps() 애니메이션만. */
     .pd-goo-stage {
       position: absolute;
       inset: 0;
-      transform: translateZ(0);
+      background-image: url('assets/parsing-goo-sprite.jpg');
+      background-repeat: no-repeat;
+      background-position: 0 0;
+      background-size: calc(44 * 100%) 100%;
+      animation: pdSprite 3.14s steps(44) infinite;
     }
-    .pd-blob {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      border-radius: 50%;
-      background: #fff;
-      opacity: 0;
-      transform: translate3d(0, 0, 0) scale(.001);
-      animation-duration: 3.14s;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      animation-fill-mode: both;
-      will-change: transform, opacity;
-      backface-visibility: hidden;
-    }
-    .pd-blob-core {
-      width: clamp(112px, 16.4vw, 210px);
-      height: clamp(112px, 16.4vw, 210px);
-      margin: clamp(-105px, -8.2vw, -56px) 0 0 clamp(-105px, -8.2vw, -56px);
-      animation-name: pdCore;
-    }
-    .pd-blob-1 {
-      width: clamp(20px, 3.6vw, 46px);
-      height: clamp(20px, 3.6vw, 46px);
-      margin: clamp(-23px, -1.8vw, -10px) 0 0 clamp(-23px, -1.8vw, -10px);
-      animation-name: pdOrbit1;
-    }
-    .pd-blob-2 {
-      width: clamp(22px, 4vw, 50px);
-      height: clamp(22px, 4vw, 50px);
-      margin: clamp(-25px, -2vw, -11px) 0 0 clamp(-25px, -2vw, -11px);
-      animation-name: pdOrbit2;
-    }
-    .pd-blob-3 {
-      width: clamp(22px, 3.9vw, 50px);
-      height: clamp(22px, 3.9vw, 50px);
-      margin: clamp(-25px, -1.95vw, -11px) 0 0 clamp(-25px, -1.95vw, -11px);
-      animation-name: pdOrbit3;
-    }
-    /* 코어: 점들이 모여드는 동안 자라나 이들을 삼키고, 끝에 살짝 출렁(액체감) 후 사라짐 */
-    @keyframes pdCore {
-      0%, 24% { opacity: 0; transform: translate3d(0, 0, 0) scale(.001); border-radius: 50%; }
-      28% { opacity: 1; transform: translate3d(0, 0, 0) scale(.36); border-radius: 50%; animation-timing-function: cubic-bezier(.34, .1, .2, 1); }
-      50% { opacity: 1; transform: translate3d(0, 0, 0) scale(.94); border-radius: 50%; }
-      56% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.05); border-radius: 46% 54% 53% 47%; }
-      62% { opacity: 1; transform: translate3d(0, 0, 0) scale(.98); border-radius: 55% 45% 47% 53%; }
-      68% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); border-radius: 50%; animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
-      80%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(.001); border-radius: 50%; }
-    }
-    /* 점들: 바깥에서 나타나 중앙으로 날아들어와 코어에 겹쳐 흡수(같은색 → 심리스 융합) */
-    @keyframes pdOrbit1 {
-      0%, 24% { opacity: 0; transform: translate3d(clamp(-94px, -7.35vw, -50px), clamp(-62px, -4.85vw, -33px), 0) scale(.001); }
-      29% { opacity: 1; transform: translate3d(clamp(-94px, -7.35vw, -50px), clamp(-62px, -4.85vw, -33px), 0) scale(.95); animation-timing-function: cubic-bezier(.4, 0, .2, 1); }
-      50% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.05); }
-      57%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
-    }
-    @keyframes pdOrbit2 {
-      0%, 26% { opacity: 0; transform: translate3d(clamp(30px, 4.4vw, 56px), clamp(-67px, -5.2vw, -36px), 0) scale(.001); }
-      31% { opacity: 1; transform: translate3d(clamp(30px, 4.4vw, 56px), clamp(-67px, -5.2vw, -36px), 0) scale(1); animation-timing-function: cubic-bezier(.4, 0, .2, 1); }
-      52% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.05); }
-      59%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
-    }
-    @keyframes pdOrbit3 {
-      0%, 28% { opacity: 0; transform: translate3d(clamp(-16px, -1.25vw, -9px), clamp(36px, 5.25vw, 67px), 0) scale(.001); }
-      33% { opacity: 1; transform: translate3d(clamp(-16px, -1.25vw, -9px), clamp(36px, 5.25vw, 67px), 0) scale(.95); animation-timing-function: cubic-bezier(.4, 0, .2, 1); }
-      53% { opacity: 1; transform: translate3d(0, 0, 0) scale(1.05); }
-      60%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(1); }
+    @keyframes pdSprite {
+      from { background-position-x: 0%; }
+      to { background-position-x: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .pd-blob { animation: none; }
-      .pd-blob-core { opacity: 1; transform: scale(1); }
-      .pd-blob-1, .pd-blob-2, .pd-blob-3 { opacity: 0; transform: scale(.001); }
+      .pd-goo-stage { animation: none; background-position-x: 42%; }
     }
     .principle-grid { display: flex; gap: clamp(12px, 1.6vw, 28px); align-items: stretch; }
     .principle-card {
@@ -1219,12 +1158,7 @@
   <div class="detail-head-row">
     <div class="parsing-detail-video-wrap">
       <!-- 경량화: 영상 대신 순수 CSS 애니메이션(같은색 원 겹침 융합). SVG 필터 없음 → 무스 호환 -->
-      <div class="pd-goo-stage" aria-hidden="true">
-        <span class="pd-blob pd-blob-1"></span>
-        <span class="pd-blob pd-blob-2"></span>
-        <span class="pd-blob pd-blob-3"></span>
-        <span class="pd-blob pd-blob-core"></span>
-      </div>
+      <div class="pd-goo-stage" aria-hidden="true"></div>
     </div>
     <div>
       <p class="detail-h">

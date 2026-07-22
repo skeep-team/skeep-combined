@@ -21,6 +21,51 @@
   z-index: 0;
 }
 
+/* ── 배경 3D 큐브 (옆으로 rotateY 회전, 실루엣 4면). 순수 CSS 3D → 무스 호환 ── */
+.cubeScene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1600px;
+  perspective-origin: 50% 50%;
+}
+.cube {
+  --cube-w: min(62vw, 760px);
+  --cube-half: calc(var(--cube-w) / 2);
+  position: relative;
+  width: var(--cube-w);
+  height: min(58vh, 460px);
+  transform-style: preserve-3d;
+  transition: transform 1.1s cubic-bezier(0.44, 0, 0.56, 1);
+  will-change: transform;
+}
+.cubeFace {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0;
+  backface-visibility: hidden;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45);
+}
+.cubeFace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 24, 37, 0.6);
+  pointer-events: none;
+}
+.cubeImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .videoContainer {
   position: absolute;
   will-change: scale, opacity;

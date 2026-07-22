@@ -172,7 +172,7 @@
       background: #000;
       width: 100%;
       height: 100vh;
-      padding: clamp(64px, 8vw, 120px) var(--edge-padding);
+      padding: clamp(64px, 8vw, 120px) var(--edge-padding) clamp(90px, 11vw, 150px);
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -198,7 +198,7 @@
     .hero-eyebrow {
       font-size: clamp(16px,1.85vw,28px); font-weight: 600; line-height: 1.5;
       letter-spacing: -0.03em; text-transform: uppercase;
-      color: #ff0b6c; margin-bottom: 26px;
+      color: #ff0b6c; margin-bottom: 12px;
     }
     .hero-h1 {
       font-size: clamp(28px,3.6vw,56px); font-weight: 700; line-height: 1.36;
@@ -213,16 +213,16 @@
     .hero-coverflow {
       position: relative; z-index: 2;
       width: 100%;
-      height: clamp(300px, 42vh, 477px);
-      margin-top: clamp(20px, 3.5vh, 52px);
+      height: clamp(276px, 38vh, 440px);
+      margin-top: clamp(48px, 7vh, 105px);
       display: flex; align-items: center; justify-content: center;
       perspective: 1600px;
       pointer-events: none;
     }
     .hcf-stage {
       position: relative;
-      width: clamp(240px, 30vw, 400px);
-      height: clamp(300px, 42vh, 477px);
+      width: clamp(220px, 27vw, 368px);
+      height: clamp(276px, 38vh, 440px);
       transform-style: preserve-3d;
     }
     .hcf-card {
@@ -248,17 +248,30 @@
       pointer-events: none;
     }
     .hcf-card.is-active::after { opacity: 0; }
-    /* ── 인트로 배경 자동 커서 (Skeep AI 포팅 → 손 아이콘 + 인사 라벨), 코버플로우 뒤 ── */
-    .hero-cursor-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-    .hero-cursor-hand { position: absolute; top: 0; left: 0; width: 46px; height: 46px;
-      transform-origin: 34% 12%; will-change: transform; }
-    .hero-cursor-hand img { display: block; width: 46px; height: 46px; }
-    .hero-cursor-label { position: absolute; top: 0; left: 0;
-      background: #fff; color: #000; border-radius: 999px;
-      padding: 8px 16px; font-size: clamp(15px,1.3vw,20px); font-weight: 600; line-height: 1.1;
-      letter-spacing: 0.1px; white-space: nowrap; transform-origin: 0% 50%;
-      box-shadow: 0 5px 16px rgba(0,0,0,0.24), 0 1px 3px rgba(0,0,0,0.14);
-      will-change: transform; }
+    /* ── 인트로 배경: 3개 손 인사 칩 (제자리 흔들림 = CSS keyframe → 무스 호환), 코버플로우 뒤 ── */
+    .hero-hands { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .hand-chip { position: absolute; display: flex; align-items: center; gap: 10px;
+      animation: chipBob 3.6s ease-in-out infinite; will-change: transform; }
+    .hand-chip .hand-ico { width: 52px; height: 52px; flex: 0 0 auto;
+      transform-origin: 34% 82%; animation: handWave 2.9s ease-in-out infinite; }
+    .hand-chip .hand-ico img { display: block; width: 52px; height: 52px; }
+    .hand-chip .hand-lbl { background: rgba(46,46,50,0.92); color: #fff;
+      border-radius: 999px 999px 12px 999px;   /* 오른쪽 하단 코너만 라운드 작게 = 말풍선 꼬리 느낌 */
+      padding: 11px 22px; font-size: clamp(16px,1.45vw,23px); font-weight: 600; line-height: 1.1;
+      letter-spacing: 0.1px; white-space: nowrap;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.45);
+      opacity: 1; transition: opacity .2s ease; }
+    /* 배치(이미지 기준): 상단-좌, 하단-좌, 우-중앙 */
+    .hand-chip.c1 { top: 30%; left: 9%; }
+    .hand-chip.c2 { top: 77%; left: 7%; animation-delay: -1.2s; }
+    .hand-chip.c3 { top: 55%; right: 4%; animation-delay: -2.4s; }
+    .hand-chip.c2 .hand-ico { animation-delay: -0.8s; }
+    .hand-chip.c3 .hand-ico { animation-delay: -1.7s; }
+    @keyframes chipBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(0.6deg); } }
+    @keyframes handWave { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .hand-chip, .hand-chip .hand-ico { animation: none; }
+    }
     .sec-hero > .hero-eyebrow,
     .sec-hero > .hero-h1,
     .sec-hero > .hero-body {
@@ -283,7 +296,7 @@
       position: fixed;
       left: 0;
       right: 0;
-      bottom: clamp(86px, 12vh, 150px);
+      bottom: clamp(48px, 8vh, 100px);
       z-index: 45;
       width: 100%;
       display: flex; align-items: center; justify-content: center;
@@ -309,11 +322,10 @@
       pointer-events: none;
     }
 .pill-gray {
-  background: #111; border-radius: 100px;
-  border: 1px solid rgba(255,255,255,0.28);   /* 검정 인트로 배경에서 버튼 가시성 확보 */
+  background: #fff; border-radius: 100px;
   padding: 9px 30px;
   font-size: clamp(16px,2vw,28px); font-weight: 600; line-height: 1.35;
-  letter-spacing: -0.03em; color: #fff;
+  letter-spacing: -0.03em; color: #000;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -460,14 +472,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sec-skeeeep {
       background: #000;
       width: 100%;
-      height: 405vh;
+      height: 230vh;
       min-height: 0;
       position: relative;
       padding: 0;
     }
     .skeeeep-sticky {
       --skip-p: 0;
-      --photo-reveal: 0;
+      --flip-p: 0;
       --skip-copy-top: 240px;
       position: sticky;
       top: 0;
@@ -477,6 +489,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       text-align: center;
       background: #000;
       isolation: isolate;
+      perspective: 1500px;
     }
     .skeeeep-sticky::before {
       content: "";
@@ -487,42 +500,60 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: 0;
       pointer-events: none;
     }
-    /* 3D 이미지 링 배경: 처음엔 풀스크린 히어로, 문구가 커지면 작게 줄어 문구 위로.
-       (축소/이동은 프레임 잘림 방지를 위해 3D 안에서 처리) */
+    /* 한 장의 사진 패널이 뒤집히며 반대편 영화관 장면을 보여준다. */
+    .skeeeep-flip-scene {
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      perspective: 1500px;
+      pointer-events: none;
+    }
+    .skeeeep-flip-card {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      transform: rotateY(0deg) scale(1);
+      transition: transform .78s cubic-bezier(.2,.76,.24,1);
+      will-change: transform;
+    }
+    .skeeeep-sticky.is-flipped .skeeeep-flip-card {
+      transform: rotateY(180deg) scale(1);
+    }
     .skeeeep-ring-bg {
       position: absolute;
-      top: 20%; bottom: 20%; left: 0; right: 0;   /* 60% 세로 밴드 (clip-path 대신 위치로 — 무스 호환) */
+      inset: 0;
       z-index: 1;
       pointer-events: none;
-      opacity: 0;                 /* 처음엔 숨김 → 페이드인 */
-      overflow: hidden;           /* 커튼 리빌용 */
-      transition: opacity 1.4s ease;
+      opacity: 1;
+      overflow: hidden;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       background:
         linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
         url('assets/skeeeep-bg.jpg') center center / cover no-repeat,
         #000;
     }
     .skeeeep-ring-bg.is-in { opacity: 1; }
-    /* 2번째 장면: 영상은 사진과 '같은 clip'으로 함께 확장(한 사각형)되고 그 안에서 크로스페이드 */
+    /* 카드 뒷면 */
     .skeeeep-video-bg {
       position: absolute;
       inset: 0;
-      z-index: 1;                 /* 사진(ring-bg, z1) 위 DOM순서 → 사진 위에서 크로스페이드 */
+      z-index: 2;
       pointer-events: none;
       overflow: hidden;
-      opacity: 0;
-      transition: opacity .5s ease;   /* 경량화: clip-path 제거 (무스 호환) */
-      /* 경량화: 영상 대신 정적 포스터 이미지 (무빙스타일 호환) */
-      background: #000 url('assets/cinema-audience-bg.png') center center / cover no-repeat;
+      opacity: 1;
+      transform: rotateY(180deg);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background: #000 url('assets/cinema-man-laughing-bg.jpeg') center center / cover no-repeat;
     }
     .skeeeep-ring-bg,
     .skeeeep-video-bg {
-      will-change: clip-path, opacity;
-    }
-    /* 스크롤 진행률이 매 프레임 clip-path를 제어할 때 CSS transition이 뒤쫓지 않게 한다. */
-    .skeeeep-sticky.sk-scroll-transition .skeeeep-ring-bg,
-    .skeeeep-sticky.sk-scroll-transition .skeeeep-video-bg {
-      transition: none;
+      will-change: transform;
     }
     .skeeeep-video-bg video {
       position: absolute;
@@ -532,17 +563,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       object-fit: cover;
       display: block;
     }
-    .skeeeep-video-bg::after {              /* 문구 주변에만 부드럽게 퍼지는 원형 딤 */
+    .skeeeep-video-bg::after {              /* 배경 전체 50% 검정 딤 */
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(
-        ellipse 52% 34% at 50% 52%,
-        rgba(0,0,0,0.72) 0%,
-        rgba(0,0,0,0.58) 34%,
-        rgba(0,0,0,0.3) 64%,
-        rgba(0,0,0,0) 100%
-      );
+      background: rgba(0,0,0,0.5);
       pointer-events: none;
     }
     body.hero-intro-unlocked .sec-skeeeep.fi {
@@ -555,19 +580,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .skeeeep-sticky:not(.sk-shown) .skeeeep-t1,
     .skeeeep-sticky:not(.sk-shown) .skip-sub { opacity: 0; }
     .skeeeep-sticky.sk-shown .skeeeep-t1,
-    .skeeeep-sticky.sk-shown .skip-sub { animation: skFadeIn 1s ease; }
+    .skeeeep-sticky.sk-shown .skip-sub { animation: none; }
     .skeeeep-t1 {
       position: absolute;
-      z-index: 1;
+      z-index: 3;
       left: 50%;
       top: 50%;
       --t1-rise: 0px;                 /* 처음엔 화면 정중앙 */
-      width: max-content;             /* 글자 크기에 맞춤 → 중앙(50%)에서 좌우 대칭으로 늘어남 */
-      font-size: clamp(32px,4.8vw,72px); font-weight: 500; line-height: 1.4;
+      width: max-content;
+      font-size: clamp(30px,3.15vw,50px); font-weight: 500; line-height: 1.3;
       letter-spacing: -0.04em; color: #fff; white-space: nowrap;
       transform: translate(-50%, -50%) translateY(var(--t1-rise));   /* 제자리 고정 (morph 위해 드리프트 제거) */
-      opacity: 1;   /* t1 페이드는 e 개수 기반(JS 인라인)으로 처리 → 17개부터 점점 연해짐 */
-      transition: opacity .1s linear;
+      opacity: 1;
+      transition: opacity .16s linear;
     }
     /* 상승 애니메이션은 인트로 동안에만 (스크롤 중 transition 지연 방지 위해 JS로 해제) */
     .skeeeep-t1.sk-anim {
@@ -578,14 +603,26 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       z-index: 2;
       left: 50%;
-      top: calc(50% + clamp(52px, 4.2vw, 72px));
+      top: 50%;
       width: calc(100% - (var(--edge-padding) * 2));
       transform: translate(-50%, -50%);
-      font-size: clamp(22px,2.6vw,40px); font-weight: 500; line-height: 1.3;
-      letter-spacing: -0.03em; color: rgba(255,255,255,0.68);
-      opacity: 0;   /* 숨김 → finish에서 t1과 동시에 goo-blur morph-in */
-      transition: opacity .1s linear;
-      will-change: top, font-size, color, opacity;
+      font-size: clamp(30px,3.15vw,50px); font-weight: 500; line-height: 1.3;
+      letter-spacing: -0.04em; color: #fff;
+      opacity: 0;
+      transition: opacity .16s linear;
+      will-change: opacity;
+    }
+    .skeeeep-sticky.is-flipped .skeeeep-t1 { opacity: 0; }
+    .skeeeep-sticky.is-flipped .skeeeep-t2 {
+      opacity: 1;
+      transition-delay: .34s;
+    }
+    .skeeeep-sticky:not(.is-flipped) .skeeeep-t1 { transition-delay: .34s; }
+    .skeeeep-sticky:not(.is-flipped) .skeeeep-t2 { transition-delay: 0s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .skeeeep-flip-card { transition-duration: .01ms; }
+      .skeeeep-t1, .skeeeep-t2 { transition-duration: .01ms; transition-delay: 0s !important; }
     }
 
     .skip-sub {
@@ -596,7 +633,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       right: var(--edge-padding);
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
       letter-spacing: -0.03em; color: rgba(255,255,255,0.68);
-      opacity: clamp(0, calc((var(--skip-p) - .52) * 3), 1);
+      display: none;
       transform: translateY(calc((1 - var(--skip-p)) * 34px));
       will-change: opacity, transform;
     }
@@ -3050,8 +3087,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .diagram-tab .tab-n { font-size: clamp(12px, 1.8vw, 20px); }
       .diagram-tab .tab-l { font-size: clamp(16px, 2.2vw, 30px); }
       .hero-h1 { font-size: clamp(32px,4.8vw,72px); }
-      .skeeeep-t1 { font-size: clamp(22px,3.6vw,48px); }
-      .skeeeep-t2 { font-size: clamp(14px,1.8vw,24px); }
+      .skeeeep-t1, .skeeeep-t2 { font-size: clamp(22px,4.2vw,34px); }
       .agent-title, .packet-title, .sk-title { font-size: clamp(24px,4vw,54px); }
       .sys-title, .ux-title { font-size: clamp(24px,4vw,54px); }
       .hero-brand {
@@ -3134,9 +3170,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   <div class="hero-coverflow" aria-hidden="true">
     <div class="hcf-stage" data-coverflow>
-      <div class="hcf-card"><img src="assets/wm-service.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/wm-product.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/wm-space.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/hero-face-1.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/hero-face-2.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/hero-face-3.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/hero-face-4.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/hero-face-5.jpg" alt="" decoding="async"></div>
     </div>
   </div>
   <script>
@@ -3180,129 +3218,52 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   })();
   </script>
   <script>
-  /* 인트로 배경 자동 커서 — 스스로 배회하는 손 아이콘 + 인사 라벨(사진 바뀔 때마다 순환).
-     Skeep AI(스며들다) UserCursor 포팅. DOM+CSS transform+rAF → 무스 호환. */
+  /* 인트로 배경: 3개 손 인사 칩 — 제자리에서 살짝 흔들림(CSS keyframe). 라벨은 5개 언어로 순환.
+     영어(Hi/Hello/Nice to meet you) → 한국어 → 일본어 → 중국어 → 스페인어. 무스 호환(rAF/canvas 없음). */
   (function () {
     var hero = document.querySelector('.sec-hero');
     if (!hero) return;
+    var HAND = 'assets/skeep-cursor-hand.png';
+    // 슬롯 0,1,2 별 짧은 인사말 (언어 순서: 영-한-일-중-스페인)
+    var LANGS = [
+      ['Hi', 'Hello', 'Nice to meet you'],   // English
+      ['안녕', '안녕하세요', '반가워요'],        // 한국어
+      ['やあ', 'こんにちは', 'はじめまして'],     // 日本語
+      ['嗨', '你好', '很高兴认识你'],            // 中文
+      ['Hola', 'Buenas', 'Encantado']         // Espanol
+    ];
+    // 배치: c1 상단-좌(슬롯0 Hi), c2 하단-좌(슬롯2 Nice to meet you), c3 우-중앙(슬롯1 Hello)
+    var SLOTS = [['c1', 0], ['c2', 2], ['c3', 1]];
     var layer = document.createElement('div');
-    layer.className = 'hero-cursor-layer';
+    layer.className = 'hero-hands';
     layer.setAttribute('aria-hidden', 'true');
-    var hand = document.createElement('div');
-    hand.className = 'hero-cursor-hand';
-    hand.innerHTML = '<img src="assets/skeep-cursor-hand.png" alt="" decoding="async">';
-    var label = document.createElement('div');
-    label.className = 'hero-cursor-label';
-    var PHRASES = ['Hello', 'Hi', 'Nice to meet you'];
-    var pi = 0;
-    label.textContent = PHRASES[0];
-    layer.appendChild(label);   // 라벨을 손 뒤에
-    layer.appendChild(hand);
-    hero.appendChild(layer);
-    // 사진(코버플로우)이 바뀔 때마다 인사말 순환
-    document.addEventListener('skeep:coverflow', function () {
-      pi = (pi + 1) % PHRASES.length;
-      label.textContent = PHRASES[pi];
+    var lbls = [];
+    SLOTS.forEach(function (sl) {
+      var chip = document.createElement('div');
+      chip.className = 'hand-chip ' + sl[0];
+      var ico = document.createElement('div');
+      ico.className = 'hand-ico';
+      ico.innerHTML = '<img src="' + HAND + '" alt="" decoding="async">';
+      var lbl = document.createElement('div');
+      lbl.className = 'hand-lbl';
+      lbl.textContent = LANGS[0][sl[1]];
+      chip.appendChild(ico);
+      chip.appendChild(lbl);
+      layer.appendChild(chip);
+      lbls.push({ el: lbl, s: sl[1] });
     });
+    hero.appendChild(layer);
 
-    var SIZE = 46;
-    var LBL_OX = SIZE * 0.86, LBL_OY = SIZE * 0.2 + 8;
-    var EDGE = 12, PAD = 24;
-    var W = 0, H = 0, heroRect = null;
-
-    // 라벨 최대 폭(가장 긴 문구)으로 커서 발자국 폭 고정 → 문구 바뀌어도 침범 없음
-    var FOOT_W = 200, FOOT_H = SIZE + 10;
-    function measureFoot() {
-      var cur = label.textContent, max = 0;
-      for (var i = 0; i < PHRASES.length; i++) { label.textContent = PHRASES[i]; if (label.offsetWidth > max) max = label.offsetWidth; }
-      label.textContent = cur;
-      FOOT_W = LBL_OX + max + 6;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var li = 0;
+    function setLang(idx) { lbls.forEach(function (o) { o.el.textContent = LANGS[idx][o.s]; }); }
+    function cycle() {
+      li = (li + 1) % LANGS.length;
+      if (reduceMotion) { setLang(li); return; }
+      lbls.forEach(function (o) { o.el.style.opacity = '0'; });
+      window.setTimeout(function () { setLang(li); lbls.forEach(function (o) { o.el.style.opacity = '1'; }); }, 200);
     }
-
-    function measure() { var r = hero.getBoundingClientRect(); if (r.width > 0 && r.height > 0) { W = r.width; H = r.height; heroRect = r; } }
-    measure(); measureFoot();
-
-    // 금지 구역: 텍스트(eyebrow/h1/body) + 코버플로우 카드들의 실제 화면 박스(변형 반영)
-    var forbidden = [];
-    function rectRel(el) {
-      if (!heroRect) return null;
-      var r = el.getBoundingClientRect();
-      if (r.width <= 0 || r.height <= 0) return null;
-      return { l: r.left - heroRect.left - PAD, t: r.top - heroRect.top - PAD, r: r.right - heroRect.left + PAD, b: r.bottom - heroRect.top + PAD };
-    }
-    function unionRects(els) {
-      var u = null;
-      for (var i = 0; i < els.length; i++) { var rr = rectRel(els[i]); if (!rr) continue; u = u ? { l: Math.min(u.l, rr.l), t: Math.min(u.t, rr.t), r: Math.max(u.r, rr.r), b: Math.max(u.b, rr.b) } : rr; }
-      return u;
-    }
-    function computeForbidden() {
-      measure();
-      forbidden = [];
-      var txt = unionRects([].slice.call(hero.querySelectorAll('.hero-eyebrow, .hero-h1, .hero-body')));
-      if (txt) forbidden.push(txt);
-      var cards = unionRects([].slice.call(hero.querySelectorAll('.hcf-card')));
-      if (cards) forbidden.push(cards);
-    }
-    computeForbidden();
-
-    function hits(box) {
-      if (box.l < EDGE || box.t < EDGE || box.r > W - EDGE || box.b > H - EDGE) return true;
-      for (var i = 0; i < forbidden.length; i++) {
-        var f = forbidden[i];
-        if (box.l < f.r && box.r > f.l && box.t < f.b && box.b > f.t) return true;
-      }
-      return false;
-    }
-    function pointOK(x, y) { return !hits({ l: x - 4, t: y - 4, r: x + FOOT_W, b: y + FOOT_H }); }
-    function pathOK(x0, y0, x1, y1) {
-      for (var s = 0; s <= 14; s++) { var t = s / 14; if (!pointOK(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)) return false; }
-      return true;
-    }
-
-    // 시작점: 왼쪽 여백 안전지대
-    var tx = EDGE + 6, ty = H * 0.5;
-    function newWaypoint() {
-      computeForbidden();
-      for (var i = 0; i < 60; i++) {
-        var x = EDGE + Math.random() * (W - EDGE * 2);
-        var y = EDGE + Math.random() * (H - EDGE * 2);
-        if (!pointOK(x, y)) continue;
-        if (!pathOK(ax, ay, x, y)) continue;   // 콘텐츠 가로지르는 경로 금지
-        tx = x; ty = y; return;
-      }
-      // 유효 지점 못 찾으면 현재 목표 유지(잠시 대기 후 재시도)
-    }
-    if (window.ResizeObserver) new ResizeObserver(function () { measure(); computeForbidden(); }).observe(hero);
-
-    var ax = tx, ay = ty, avx = 0, avy = 0;
-    var lx = tx, ly = ty, lvx = 0, lvy = 0;
-    var rot = 0, rotv = 0, wait = 0, last = null;
-    function step(cur, vel, target, k, d, m, dt) {
-      var a = ((target - cur) * k - vel * d) / m;
-      var nv = vel + a * dt;
-      return [cur + nv * dt, nv];
-    }
-    function frame(now) {
-      if (last == null) last = now;
-      var dt = Math.min(0.032, (now - last) / 1000); last = now;
-      if (Math.hypot(tx - ax, ty - ay) < 18) {
-        wait += dt;
-        if (wait > 1.0 + Math.random() * 1.6) { wait = 0; newWaypoint(); }
-      }
-      var r1 = step(ax, avx, tx, 120, 25, 0.7, dt); ax = r1[0]; avx = r1[1];
-      var r2 = step(ay, avy, ty, 120, 25, 0.7, dt); ay = r2[0]; avy = r2[1];
-      var r3 = step(lx, lvx, ax, 78, 19, 0.8, dt); lx = r3[0]; lvx = r3[1];
-      var r4 = step(ly, lvy, ay, 78, 19, 0.8, dt); ly = r4[0]; lvy = r4[1];
-      var speed = Math.hypot(avx, avy);
-      var sign = avx === 0 ? 0 : (avx > 0 ? 1 : -1);
-      var targetRot = sign * Math.min(1, speed / 1200) * 14;
-      var r5 = step(rot, rotv, targetRot, 160, 22, 0.6, dt); rot = r5[0]; rotv = r5[1];
-      hand.style.transform = 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
-      label.style.transform = 'translate(' + (lx + LBL_OX).toFixed(2) + 'px, ' + (ly + LBL_OY).toFixed(2) + 'px)';
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-    window.addEventListener('resize', measure);
+    window.setInterval(cycle, 2600);
   })();
   </script>
 
@@ -3351,9 +3312,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </svg>
 <section class="sec-skeeeep fi">
   <div class="skeeeep-sticky">
-    <div class="skeeeep-ring-bg" id="skeeeepRingBg" aria-hidden="true"></div>
-    <div class="skeeeep-video-bg" aria-hidden="true"></div>
-    <p class="skeeeep-t1 sk-anim" id="skeeeepT1"></p>
+    <div class="skeeeep-flip-scene" aria-hidden="true">
+      <div class="skeeeep-flip-card" id="skeeeepFlipCard">
+        <div class="skeeeep-ring-bg" id="skeeeepRingBg"></div>
+        <div class="skeeeep-video-bg"></div>
+      </div>
+    </div>
+    <p class="skeeeep-t1" id="skeeeepT1">Skeep into the new era</p>
     <p class="skeeeep-t2">Skip the intro, Keep the flow</p>
     <p class="skip-sub" aria-hidden="true"></p>
   </div>
@@ -3382,6 +3347,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const t2 = sec && sec.querySelector('.skeeeep-t2');
   const sticky = sec && sec.querySelector('.skeeeep-sticky');
   if (!sec || !t1 || !sticky) return;
+  /* 기존 e 반복 생성·스크롤 잠금·텍스트 몰핑은 3D 플립 전환으로 대체했다. */
+  sticky.classList.add('sk-shown');
+  t1.textContent = 'Skeep into the new era';
+  return;
   const photoEl = sec.querySelector('#skeeeepRingBg');
 
   const PRE = 'Sk', TAIL = 'p into the new era';
@@ -3751,9 +3720,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers>
   <div class="layer-visual" aria-live="polite">
-    <img class="layer-visual-image active" src="assets/passive-layer-flow.png" alt="상시 레이어의 컨텍스트 플로우" data-layer-image="passive">
-    <img class="layer-visual-image" src="assets/active-layer-flow.png" alt="활성 레이어의 컨텍스트 플로우" data-layer-image="active">
-    <img class="layer-visual-image" src="assets/database-layer-flow.png" alt="데이터베이스 구조의 컨텍스트 플로우" data-layer-image="database">
+    <img class="layer-visual-image active" src="assets/database-layer-flow-v2.png" alt="상시 레이어의 컨텍스트 플로우" data-layer-image="passive">
+    <img class="layer-visual-image" src="assets/passive-layer-flow-v2.png" alt="활성 레이어의 컨텍스트 플로우" data-layer-image="active">
+    <img class="layer-visual-image" src="assets/active-layer-flow-v2.png" alt="데이터베이스 구조의 컨텍스트 플로우" data-layer-image="database">
   </div>
   <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
     <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive">
@@ -4057,7 +4026,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     cursor: pointer;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
-    opacity: 1;
+    opacity: 0;
     transform: translateY(0);
     transition: opacity .35s ease, transform .55s cubic-bezier(.22,.75,.18,1);
   }
@@ -4115,7 +4084,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .wm-peel-dot.bl { bottom: 20px; left: 20px; }
   .wm-peel-dot.br { right: 20px; bottom: 20px; }
   .wm-peel-card.is-ready {
-    opacity: 1;
     transform: translateY(0);
   }
   /* 흩뿌린(회전 + 상하 오프셋) 배치 — SERVICE / PRODUCT / SPACE (타겟 배치) */
@@ -4125,14 +4093,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .wm-peel-grid .wm-peel-card:nth-child(2).is-ready { transform: translate(-16px, -34px) rotate(0deg); }
   .wm-peel-grid .wm-peel-card:nth-child(3),
   .wm-peel-grid .wm-peel-card:nth-child(3).is-ready { transform: translate(0px, 52px) rotate(22deg); }
-  .wm-peel-card.is-peel-pending,
-  .wm-peel-card.is-initializing-peel { opacity: 0; }
+  .wm-peel-card.is-peel-pending { opacity: 0; }
+  .wm-peel-card.is-webgl-ready:not(.is-peel-pending),
+  .wm-peel-card.is-static-fallback { opacity: 1; }
   .wm-peel-card.is-webgl-ready {
     background-image: none !important;
     background-color: transparent;
   }
-  .wm-peel-card.is-webgl-ready::before,
-  .wm-peel-card.is-webgl-ready .wm-peel-fallback-copy { opacity: 0; }
+  .wm-peel-card.is-webgl-ready::before { opacity: 0; }
+  .wm-peel-card.is-webgl-ready .wm-peel-fallback-copy { opacity: 1; }
+  .wm-peel-card[aria-pressed="true"] .wm-peel-fallback-desc { opacity: 0; }
+  .wm-peel-card[aria-pressed="false"] .wm-peel-fallback-desc { opacity: 1; }
+  .wm-peel-fallback-title,
+  .wm-peel-fallback-desc {
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   .wm-peel-canvas {
     position: absolute;
     top: -150%;
@@ -4230,34 +4207,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     ctx.fillStyle = dim;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.font = '500 112px "Helvetica Neue", Arial, sans-serif';
-    ctx.fillText(slide.where.toUpperCase(), width / 2, 160);
-
-    ctx.font = '400 43px "Pretendard", "Helvetica Neue", Arial, sans-serif';
-    const lines = slide.desc.split('\n');
-    const lineHeight = 64;
-    const textStartY = height - 150 - ((lines.length - 1) * lineHeight) / 2;
-    lines.forEach((line, lineIndex) => {
-      ctx.fillText(line, width / 2, textStartY + lineIndex * lineHeight);
-    });
-
-    ctx.fillStyle = 'rgba(255,255,255,.9)';
-    const dotInset = 72;
-    const dotRadius = 17;
-    [
-      [dotInset, dotInset],
-      [width - dotInset, dotInset],
-      [dotInset, height - dotInset],
-      [width - dotInset, height - dotInset],
-    ].forEach(([x, y]) => {
-      ctx.beginPath();
-      ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
     ctx.restore();
 
     return canvas.toDataURL('image/png');
@@ -4292,6 +4241,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     } catch (error) {
       console.error(`Sticker texture failed for ${slide.key}:`, error);
       card.classList.remove('is-peel-pending');
+      card.classList.add('is-static-fallback');
       return;
     }
     const peel = window.SkeepStickerPeel.mount(card, {
@@ -4303,19 +4253,27 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       backColor: '#000000',
       shadowOpacity: 0,
     });
-    card.classList.add('is-initializing-peel');
-    const startFolded = () => {
+    /* 시작 상태를 애니메이션으로 접지 않고 즉시 고정한다.
+       느린 TV WebGL에서도 '펼침 → 접힘' 초기화 장면이 노출되지 않는다. */
+    peel.amount = peel.options.hoverPeel / 100;
+    peel.peeled = true;
+    card.setAttribute('aria-pressed', 'true');
+    peel.updateBones();
+    peel.render();
+    const revealWhenReady = () => {
       if (!card.classList.contains('is-webgl-ready')) {
-        requestAnimationFrame(startFolded);
+        requestAnimationFrame(revealWhenReady);
         return;
       }
       card.classList.remove('is-peel-pending');
-      peel.onClick();
-      window.setTimeout(() => {
-        card.classList.remove('is-initializing-peel');
-      }, peel.options.duration * 1000 + 80);
     };
-    requestAnimationFrame(startFolded);
+    requestAnimationFrame(revealWhenReady);
+    window.setTimeout(() => {
+      if (!card.classList.contains('is-webgl-ready')) {
+        card.classList.remove('is-peel-pending');
+        card.classList.add('is-static-fallback');
+      }
+    }, 2500);
   }));
 })();
 </script>
@@ -5109,12 +5067,85 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   // Pin the first scene and morph its lower line into the next scene's headline.
   const skipTransition = document.querySelector('.sec-skeeeep');
   const skipTransitionSticky = skipTransition?.querySelector('.skeeeep-sticky');
+  const skipFlipCard = skipTransition?.querySelector('.skeeeep-flip-card');
   const skipPhoto = skipTransition?.querySelector('.skeeeep-ring-bg');   // 전환 때 밴드 → 전체 화면 확장
   const skipVideo = skipTransition?.querySelector('.skeeeep-video-bg');  // 이어서 영상이 가운데서 자라나며 등장
   const skipT1 = skipTransition?.querySelector('#skeeeepT1');            // Text Morph: eee 문장 (morph-out)
   const skipTransitionTitle = skipTransition?.querySelector('.skeeeep-t2');
   const skipTransitionCopy = skipTransition?.querySelector('.skip-sub');
-  if (skipTransition && skipTransitionSticky && skipTransitionTitle && skipTransitionCopy) {
+  if (skipTransition && skipTransitionSticky && skipFlipCard && skipT1 && skipTransitionTitle) {
+    let flipped = false;
+    let animating = false;
+    let touchStartY = null;
+    let lastScrollY = window.scrollY;
+    let animationTimer = 0;
+    let stageWasActive = false;
+
+    const isFlipStageActive = () => {
+      const rect = skipTransition.getBoundingClientRect();
+      return rect.top <= window.innerHeight * .12 && rect.bottom >= window.innerHeight * .88;
+    };
+
+    const setFlipped = next => {
+      if (next === flipped || animating) return false;
+      flipped = next;
+      animating = true;
+      skipTransitionSticky.classList.toggle('is-flipped', flipped);
+      window.clearTimeout(animationTimer);
+      animationTimer = window.setTimeout(() => { animating = false; }, 860);
+      return true;
+    };
+
+    const handleDirection = direction => {
+      if (!isFlipStageActive()) return false;
+      /* 회전 중 반복 입력은 소비해 카드와 페이지가 동시에 움직이지 않게 한다. */
+      if (animating) return true;
+      if (direction > 0 && !flipped) return setFlipped(true);
+      if (direction < 0 && flipped) return setFlipped(false);
+      return false;
+    };
+
+    window.addEventListener('wheel', event => {
+      if (Math.abs(event.deltaY) < 4) return;
+      if (handleDirection(event.deltaY)) event.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('keydown', event => {
+      const down = event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ';
+      const up = event.key === 'ArrowUp' || event.key === 'PageUp';
+      if ((down || up) && handleDirection(down ? 1 : -1)) event.preventDefault();
+    });
+
+    window.addEventListener('touchstart', event => {
+      touchStartY = event.touches[0]?.clientY ?? null;
+    }, { passive: true });
+    window.addEventListener('touchend', event => {
+      if (touchStartY == null) return;
+      const endY = event.changedTouches[0]?.clientY ?? touchStartY;
+      const delta = touchStartY - endY;
+      touchStartY = null;
+      if (Math.abs(delta) > 18) handleDirection(delta);
+    }, { passive: true });
+
+    /* 일부 TV 브라우저는 wheel 대신 scroll만 보내므로 방향 변화도 보조 입력으로 사용한다. */
+    window.addEventListener('scroll', () => {
+      const currentY = window.scrollY;
+      const delta = currentY - lastScrollY;
+      lastScrollY = currentY;
+      const stageActive = isFlipStageActive();
+      if (!stageActive) {
+        stageWasActive = false;
+        return;
+      }
+      /* 구간에 진입시킨 바로 그 스크롤은 앞면을 보여주고, 다음 입력부터 뒤집는다. */
+      if (!stageWasActive) {
+        stageWasActive = true;
+        return;
+      }
+      if (!animating && Math.abs(delta) > 8) handleDirection(delta);
+    }, { passive: true });
+  }
+  if (false && skipTransition && skipTransitionSticky && skipTransitionTitle && skipTransitionCopy) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const clamp = (min, value, max) => Math.min(max, Math.max(min, value));
     const mix = (from, to, amount) => from + (to - from) * amount;

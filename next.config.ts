@@ -4,7 +4,9 @@ const isGithubPages = process.env.GITHUB_PAGES === "true";
 const basePath = isGithubPages ? "/skeep-combined" : "";
 
 const nextConfig: NextConfig = {
-  ...(isGithubPages ? { output: "export" as const } : {}),
+  ...(isGithubPages
+    ? { output: "export" as const, trailingSlash: true }
+    : {}),
   basePath,
   assetPrefix: basePath,
   images: {

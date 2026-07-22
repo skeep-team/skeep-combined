@@ -8,6 +8,10 @@
 .header {
   padding: 0 var(--edge-padding);
   margin-bottom: clamp(20px, 2.4vw, 32px);
+  /* MovingStyle's cached/embedded Framer runtime can leave an old reveal
+     transform inline. Keep this critical section readable regardless. */
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 .eyebrow {
@@ -23,6 +27,8 @@
   gap: clamp(24px, 4vw, 64px);
   padding: 0 var(--edge-padding);
   margin-bottom: clamp(56px, 9vw, 140px);
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 .heading {
@@ -50,9 +56,28 @@
   aspect-ratio: 1920 / 766;
   overflow: hidden;
   background: var(--color-bg-soft);
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 .boxVideo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 160ms linear;
+}
+
+.boxVideoPlaying {
+  opacity: 1;
+}
+
+.boxPoster {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;

@@ -15,6 +15,15 @@ const KEYWORD_VIDEOS: Record<string, string | null> = {
   Rest: `${BASE_PATH}/hero/rest.mp4`,
 };
 
+// 무빙스타일(무스, Tizen)에선 <video>가 재생/렌더되지 않아 빈 화면이 된다.
+// poster 정지 프레임(실루엣)을 넣어 영상이 안 떠도 배경이 보이게 한다.
+const KEYWORD_POSTERS: Record<string, string> = {
+  Focus: `${BASE_PATH}/hero/focus.poster.jpg`,
+  Meet: `${BASE_PATH}/hero/meet.poster.jpg`,
+  Travel: `${BASE_PATH}/hero/travel.poster.jpg`,
+  Rest: `${BASE_PATH}/hero/rest.poster.jpg`,
+};
+
 type VideoLayout = "full" | "inset";
 
 const KEYWORD_LAYOUT: Record<string, VideoLayout> = {
@@ -125,6 +134,17 @@ export function Hero() {
   }, []);
   const { text: typedText, wordIndex } = useTypewriter(KEYWORDS);
 
+  // 배경 큐브: 타이핑 단어가 바뀔 때마다 옆으로(rotateY) -90° 회전. 4면 = 실루엣 4장.
+  // 순수 CSS 3D transform → 무빙스타일(무스)에서도 렌더 (canvas/WebGL/framer-motion 없음).
+  const [cubeRotY, setCubeRotY] = useState(0);
+  const prevWordRef = useRef(wordIndex);
+  useEffect(() => {
+    if (wordIndex !== prevWordRef.current) {
+      prevWordRef.current = wordIndex;
+      setCubeRotY((r) => r - 90);
+    }
+  }, [wordIndex]);
+
   useEffect(() => {
     const currentWord = KEYWORDS[wordIndex];
     const currentEl = videoRefs.current[currentWord];
@@ -177,41 +197,30 @@ export function Hero() {
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
       <div className={styles.section}>
-        <div className={styles.videoLayer}>
-          {KEYWORDS.map((word, i) => {
-            const src = KEYWORD_VIDEOS[word];
-            if (!src) return null;
-            const active = wordIndex === i;
-            const layout = KEYWORD_LAYOUT[word];
-            let transition = NO_TRANSITION;
-            if (active) transition = isSilentTransition ? NO_TRANSITION : ENTER_TRANSITION;
-            else if (word === previousWord) transition = isSilentTransition ? NO_TRANSITION : LEAVE_TRANSITION;
-            return (
+        {/* 배경: 옆으로 도는 3D 큐브 (실루엣 4면). 순수 CSS 3D → 무스 호환.
+            영상 버전은 백업 레포(skeep-combined-video)에 보존. */}
+        <div className={styles.cubeScene} aria-hidden="true">
+          <div
+            className={styles.cube}
+            style={{ transform: `rotateY(${cubeRotY}deg)` }}
+          >
+            {KEYWORDS.map((word, i) => (
               <div
                 key={word}
-                className={`${styles.videoContainer} ${
-                  layout === "inset" ? styles.videoInset : styles.videoFull
-                }`}
+                className={styles.cubeFace}
                 style={{
-                  opacity: active ? 1 : 0,
-                  scale: active ? 1 : 1.15,
-                  rotate: `${KEYWORD_TILT_DEG[word] ?? 0}deg`,
-                  transition,
+                  transform: `rotateY(${i * 90}deg) translateZ(var(--cube-half))`,
                 }}
               >
-                <video
-                  ref={videoRefCallbacks[word]}
-                  className={styles.video}
-                  src={src}
-                  preload="auto"
-                  muted
-                  loop
-                  playsInline
+                <img
+                  className={styles.cubeImg}
+                  src={KEYWORD_POSTERS[word]}
+                  alt=""
+                  draggable={false}
                 />
-                <div className={layout === "inset" ? styles.videoScrimInset : styles.videoScrim} />
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
         <motion.p className={styles.heading} style={{ opacity, scale }}>
           <span>{"When you need "}</span>
