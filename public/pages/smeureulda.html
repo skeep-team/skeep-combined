@@ -12,13 +12,8 @@
     if (isMorphEmbed) {
       document.documentElement.classList.add('embed-morph');
     } else {
-      const navigation = performance.getEntriesByType('navigation')[0];
-      if (navigation?.type === 'reload') {
-        history.scrollRestoration = 'manual';
-        window.addEventListener('pageshow', () => {
-          if (window.scrollY < window.innerHeight) window.scrollTo(0, 0);
-        }, { once: true });
-      }
+      // 새로고침 시 보던 위치 그대로 유지(맨 위로 튀지 않음). 첫 방문은 자연히 맨 위.
+      if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
     }
   </script>
   <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />

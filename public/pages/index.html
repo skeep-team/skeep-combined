@@ -8,17 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Skeep Intelligence System™</title>
   <script>
-    /* 새로고침·직접진입 → 맨 위(인트로)부터. 뒤로/앞으로가기 → 보던 위치 그대로 복원 */
+    /* 새로고침·뒤로/앞으로가기 → 보던 위치 그대로 복원(맨 위 인트로로 튀지 않음).
+       직접진입(첫 방문) → 자연히 맨 위. 스크롤 위치를 저장해 히어로 잠금 판정에 사용. */
     if ('scrollRestoration' in history) {
-      try {
-        var _nav = performance.getEntriesByType('navigation')[0];
-        var _reload = _nav && _nav.type === 'reload';
-        history.scrollRestoration = _reload ? 'manual' : 'auto';
-        if (_reload) window.scrollTo(0, 0);
-      } catch (e) {
-        history.scrollRestoration = 'auto';
-      }
+      try { history.scrollRestoration = 'auto'; } catch (e) {}
     }
+    window.addEventListener('scroll', function () {
+      try { sessionStorage.setItem('skeepScrollY', String(Math.round(window.scrollY))); } catch (e) {}
+    }, { passive: true });
   </script>
   <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
@@ -184,28 +181,13 @@
       position: relative;
       overflow: hidden;
     }
+    /* 인트로 배경: 순수 검정 (핑크 영상·흰 블러 제거 → 무스에서도 렌더) */
     .hero-main-video {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
+      display: none;
     }
     .sec-hero::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      z-index: 1;
-      width: min(1080px, 78vw);
-      height: min(420px, 42vh);
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .72);
-      filter: blur(76px);
-      transform: translate(-50%, -50%);
-      pointer-events: none;
+      content: none;
+      display: none;
     }
     .hero-brand {
       position: absolute;
@@ -219,13 +201,64 @@
       color: #ff0b6c; margin-bottom: 26px;
     }
     .hero-h1 {
-      font-size: clamp(30px,4.2vw,64px); font-weight: 700; line-height: 1.36;
-      letter-spacing: -0.04em; margin-bottom: 28px; color: #0e1825;
+      font-size: clamp(28px,3.6vw,56px); font-weight: 700; line-height: 1.36;
+      letter-spacing: -0.04em; margin-bottom: 28px; color: #fff;
+      white-space: nowrap;   /* 한글 메인 타이틀 한 줄 고정 */
     }
     .hero-body {
       font-size: clamp(13px,1.55vw,21px); font-weight: 500; line-height: 1.48;
-      letter-spacing: -0.03em; color: rgba(14,24,37,.82); max-width: 1120px;
+      letter-spacing: -0.03em; color: rgba(255,255,255,.82); max-width: 1120px;
     }
+    /* ── 인트로 Coverflow 갤러리 (Originkit 이식 → 바닐라 CSS 3D, 무스 호환) ── */
+    .hero-coverflow {
+      position: relative; z-index: 2;
+      width: 100%;
+      height: clamp(300px, 42vh, 477px);
+      margin-top: clamp(20px, 3.5vh, 52px);
+      display: flex; align-items: center; justify-content: center;
+      perspective: 1600px;
+      pointer-events: none;
+    }
+    .hcf-stage {
+      position: relative;
+      width: clamp(240px, 30vw, 400px);
+      height: clamp(300px, 42vh, 477px);
+      transform-style: preserve-3d;
+    }
+    .hcf-card {
+      position: absolute; left: 50%; top: 50%;
+      width: 100%; height: 100%;
+      border-radius: 30px; overflow: hidden;
+      background: #1a1a1a;
+      transform-style: preserve-3d;
+      transform-origin: center center;
+      transform: translate(-50%, -50%);
+      transition: transform .6s cubic-bezier(.22,1,.36,1), opacity .6s cubic-bezier(.22,1,.36,1);
+      will-change: transform, opacity;
+    }
+    .hcf-card img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; display: block; user-select: none;
+    }
+    .hcf-card::after {   /* 비활성 카드 딤 (opacity 60 → dim 0.4) */
+      content: ""; position: absolute; inset: 0;
+      background: #000; opacity: .4;
+      transition: opacity .6s cubic-bezier(.22,1,.36,1);
+      pointer-events: none;
+    }
+    .hcf-card.is-active::after { opacity: 0; }
+    /* ── 인트로 배경 자동 커서 (Skeep AI 포팅 → 손 아이콘 + 인사 라벨), 코버플로우 뒤 ── */
+    .hero-cursor-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .hero-cursor-hand { position: absolute; top: 0; left: 0; width: 46px; height: 46px;
+      transform-origin: 34% 12%; will-change: transform; }
+    .hero-cursor-hand img { display: block; width: 46px; height: 46px; }
+    .hero-cursor-label { position: absolute; top: 0; left: 0;
+      background: #fff; color: #000; border-radius: 999px;
+      padding: 8px 16px; font-size: clamp(15px,1.3vw,20px); font-weight: 600; line-height: 1.1;
+      letter-spacing: 0.1px; white-space: nowrap; transform-origin: 0% 50%;
+      box-shadow: 0 5px 16px rgba(0,0,0,0.24), 0 1px 3px rgba(0,0,0,0.14);
+      will-change: transform; }
     .sec-hero > .hero-eyebrow,
     .sec-hero > .hero-h1,
     .sec-hero > .hero-body {
@@ -239,9 +272,11 @@
     }
     body.hero-float-ready .sec-hero > .hero-eyebrow,
     body.hero-float-ready .sec-hero > .hero-h1,
-    body.hero-float-ready .sec-hero > .hero-body {
+    body.hero-float-ready .sec-hero > .hero-body,
+    body.hero-float-ready .sec-hero > .hero-coverflow {
       transform: translateY(-54px);
     }
+    .hero-coverflow { transition: transform .72s cubic-bezier(.22,1,.36,1); }
 
     /* ── 2. LET'S SKEEP IN ───────────────────────── */
     .sec-skeep-in {
@@ -275,6 +310,7 @@
     }
 .pill-gray {
   background: #111; border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.28);   /* 검정 인트로 배경에서 버튼 가시성 확보 */
   padding: 9px 30px;
   font-size: clamp(16px,2vw,28px); font-weight: 600; line-height: 1.35;
   letter-spacing: -0.03em; color: #fff;
@@ -455,18 +491,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
        (축소/이동은 프레임 잘림 방지를 위해 3D 안에서 처리) */
     .skeeeep-ring-bg {
       position: absolute;
-      inset: 0;
-      z-index: 1;                 /* 흰 오버레이(0) 위, 텍스트(t1=1은 DOM순서로 위, t2=2)와 공존 */
+      top: 20%; bottom: 20%; left: 0; right: 0;   /* 60% 세로 밴드 (clip-path 대신 위치로 — 무스 호환) */
+      z-index: 1;
       pointer-events: none;
       opacity: 0;                 /* 처음엔 숨김 → 페이드인 */
-      transition: opacity 1.4s ease, clip-path .32s ease-out;
-      /* 3D 링 제거 → 정적 흑백 사진 배경 (검정 유지 위해 어두운 스크림 오버레이) */
+      overflow: hidden;           /* 커튼 리빌용 */
+      transition: opacity 1.4s ease;
       background:
         linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
         url('assets/skeeeep-bg.jpg') center center / cover no-repeat,
         #000;
-      /* 워드마크가 e로 늘어날 때 가운데 세로 띠 → 좌우로 펼쳐지는 리빌 (JS가 clip-path 인라인 설정) */
-      clip-path: inset(20% 49.5%);   /* 세로는 위아래 20%씩 잘라 가로 밴드, 가로는 JS가 리빌 */
     }
     .skeeeep-ring-bg.is-in { opacity: 1; }
     /* 2번째 장면: 영상은 사진과 '같은 clip'으로 함께 확장(한 사각형)되고 그 안에서 크로스페이드 */
@@ -477,8 +511,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: none;
       overflow: hidden;
       opacity: 0;
-      clip-path: inset(30% 0%);  /* 풀 폭 밴드 → JS가 세로만 확장 (사진과 동일) */
-      transition: clip-path .32s ease-out, opacity .5s ease;
+      transition: opacity .5s ease;   /* 경량화: clip-path 제거 (무스 호환) */
+      /* 경량화: 영상 대신 정적 포스터 이미지 (무빙스타일 호환) */
+      background: #000 url('assets/cinema-audience-bg.png') center center / cover no-repeat;
     }
     .skeeeep-ring-bg,
     .skeeeep-video-bg {
@@ -497,11 +532,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       object-fit: cover;
       display: block;
     }
-    .skeeeep-video-bg::after {              /* 흰 텍스트 가독성용 스크림 */
+    .skeeeep-video-bg::after {              /* 문구 주변에만 부드럽게 퍼지는 원형 딤 */
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: radial-gradient(
+        ellipse 52% 34% at 50% 52%,
+        rgba(0,0,0,0.72) 0%,
+        rgba(0,0,0,0.58) 34%,
+        rgba(0,0,0,0.3) 64%,
+        rgba(0,0,0,0) 100%
+      );
       pointer-events: none;
     }
     body.hero-intro-unlocked .sec-skeeeep.fi {
@@ -526,9 +567,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       letter-spacing: -0.04em; color: #fff; white-space: nowrap;
       transform: translate(-50%, -50%) translateY(var(--t1-rise));   /* 제자리 고정 (morph 위해 드리프트 제거) */
       opacity: 1;   /* t1 페이드는 e 개수 기반(JS 인라인)으로 처리 → 17개부터 점점 연해짐 */
+      transition: opacity .1s linear;
     }
     /* 상승 애니메이션은 인트로 동안에만 (스크롤 중 transition 지연 방지 위해 JS로 해제) */
-    .skeeeep-t1.sk-anim { transition: transform .9s cubic-bezier(.22,.61,.36,1); }
+    .skeeeep-t1.sk-anim {
+      transition: transform .9s cubic-bezier(.22,.61,.36,1), opacity .1s linear;
+    }
     .skeeeep-sticky.sk-risen .skeeeep-t1 { --t1-rise: 0px; }   /* 늘어날 때 텍스트 제자리 고정 (상승 제거) — 반드시 단위 있는 0px (calc 유효) */
     .skeeeep-t2 {
       position: absolute;
@@ -540,6 +584,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: clamp(22px,2.6vw,40px); font-weight: 500; line-height: 1.3;
       letter-spacing: -0.03em; color: rgba(255,255,255,0.68);
       opacity: 0;   /* 숨김 → finish에서 t1과 동시에 goo-blur morph-in */
+      transition: opacity .1s linear;
       will-change: top, font-size, color, opacity;
     }
 
@@ -816,7 +861,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: #fff;
       background: none;
       -webkit-text-fill-color: #fff;
-      animation: agentTitlePulse 3.4s ease-in-out infinite;
+      animation: none;
       --agent-gradient-opacity: 1;
       --agent-black-opacity: 0;
       margin-bottom: clamp(12px, 1.5vw, 26px);
@@ -1270,11 +1315,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* 분리 파일 버전: 탭별로 [왼쪽 패널 + 오른쪽 콘텐츠] 두 이미지를 나란히 타일링 */
     .diagram-pair {
       position: absolute; inset: 0;
-      display: flex; align-items: stretch; justify-content: center;
+      display: grid;
+      grid-template-columns: 546fr 3412fr;
       border-radius: inherit; overflow: hidden;
       transition: opacity .45s ease;
     }
-    .diagram-pair img { height: 100%; width: auto; flex: 0 0 auto; display: block; }
+    .diagram-pair img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      object-fit: fill;
+    }
     .diagram-pair--context { opacity: 0; pointer-events: none; }
     .diagram-card.show-context .diagram-pair--journey { opacity: 0; pointer-events: none; }
     .diagram-card.show-context .diagram-pair--context { opacity: 1; pointer-events: auto; }
@@ -1324,11 +1376,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-visual {
       position: relative;
       width: 100%;
-      aspect-ratio: 3861 / 936;
+      aspect-ratio: 3959 / 945;
       margin-bottom: clamp(28px, 4vw, 56px);
       border-radius: 0;
       overflow: hidden;
-      background: #000;
+      background: transparent;
     }
     .layer-visual-image {
       position: absolute;
@@ -3057,14 +3109,202 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   1. HERO
 ═══════════════════════ -->
 <section class="sec-hero fi">
-  <video class="hero-main-video" src="assets/intro-hero-bg.mp4" autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
+  <video class="hero-main-video" src="assets/intro-hero-bg.mp4" poster="assets/intro-hero-bg-poster.jpg" autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
+  <script>
+  /* 인트로 히어로 영상 재생 보강 (구형/임베디드 브라우저: autoplay 속성이 막혀도
+     JS로 muted 재생 시도 — 로드 직후 + 첫 사용자 동작 시). 애플의 JS 기반 재생과 동일 취지. */
+  (function () {
+    var v = document.querySelector('.hero-main-video');
+    if (!v) return;
+    function tryPlay() { try { v.muted = true; var p = v.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
+    tryPlay();
+    if (document.readyState !== 'complete') window.addEventListener('load', tryPlay);
+    ['pointerdown', 'touchstart', 'keydown', 'wheel', 'click', 'mousemove'].forEach(function (ev) {
+      window.addEventListener(ev, tryPlay, { passive: true });
+    });
+  })();
+  </script>
   <p class="hero-eyebrow">Skeep Intelligence System™</p>
-  <h1 class="hero-h1">내가 이 세상의<br>주인공인 것처럼</h1>
+  <h1 class="hero-h1">내가 이 세상의 주인공인 것처럼</h1>
   <p class="hero-body">
     누구세요, 무엇을 좋아하세요, 어떻게 도와드릴까요.<br>
     지금까지 우리는 새로운 제품과 서비스를 마주할 때면 매번 우리의 맥락과 목적을 설명해야만 했습니다.<br>
     그 서먹한 통성명의 반복이 너무 당연해진 나머지, 불편하다는 사실조차 잊고 살았죠.
   </p>
+
+  <div class="hero-coverflow" aria-hidden="true">
+    <div class="hcf-stage" data-coverflow>
+      <div class="hcf-card"><img src="assets/wm-service.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/wm-product.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/wm-space.png" alt="" decoding="async"></div>
+    </div>
+  </div>
+  <script>
+  (function () {
+    var stage = document.querySelector('[data-coverflow]');
+    if (!stage) return;
+    var cards = [].slice.call(stage.querySelectorAll('.hcf-card'));
+    var n = cards.length;
+    if (n < 2) return;
+    // Originkit Coverflow 파라미터 (autoplay, showTitle:false, rightToLeft)
+    var GAP = 8, TILT = 12, SIDE = 8, SCALE_STEP = 0.16, DEPTH = 240, MAX_VISIBLE = 2, DELAY = 2500;
+    var active = 0;
+    function render() {
+      for (var i = 0; i < n; i++) {
+        var rel = i - active;
+        if (rel > n / 2) rel -= n;
+        if (rel < -n / 2) rel += n;
+        var ax = Math.abs(rel);
+        var visible = ax <= MAX_VISIBLE;
+        var sc = Math.max(0.4, 1 - ax * SCALE_STEP);
+        var tx = rel * (GAP * 30);
+        var tz = -ax * DEPTH;
+        var ry = -rel * TILT;
+        var rz = rel * SIDE;
+        var c = cards[i];
+        c.style.transform = 'translate(-50%,-50%) translateX(' + tx + 'px) translateZ(' + tz + 'px) rotateY(' + ry + 'deg) rotateZ(' + rz + 'deg) scale(' + sc + ')';
+        c.style.opacity = visible ? '1' : '0';
+        c.style.zIndex = String(100 - ax);
+        c.classList.toggle('is-active', rel === 0);
+      }
+    }
+    render();
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      window.setInterval(function () {
+        active = (active + 1) % n;
+        render();
+        document.dispatchEvent(new CustomEvent('skeep:coverflow', { detail: { index: active } }));
+      }, DELAY);
+    }
+  })();
+  </script>
+  <script>
+  /* 인트로 배경 자동 커서 — 스스로 배회하는 손 아이콘 + 인사 라벨(사진 바뀔 때마다 순환).
+     Skeep AI(스며들다) UserCursor 포팅. DOM+CSS transform+rAF → 무스 호환. */
+  (function () {
+    var hero = document.querySelector('.sec-hero');
+    if (!hero) return;
+    var layer = document.createElement('div');
+    layer.className = 'hero-cursor-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    var hand = document.createElement('div');
+    hand.className = 'hero-cursor-hand';
+    hand.innerHTML = '<img src="assets/skeep-cursor-hand.png" alt="" decoding="async">';
+    var label = document.createElement('div');
+    label.className = 'hero-cursor-label';
+    var PHRASES = ['Hello', 'Hi', 'Nice to meet you'];
+    var pi = 0;
+    label.textContent = PHRASES[0];
+    layer.appendChild(label);   // 라벨을 손 뒤에
+    layer.appendChild(hand);
+    hero.appendChild(layer);
+    // 사진(코버플로우)이 바뀔 때마다 인사말 순환
+    document.addEventListener('skeep:coverflow', function () {
+      pi = (pi + 1) % PHRASES.length;
+      label.textContent = PHRASES[pi];
+    });
+
+    var SIZE = 46;
+    var LBL_OX = SIZE * 0.86, LBL_OY = SIZE * 0.2 + 8;
+    var EDGE = 12, PAD = 24;
+    var W = 0, H = 0, heroRect = null;
+
+    // 라벨 최대 폭(가장 긴 문구)으로 커서 발자국 폭 고정 → 문구 바뀌어도 침범 없음
+    var FOOT_W = 200, FOOT_H = SIZE + 10;
+    function measureFoot() {
+      var cur = label.textContent, max = 0;
+      for (var i = 0; i < PHRASES.length; i++) { label.textContent = PHRASES[i]; if (label.offsetWidth > max) max = label.offsetWidth; }
+      label.textContent = cur;
+      FOOT_W = LBL_OX + max + 6;
+    }
+
+    function measure() { var r = hero.getBoundingClientRect(); if (r.width > 0 && r.height > 0) { W = r.width; H = r.height; heroRect = r; } }
+    measure(); measureFoot();
+
+    // 금지 구역: 텍스트(eyebrow/h1/body) + 코버플로우 카드들의 실제 화면 박스(변형 반영)
+    var forbidden = [];
+    function rectRel(el) {
+      if (!heroRect) return null;
+      var r = el.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) return null;
+      return { l: r.left - heroRect.left - PAD, t: r.top - heroRect.top - PAD, r: r.right - heroRect.left + PAD, b: r.bottom - heroRect.top + PAD };
+    }
+    function unionRects(els) {
+      var u = null;
+      for (var i = 0; i < els.length; i++) { var rr = rectRel(els[i]); if (!rr) continue; u = u ? { l: Math.min(u.l, rr.l), t: Math.min(u.t, rr.t), r: Math.max(u.r, rr.r), b: Math.max(u.b, rr.b) } : rr; }
+      return u;
+    }
+    function computeForbidden() {
+      measure();
+      forbidden = [];
+      var txt = unionRects([].slice.call(hero.querySelectorAll('.hero-eyebrow, .hero-h1, .hero-body')));
+      if (txt) forbidden.push(txt);
+      var cards = unionRects([].slice.call(hero.querySelectorAll('.hcf-card')));
+      if (cards) forbidden.push(cards);
+    }
+    computeForbidden();
+
+    function hits(box) {
+      if (box.l < EDGE || box.t < EDGE || box.r > W - EDGE || box.b > H - EDGE) return true;
+      for (var i = 0; i < forbidden.length; i++) {
+        var f = forbidden[i];
+        if (box.l < f.r && box.r > f.l && box.t < f.b && box.b > f.t) return true;
+      }
+      return false;
+    }
+    function pointOK(x, y) { return !hits({ l: x - 4, t: y - 4, r: x + FOOT_W, b: y + FOOT_H }); }
+    function pathOK(x0, y0, x1, y1) {
+      for (var s = 0; s <= 14; s++) { var t = s / 14; if (!pointOK(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)) return false; }
+      return true;
+    }
+
+    // 시작점: 왼쪽 여백 안전지대
+    var tx = EDGE + 6, ty = H * 0.5;
+    function newWaypoint() {
+      computeForbidden();
+      for (var i = 0; i < 60; i++) {
+        var x = EDGE + Math.random() * (W - EDGE * 2);
+        var y = EDGE + Math.random() * (H - EDGE * 2);
+        if (!pointOK(x, y)) continue;
+        if (!pathOK(ax, ay, x, y)) continue;   // 콘텐츠 가로지르는 경로 금지
+        tx = x; ty = y; return;
+      }
+      // 유효 지점 못 찾으면 현재 목표 유지(잠시 대기 후 재시도)
+    }
+    if (window.ResizeObserver) new ResizeObserver(function () { measure(); computeForbidden(); }).observe(hero);
+
+    var ax = tx, ay = ty, avx = 0, avy = 0;
+    var lx = tx, ly = ty, lvx = 0, lvy = 0;
+    var rot = 0, rotv = 0, wait = 0, last = null;
+    function step(cur, vel, target, k, d, m, dt) {
+      var a = ((target - cur) * k - vel * d) / m;
+      var nv = vel + a * dt;
+      return [cur + nv * dt, nv];
+    }
+    function frame(now) {
+      if (last == null) last = now;
+      var dt = Math.min(0.032, (now - last) / 1000); last = now;
+      if (Math.hypot(tx - ax, ty - ay) < 18) {
+        wait += dt;
+        if (wait > 1.0 + Math.random() * 1.6) { wait = 0; newWaypoint(); }
+      }
+      var r1 = step(ax, avx, tx, 120, 25, 0.7, dt); ax = r1[0]; avx = r1[1];
+      var r2 = step(ay, avy, ty, 120, 25, 0.7, dt); ay = r2[0]; avy = r2[1];
+      var r3 = step(lx, lvx, ax, 78, 19, 0.8, dt); lx = r3[0]; lvx = r3[1];
+      var r4 = step(ly, lvy, ay, 78, 19, 0.8, dt); ly = r4[0]; lvy = r4[1];
+      var speed = Math.hypot(avx, avy);
+      var sign = avx === 0 ? 0 : (avx > 0 ? 1 : -1);
+      var targetRot = sign * Math.min(1, speed / 1200) * 14;
+      var r5 = step(rot, rotv, targetRot, 160, 22, 0.6, dt); rot = r5[0]; rotv = r5[1];
+      hand.style.transform = 'translate(' + ax.toFixed(2) + 'px, ' + ay.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+      label.style.transform = 'translate(' + (lx + LBL_OX).toFixed(2) + 'px, ' + (ly + LBL_OY).toFixed(2) + 'px)';
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    window.addEventListener('resize', measure);
+  })();
+  </script>
 
   <div class="hero-gnb" id="heroGnb">
     <div class="hero-gnb-shape gnb-away" id="heroGnbShape">
@@ -3112,9 +3352,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <section class="sec-skeeeep fi">
   <div class="skeeeep-sticky">
     <div class="skeeeep-ring-bg" id="skeeeepRingBg" aria-hidden="true"></div>
-    <div class="skeeeep-video-bg" aria-hidden="true">
-      <video src="assets/skeeeep-flow.mp4" autoplay loop muted playsinline></video>
-    </div>
+    <div class="skeeeep-video-bg" aria-hidden="true"></div>
     <p class="skeeeep-t1 sk-anim" id="skeeeepT1"></p>
     <p class="skeeeep-t2">Skip the intro, Keep the flow</p>
     <p class="skip-sub" aria-hidden="true"></p>
@@ -3148,15 +3386,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   const PRE = 'Sk', TAIL = 'p into the new era';
   const BASE_E = 2, MAXE = 40, RISE_AT = 28, TRIGGER_AT = 28, RING_AT = 28, FADE_AT = 40;
-  // 사진 리빌: e가 REVEAL_START개일 때 얇은 띠로 등장 → REVEAL_END개에서 풀폭
-  const REVEAL_START = 3, REVEAL_END = 28;
-  // 리빌 완료 시 '밴드'(세로 20% / 가로 12% 여백)까지만 — 전환 때 전체 화면으로 확장됨
+  // 사진은 펼침 효과 없이 기존 타이밍에 단순 페이드인
+  const REVEAL_START = 3;
   const setPhotoReveal = (count) => {
     if (!photoEl) return;
-    const r = Math.max(0, Math.min(1, (count - REVEAL_START) / (REVEAL_END - REVEAL_START)));
-    const h = 49.5 * (1 - r);   // 띠(49.5%) → 가로 끝까지(0%): 풀 폭 밴드 (세로 30% 유지)
-    photoEl.style.clipPath = 'inset(30% ' + h.toFixed(2) + '%)';
+    if (count >= REVEAL_START) photoEl.classList.add('is-in');
   };
+  // 무스(스크롤락 미동작) 대비: 섹션이 화면에 들어오면 사진 페이드인
+  if (photoEl && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) photoEl.classList.add('is-in'); });
+    }, { threshold: 0.12 }).observe(sec);
+  }
   const typedFull = PRE + 'e'.repeat(BASE_E) + TAIL;   // "Skeep into the new era"
   // 늘어나는 e들만 goo span으로 감싼다 (Sk·p into the new era는 일반 폰트)
   const setT1 = (n) => { t1.textContent = PRE + 'e'.repeat(n) + TAIL; };
@@ -3229,7 +3470,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     locked = true;
     window.scrollTo(0, lockY);
     window.addEventListener('scroll', pin, { passive: true });
-    if (reduce) { sticky.classList.add('sk-shown'); setT1(TRIGGER_AT); rise(); ringUp(); if (photoEl) { photoEl.classList.add('is-in'); photoEl.style.clipPath = 'inset(30% 0%)'; } return; }
+    if (reduce) { sticky.classList.add('sk-shown'); setT1(TRIGGER_AT); rise(); ringUp(); if (photoEl) photoEl.classList.add('is-in'); return; }
     const safety = window.setTimeout(finish, 11000);
 
     // 처음 1초는 완전 검정 빈 화면 → 그다음 문구 등장 & 타이핑
@@ -3243,7 +3484,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
           count++;
           eShown = count;
           setT1(count);
-          // 사진 리빌: 띠로 등장 → e가 늘수록 좌우로 펼쳐짐 (워드마크 스트레치와 동기화)
+          // 사진은 펼침 없이 페이드인
           if (count === REVEAL_START && photoEl) photoEl.classList.add('is-in');
           setPhotoReveal(count);
           if (count === RISE_AT) rise();
@@ -3307,7 +3548,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="sec-agent-detail fi" data-agent-scroll>
   <div class="agent-sticky">
-    <video class="agent-bg-video" src="assets/input-hero-bg.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+    <video class="agent-bg-video" src="assets/input-hero-bg.mp4" poster="assets/input-hero-bg-poster.jpg" autoplay loop muted playsinline aria-hidden="true"></video>
     <div class="agent-row">
       <div class="agent-left" data-agent-left>
         <div class="agent-cube-stage" data-agent-cube aria-hidden="true">
@@ -3469,11 +3710,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="diagram-card">
     <div class="diagram-pair diagram-pair--journey">
       <img class="diagram-left" src="assets/journey-left.png" alt="USER JOURNEY — 사용자가 경험하는 이동의 흐름 (정면을 바라보고 서 있는 사용자)">
-      <img class="diagram-right" src="assets/journey-right.png" alt="사용자 경험 플로우: 자동차·거실·세탁 공간·침실로 이어지는 이동의 흐름">
+      <img class="diagram-right" src="assets/journey-right-v2.png" alt="사용자 경험 플로우: 자동차·거실·세탁 공간·침실로 이어지는 이동의 흐름">
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
-      <img class="diagram-left" src="assets/context-left.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
-      <img class="diagram-right" src="assets/context-right.png" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
+      <img class="diagram-left" src="assets/context-left-v2.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
+      <img class="diagram-right" src="assets/context-right-v2.png" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -4877,6 +5118,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const clamp = (min, value, max) => Math.min(max, Math.max(min, value));
     const mix = (from, to, amount) => from + (to - from) * amount;
+    const smoothStep = (start, end, value) => {
+      const t = clamp(0, (value - start) / (end - start), 1);
+      return t * t * (3 - 2 * t);
+    };
     let transitionMetrics = null;
     let transitionTicking = false;
 
@@ -4929,35 +5174,28 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       skipTransitionSticky.style.setProperty('--skip-p', progress.toFixed(4));
       window.__skipP = progress; // 3D 링 배경이 중앙정렬 정도를 읽음
       // ── Text Morph (progress 기반 → 영상과 완전 동기) ──
-      // 최종 문장으로 바뀌는 시작은 늦추고, 실제 몰핑 구간은 짧게 압축한다.
-      const o1 = Math.max(0, Math.min(1, (progress - 0.10) / 0.20));  // t1(eee) 흩어짐: 0.10 → 0.30
-      const o2 = Math.max(0, Math.min(1, (progress - 0.12) / 0.18));  // t2(skip) 맺힘: 0.12 → 0.30
-      // 영화 장면도 너무 일찍 덮이지 않도록 시작만 늦추고 짧게 페이드한다.
-      const videoOpacity = Math.max(0, Math.min(1, (progress - 0.16) / 0.14));
+      // 두 문장이 동시에 선명해지는 고스팅을 막는다.
+      // t1이 거의 사라진 뒤 t2가 이어받고, 교차 구간에서는 둘 다 낮은 투명도만 유지한다.
+      const o1 = smoothStep(0.10, 0.21, progress);  // t1 흩어짐
+      const o2 = smoothStep(0.18, 0.29, progress);  // t2 맺힘
+      // 배경도 같은 완만한 곡선으로 전환해 텍스트 핸드오프와 한 흐름으로 보이게 한다.
+      const videoOpacity = smoothStep(0.14, 0.29, progress);
 
-      // 텍스트 몰핑은 0.30에서 끝내고 마지막 장면은 원래 글꼴로 보여준다.
-      if (progress > 0) {
-        const ex = Math.min(1, progress / 0.30);
-        // 소수점 한 자리 반올림으로 생기던 미세한 계단 현상을 줄인다.
-        const clip = 'inset(' + (30 * (1 - ex)).toFixed(3) + '% 0%)';
-        if (skipPhoto) skipPhoto.style.clipPath = clip;
-        if (skipVideo) { skipVideo.style.clipPath = clip; skipVideo.style.opacity = videoOpacity.toFixed(3); }
-      } else if (skipVideo) {
-        skipVideo.style.opacity = '0';
-      }
+      // 경량화(무스 호환): clip-path 세로 확장 제거 → 영화 장면 이미지는 opacity 크로스페이드만.
+      if (skipVideo) skipVideo.style.opacity = (progress > 0 ? videoOpacity : 0).toFixed(3);
       // t2를 t1과 같은 중앙에 고정 → 제자리 크로스페이드
       skipTransitionTitle.style.top = `${transitionMetrics.targetY}px`;
       skipTransitionTitle.style.fontSize = `${transitionMetrics.targetSize}px`;
       skipTransitionTitle.style.lineHeight = `${transitionMetrics.targetLine}px`;
       skipTransitionTitle.style.letterSpacing = `${transitionMetrics.targetSpacing}px`;
       skipTransitionTitle.style.color = 'rgb(255, 255, 255)';
-      // 제자리 goo-blur 크로스페이드 (blur 14 — 겹칠 때 두 문장이 보이도록 세지 않게)
+      // 제자리 크로스페이드 (경량화: SVG goo 필터·blur 제거 → 순수 opacity. 무빙스타일 호환)
       if (skipT1) {
         skipT1.style.opacity = (1 - o1).toFixed(3);
-        skipT1.style.filter = o1 > 0 ? 'blur(' + (14 * o1).toFixed(1) + 'px) url(#skeeeepMorphGoo)' : 'none';
+        skipT1.style.filter = 'none';
       }
       skipTransitionTitle.style.opacity = o2.toFixed(3);
-      skipTransitionTitle.style.filter = o2 < 1 ? 'blur(' + (14 * (1 - o2)).toFixed(1) + 'px) url(#skeeeepMorphGoo)' : 'none';
+      skipTransitionTitle.style.filter = 'none';
     }
 
     const requestSkipTransitionUpdate = () => {
@@ -5151,10 +5389,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     const keepHeroPinned = () => {
       if (!heroLocked()) return;
-      if (window.scrollY > 0) {
-        revealHeroButton();
-        window.scrollTo(0, 0);
-      }
+      // 맨 위 고정만 한다. 버튼 노출은 의도적인 아래 제스처(휠/터치/키)로만 —
+      // 새로고침 시 브라우저 스크롤 복원이 만드는 우발적 스크롤로는 버튼이 뜨지 않게.
+      if (window.scrollY > 0) window.scrollTo(0, 0);
     };
 
     heroFloatTrigger.setAttribute('role', 'button');
@@ -5173,7 +5410,21 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('scroll', keepHeroPinned, { passive: true });
-    lockHero();
+
+    // 새로고침/복원으로 인트로 아래 위치에서 들어오면 히어로 잠금을 건너뛰고 그 위치 그대로 유지.
+    let _savedY = 0;
+    try { _savedY = parseInt(sessionStorage.getItem('skeepScrollY') || '0', 10) || 0; } catch (e) {}
+    const _navEntry = performance.getEntriesByType('navigation')[0];
+    const _restoring = _navEntry && (_navEntry.type === 'reload' || _navEntry.type === 'back_forward');
+    if (_restoring && _savedY > 4) {
+      document.body.classList.add('hero-intro-unlocked');
+      document.body.classList.remove('hero-scroll-locked', 'hero-float-ready', 'hero-dissolving');
+      document.documentElement.classList.remove('hero-scroll-locked');
+      if (skeeeepSection) skeeeepSection.classList.add('vis');
+      window.scrollTo(0, _savedY);
+    } else {
+      lockHero();
+    }
   }
 
   const philScroll = document.querySelector('[data-phil-scroll]');
@@ -5381,9 +5632,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let agentTicking = false;
     let agentIntroStartedAt = null;
 
-    // ── Prism Grid 배경 (Originkit 이식): hover 시 칸이 파스텔로 켜졌다 1s 페이드아웃 ──
-    const AGENT_GRID_BOX = 40;
-    const AGENT_GRID_COLORS = ['#FFFFFF'];  /* 흰색 셀 */
+    // ── 그리드 배경 (정적) — 격자선만 표시, 터치 인터랙션 없음 ──
     const agentGrid = document.createElement('div');
     agentGrid.className = 'agent-grid-bg';
     agentGrid.setAttribute('aria-hidden', 'true');
@@ -5391,113 +5640,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     agentGridLit.className = 'agent-grid-lit';
     agentGrid.appendChild(agentGridLit);
     agentSticky.insertBefore(agentGrid, agentSticky.firstChild);
-    let agentGridLastKey = '';
-    agentSticky.addEventListener('pointermove', (event) => {
-      const rect = agentSticky.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
-      const col = Math.floor(x / AGENT_GRID_BOX);
-      const row = Math.floor(y / AGENT_GRID_BOX);
-      const key = col + '_' + row;
-      if (key === agentGridLastKey) return;
-      agentGridLastKey = key;
-      const cell = document.createElement('div');
-      cell.className = 'agent-grid-cell';
-      cell.style.left = (col * AGENT_GRID_BOX) + 'px';
-      cell.style.top = (row * AGENT_GRID_BOX) + 'px';
-      cell.style.background = AGENT_GRID_COLORS[Math.floor(Math.random() * AGENT_GRID_COLORS.length)];
-      agentGridLit.appendChild(cell);
-      requestAnimationFrame(() => { cell.style.opacity = '0'; });
-      window.setTimeout(() => cell.remove(), 1050);
-    });
-    agentSticky.addEventListener('pointerleave', () => { agentGridLastKey = ''; });
+    // (터치 시 격자칸 켜지는 인터랙션 제거 — 정적 그리드 배경만 유지)
 
-    // ── Scramble Text (Originkit GlitchCharReveal 이식) — "Migratable Agent" 타이틀 ──
-    // 등장: 글자가 글리치되며 좌→우로 확정. hover: 커서 근처 글자 diffusion 스크램블(radius 2).
-    // titleScrambleEnter 는 updateAgent 의 인트로 시작 시점에서 호출된다(페이드인과 동기화).
-    // titleDetailMode 는 디테일(밝은) 뷰 여부 — true면 스크램블/hover 모두 정지하고 원문 유지.
+    // ── 타이틀 "Migratable Agent" — 스크램블/글리치/hover 효과 제거, 원문 정적 유지 ──
+    // titleDetailMode 는 디테일(밝은) 뷰 여부 플래그로만 남겨둔다(updateAgent에서 설정).
     let titleScrambleEnter = () => {};
     let titleDetailMode = false;
-    (function () {
-      const GC_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const GC_LOWER = 'abcdefghijklmnopqrstuvwxyz';
-      const HOVER_POOL = 'abcdefghijklmnopqrstuvwxyz';
-      const RADIUS = 2;
-      const ENTER_MS = 1600;
-      const GLITCH_STEP = 45;
-      const isLower = (c) => c === c.toLowerCase() && c !== c.toUpperCase();
-      const glitchFor = (c) => { const p = isLower(c) ? GC_LOWER : GC_UPPER; return p[Math.floor(Math.random() * p.length)]; };
-      const pick = (pool) => pool[Math.floor(Math.random() * pool.length)];
-
-      const final = agentTitle.textContent;
-      agentTitle.textContent = '';
-      const cells = [];       // { el, ch, space }
-      for (const ch of final) {
-        const s = document.createElement('span');
-        if (ch === ' ') { s.innerHTML = '&nbsp;'; cells.push({ el: s, ch, space: true }); }
-        else { s.textContent = ch; cells.push({ el: s, ch, space: false }); }
-        agentTitle.appendChild(s);
-      }
-      const chars = cells.filter((c) => !c.space);
-
-      const HOLD_MS = 2200;   // 스크램블 완료 후 solid 유지 시간 (이 동안 hover 가능)
-      let enterRAF = null, enterActive = false;
-      function restoreAll() { chars.forEach((c) => { c.el.textContent = c.ch; }); }
-      function runEnter(onDone) {
-        if (enterActive) return;
-        enterActive = true;
-        const N = chars.length;
-        const ease = (t) => 1 - (1 - t) * (1 - t);          // easeOut
-        const lockAt = chars.map((_, i) => ease((i + 1) / N) * ENTER_MS);
-        const start = performance.now();
-        let lastStep = 0;
-        function frame(now) {
-          // 디테일(밝은) 뷰로 넘어가면 즉시 원문 복원하고 종료 (스크램블 금지)
-          if (titleDetailMode) { restoreAll(); enterActive = false; enterRAF = null; if (typeof onDone === 'function') onDone(); return; }
-          const el = now - start;
-          let done = true;
-          if (now - lastStep >= GLITCH_STEP) {
-            lastStep = now;
-            chars.forEach((c, i) => {
-              if (el >= lockAt[i]) { if (c.el.textContent !== c.ch) c.el.textContent = c.ch; }
-              else { done = false; c.el.textContent = glitchFor(c.ch); }
-            });
-          } else if (el < lockAt[N - 1]) done = false;
-          if (done) { restoreAll(); enterActive = false; enterRAF = null; if (typeof onDone === 'function') onDone(); }
-          else enterRAF = requestAnimationFrame(frame);
-        }
-        enterRAF = requestAnimationFrame(frame);
-      }
-
-      // 반복 재생: 스크램블 → HOLD_MS solid 유지 → 다시 스크램블 (계속)
-      let looping = false, loopTimer = null;
-      function cycle() {
-        if (titleDetailMode) { restoreAll(); loopTimer = window.setTimeout(cycle, 400); return; } // 디테일 뷰: 스크램블 없이 대기
-        runEnter(() => { loopTimer = window.setTimeout(cycle, HOLD_MS); });
-      }
-      // 인트로 페이드인 시작 시 루프 시작 (updateAgent에서 호출, 한 번만)
-      titleScrambleEnter = () => { if (looping) return; looping = true; cycle(); };
-
-      // hover diffusion
-      let lastPivot = -1;
-      agentTitle.addEventListener('pointermove', (event) => {
-        if (enterActive || titleDetailMode) return;   // 디테일 뷰에선 hover 스크램블 금지
-        let pivot = 0, minD = Infinity;
-        chars.forEach((c, i) => {
-          const r = c.el.getBoundingClientRect();
-          const d = Math.abs((r.left + r.width / 2) - event.clientX);
-          if (d < minD) { minD = d; pivot = i; }
-        });
-        if (pivot === lastPivot) return;
-        lastPivot = pivot;
-        restoreAll();
-        for (let i = Math.max(0, pivot - RADIUS); i <= Math.min(chars.length - 1, pivot + RADIUS); i++) {
-          chars[i].el.textContent = pick(HOVER_POOL);
-        }
-      });
-      agentTitle.addEventListener('pointerleave', () => { lastPivot = -1; restoreAll(); });
-    })();
 
 
     function clamp01(value) {

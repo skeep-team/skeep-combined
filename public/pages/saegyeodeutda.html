@@ -1716,9 +1716,8 @@
 </section>
 
 <script>
-  // Refresh should always start at the top, not wherever the user left off.
-  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  window.addEventListener('load', () => window.scrollTo(0, 0));
+  // 새로고침 시 보던 위치 그대로 유지(맨 위로 튀지 않음). 첫 방문은 자연히 맨 위.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'auto';
 </script>
 
 <script>
