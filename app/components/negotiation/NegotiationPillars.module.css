@@ -51,6 +51,62 @@
   object-fit: cover;
 }
 
+/* skeep-flow.mp4는 정지 화면이라 이미지 대신 대각선 투톤 CSS 그라데이션으로 대체.
+   각도를 @property로 등록해 linear-gradient의 각도 자체를 애니메이션한다. */
+@property --pd-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 100deg;
+}
+.pillarDiagonal {
+  position: absolute;
+  inset: 0;
+  --pd-angle: 100deg;
+  background: linear-gradient(var(--pd-angle), #E2E9EF 50%, #F4F9FC 50%);
+  animation: pdAngleSwing 1.3s cubic-bezier(.65, 0, .35, 1.9) infinite alternate;
+}
+@keyframes pdAngleSwing {
+  0%   { --pd-angle: 72deg; }
+  100% { --pd-angle: 128deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillarDiagonal { animation: none; }
+}
+
+/* 경량화: keep-flow.mp4 대신 CSS 리플 애니메이션 (무빙스타일 호환 + 항상 재생) */
+.pillarRipple {
+  position: absolute;
+  inset: 0;
+  background: #EC1982;
+  overflow: hidden;
+}
+.pillarRippleRing {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 90cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #F469AD;
+  opacity: 0;
+  animation: pillarRippleAnim 3.6s cubic-bezier(.3, 0, .3, 1) infinite;
+}
+.pillarRippleRing:nth-child(1) { animation-delay: 0s; }
+.pillarRippleRing:nth-child(2) { animation-delay: -1.2s; }
+.pillarRippleRing:nth-child(3) { animation-delay: -2.4s; }
+@keyframes pillarRippleAnim {
+  0%   { transform: translate(-50%, -50%) scale(.15); opacity: .95; }
+  8%   { opacity: .95; }
+  100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pillarRippleRing {
+    animation: none;
+    transform: translate(-50%, -50%) scale(.7);
+    opacity: .6;
+  }
+}
+
 .content {
   position: absolute;
   inset: 0;
@@ -127,7 +183,9 @@
     opacity: 1 !important;
   }
 
-  .backgroundVideo {
+  .backgroundVideo,
+  .pillarDiagonal,
+  .pillarRipple {
     position: absolute;
     aspect-ratio: 1600 / 900;
     border-radius: 32px;

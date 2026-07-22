@@ -21,7 +21,7 @@ export default function NegotiationPage() {
     <main>
       <StatementBlock
         heading={["당신이 원하는 그대로", "가장 자연스럽게"]}
-        video={`${BASE_PATH}/negotiation/statement-bg.mp4`}
+        image={`${BASE_PATH}/negotiation/statement-bg.poster.jpg`}
       />
       <EvaluationCriteria />
       <EnvironmentLayers />

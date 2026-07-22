@@ -131,11 +131,59 @@
     }
     .sd-pill-row {
       width: 100%;
+      display: flex;
+      align-items: stretch;
+      gap: clamp(6px, 0.8vw, 14px);
     }
-    .sd-pill-row video {
-      width: 100%;
-      height: auto;
-      display: block;
+    .sd-pill {
+      height: clamp(84px, 11.5vw, 210px);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(16px, 2vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0e1825;
+      overflow: hidden;
+      will-change: flex-grow;
+      animation-duration: 9s;
+      animation-timing-function: cubic-bezier(.65, 0, .35, 1);
+      animation-iteration-count: infinite;
+    }
+    .sd-pill-sensing {
+      background: linear-gradient(135deg, #ff0a6c 0%, #ff6bb3 55%, #ffb199 100%);
+      color: #fff;
+      animation-name: sdPillSensing;
+    }
+    .sd-pill-input {
+      background: linear-gradient(135deg, #ffe9b3 0%, #ffedc9 50%, #ffcda0 100%);
+      animation-name: sdPillInput;
+    }
+    .sd-pill-pause {
+      background: linear-gradient(135deg, #bfe4ff 0%, #eaf6ff 60%, #ffffff 100%);
+      animation-name: sdPillPause;
+    }
+    @keyframes sdPillSensing {
+      0%, 14%   { flex-grow: 7; }
+      28%, 47%  { flex-grow: 1; }
+      61%, 80%  { flex-grow: 2; }
+      100%      { flex-grow: 7; }
+    }
+    @keyframes sdPillInput {
+      0%, 14%   { flex-grow: 2; }
+      28%, 47%  { flex-grow: 2; }
+      61%, 80%  { flex-grow: 7; }
+      100%      { flex-grow: 2; }
+    }
+    @keyframes sdPillPause {
+      0%, 14%   { flex-grow: 1; }
+      28%, 47%  { flex-grow: 7; }
+      61%, 80%  { flex-grow: 1; }
+      100%      { flex-grow: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sd-pill { animation: none; flex-grow: 1 !important; }
     }
     .sd-pink { color: #ff076a; }
     .sd-sensing-scene {
@@ -1560,7 +1608,10 @@
     <p class="sd-body">말하기 전, 스킵은 이미 귀 기울이고 있죠.<br>언제든 주변을 살피며 다음을 준비합니다.</p>
   </div>
   <div class="sd-pill-row fi">
-    <video src="assets/sensing-input-pause-loop.mp4" autoplay loop muted playsinline preload="auto" id="pillVideo"></video>
+    <!-- 경량화: 영상 대신 CSS 애니메이션 (무빙스타일 호환 + 항상 재생) -->
+    <div class="sd-pill sd-pill-sensing">Sensing</div>
+    <div class="sd-pill sd-pill-input">Input</div>
+    <div class="sd-pill sd-pill-pause">Pause</div>
   </div>
 </section>
 

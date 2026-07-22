@@ -73,6 +73,48 @@
   object-fit: cover;
 }
 
+/* 경량화: intent-bg.mp4 대신 CSS 애니메이션 (무빙스타일 호환 + 항상 재생).
+   같은 색의 원을 mix-blend-mode: difference로 겹치면, 크림 배경 위에서는
+   검게(difference(크림,크림)=검정), 검정 글자 위에서는 밝게
+   (difference(검정,크림)=크림) 보여 글자를 훑고 지나가며 반전시키는
+   효과가 난다. */
+.intentStage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #FDF5D1;
+}
+.intentLabel {
+  margin: 0;
+  font-size: clamp(52px, 11vw, 108px);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #000;
+  user-select: none;
+}
+.intentCircle {
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: clamp(160px, 34vw, 300px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #FDF5D1;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  animation: intentSweep 3.6s cubic-bezier(.5, 0, .5, 1) infinite alternate;
+}
+@keyframes intentSweep {
+  0%   { left: -20%; }
+  100% { left: 120%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intentCircle { animation: none; left: 50%; }
+}
+
 .caption {
   position: absolute;
   inset: 0;

@@ -18,7 +18,7 @@ export default function Service3Page() {
     <main>
       <StatementBlock
         heading={["당신다운 경험의 시작"]}
-        video={`${BASE_PATH}/service3/statement-bg.mp4`}
+        image={`${BASE_PATH}/service3/statement-bg.poster.jpg`}
       />
       <TodayStandard />
       <GrowthCycle />

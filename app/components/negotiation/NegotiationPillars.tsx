@@ -6,10 +6,13 @@ import styles from "./NegotiationPillars.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+// 경량화: 세 배경 모두 <video>였지만 skip/skeep은 사실상 정지 화면이라 정적
+// 배경으로, keep만 실제 움직이는 리플이라 CSS 애니메이션으로 대체했다
+// (무빙스타일 호환 + 항상 재생).
 const PILLARS = [
   {
     key: "skip",
-    video: `${BASE_PATH}/negotiation/skip-flow.mp4`,
+    image: `${BASE_PATH}/negotiation/skip-flow-poster.jpg`,
     lightText: true,
     title: ["본질만 남긴 채", "SKIP"],
     body: [
@@ -20,7 +23,7 @@ const PILLARS = [
   },
   {
     key: "skeep",
-    video: `${BASE_PATH}/negotiation/skeep-flow.mp4`,
+    diagonal: true,
     title: ["경계를 존중하는", "SKEEP"],
     body: [
       "환경 운영 규칙과 물리적 한계,",
@@ -30,7 +33,7 @@ const PILLARS = [
   },
   {
     key: "keep",
-    video: `${BASE_PATH}/negotiation/keep-flow.mp4`,
+    ripple: true,
     lightText: true,
     title: ["모두의 흐름은", "KEEP"],
     body: [
@@ -92,7 +95,9 @@ export function NegotiationPillars() {
             const containerWeight = windowWeight(stage, i, 0, 0.35);
             const titleWeight = windowWeight(stage, i, 0.22, 0.35);
             const bodyWeight = windowWeight(stage, i, 0.44, 0.35);
-            const hasVideo = "video" in pillar;
+            const hasImage = "image" in pillar;
+            const hasDiagonal = "diagonal" in pillar && pillar.diagonal;
+            const hasRipple = "ripple" in pillar && pillar.ripple;
             const lightText = "lightText" in pillar && pillar.lightText;
             return (
               <div
@@ -100,16 +105,17 @@ export function NegotiationPillars() {
                 className={styles.layer}
                 style={{ "--pillar-opacity": containerWeight } as CSSProperties}
               >
-                {hasVideo && (
-                  // eslint-disable-next-line jsx-a11y/media-has-caption
-                  <video
-                    className={styles.backgroundVideo}
-                    src={pillar.video}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                  />
+                {hasImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className={styles.backgroundVideo} src={pillar.image} alt="" />
+                )}
+                {hasDiagonal && <div className={styles.pillarDiagonal} aria-hidden="true" />}
+                {hasRipple && (
+                  <div className={styles.pillarRipple} aria-hidden="true">
+                    <span className={styles.pillarRippleRing} />
+                    <span className={styles.pillarRippleRing} />
+                    <span className={styles.pillarRippleRing} />
+                  </div>
                 )}
                 <div className={styles.content}>
                   <div className={styles.textBlock}>
