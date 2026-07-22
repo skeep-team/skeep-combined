@@ -7,15 +7,18 @@
   var path = window.location.pathname.replace(/\/$/, '') || '/';
   var basePath = path === '/skeep-combined' || path.indexOf('/skeep-combined/') === 0 ? '/skeep-combined' : '';
   var relativePath = basePath ? path.slice(basePath.length) || '/' : path;
+  // 로컬 파일(file://)로 열었을 때: 3개 정적 페이지는 같은 폴더 상대경로로 연결,
+  // 허브·Next 라우트는 서버가 있어야 동작하므로 비활성 처리. 배포(웹서버)에선 원래대로.
+  var isFile = window.location.protocol === 'file:';
   var items = [
-    { label: '인덱스', href: basePath + '/', match: ['/'] },
-    { label: '오버뷰', href: basePath + '/pages/index.html', match: ['/pages/index.html'] },
-    { label: '새겨듣다', href: basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
-    { label: '스며들다', href: basePath + '/pages/smeureulda.html', match: ['/pages/smeureulda.html'] },
-    { label: '조율하다', href: basePath + '/negotiation', match: ['/negotiation'] },
-    { label: '빌려쓰다', href: basePath + '/principles', match: ['/principles'] },
-    { label: '지켜주다', href: basePath + '/service2', match: ['/service2'] },
-    { label: '기억하다', href: basePath + '/service3', match: ['/service3'] },
+    { label: '인덱스', href: isFile ? '' : basePath + '/', match: ['/'], disabled: isFile },
+    { label: '오버뷰', href: isFile ? 'index.html' : basePath + '/pages/index.html', match: ['/pages/index.html'] },
+    { label: '새겨듣다', href: isFile ? 'saegyeodeutda.html' : basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
+    { label: '스며들다', href: isFile ? 'smeureulda.html' : basePath + '/pages/smeureulda.html', match: ['/pages/smeureulda.html'] },
+    { label: '조율하다', href: isFile ? '' : basePath + '/negotiation', match: ['/negotiation'], disabled: isFile },
+    { label: '빌려쓰다', href: isFile ? '' : basePath + '/principles', match: ['/principles'], disabled: isFile },
+    { label: '지켜주다', href: isFile ? '' : basePath + '/service2', match: ['/service2'], disabled: isFile },
+    { label: '기억하다', href: isFile ? '' : basePath + '/service3', match: ['/service3'], disabled: isFile },
     { label: '비즈니스', href: '', match: ['/business'], disabled: true }
   ];
 
