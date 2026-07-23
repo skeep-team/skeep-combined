@@ -19,13 +19,13 @@ export function TodayStandard() {
         </p>
       </Reveal>
       <Reveal delay={0.1} className={styles.box}>
-        {/* 무빙스타일(무스)에선 <video>가 렌더 안 돼 빈 화면 → 정적 이미지(poster)로 교체.
-            영상 모션은 백업 레포(skeep-combined-video)에 보존. */}
-        <img
+        <video
           className={styles.video}
-          src={`${BASE_PATH}/service3/today-standard-bg.poster.jpg`}
-          alt=""
-          draggable={false}
+          src={`${BASE_PATH}/service3/today-standard-bg.mp4`}
+          autoPlay
+          muted
+          loop
+          playsInline
         />
       </Reveal>
     </section>
