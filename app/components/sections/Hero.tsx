@@ -53,6 +53,9 @@ const PAUSE_AFTER_TYPE_MS = 1200;
 const PAUSE_AFTER_DELETE_MS = 300;
 
 const PRE_ROLL_MS = 1000;
+const INTRO_HOLD_MS = 300;
+const INTRO_SHRINK_MS = 900;
+const INTRO_HANDOFF_MS = 140;
 
 // How long each keyword stays "current" (typing + pause + deleting + gap),
 // matching useTypewriter's own timing so the next clip can be pre-rolled.
@@ -81,12 +84,14 @@ function playVideo(el: HTMLVideoElement) {
   });
 }
 
-function useTypewriter(words: string[]) {
+function useTypewriter(words: string[], enabled: boolean) {
   const [wordIndex, setWordIndex] = useState(0);
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<"typing" | "pausing" | "deleting">("typing");
 
   useEffect(() => {
+    if (!enabled) return;
+
     const word = words[wordIndex];
 
     if (phase === "typing") {
@@ -112,13 +117,16 @@ function useTypewriter(words: string[]) {
       setPhase("typing");
     }, PAUSE_AFTER_DELETE_MS);
     return () => clearTimeout(id);
-  }, [phase, text, wordIndex, words]);
+  }, [enabled, phase, text, wordIndex, words]);
 
   return { text, wordIndex };
 }
 
 export function Hero() {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const [introSettled, setIntroSettled] = useState(false);
+  const [cubeReady, setCubeReady] = useState(false);
+  const [introHandedOff, setIntroHandedOff] = useState(false);
   const videoRefs = useRef<Partial<Record<string, HTMLVideoElement>>>({});
   // Stable per-word ref callbacks so React doesn't detach/reattach the video
   // refs on every re-render (this component re-renders on every typed
@@ -132,18 +140,49 @@ export function Hero() {
     }
     return cache;
   }, []);
-  const { text: typedText, wordIndex } = useTypewriter(KEYWORDS);
+  // Start the first "Focus" immediately. Cube readiness only gates the 3D
+  // rotation; tying the typewriter to it delayed the first character until
+  // the 1.2s intro shrink had completely finished.
+  const { text: typedText, wordIndex } = useTypewriter(KEYWORDS, true);
+
+  // Start with the Focus face filling the viewport, hold briefly, then shrink
+  // into the resting cube size. Cube rotation stays paused until the intro
+  // finishes, while the first keyword begins typing immediately.
+  useEffect(() => {
+    const shrinkTimer = window.setTimeout(
+      () => setIntroSettled(true),
+      INTRO_HOLD_MS
+    );
+    const cubeTimer = window.setTimeout(
+      () => setCubeReady(true),
+      INTRO_HOLD_MS + INTRO_SHRINK_MS
+    );
+    // Keep the shrunken Focus poster above the already-visible first cube face
+    // for a few frames. Removing it in the same frame as cube activation can
+    // expose a blank compositor frame on Samsung Moving Style/Tizen.
+    const handoffTimer = window.setTimeout(
+      () => setIntroHandedOff(true),
+      INTRO_HOLD_MS + INTRO_SHRINK_MS + INTRO_HANDOFF_MS
+    );
+
+    return () => {
+      window.clearTimeout(shrinkTimer);
+      window.clearTimeout(cubeTimer);
+      window.clearTimeout(handoffTimer);
+    };
+  }, []);
 
   // 배경 큐브: 타이핑 단어가 바뀔 때마다 옆으로(rotateY) -90° 회전. 4면 = 실루엣 4장.
   // 순수 CSS 3D transform → 무빙스타일(무스)에서도 렌더 (canvas/WebGL/framer-motion 없음).
   const [cubeRotY, setCubeRotY] = useState(0);
   const prevWordRef = useRef(wordIndex);
   useEffect(() => {
+    if (!cubeReady) return;
     if (wordIndex !== prevWordRef.current) {
       prevWordRef.current = wordIndex;
       setCubeRotY((r) => r - 90);
     }
-  }, [wordIndex]);
+  }, [cubeReady, wordIndex]);
 
   useEffect(() => {
     const currentWord = KEYWORDS[wordIndex];
@@ -197,12 +236,34 @@ export function Hero() {
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
       <div className={styles.section}>
+        <div
+          className={`${styles.introPoster} ${
+            introSettled ? styles.introPosterShrunk : ""
+          } ${introHandedOff ? styles.introPosterHandedOff : ""}`}
+          aria-hidden="true"
+        >
+          <img
+            className={styles.introPosterImg}
+            src={KEYWORD_POSTERS.Focus}
+            alt=""
+            draggable={false}
+            loading="eager"
+            fetchPriority="high"
+          />
+        </div>
         {/* 배경: 옆으로 도는 3D 큐브 (실루엣 4면). 순수 CSS 3D → 무스 호환.
             영상 버전은 백업 레포(skeep-combined-video)에 보존. */}
-        <div className={styles.cubeScene} aria-hidden="true">
+        <div
+          className={`${styles.cubeScene} ${
+            cubeReady ? styles.cubeSceneReady : styles.cubeSceneHidden
+          }`}
+          aria-hidden="true"
+        >
           <div
             className={styles.cube}
-            style={{ transform: `rotateY(${cubeRotY}deg)` }}
+            style={{
+              transform: `translateZ(calc(-1 * var(--cube-half))) rotateY(${cubeRotY}deg)`,
+            }}
           >
             {KEYWORDS.map((word, i) => (
               <div
@@ -217,6 +278,8 @@ export function Hero() {
                   src={KEYWORD_POSTERS[word]}
                   alt=""
                   draggable={false}
+                  loading="eager"
+                  fetchPriority={i === 0 ? "high" : "auto"}
                 />
               </div>
             ))}

@@ -138,6 +138,10 @@
   pointer-events: none;
 }
 
+.cardTagOverview {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .thumbnail {
   position: absolute;
   inset: 0;

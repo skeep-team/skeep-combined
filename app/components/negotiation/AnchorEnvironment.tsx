@@ -1,42 +1,21 @@
-"use client";
-
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import styles from "./AnchorEnvironment.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+// 왼쪽으로 흐르는 순서 = 원본 영상 순환 순서. h = 박스 높이 대비 상대 높이(원본 비율).
+const DEVICES = [
+  { key: "car", alt: "자동차", h: 40 },
+  { key: "box", alt: "AMUGEONA 커피머신", h: 52 },
+  { key: "phone", alt: "스마트폰", h: 62 },
+  { key: "laptop", alt: "노트북", h: 42 },
+  { key: "buds", alt: "무선 이어버즈", h: 26 },
+] as const;
+
+// 매끄러운 무한 루프를 위해 세트를 2벌 이어붙인다(총 10칸).
+const TRACK = [...DEVICES, ...DEVICES];
+
 export function AnchorEnvironment() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoPlaying, setVideoPlaying] = useState(false);
-
-  const ensurePlayback = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const rect = video.getBoundingClientRect();
-    const isNearViewport = rect.bottom > -window.innerHeight && rect.top < window.innerHeight * 2;
-    if (!isNearViewport || !video.paused) return;
-
-    video.muted = true;
-    void video.play().catch(() => {
-      // The poster remains visible if an embedded browser still refuses
-      // autoplay. A following scroll/visibility event retries playback.
-    });
-  }, []);
-
-  useEffect(() => {
-    const retry = window.setInterval(ensurePlayback, 1800);
-    window.addEventListener("scroll", ensurePlayback, { passive: true });
-    document.addEventListener("visibilitychange", ensurePlayback);
-    ensurePlayback();
-
-    return () => {
-      window.clearInterval(retry);
-      window.removeEventListener("scroll", ensurePlayback);
-      document.removeEventListener("visibilitychange", ensurePlayback);
-    };
-  }, [ensurePlayback]);
-
   return (
     <section className={styles.section}>
       <div className={styles.header}>
@@ -56,30 +35,34 @@ export function AnchorEnvironment() {
         </p>
       </div>
       <div className={styles.box}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className={styles.boxPoster}
-          src={`${BASE_PATH}/negotiation/anchor-environment.poster.jpg`}
-          alt="다양한 제품이 양쪽으로 흐르는 장면"
-        />
-        <video
-          ref={videoRef}
-          className={videoPlaying ? `${styles.boxVideo} ${styles.boxVideoPlaying}` : styles.boxVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={`${BASE_PATH}/negotiation/anchor-environment.poster.jpg`}
-          onCanPlay={ensurePlayback}
-          onPlaying={() => setVideoPlaying(true)}
-          onPause={() => setVideoPlaying(false)}
-        >
-          <source
-            src={`${BASE_PATH}/negotiation/anchor-environment.mp4?v=tv-baseline-1`}
-            type='video/mp4; codecs="avc1.42E028"'
-          />
-        </video>
+        <div className={styles.conveyor} aria-hidden="true">
+          <div className={styles.track}>
+            {TRACK.map((d, i) => (
+              <div key={i} className={styles.slot} data-device={d.key}>
+                <div
+                  className={styles.device}
+                  style={{ "--h": `${d.h}%` } as CSSProperties}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.black}
+                    src={`${BASE_PATH}/negotiation/devices/${d.key}-black.webp`}
+                    alt=""
+                    draggable={false}
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.color}
+                    src={`${BASE_PATH}/negotiation/devices/${d.key}-color.webp`}
+                    alt=""
+                    draggable={false}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span className={styles.anchorDot} aria-hidden="true" />
       </div>
     </section>
   );

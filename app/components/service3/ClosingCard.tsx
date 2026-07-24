@@ -20,7 +20,7 @@ export function ClosingCard() {
         />
         <video
           className={`${styles.bgVideo} ${videoReady ? styles.bgVideoReady : ""}`}
-          src={`${BASE_PATH}/service3/closing-bg.mp4`}
+          src={`${BASE_PATH}/service3/closing-bg.mp4?v=20260723`}
           poster={`${BASE_PATH}/service3/closing-bg.poster.jpg`}
           preload="metadata"
           autoPlay

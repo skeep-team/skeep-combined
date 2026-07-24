@@ -12,7 +12,10 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const PILLARS = [
   {
     key: "skip",
-    image: `${BASE_PATH}/negotiation/skip-flow-poster.jpg`,
+    images: [
+      `${BASE_PATH}/negotiation/skip-conditions-reduced.png`,
+      `${BASE_PATH}/negotiation/skip-conditions-full.png`,
+    ],
     lightText: true,
     title: ["본질만 남긴 채", "SKIP"],
     body: [
@@ -95,7 +98,7 @@ export function NegotiationPillars() {
             const containerWeight = windowWeight(stage, i, 0, 0.35);
             const titleWeight = windowWeight(stage, i, 0.22, 0.35);
             const bodyWeight = windowWeight(stage, i, 0.44, 0.35);
-            const hasImage = "image" in pillar;
+            const hasImages = "images" in pillar;
             const hasDiagonal = "diagonal" in pillar && pillar.diagonal;
             const hasRipple = "ripple" in pillar && pillar.ripple;
             const lightText = "lightText" in pillar && pillar.lightText;
@@ -105,9 +108,20 @@ export function NegotiationPillars() {
                 className={styles.layer}
                 style={{ "--pillar-opacity": containerWeight } as CSSProperties}
               >
-                {hasImage && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className={styles.backgroundVideo} src={pillar.image} alt="" />
+                {hasImages && (
+                  <div className={styles.dissolveBackground} aria-hidden="true">
+                    {pillar.images.map((image, imageIndex) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={image}
+                        className={`${styles.backgroundVideo} ${
+                          imageIndex === 1 ? styles.backgroundVideoAlternate : ""
+                        }`}
+                        src={image}
+                        alt=""
+                      />
+                    ))}
+                  </div>
                 )}
                 {hasDiagonal && <div className={styles.pillarDiagonal} aria-hidden="true" />}
                 {hasRipple && (

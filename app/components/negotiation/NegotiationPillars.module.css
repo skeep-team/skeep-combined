@@ -43,12 +43,47 @@
   opacity: var(--pillar-opacity, 1);
 }
 
+.dissolveBackground,
 .backgroundVideo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.dissolveBackground {
+  overflow: hidden;
+  background: #0d1928;
+  transform: translateZ(0);
+}
+
+.backgroundVideo {
   object-fit: cover;
+  opacity: 1;
+}
+
+.backgroundVideoAlternate {
+  opacity: 0;
+  animation: skipOverlayDissolve 4s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@keyframes skipOverlayDissolve {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backgroundVideoAlternate {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 /* skeep-flow.mp4는 정지 화면이라 이미지 대신 대각선 투톤 CSS 그라데이션으로 대체.
@@ -63,7 +98,7 @@
   inset: 0;
   --pd-angle: 100deg;
   background: linear-gradient(var(--pd-angle), #E2E9EF 50%, #F4F9FC 50%);
-  animation: pdAngleSwing 1.3s cubic-bezier(.65, 0, .35, 1.9) infinite alternate;
+  animation: pdAngleSwing 1.8s cubic-bezier(.65, 0, .35, 1) infinite alternate;
 }
 @keyframes pdAngleSwing {
   0%   { --pd-angle: 72deg; }
@@ -89,11 +124,11 @@
   border-radius: 50%;
   background: #F469AD;
   opacity: 0;
-  animation: pillarRippleAnim 3.6s cubic-bezier(.3, 0, .3, 1) infinite;
+  animation: pillarRippleAnim 4.8s cubic-bezier(.3, 0, .3, 1) infinite;
 }
 .pillarRippleRing:nth-child(1) { animation-delay: 0s; }
-.pillarRippleRing:nth-child(2) { animation-delay: -1.2s; }
-.pillarRippleRing:nth-child(3) { animation-delay: -2.4s; }
+.pillarRippleRing:nth-child(2) { animation-delay: -1.6s; }
+.pillarRippleRing:nth-child(3) { animation-delay: -3.2s; }
 @keyframes pillarRippleAnim {
   0%   { transform: translate(-50%, -50%) scale(.15); opacity: .95; }
   8%   { opacity: .95; }
@@ -183,7 +218,7 @@
     opacity: 1 !important;
   }
 
-  .backgroundVideo,
+  .dissolveBackground,
   .pillarDiagonal,
   .pillarRipple {
     position: absolute;

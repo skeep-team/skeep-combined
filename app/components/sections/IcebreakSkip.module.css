@@ -43,7 +43,7 @@
 .visual {
   position: relative;
   width: min(720px, 100%);
-  aspect-ratio: 720 / 466;
+  aspect-ratio: 720 / 430;
   border-radius: 32px;
   overflow: hidden;
   background: #0e1825;
@@ -57,4 +57,99 @@
   height: 100%;
   object-fit: cover;
   border-radius: 32px;
+}
+
+/* ── 영상(noise.mp4) 재현: 볼드 하이라이트는 실측 위치에 고정, 흐린 노이즈가
+   양쪽에서 슬라이드-인 → 유지 → 슬라이드-아웃. 이동은 빠르고 유지구간이 긺(원본 리듬).
+   행 위치(top)는 프레임 실측(19.6/41.3/62.8/82.6%)으로 인라인 지정. 무스 호환. ── */
+.noiseCard {
+  position: absolute;
+  inset: 0;
+}
+.noiseRow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+}
+.noiseHl {
+  position: absolute;
+  top: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 46px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+.noiseIcon {
+  display: inline-block;
+  height: 1.15em;
+  width: auto;
+  margin-right: 0.16em;
+  vertical-align: -0.22em;
+}
+.noiseCtxL,
+.noiseCtxR {
+  white-space: nowrap;
+  font-size: 46px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.38);
+  pointer-events: none;
+}
+/* 바깥 span = 위치/세로정렬만 담당(정적). 슬라이드+페이드는 안쪽 span이 담당해
+   ctxL의 세로정렬 transform과 슬라이드 transform이 충돌하지 않게 분리(좌/우 동일 동작). */
+.noiseCtxL {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  margin-right: 0.4em;
+  text-align: right;
+}
+.noiseCtxR {
+  display: inline-block;
+  margin-left: 0.4em;
+}
+/* 볼드 없는 줄(3행): 좌우 마진이 겹쳐 간격이 두 배가 되므로 절반으로 → 한 칸 띄어쓰기와 동일 */
+.noiseRowPlain .noiseCtxL {
+  margin-right: 0.2em;
+}
+.noiseRowPlain .noiseCtxR {
+  margin-left: 0.2em;
+}
+.ctxSlideL,
+.ctxSlideR {
+  display: inline-block;
+}
+.ctxSlideL {
+  animation: ctxSlideInL 4s ease-in-out infinite;
+}
+.ctxSlideR {
+  animation: ctxSlideInR 4s ease-in-out infinite;
+}
+/* 좁은 화면(카드 축소)에선 글자도 함께 축소 */
+@media (max-width: 760px) {
+  .noiseHl,
+  .noiseCtxL,
+  .noiseCtxR {
+    font-size: 6.2vw;
+  }
+}
+/* 페이드 + 양옆에서 들어오는 슬라이드. 최종 위치(translateX 0)는 정렬된 제자리.
+   0–30% 정렬·가득 → 46–66% 옆으로 빠져 사라짐 → 84–100% 다시 들어와 정렬·가득 */
+@keyframes ctxSlideInL {
+  0%, 30% { opacity: 1; transform: translateX(0); }
+  46%, 66% { opacity: 0; transform: translateX(-24px); }
+  84%, 100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes ctxSlideInR {
+  0%, 30% { opacity: 1; transform: translateX(0); }
+  46%, 66% { opacity: 0; transform: translateX(24px); }
+  84%, 100% { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ctxSlideL,
+  .ctxSlideR { animation: none; opacity: 1; transform: translateX(0); }
 }

@@ -18,6 +18,7 @@
   </script>
   <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -206,7 +207,7 @@
     /* ── 3-4. sticky transition: 목적은 행동으로 → TWO-COL ── */
     .logic-transition {
       position: relative;
-      height: 230svh;
+      height: 290svh;
       background: #fff;
       margin-top: 0;
     }
@@ -379,7 +380,7 @@
     .sec-word-morph-scene {
       position: relative;
       height: 140vh;
-      background: #fff;
+      background: #FFCCE5;
     }
     .word-scene-sticky {
       position: sticky;
@@ -437,6 +438,48 @@
       width: 100%;
       height: 100%;
       display: block;
+    }
+    /* 경량화: 픽셀 파티클 캔버스 대신 CSS mix-blend-mode 스윕 (무빙스타일 호환 + 항상 재생).
+       기억하다(SkeepExperience) INTENT 스테이지와 같은 기법 — 배경과 같은 색 사각형이
+       mix-blend-mode:difference로 텍스트 위를 스쳐 지나가며 훑는다(원 대신 사각형).
+       .word-scene-sticky의 position:sticky를 타고 넘어가면 블렌드가 배경과 제대로
+       합성되지 않는(크로미움) 현상이 있어, isolation:isolate + 자체 배경색으로
+       블렌드 계산을 이 박스 안에서 완결시킨다(스티키 경계를 건널 필요 없음). */
+    .parsing-particle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      isolation: isolate;
+      background: #FFCCE5;
+    }
+    .parsing-static-label {
+      margin: 0;
+      font-family: 'Bebas Neue', 'Pretendard', sans-serif;
+      font-size: clamp(84px, 15vw, 260px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #0e1825;
+      text-transform: uppercase;
+      user-select: none;
+    }
+    .parsing-sweep {
+      position: absolute;
+      top: 50%;
+      left: -25%;
+      width: clamp(280px, 42vw, 640px);
+      aspect-ratio: 1;
+      background: #FFCCE5;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      animation: parsingSweep 3.6s cubic-bezier(.5, 0, .5, 1) infinite alternate;
+    }
+    @keyframes parsingSweep {
+      0%   { left: -25%; }
+      100% { left: 125%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .parsing-sweep { animation: none; left: 50%; }
     }
 
     /* ── 6. PARSING INTRO ── */
@@ -501,24 +544,51 @@
       object-fit: cover;
       mix-blend-mode: screen;
     }
+    /* 무스 호환 2D canvas 메타볼 (SVG goo 필터 대체) */
+    .pd-morph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     /* 레퍼런스 영상의 3.14초 리듬: 정지 → 응집 → 단일 원 → 정지 */
-    /* 원본 영상을 프레임 스프라이트(CSS 플립북)로 재생 → 무스에서도 영상과 동일한 메타볼 goo.
-       SVG필터/canvas/영상 없음, 정적 이미지 + steps() 애니메이션만. */
+    /* 순수 CSS 메타볼 goo (이미지/영상/canvas 없음, 벡터라 무한 선명, 색 정확).
+       흰 원 5개를 CSS로 흩뿌렸다가 중앙으로 모아 하나로 합친다. 부모에 SVG goo 필터
+       (feGaussianBlur+feColorMatrix)를 걸어 겹치는 "알파"만 임계처리 → 원들이 액체처럼
+       목을 이루며 붙는다(색은 안 건드려 핑크 #FD0A6B 그대로 유지).
+       총 3.14s: 빈 화면 → 응집 → 단일 원 → 페이드 (원본 영상 리듬). */
     .pd-goo-stage {
-      position: absolute;
-      inset: 0;
-      background-image: url('assets/parsing-goo-sprite.jpg');
-      background-repeat: no-repeat;
-      background-position: 0 0;
-      background-size: calc(44 * 100%) 100%;
-      animation: pdSprite 3.14s steps(44) infinite;
+      position: absolute; inset: 0; overflow: hidden;
+      animation: pdGooFade 3.14s ease-in-out infinite;
     }
-    @keyframes pdSprite {
-      from { background-position-x: 0%; }
-      to { background-position-x: 100%; }
+    .pd-goo-defs { position: absolute; width: 0; height: 0; }
+    .pd-goo {
+      position: absolute; inset: 0;
+      filter: url(#pdGooFilter);
+    }
+    .pd-blob {
+      position: absolute; top: 50%; left: 50%;
+      width: 24%; aspect-ratio: 1; border-radius: 50%;
+      background: #fff;
+      /* 위치 오프셋(--x/--y)은 "원 크기 대비 %"라 박스가 커져도 비율 유지(반응형) */
+      transform: translate(-50%, -50%) translate(var(--x, 0), var(--y, 0)) scale(var(--s0, 1));
+      animation: pdBlob 3.14s ease-in-out infinite;
+      will-change: transform;
+    }
+    .pd-blob.b1 { --x: 0%;   --y: 0%;   --s0: .92; }
+    .pd-blob.b2 { --x: -77%; --y: -55%; --s0: .5; }
+    .pd-blob.b3 { --x: 76%;  --y: -42%; --s0: .56; }
+    .pd-blob.b4 { --x: -52%; --y: 68%;  --s0: .46; }
+    .pd-blob.b5 { --x: 71%;  --y: 56%;  --s0: .5; }
+    @keyframes pdBlob {
+      0%, 16%  { transform: translate(-50%,-50%) translate(var(--x), var(--y)) scale(var(--s0)); }
+      50%, 74% { transform: translate(-50%,-50%) translate(0, 0) scale(1); }
+      100%     { transform: translate(-50%,-50%) translate(0, 0) scale(1); }
+    }
+    @keyframes pdGooFade {
+      0%, 8%    { opacity: 0; }
+      16%, 74%  { opacity: 1; }
+      90%, 100% { opacity: 0; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .pd-goo-stage { animation: none; background-position-x: 42%; }
+      .pd-goo-stage { animation: none; opacity: 1; }
+      .pd-blob { animation: none; transform: translate(-50%,-50%) scale(1); }
+      .pd-blob.b2, .pd-blob.b3, .pd-blob.b4, .pd-blob.b5 { display: none; } /* 정지 시 단일 원 */
     }
     .principle-grid { display: flex; gap: clamp(12px, 1.6vw, 28px); align-items: stretch; }
     .principle-card {
@@ -567,7 +637,8 @@
       font-size: clamp(16px, 1.75vw, 28px);
     }
     .sec-detail.mapping-photo .pr-body {
-      font-size: clamp(12px, 1.2vw, 19px);
+      font-size: clamp(11px, 1.02vw, 16px);
+      letter-spacing: -0.04em;
     }
     /* ── PILL BTN ── */
     .pill-btn-wrap {
@@ -872,7 +943,7 @@
     .sec-morphing-detail { background: #fff; width: 100%; padding: clamp(170px, 17vw, 260px) var(--edge-padding) clamp(56px, 8vw, 116px); }
     .morphing-detail-row { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(48px, 7vw, 120px); }
     .morphing-detail-left { display: flex; flex-direction: column; gap: clamp(12px, 1.6vw, 28px); flex-shrink: 0; max-width: 760px; }
-    .morphing-detail-h { font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em; }
+    .morphing-detail-h { font-size: clamp(30px,3.7vw,48px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em; }
     .morphing-detail-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; }
     .morphing-detail-right { flex: 0 0 560px; display: flex; flex-direction: column; gap: 20px; }
     .morphing-img-card {
@@ -1137,7 +1208,8 @@
 <section class="sec-word-morph-scene" data-word-scene>
   <div class="word-scene-sticky">
     <div class="parsing-particle-wrap" data-parsing-wave aria-label="Parsing">
-      <canvas class="parsing-particle-canvas"></canvas>
+      <p class="parsing-static-label">PARSING</p>
+      <span class="parsing-sweep" aria-hidden="true"></span>
     </div>
   </div>
 </section>
@@ -1157,8 +1229,115 @@
 <section class="sec-detail parsing-detail-visual fi" id="parsing-detail-visual">
   <div class="detail-head-row">
     <div class="parsing-detail-video-wrap">
-      <!-- 경량화: 영상 대신 순수 CSS 애니메이션(같은색 원 겹침 융합). SVG 필터 없음 → 무스 호환 -->
-      <div class="pd-goo-stage" aria-hidden="true"></div>
+      <!-- 무스 호환 2D canvas 메타볼: 원 4개 → 클로버 → 사각 (액체 융합, 회전, 색 순환). SVG goo 필터 대체 -->
+      <canvas class="pd-morph" id="pdMorphCanvas" aria-hidden="true"></canvas>
+      <script>
+      (() => {
+        const cv = document.getElementById('pdMorphCanvas');
+        if (!cv) return;
+        const ctx = cv.getContext('2d');
+        const off = document.createElement('canvas');
+        const octx = off.getContext('2d');
+        let W, H, DPR, cx, cy, MIN;
+        function resize() {
+          DPR = Math.min(2, window.devicePixelRatio || 1);
+          W = cv.clientWidth; H = cv.clientHeight;
+          if (!W || !H) return;
+          cv.width = off.width = Math.round(W * DPR);
+          cv.height = off.height = Math.round(H * DPR);
+          cx = W / 2; cy = H / 2; MIN = Math.min(W, H);
+        }
+        new ResizeObserver(resize).observe(cv); resize();
+
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const corners = [[-1,-1],[1,-1],[-1,1],[1,1]];
+        const COLORS = [[250,137,219], [117,66,252], [85,189,129]];  // 핑크 #FA89DB → 보라 #7542FC → 초록 #55BD81
+        const lerpC = (a,b,k)=>`rgb(${Math.round(a[0]+(b[0]-a[0])*k)},${Math.round(a[1]+(b[1]-a[1])*k)},${Math.round(a[2]+(b[2]-a[2])*k)})`;
+
+        const STATES = {
+          circle: { off: 0.185,   half: 0.082,  rx: 0.082 },
+          clover: { off: 0.105,   half: 0.120,  rx: 0.120 },
+          square: { off: 0.07625, half: 0.13125, rx: 0.040 },
+        };
+        const lerp = (a,b,k)=>a+(b-a)*k;
+        const easeIO = t => t<0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+
+        const SEQ = ['circle','clover','square','clover'];
+        const HOLD = 1.1, MORPH = 0.9, SEG = HOLD + MORPH;
+        const HOLD_DEG = 46, MORPH_DEG = 44;
+        const GOO = 0.038, CONTRAST = 22;
+
+        function roundedRect(g, x, y, w, h, r) {
+          r = Math.min(r, w/2, h/2);
+          g.moveTo(x+r, y);
+          g.arcTo(x+w, y,   x+w, y+h, r);
+          g.arcTo(x+w, y+h, x,   y+h, r);
+          g.arcTo(x,   y+h, x,   y,   r);
+          g.arcTo(x,   y,   x+w, y,   r);
+          g.closePath();
+        }
+
+        function render(A, B, k, angleDeg, bg) {
+          const p = {
+            off:  lerp(A.off,  B.off,  k) * MIN,
+            half: lerp(A.half, B.half, k) * MIN,
+            rx:   lerp(A.rx,   B.rx,   k) * MIN,
+          };
+          octx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          octx.fillStyle = '#000';
+          octx.fillRect(0, 0, W, H);
+          octx.save();
+          octx.translate(cx, cy);
+          octx.rotate(angleDeg * Math.PI / 180);
+          octx.fillStyle = '#fff';
+          octx.beginPath();
+          for (const [sx, sy] of corners) {
+            const bx = sx * p.off, by = sy * p.off;
+            roundedRect(octx, bx - p.half, by - p.half, p.half*2, p.half*2, p.rx);
+          }
+          octx.fill();
+          octx.restore();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.filter = 'none';
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, cv.width, cv.height);
+          ctx.filter = `blur(${(MIN * GOO * DPR).toFixed(1)}px) contrast(${CONTRAST})`;
+          ctx.globalCompositeOperation = 'lighten';
+          ctx.drawImage(off, 0, 0);
+          ctx.filter = 'none';
+          ctx.globalCompositeOperation = 'source-over';
+        }
+
+        let raf = 0, visible = true, start = performance.now();
+        function frame(now) {
+          raf = requestAnimationFrame(frame);
+          if (!visible || !W || !H) return;
+          const t = (now - start) / 1000;
+          const absSeg = Math.floor(t / SEG);
+          const local = t - absSeg * SEG;
+          const i = ((absSeg % SEQ.length) + SEQ.length) % SEQ.length;
+          const k = local < HOLD ? 0 : easeIO((local - HOLD) / MORPH);
+          const A = STATES[SEQ[i]], B = STATES[SEQ[(i+1) % SEQ.length]];
+          const segAngle = local < HOLD
+            ? HOLD_DEG * (local / HOLD)
+            : HOLD_DEG + MORPH_DEG * ((local - HOLD) / MORPH);
+          const angle = absSeg * (HOLD_DEG + MORPH_DEG) + segAngle;
+          const cA = COLORS[absSeg % 3], cB = COLORS[(absSeg + 1) % 3];
+          render(A, B, k, angle, lerpC(cA, cB, k));
+        }
+
+        if (reduce) {
+          (function once(){ if(!W){ resize(); requestAnimationFrame(once); return; } render(STATES.square, STATES.square, 1, 0, lerpC(COLORS[0], COLORS[0], 0)); })();
+        } else {
+          if ('IntersectionObserver' in window) {
+            new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(cv);
+          }
+          document.addEventListener('visibilitychange', () => { if (document.hidden) visible = false; });
+          raf = requestAnimationFrame(frame);
+        }
+      })();
+      </script>
     </div>
     <div>
       <p class="detail-h">
@@ -1451,13 +1630,13 @@
   <div class="principle-grid">
     <div class="principle-card fi d1">
       <p class="pr-num">Principle 01</p>
-      <p class="pr-title">도메인 컴포넌트 매칭</p>
-      <p class="pr-body">현재 제어 가능한 스키퍼블의 API 명세를 동적으로 스캔하여 매칭 가능한 리소스를 선별합니다.</p>
+      <p class="pr-title">적절한 후보 매칭</p>
+      <p class="pr-body">현재 제어 가능한 스키퍼블 후보군을 근거로, 지금 이 목적에 적합한 리소스를 선별합니다.</p>
     </div>
     <div class="principle-card fi d2">
       <p class="pr-num">Principle 02</p>
-      <p class="pr-title">물리 법칙 시뮬레이션</p>
-      <p class="pr-body">실제 물리 세계의 제약 조건을 반영하여 실행할 수 있는 경로만을 초고속으로 필터링합니다.</p>
+      <p class="pr-title">타당성 교차 확인</p>
+      <p class="pr-body">파싱이 이미 확인한 물리적 제약을 후보군에 다시 대조하여, 실행 가능한 기능 조합만 남깁니다.</p>
     </div>
     <div class="principle-card fi d3">
       <p class="pr-num">Principle 03</p>
@@ -1469,9 +1648,9 @@
 
 <!-- ══ 14. MORPHING BRIDGE ══ -->
 <section class="sec-morphing-bridge fi">
-  <div class="morphing-pill" aria-label="Morphing">
+  <div class="morphing-pill" aria-label="Dispatch">
     <span class="morphing-pill-word" aria-hidden="true">
-      <span style="--i:0">M</span><span style="--i:1">o</span><span style="--i:2">r</span><span style="--i:3">p</span><span style="--i:4">h</span><span style="--i:5">i</span><span style="--i:6">n</span><span style="--i:7">g</span>
+      <span style="--i:0">D</span><span style="--i:1">i</span><span style="--i:2">s</span><span style="--i:3">p</span><span style="--i:4">a</span><span style="--i:5">t</span><span style="--i:6">c</span><span style="--i:7">h</span>
     </span>
   </div>
   <p class="morphing-bridge-text">
@@ -1594,9 +1773,9 @@
 <section class="sec-skip-banner fi">
   <p class="skip-banner-t">스킵하다&nbsp;<span class="dim">스며들다</span></p>
   <p class="skip-banner-desc">
-    각 스키퍼블의 눈높이에 맞춰 완벽하게 변신하는 것<br>
-    그 어떤 공간에 가더라도 마치 처음부터 그곳에 있었던 것처럼<br>
-    자연스럽게 동화되는 스킵만의 영리한 공간 이동 방식, 모핑
+    목적 달성을 위한 실행 블록을 패킷에 실어, 사용자 곁의 환경에 전달하는 일.<br>
+    멀리 있던 기기도, 처음 마주한 공간도 패킷이 닿는 순간 사용자를 이해하고,<br>
+    자연스럽게 맥락과 목적을 이어받는 스킵만의 영리한 전달 방식.
   </p>
 </section>
 
@@ -1604,30 +1783,30 @@
 <section class="sec-morphing-detail">
   <div class="morphing-detail-row">
     <div class="morphing-detail-left fi">
+      <p class="detail-label" style="margin-bottom:0">Dispatch</p>
       <p class="morphing-detail-h">
-        로마에 가면<br>로바 법을 따르듯, 모핑
+        실행블록과 최소 유효 맥락을 패킷에 실어<br>사용자 곁의 환경에 전달하는 단계
       </p>
       <p class="morphing-detail-p">
-        스킵은 세상 모든 기기에 무작정 모핑하지 않습니다.<br>
-        당신의 움직임을 미리 읽고, 다음에 도착할 그 공간에만<br>
-        정확하게 패킷을 던지는 물수제비 스페셜리스트죠.
+        각 환경의 에이전트가 곧바로 사용자의 경험을 이어갈 수 있도록<br>
+        사용자 곁의 서비스와 제품, 공간 어디든 척척
       </p>
     </div>
     <div class="morphing-detail-right">
       <div class="morphing-img-card fi d1">
         <span class="mic-label">Principle 01</span>
-        <p class="mic-title">연계준비 감지</p>
-        <p class="mic-body">사용자가 특정 목적을 수행하기 직전의 전조 행동을 포착합니다.</p>
+        <p class="mic-title">실행 블록과 맥락 전달</p>
+        <p class="mic-body">연산이 끝난 실행 블록에 최소 유효 맥락(MVC)을 실어, 확정된 각 환경으로 전달합니다.</p>
       </div>
       <div class="morphing-img-card fi d2">
         <span class="mic-label">Principle 02</span>
-        <p class="mic-title">명시적 움직임 라우팅</p>
-        <p class="mic-body">유추가 필요 없는, 겉으로 명확하게 드러나는 행동적 확신을 읽어냅니다.&nbsp;</p>
+        <p class="mic-title">구독 플랜 기반 개수 제한</p>
+        <p class="mic-body">동시에 전달할 수 있는 패킷 수는 사용자의 구독 플랜에 따라 정해지며,</p>
       </div>
       <div class="morphing-img-card fi d3">
         <span class="mic-label">Principle 03</span>
-        <p class="mic-title">비명시적 움직임 동적 보정</p>
-        <p class="mic-body">명확한 신호가 없을 때도&nbsp;표정, 제스처, 생체 신호를 통해 다음 행동을 추론합니다.</p>
+        <p class="mic-title">각 환경의 자율적 판단</p>
+        <p class="mic-body">전달받은 각 환경의 에이전트는 스스로 판단해, 블록을 즉시 처리하거나 기능을 다운로드 합니다.</p>
       </div>
     </div>
   </div>

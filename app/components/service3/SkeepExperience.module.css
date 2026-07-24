@@ -125,12 +125,98 @@
   color: #8390a2;
 }
 
-.beyondVideo {
+.beyondCollage {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
+  background: #000;
+  isolation: isolate;
+}
+
+.beyondPhoto {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: 21%;
+  aspect-ratio: 1;
   object-fit: cover;
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) rotate(var(--rotate)) scale(0.25);
+  transform-origin: 50% 50%;
+  animation: beyondPhotoFlow 1.8s linear infinite;
+  animation-delay: var(--delay);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.beyondPhoto1 {
+  --left: 49.9%;
+  --top: 28.8%;
+  --rotate: -4deg;
+  --delay: -0.36s;
+  z-index: 1;
+}
+
+.beyondPhoto2 {
+  --left: 60.3%;
+  --top: 33.7%;
+  --rotate: 8deg;
+  --delay: -0.18s;
+  z-index: 2;
+}
+
+.beyondPhoto3 {
+  --left: 67.1%;
+  --top: 48.1%;
+  --rotate: 5deg;
+  --delay: 0s;
+  z-index: 3;
+}
+
+.beyondPhoto4 {
+  --left: 43.5%;
+  --top: 55.5%;
+  --rotate: -7deg;
+  --delay: 0.28s;
+  z-index: 4;
+}
+
+.beyondPhoto5 {
+  --left: 49.5%;
+  --top: 64%;
+  --rotate: 7deg;
+  --delay: 0.42s;
+  z-index: 5;
+}
+
+.beyondPhoto6 {
+  --left: 60.7%;
+  --top: 64.4%;
+  --rotate: -6deg;
+  --delay: 0.56s;
+  z-index: 6;
+}
+
+@keyframes beyondPhotoFlow {
+  0% {
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) rotate(var(--rotate)) scale(0.25);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  4% {
+    opacity: 1;
+  }
+  14%,
+  30% {
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0) rotate(var(--rotate)) scale(1);
+  }
+  48%,
+  100% {
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0) rotate(var(--rotate)) scale(1);
+  }
 }
 
 .seamlessWrap {
@@ -191,5 +277,13 @@
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%),
       #e7eaf0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beyondPhoto {
+    animation: none;
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0) rotate(var(--rotate)) scale(1);
   }
 }

@@ -35,7 +35,7 @@
   aspect-ratio: 1600 / 900;
   border-radius: 32px;
   overflow: hidden;
-  background: var(--color-bg-soft);
+  background: #ffffff;
 }
 
 .boxVideo {
@@ -44,6 +44,83 @@
   height: 100%;
   object-fit: cover;
   border-radius: 32px;
+}
+
+/* 경량화: collage.mp4 대신 CSS 애니메이션 (무빙스타일 호환 + 항상 재생).
+   원본 영상 150프레임 전수를 minAreaRect로 정밀 측정(크기 px/1600, px/900,
+   회전각, 색상)해서 만든 타임라인 — 큰 마젠타 정사각형(그리며 축소)
+   → 넓은 복숭아/연노랑 직사각형 → 세로로 긴 민트/하늘색 직사각형
+   → 하늘색 정사각형으로 모프하며 회전(-15deg) → 페이드아웃 → 반복.
+   width/height 대신 고정 크기(80% × 86.6%, 관측된 최대치) 박스를
+   transform: scale()로 축소/확대해 GPU에서만 처리한다 ("User" 라벨은
+   박스 바깥의 형제 요소라 스케일의 영향을 받지 않고 항상 같은 크기 유지). */
+.collageStage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 색 박스만 모프/페이드. "User"는 항상 그대로(스테이지의 형제라 영향 없음). */
+.collageCard {
+  position: absolute;
+  width: 80%;
+  height: 86.6%;
+  transform-origin: center;
+  animation: collageMorph 5s ease-in-out infinite;
+}
+.collageLabel {
+  position: relative; /* 박스 위에 겹침 */
+  display: inline-block;
+  font-size: clamp(28px, 3.5vw, 56px);
+  font-weight: 600; /* 고정: 원본은 굵기 일정, 크기(scale)로만 강약이 남 */
+  letter-spacing: -0.02em;
+  color: #111111;
+  transform-origin: center;
+  /* 크기만 부드럽게 축소(굵기 스냅 제거 → 끊김 없음, 회전 없이 수평 유지).
+     실측 높이 78→67→60→47px 를 최종 크기 대비 배율로 환산. */
+  animation: collageLabelAnim 5s ease-in-out infinite;
+}
+@keyframes collageLabelAnim {
+  0%,  12% { transform: scale(1.66); } /* ① 흰 배경 · 가장 큼 */
+  30%, 42% { transform: scale(1.43); } /* ② 분홍 정사각 (박스와 함께 축소) */
+  54%, 58% { transform: scale(1.28); } /* ③ 크림 가로 */
+  70%      { transform: scale(1.12); } /* ④ 하늘 세로 */
+  80%      { transform: scale(1.0);  } /* ⑤ 하늘 정사각 */
+  90%, 100% { transform: scale(1.0); } /* 기울기 · 유지 */
+}
+/* 딱 5단계: ① 흰(User만) → ② 분홍 정사각(축소되며 등장) → ③ 크림 가로 →
+   ④ 하늘색 세로 → ⑤ 하늘색 정사각 -15° 비틀기 → 유지 → 페이드 후 반복.
+   scale는 base(80%×86.6%) 대비. "User"는 박스 밖 형제라 크기 고정. */
+/* 주의: transform은 오른쪽부터 적용 → rotate()를 앞(왼쪽)에 둬야 "먼저 scale로
+   정사각형을 만든 뒤 그걸 통째로 회전"함. 순서를 바꾸면 회전한 걸 비대칭 축소해
+   마름모로 찌그러진다. */
+@keyframes collageMorph {
+  /* ① 흰 배경 · User만 (박스 숨김). 줄어들기 전 = 더 큰 "정사각형"(가로세로 비례). */
+  0%,  16% { opacity: 0; transform: rotate(0deg) scale(.54, .89); background: #EE73AE; }
+  /* ② 분홍 정사각형이 축소되며 등장 → 유지 */
+  30%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #EE73AE; }
+  42%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #EE73AE; }
+  /* ③ 크림 가로 직사각형 (변화 1) */
+  54%, 58% { opacity: 1; transform: rotate(0deg) scale(.40, .24); background: #FCF1CE; }
+  /* ④ 하늘색 세로 직사각형 (변화 2) */
+  70%      { opacity: 1; transform: rotate(0deg) scale(.23, .48); background: #D6EBFB; }
+  /* ⑤-a 하늘색 정사각형 먼저 완성 → ⑤-b 정사각형인 채 왼쪽으로 각도만 -15° 회전 */
+  80%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #D6EBFB; }
+  90%, 96% { opacity: 1; transform: rotate(-15deg) scale(.34, .56); background: #D6EBFB; }
+  100%     { opacity: 0; transform: rotate(-15deg) scale(.34, .56); background: #D6EBFB; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .collageCard {
+    animation: none;
+    opacity: 1;
+    transform: scale(.34, .56);
+    background: #EE73AE;
+  }
+  .collageLabel {
+    animation: none;
+    transform: scale(1.3);
+  }
 }
 
 @media (max-width: 640px) {

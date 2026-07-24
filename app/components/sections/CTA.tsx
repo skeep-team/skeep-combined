@@ -19,14 +19,22 @@ export function CTA() {
         </p>
       </Reveal>
       <Reveal delay={0.15} className={styles.visual}>
-        <video
-          className={styles.video}
-          src={`${BASE_PATH}/cta/restart.mp4`}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        {/* 영상(restart.mp4) 재현 → 무스 호환 CSS. 표지판은 고정, 원 안 화살표만 회전.
+            영상 버전은 백업 레포(skeep-combined-video)에 보존. */}
+        <div className={styles.signWrap} aria-hidden="true">
+          <img
+            className={styles.signBase}
+            src={`${BASE_PATH}/cta/restart-sign.png`}
+            alt=""
+            draggable={false}
+          />
+          <img
+            className={styles.arrow}
+            src={`${BASE_PATH}/cta/restart-arrow.png`}
+            alt=""
+            draggable={false}
+          />
+        </div>
       </Reveal>
     </section>
   );

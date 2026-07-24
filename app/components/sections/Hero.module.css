@@ -4,6 +4,8 @@
 }
 
 .section {
+  --hero-cube-w: min(72vw, 920px);
+  --hero-cube-h: min(68vh, 560px);
   height: 100vh;
   position: sticky;
   top: 0;
@@ -21,23 +23,79 @@
   z-index: 0;
 }
 
+.introPoster {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  opacity: 1;
+  transform: translate3d(-50%, -50%, 0);
+  transition:
+    width 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.18s linear;
+  backface-visibility: hidden;
+  will-change: width, height, opacity;
+}
+
+.introPosterShrunk {
+  width: var(--hero-cube-w);
+  height: var(--hero-cube-h);
+}
+
+.introPosterHandedOff {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.introPoster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 24, 37, 0.6);
+  pointer-events: none;
+}
+
+.introPosterImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 /* ── 배경 3D 큐브 (옆으로 rotateY 회전, 실루엣 4면). 순수 CSS 3D → 무스 호환 ── */
 .cubeScene {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   perspective: 1600px;
   perspective-origin: 50% 50%;
+  transform: translateZ(0);
+  transition: opacity 0.12s linear;
+  backface-visibility: hidden;
+}
+
+.cubeSceneHidden {
+  opacity: 0;
+}
+
+.cubeSceneReady {
+  opacity: 1;
 }
 .cube {
-  --cube-w: min(62vw, 760px);
+  --cube-w: var(--hero-cube-w);
   --cube-half: calc(var(--cube-w) / 2);
   position: relative;
   width: var(--cube-w);
-  height: min(58vh, 460px);
+  height: var(--hero-cube-h);
   transform-style: preserve-3d;
   transition: transform 1.1s cubic-bezier(0.44, 0, 0.56, 1);
   will-change: transform;
@@ -119,7 +177,7 @@
 
 .heading {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   font-size: clamp(32px, 4.8vw, 72px);
   font-weight: 600;
   letter-spacing: -0.04em;

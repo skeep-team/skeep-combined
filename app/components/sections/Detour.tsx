@@ -1,10 +1,8 @@
 "use client";
 
 import { useMotionValueEvent, useScroll } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import styles from "./Detour.module.css";
-
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const LINE_RANGES: [number, number][] = [
   [0.05, 0.22],
@@ -12,6 +10,15 @@ const LINE_RANGES: [number, number][] = [
   [0.55, 0.72],
   [0.55, 0.72],
 ];
+
+// 경량화: bg.mp4(회전하는 나침반 바늘) 대신 CSS 애니메이션
+// (무빙스타일 호환 + 항상 재생). 다이얼은 15도 간격 24개 눈금,
+// 6개마다(0/90/180/270도) 굵은 방위 눈금.
+const TICK_COUNT = 24;
+const TICKS = Array.from({ length: TICK_COUNT }, (_, i) => ({
+  angle: i * (360 / TICK_COUNT),
+  major: i % 6 === 0,
+}));
 
 function clampedProgress([start, end]: [number, number], value: number) {
   if (end === start) return value >= end ? 1 : 0;
@@ -39,14 +46,31 @@ export function Detour() {
   return (
     <div ref={wrapperRef} className={styles.wrapper}>
       <section className={styles.section}>
-        <video
-          className={styles.bgVideo}
-          src={`${BASE_PATH}/detour/bg.mp4`}
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
+        <div className={styles.compassBg} aria-hidden="true">
+          <div className={styles.dial}>
+            {TICKS.map((tick, i) => (
+              <span
+                key={i}
+                className={tick.major ? `${styles.tick} ${styles.tickMajor}` : styles.tick}
+                style={{ "--tick-angle": `${tick.angle}deg` } as CSSProperties}
+              />
+            ))}
+            <svg className={styles.needle} viewBox="0 0 131 477" aria-hidden="true">
+              <defs>
+                <linearGradient id="detourNeedleFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#3D4551" />
+                  <stop offset="50%" stopColor="#3D4551" />
+                  <stop offset="50%" stopColor="#262E3A" />
+                  <stop offset="100%" stopColor="#262E3A" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 60.2 19.3 Q 65.5 0 70.8 19.3 L 131 238.5 L 70.8 457.7 Q 65.5 477 60.2 457.7 L 0 238.5 Z"
+                fill="url(#detourNeedleFill)"
+              />
+            </svg>
+          </div>
+        </div>
         <div className={styles.textBlock}>
           <h2 className={styles.heading}>
             <span style={lineStyle(lineProgress[0])}>우회하는 것 또한</span>

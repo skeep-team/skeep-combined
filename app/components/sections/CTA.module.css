@@ -40,6 +40,7 @@
   aspect-ratio: 720 / 466;
   border-radius: 32px;
   overflow: hidden;
+  background: linear-gradient(160deg, #ffecf4 0%, #ffffff 62%);
 }
 
 @media (max-width: 860px) {
@@ -54,11 +55,37 @@
   }
 }
 
-.video {
+/* 표지판(원+RESTART+기둥) 세로 이미지: 카드 중앙에 높이 기준으로 배치 */
+.signWrap {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 90%;
+  aspect-ratio: 1137 / 1532;
+}
+.signBase {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 32px;
+  object-fit: contain;
+}
+/* 흰 화살표: 실측한 원 중심(48.3%, 29.4%)에 얹어 그 자리에서 회전(스핀) */
+.arrow {
+  position: absolute;
+  left: 48.3%;
+  top: 29.4%;
+  width: 30%;
+  height: auto;
+  transform-origin: center;
+  animation: ctaArrowNudge 5s ease-in-out infinite;
+}
+/* 원본 실측: 0°(우) 유지 → +20°(위로, 반시계=CSS -20deg) 유지 → 0° 복귀 유지 (5s 루프) */
+@keyframes ctaArrowNudge {
+  0%, 20% { transform: translate(-50%, -50%) rotate(0deg); }
+  34%, 54% { transform: translate(-50%, -50%) rotate(-20deg); }
+  66%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arrow { animation: none; transform: translate(-50%, -50%) rotate(0deg); }
 }

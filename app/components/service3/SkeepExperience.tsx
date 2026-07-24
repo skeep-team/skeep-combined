@@ -44,15 +44,29 @@ function IntentVisual() {
 }
 
 function BeyondVisual() {
+  const photos = [
+    { src: "kiosk.png", alt: "공항 키오스크를 사용하는 장면" },
+    { src: "headphones.png", alt: "헤드폰으로 음악을 듣는 장면" },
+    { src: "washer.png", alt: "세탁기 안을 들여다보는 가족" },
+    { src: "coffee.png", alt: "커피를 들고 이동하는 사람" },
+    { src: "friends.png", alt: "차 안에서 웃고 있는 친구들" },
+    { src: "scooter.png", alt: "스쿠터에서 휴대폰을 사용하는 사람" },
+  ];
+
   return (
-    <video
-      className={styles.beyondVideo}
-      src={`${BASE_PATH}/service3/beyond-bg.mp4`}
-      autoPlay
-      muted
-      loop
-      playsInline
-    />
+    <div className={styles.beyondCollage}>
+      {photos.map((photo, index) => (
+        <img
+          key={photo.src}
+          className={`${styles.beyondPhoto} ${styles[`beyondPhoto${index + 1}`]}`}
+          src={`${BASE_PATH}/service3/beyond-collage/${photo.src}`}
+          alt={photo.alt}
+          loading="eager"
+          decoding="async"
+          draggable={false}
+        />
+      ))}
+    </div>
   );
 }
 

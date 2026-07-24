@@ -214,7 +214,9 @@
       position: relative; z-index: 2;
       width: 100%;
       height: clamp(276px, 38vh, 440px);
-      margin-top: clamp(48px, 7vh, 105px);
+      /* 사진(코버플로우)을 텍스트 위로 올림 (flex order). 여백은 아래쪽으로 뒤집는다. */
+      order: -1;
+      margin-bottom: clamp(48px, 7vh, 105px);
       display: flex; align-items: center; justify-content: center;
       perspective: 1600px;
       pointer-events: none;
@@ -261,10 +263,11 @@
       letter-spacing: 0.1px; white-space: nowrap;
       box-shadow: 0 5px 18px rgba(0,0,0,0.45);
       opacity: 1; transition: opacity .2s ease; }
-    /* 배치(이미지 기준): 상단-좌, 하단-좌, 우-중앙 */
-    .hand-chip.c1 { top: 30%; left: 9%; }
-    .hand-chip.c2 { top: 77%; left: 7%; animation-delay: -1.2s; }
-    .hand-chip.c3 { top: 55%; right: 4%; animation-delay: -2.4s; }
+    /* 배치: 사진(코버플로우)이 위로 올라가서, 인사 칩도 카드 팬 주변으로 끌어올림.
+       좌-상(Hola), 좌-중하(Encantado), 우-상(Buenas) — 카드 좌우를 감싼다. */
+    .hand-chip.c1 { top: 24%; left: 9%; }
+    .hand-chip.c2 { top: 46%; left: 6%; animation-delay: -1.2s; }
+    .hand-chip.c3 { top: 30%; right: 4%; animation-delay: -2.4s; }
     .hand-chip.c2 .hand-ico { animation-delay: -0.8s; }
     .hand-chip.c3 .hand-ico { animation-delay: -1.7s; }
     @keyframes chipBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(0.6deg); } }
@@ -863,6 +866,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 100%;
       position: relative; z-index: 1;
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .agent-left {
       display: flex; flex-direction: column; gap: clamp(8px, 1vw, 16px); flex-shrink: 0;
@@ -870,24 +875,27 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       text-align: left;
       position: relative;
       will-change: transform;
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     /* 텍스트 묶음 뒤에만 검정 블러 딤 — 그리드 위, 텍스트 아래에서 가독성 확보 */
     .agent-left::before {
       content: "";
       position: absolute;
       left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
+      transform: translate3d(-50%, -50%, 0);
       width: 150%;
       height: 210%;
       background: radial-gradient(ellipse at center,
-        rgba(4,11,21,0.68) 0%,
-        rgba(4,11,21,0.46) 36%,
-        rgba(4,11,21,0.22) 58%,
-        transparent 78%);
-      filter: blur(32px);
+        rgba(4,11,21,0.72) 0%,
+        rgba(4,11,21,0.48) 34%,
+        rgba(4,11,21,0.20) 58%,
+        transparent 82%);
       opacity: var(--dim-opacity, 1);
       z-index: -1;
       pointer-events: none;
+      will-change: opacity;
     }
     @keyframes agentTitlePulse {
       0%, 100% { -webkit-text-fill-color: rgba(255,255,255,1);   color: rgba(255,255,255,1); }
@@ -907,6 +915,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       text-align: center;
       transform-origin: center center;
       will-change: opacity, transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
       transition: color .45s ease, -webkit-text-fill-color .45s ease, font-size .45s ease;
     }
     .agent-title::before,
@@ -957,7 +967,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       white-space: nowrap;
       margin: 0;
       opacity: 0;
-      will-change: transform;
+      will-change: opacity, transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     /* negotiation 페이지 토글과 디자인 통일: 다크 컨테이너 + 흰 선택 카드 + 번호/라벨 */
     .pills-row   {
@@ -971,6 +983,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: 0;
       transform: translateY(32px);
       will-change: opacity, transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .pill-sm {
       flex: 1 1 0;
@@ -1079,6 +1093,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: 0;
       transform: translateY(56px);
       will-change: opacity, transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
     .agent-view-hidden { display: none !important; }
     .agent-principles-col {
@@ -5542,6 +5558,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     new ResizeObserver(resize).observe(cv); resize();
     const STEPS = 100;
+    let blobRunning = false;
+    let blobRaf = 0;
     function superPath(rx, ry, n, rot) {
       const cR = Math.cos(rot), sR = Math.sin(rot);
       ctx.beginPath();
@@ -5555,7 +5573,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       ctx.closePath();
     }
     function frame(now) {
-      requestAnimationFrame(frame);
+      if (!blobRunning) return;
+      blobRaf = requestAnimationFrame(frame);
       if (!W || !H) return;
       const t = reduce ? 4 : now / 1000;
       ctx.fillStyle = '#40B875'; ctx.fillRect(0, 0, W, H);
@@ -5570,7 +5589,25 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         ctx.fill();
       }
     }
-    requestAnimationFrame(frame);
+    function setBlobRunning(next) {
+      if (blobRunning === next) return;
+      blobRunning = next;
+      if (blobRunning) blobRaf = requestAnimationFrame(frame);
+      else if (blobRaf) cancelAnimationFrame(blobRaf);
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        setBlobRunning(entries[0].isIntersecting && !document.hidden);
+      }, { rootMargin: '12% 0px', threshold: 0.01 }).observe(cv);
+    } else {
+      setBlobRunning(true);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) setBlobRunning(false);
+      else if (cv.getBoundingClientRect().bottom > 0 && cv.getBoundingClientRect().top < innerHeight) {
+        setBlobRunning(true);
+      }
+    });
   })();
 
   // Philosophy 03 media: white ball bouncing down 4 looping bars (orange when hit)
@@ -5589,6 +5626,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       MIN = Math.min(W, H);
     }
     new ResizeObserver(resize).observe(cv); resize();
+    let ballRunning = false;
+    let ballRaf = 0;
     function roundRect(x, y, w, h, r) {
       r = Math.min(r, w / 2, h / 2);
       ctx.beginPath();
@@ -5601,7 +5640,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     const T = 0.44;
     function frame(now) {
-      requestAnimationFrame(frame);
+      if (!ballRunning) return;
+      ballRaf = requestAnimationFrame(frame);
       if (!W || !H) return;
       const time = reduce ? 1.2 : now / 1000;
       const stepX = MIN * 0.132, stepY = -MIN * 0.122;
@@ -5642,7 +5682,25 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       ctx.fill();
       ctx.shadowBlur = 0;
     }
-    requestAnimationFrame(frame);
+    function setBallRunning(next) {
+      if (ballRunning === next) return;
+      ballRunning = next;
+      if (ballRunning) ballRaf = requestAnimationFrame(frame);
+      else if (ballRaf) cancelAnimationFrame(ballRaf);
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        setBallRunning(entries[0].isIntersecting && !document.hidden);
+      }, { rootMargin: '12% 0px', threshold: 0.01 }).observe(cv);
+    } else {
+      setBallRunning(true);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) setBallRunning(false);
+      else if (cv.getBoundingClientRect().bottom > 0 && cv.getBoundingClientRect().top < innerHeight) {
+        setBallRunning(true);
+      }
+    });
   })();
 
   const agentScroll = document.querySelector('[data-agent-scroll]');
@@ -5662,6 +5720,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let activeAgentTab = 'principles';
     let agentTicking = false;
     let agentIntroStartedAt = null;
+    let agentMetrics = null;
 
     // ── 그리드 배경 (정적) — 격자선만 표시, 터치 인터랙션 없음 ──
     const agentGrid = document.createElement('div');
@@ -5687,13 +5746,64 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       return t * t * (3 - 2 * t);
     }
 
+    /*
+     * Moving Style/Tizen optimization:
+     * all layout reads are collected here and cached. Scroll frames below only
+     * update compositor-friendly opacity/transform values, avoiding repeated
+     * forced layouts from offsetWidth/offsetHeight/getComputedStyle.
+     */
+    function measureAgent() {
+      const scrollRect = agentScroll.getBoundingClientRect();
+      const stickyStyle = getComputedStyle(agentSticky);
+      const cubeStyle = agentCube ? getComputedStyle(agentCube) : null;
+      const lineMetrics = agentLines.map(line => ({
+        width: line.offsetWidth,
+        left: line.offsetLeft
+      }));
+      const subWidth = lineMetrics.reduce((max, line) => Math.max(max, line.width), 0);
+      const leftWidth = agentLeft.offsetWidth;
+      const pillsWidth = agentPills.offsetWidth;
+      const baseWidth = Math.max(leftWidth, subWidth, pillsWidth);
+      const introTitleScale = 1.38;
+      const baseLeftHeight =
+        (agentTitle.offsetHeight * introTitleScale) +
+        agentSub.offsetHeight +
+        agentPills.offsetHeight + 56;
+      const cubeBlockHeight = agentCube
+        ? agentCube.offsetHeight + (parseFloat(cubeStyle.marginBottom) || 0)
+        : 0;
+      const stickyPaddingTop = parseFloat(stickyStyle.paddingTop) || 0;
+      const stickyPaddingLeft = parseFloat(stickyStyle.paddingLeft) || 0;
+      const centerX = (window.innerWidth - baseWidth) / 2;
+
+      agentMetrics = {
+        sectionTop: scrollRect.top + window.scrollY,
+        scrollable: Math.max(1, agentScroll.offsetHeight - window.innerHeight),
+        sectionHeight: agentScroll.offsetHeight,
+        baseWidth,
+        leftWidth,
+        pillsWidth,
+        centerX,
+        centerY:
+          (window.innerHeight - (cubeBlockHeight + baseLeftHeight)) / 2 -
+          stickyPaddingTop + 48,
+        stickyPaddingLeft,
+        lineMetrics,
+        cubeShift: (baseWidth - leftWidth) / 2,
+        pillShift: Math.max(0, (baseWidth - pillsWidth) / 2)
+      };
+    }
+
     function updateAgent() {
       agentTicking = false;
-      const rect = agentScroll.getBoundingClientRect();
-      const scrollable = Math.max(1, agentScroll.offsetHeight - window.innerHeight);
-      const progress = clamp01(-rect.top / scrollable);
+      if (!agentMetrics) measureAgent();
+      const scrollY = window.scrollY;
+      const relativeTop = agentMetrics.sectionTop - scrollY;
+      const progress = clamp01(-relativeTop / agentMetrics.scrollable);
       const now = performance.now();
-      const isEntering = rect.top < window.innerHeight * 0.88 && rect.bottom > window.innerHeight * 0.12;
+      const isEntering =
+        relativeTop < window.innerHeight * 0.88 &&
+        relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
       if (agentIntroStartedAt === null && isEntering) { agentIntroStartedAt = now; titleScrambleEnter(); }
       const introElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
       const titleIn = smooth(introElapsed / 700);
@@ -5705,24 +5815,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       // intro video dissolves out as the section reveals its content
       if (agentBgVideo) agentBgVideo.style.opacity = (1 - smooth((progress - 0.35) / 0.35)).toFixed(3);
       const titleScale = 1.38 - move * 0.50;
-      const titleWidth = agentTitle.offsetWidth * titleScale;
-      const lineWidths = agentLines.map(line => line.offsetWidth);
-      const subWidth = Math.max(...lineWidths);
-      // 타이틀은 이제 컬럼 안에서 자체 중앙정렬(align-self:center)되므로 baseWidth는
-      // 실제 레이아웃 폭(agentLeft) 기준으로 잡아 블록을 정확히 화면 중앙에 놓는다
-      const baseWidth = Math.max(agentLeft.offsetWidth, subWidth, agentPills.offsetWidth);
-      const centerX = (window.innerWidth - baseWidth) / 2;
-      const baseLeftHeight = (agentTitle.offsetHeight * titleScale) + agentSub.offsetHeight + agentPills.offsetHeight + 56;
-      const cubeStyle = agentCube ? getComputedStyle(agentCube) : null;
-      const cubeBlockHeight = agentCube
-        ? agentCube.offsetHeight + (parseFloat(cubeStyle.marginBottom) || 0)
-        : 0;
-      const visualHeight = cubeBlockHeight + baseLeftHeight;
-      const stickyStyle = getComputedStyle(agentSticky);
-      const stickyPaddingTop = parseFloat(stickyStyle.paddingTop) || 0;
-      const stickyPaddingLeft = parseFloat(stickyStyle.paddingLeft) || 0;
-      const centerY = (window.innerHeight - visualHeight) / 2 - stickyPaddingTop + 48;
-      const leftViewportX = stickyPaddingLeft + (centerX - stickyPaddingLeft) * (1 - move);
+      const leftViewportX =
+        agentMetrics.stickyPaddingLeft +
+        (agentMetrics.centerX - agentMetrics.stickyPaddingLeft) * (1 - move);
       const detailClean = smooth((move - 0.12) / 0.38);
 
       agentSticky.classList.toggle('is-light', detailClean > 0.5);
@@ -5732,28 +5827,28 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       agentTitle.style.opacity = titleIn;
       if (agentCube) {
         agentCube.style.opacity = (titleIn * (1 - move)).toFixed(3);
-        // 타이틀은 인트로에서 titleScale배로 커져 baseWidth가 넓어지므로,
-        // 실제 폭(agentLeft) 기준으로 가운데 있던 큐브를 baseWidth 중심으로 이동시켜 축을 맞춘다
-        const cubeShift = (baseWidth - agentLeft.offsetWidth) / 2;
-        agentCube.style.transform = `translateX(${(cubeShift * (1 - move)).toFixed(2)}px)`;
+        agentCube.style.transform = `translate3d(${(agentMetrics.cubeShift * (1 - move)).toFixed(2)}px, 0, 0)`;
       }
       agentTitle.style.setProperty('--agent-gradient-opacity', (1 - move).toFixed(3));
       agentTitle.style.setProperty('--agent-black-opacity', move.toFixed(3));
       agentSticky.style.setProperty('--agent-bg-opacity', titleIn * 0.58 * (1 - bgDrift * 0.58) * (1 - detailClean));
       agentSticky.style.setProperty('--agent-bg-y', `${bgDrift * 180}px`);
-      agentTitle.style.transform = `translateY(${(1 - titleIn) * 42}px) scale(${titleScale})`;
-      agentLeft.style.transform = `translate(${(centerX - stickyPaddingLeft) * (1 - move)}px, ${centerY * (1 - move)}px)`;
-      agentLines.forEach(line => {
-        const lineLocalLeft = line.offsetLeft;
-        const lineCenterX = (window.innerWidth - line.offsetWidth) / 2 - leftViewportX - lineLocalLeft;
+      agentTitle.style.transform = `translate3d(0, ${(1 - titleIn) * 42}px, 0) scale(${titleScale})`;
+      agentLeft.style.transform = `translate3d(${(agentMetrics.centerX - agentMetrics.stickyPaddingLeft) * (1 - move)}px, ${agentMetrics.centerY * (1 - move)}px, 0)`;
+      agentLines.forEach((line, index) => {
+        const lineMetric = agentMetrics.lineMetrics[index];
+        const lineCenterX =
+          (window.innerWidth - lineMetric.width) / 2 -
+          leftViewportX -
+          lineMetric.left;
         line.style.opacity = subIn;
-        line.style.transform = `translate(${lineCenterX * (1 - move)}px, ${(1 - subIn) * 22}px)`;
+        line.style.transform = `translate3d(${lineCenterX * (1 - move)}px, ${(1 - subIn) * 22}px, 0)`;
       });
       agentPills.style.opacity = pillsIn;
-      agentPills.style.transform = `translate(${Math.max(0, (baseWidth - agentPills.offsetWidth) / 2) * (1 - move)}px, ${(1 - pillsIn) * 32}px)`;
+      agentPills.style.transform = `translate3d(${agentMetrics.pillShift * (1 - move)}px, ${(1 - pillsIn) * 32}px, 0)`;
       agentViews.forEach(view => {
         view.style.opacity = questionsIn;
-        view.style.transform = `translateY(${(1 - questionsIn) * 56}px)`;
+        view.style.transform = `translate3d(0, ${(1 - questionsIn) * 56}px, 0)`;
       });
       if (agentIntroStartedAt !== null && introElapsed < 1000) requestAgentUpdate();
     }
@@ -5764,9 +5859,21 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       requestAnimationFrame(updateAgent);
     }
 
+    measureAgent();
     updateAgent();
     window.addEventListener('scroll', requestAgentUpdate, { passive: true });
-    window.addEventListener('resize', requestAgentUpdate);
+    window.addEventListener('resize', () => {
+      agentMetrics = null;
+      measureAgent();
+      requestAgentUpdate();
+    });
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        agentMetrics = null;
+        measureAgent();
+        requestAgentUpdate();
+      });
+    }
 
     function setAgentTab(tab) {
       activeAgentTab = tab;

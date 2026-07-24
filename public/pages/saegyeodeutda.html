@@ -1354,10 +1354,10 @@
       color: rgba(0,0,0,.5);
     }
     .sd-summary-video-band {
-      width: min(100%, 520px);
+      width: min(100%, 420px);
       height: auto;
       aspect-ratio: 1 / 1;
-      background: #FFE8F5;
+      background: #66717f;
       border-radius: clamp(24px, 2.4vw, 40px);
       overflow: hidden;
       display: flex;
@@ -1365,13 +1365,262 @@
       justify-content: center;
       margin: 0 auto clamp(32px, 4vw, 64px);
     }
-    .sd-summary-video {
-      flex: 0 0 auto;
+    .sd-summary-orb-scene {
+      position: relative;
+      width: 100%;
       height: 100%;
-      aspect-ratio: 1 / 1;
-      background: #FFE8F5;
+      overflow: hidden;
+      isolation: isolate;
     }
-    .sd-summary-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .sd-summary-orb {
+      position: absolute;
+      z-index: 2;
+      top: 14.3%;
+      left: 35.8%;
+      width: 28.4%;
+      height: 28.4%;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0;
+      transform: translate3d(0, 69%, 0) scale3d(.2, .2, 1);
+      transform-origin: 50% 50%;
+      animation: sd-summary-orb-bounce 3.036s linear infinite;
+      animation-play-state: paused;
+      will-change: transform, opacity, border-radius;
+      backface-visibility: hidden;
+    }
+    .sd-summary-orb-shadow {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      border-radius: 50%;
+      transform: translate3d(-50%, 0, 0) scaleX(.82);
+      transform-origin: 50% 50%;
+      opacity: 0;
+      animation: sd-summary-shadow-impact 3.036s linear infinite;
+      animation-play-state: paused;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+    }
+    .sd-summary-orb-shadow-outer {
+      bottom: 10%;
+      width: 46%;
+      height: 8.5%;
+      background: radial-gradient(ellipse at center,
+        rgba(255, 255, 255, .20) 0%,
+        rgba(255, 255, 255, .07) 48%,
+        rgba(255, 255, 255, 0) 76%);
+    }
+    .sd-summary-orb-shadow-inner {
+      bottom: 11.1%;
+      width: 27%;
+      height: 5%;
+      background: radial-gradient(ellipse at center,
+        rgba(255, 255, 255, .18) 0%,
+        rgba(255, 255, 255, .055) 54%,
+        rgba(255, 255, 255, 0) 78%);
+    }
+    .sd-summary-section.vis .sd-summary-orb,
+    .sd-summary-section.vis .sd-summary-orb-shadow {
+      animation-play-state: running;
+    }
+    @keyframes sd-summary-orb-bounce {
+      0%, 13.3%, 56.7%, 100% {
+        opacity: 0;
+        border-radius: 50%;
+        transform: translate3d(0, 69%, 0) scale3d(.2, .2, 1);
+      }
+      14.4% {
+        opacity: .35;
+        border-radius: 50%;
+        transform: translate3d(0, 69%, 0) scale3d(.2, .2, 1);
+      }
+      15.6% {
+        opacity: .62;
+        border-radius: 50%;
+        transform: translate3d(0, 42%, 0) scale3d(.72, .71, 1);
+      }
+      16.7% {
+        opacity: .86;
+        border-radius: 50%;
+        transform: translate3d(0, 40%, 0) scale3d(.89, .89, 1);
+      }
+      18.1% {
+        opacity: 1;
+        border-radius: 50% / 32.9%;
+        transform: translate3d(0, 69%, 0) scale3d(.97, 1.52, 1);
+      }
+      21.4% {
+        opacity: 1;
+        border-radius: 50% 50% 50% 50% / 33.7% 33.7% 33.7% 33.7%;
+        transform: translate3d(0, 125.4%, 0) scale3d(.97, 1.485, 1);
+      }
+      22.5% {
+        opacity: 1;
+        border-radius: 50% 50% 40% 40% / 40% 40% 32% 32%;
+        transform: translate3d(0, 139%, 0) scale3d(.97, 1.24, 1);
+      }
+      23.7% {
+        opacity: 1;
+        border-radius: 50% 50% 30% 30% / 49% 49% 22% 22%;
+        transform: translate3d(0, 151.7%, 0) scale3d(.97, 1.001, 1);
+      }
+      24.7% {
+        opacity: 1;
+        border-radius: 50% 50% 23% 23% / 49% 49% 16% 16%;
+        transform: translate3d(0, 170%, 0) scale3d(.97, .58, 1);
+      }
+      25.7% {
+        opacity: 1;
+        border-radius: 50% 50% 18% 18% / 46% 46% 12% 12%;
+        transform: translate3d(0, 187.3%, 0) scale3d(.97, .289, 1);
+      }
+      26.7% {
+        opacity: 1;
+        border-radius: 50% 50% 20% 20% / 43% 43% 14% 14%;
+        transform: translate3d(0, 185%, 0) scale3d(.97, .34, 1);
+      }
+      27.7% {
+        opacity: 1;
+        border-radius: 50% 50% 24% 24% / 40% 40% 18% 18%;
+        transform: translate3d(0, 179.6%, 0) scale3d(.97, .421, 1);
+      }
+      29% {
+        opacity: 1;
+        border-radius: 50% 50% 30% 30% / 48% 48% 22% 22%;
+        transform: translate3d(0, 171%, 0) scale3d(.97, .54, 1);
+      }
+      30.3% {
+        opacity: 1;
+        border-radius: 50% 50% 36% 36% / 58% 58% 28% 28%;
+        transform: translate3d(0, 163.8%, 0) scale3d(.97, .658, 1);
+      }
+      31.8% {
+        opacity: 1;
+        border-radius: 50% 50% 43% 43% / 43% 43% 35% 35%;
+        transform: translate3d(0, 126%, 0) scale3d(.97, 1.22, 1);
+      }
+      33.6% {
+        opacity: 1;
+        border-radius: 50% 50% 48% 48% / 27.5% 27.5% 25% 25%;
+        transform: translate3d(0, 86.6%, 0) scale3d(.97, 1.816, 1);
+      }
+      34.4% {
+        opacity: 1;
+        border-radius: 50% 50% 49% 49% / 26.6% 26.6% 26% 26%;
+        transform: translate3d(0, 73%, 0) scale3d(.97, 1.86, 1);
+      }
+      35.6% {
+        opacity: 1;
+        border-radius: 50% 50% 50% 50% / 26.2% 26.2% 26.2% 26.2%;
+        transform: translate3d(0, 49%, 0) scale3d(.97, 1.89, 1);
+      }
+      36.7% {
+        opacity: 1;
+        border-radius: 50% / 34.1%;
+        transform: translate3d(0, 18%, 0) scale3d(.97, 1.45, 1);
+      }
+      38.9% {
+        opacity: 1;
+        border-radius: 50% / 45.4%;
+        transform: translate3d(0, 3.3%, 0) scale3d(.97, 1.059, 1);
+      }
+      42.2% {
+        opacity: 1;
+        border-radius: 50%;
+        transform: translate3d(0, 0, 0) scale3d(.99, 1, 1);
+      }
+      44.4% {
+        opacity: 1;
+        border-radius: 50% / 49%;
+        transform: translate3d(0, 2%, 0) scale3d(.99, 1.01, 1);
+      }
+      46.7% {
+        opacity: 1;
+        border-radius: 50%;
+        transform: translate3d(0, 15%, 0) scale3d(.94, .98, 1);
+      }
+      48.9% {
+        opacity: .89;
+        border-radius: 50% / 46.2%;
+        transform: translate3d(0, 34%, 0) scale3d(.85, .92, 1);
+      }
+      51.1% {
+        opacity: .58;
+        border-radius: 50% / 41.5%;
+        transform: translate3d(0, 50%, 0) scale3d(.73, .88, 1);
+      }
+      53.3% {
+        opacity: .34;
+        border-radius: 50% / 29.9%;
+        transform: translate3d(0, 66%, 0) scale3d(.58, .97, 1);
+      }
+      55.6% {
+        opacity: 0;
+        border-radius: 50% / 14.3%;
+        transform: translate3d(0, 104%, 0) scale3d(.35, 1.22, 1);
+      }
+    }
+    @keyframes sd-summary-shadow-impact {
+      0%, 13.3%, 56.7%, 100% {
+        transform: translate3d(-50%, 0, 0) scaleX(.3);
+        opacity: 0;
+      }
+      14.4% {
+        transform: translate3d(-50%, 0, 0) scaleX(.34);
+        opacity: .18;
+      }
+      18.1% {
+        transform: translate3d(-50%, 0, 0) scaleX(.62);
+        opacity: .38;
+      }
+      21.4% {
+        transform: translate3d(-50%, 0, 0) scaleX(.9);
+        opacity: .62;
+      }
+      23.7% {
+        transform: translate3d(-50%, 0, 0) scaleX(.88);
+        opacity: .78;
+      }
+      25.7% {
+        transform: translate3d(-50%, 0, 0) scaleX(.93);
+        opacity: 1;
+      }
+      27.7% {
+        transform: translate3d(-50%, 0, 0) scaleX(.98);
+        opacity: .92;
+      }
+      30.3% {
+        transform: translate3d(-50%, 0, 0) scaleX(1);
+        opacity: .82;
+      }
+      33.6% {
+        transform: translate3d(-50%, 0, 0) scaleX(.72);
+        opacity: .58;
+      }
+      35.6% {
+        transform: translate3d(-50%, 0, 0) scaleX(.58);
+        opacity: .42;
+      }
+      42.2% {
+        transform: translate3d(-50%, 0, 0) scaleX(.72);
+        opacity: .54;
+      }
+      48.9% {
+        transform: translate3d(-50%, 0, 0) scaleX(.82);
+        opacity: .46;
+      }
+      55.6% {
+        transform: translate3d(-50%, 0, 0) scaleX(.4);
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sd-summary-orb,
+      .sd-summary-orb-shadow {
+        animation: none;
+      }
+    }
     .sd-summary-copy {
       display: flex;
       flex-direction: column;
@@ -1467,7 +1716,7 @@
         flex-basis: auto;
         flex-direction: column;
       }
-      .sd-summary-video-band { width: min(100%, 440px); }
+      .sd-summary-video-band { width: min(100%, 420px); }
       .sd-summary-copy {
         flex-direction: column;
         gap: clamp(14px, 3vw, 22px);
@@ -1801,10 +2050,12 @@
   </div>
 </section>
 
-<section class="sd-section sd-summary-section fi">
+<section id="pause-summary" class="sd-section sd-summary-section fi">
   <div class="sd-summary-video-band">
-    <div class="sd-summary-video">
-      <video src="assets/pause-motion.mp4" autoplay loop muted playsinline></video>
+    <div class="sd-summary-orb-scene" aria-hidden="true">
+      <span class="sd-summary-orb"></span>
+      <span class="sd-summary-orb-shadow sd-summary-orb-shadow-outer"></span>
+      <span class="sd-summary-orb-shadow sd-summary-orb-shadow-inner"></span>
     </div>
   </div>
   <div class="sd-summary-copy">
@@ -1829,6 +2080,36 @@
     </div>
   </div>
 </section>
+
+<script>
+(function () {
+  var summary = document.getElementById('pause-summary');
+  if (!summary) return;
+
+  function startPauseMotion() {
+    summary.classList.add('vis');
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    startPauseMotion();
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting) return;
+    startPauseMotion();
+    window.clearTimeout(fallbackTimer);
+    observer.disconnect();
+  }, { threshold: 0.04 });
+
+  observer.observe(summary);
+
+  var fallbackTimer = window.setTimeout(function () {
+    startPauseMotion();
+    observer.disconnect();
+  }, 1800);
+})();
+</script>
 
 <footer class="site-footer fi">
   <div class="footer-inner">

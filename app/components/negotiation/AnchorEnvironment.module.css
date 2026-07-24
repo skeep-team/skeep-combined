@@ -50,38 +50,133 @@
   color: var(--color-text-muted);
 }
 
+/* 경량화: anchor-environment.mp4 대신 순수 CSS 컨베이어(무빙스타일 호환 +
+   항상 재생). 원본 영상 재현 — 기기들이 왼쪽으로 흐르고, 정중앙에 온
+   기기만 흑백 실루엣에서 컬러로 켜졌다가 지나가면 다시 흑백.
+   순서(왼→오): 자동차 → AMUGEONA → 폰 → 노트북 → 이어버즈 (무한 순환).
+   1바퀴 7.3s, 기기 5개 → 1.46s 간격으로 하나씩 중앙 통과. 실측 타이밍:
+   폰 0s · 노트북 1.46s · 이어버즈 2.92s · 자동차 4.38s · AMUGEONA 5.84s. */
 .box {
   position: relative;
   width: 100%;
   aspect-ratio: 1920 / 766;
   overflow: hidden;
-  background: var(--color-bg-soft);
+  background: #ffffff;
   opacity: 1 !important;
   transform: none !important;
+  /* 한 바퀴 시간. 이 값만 바꾸면 스크롤·컬러·딜레이가 전부 같이 스케일된다.
+     느리게 하려면 키우고(예: 10s), 빠르게 하려면 줄이면 됨. */
+  --anchor-T: 8.5s;
 }
 
-.boxVideo {
+.conveyor {
   position: absolute;
   inset: 0;
-  display: block;
-  width: 100%;
+  overflow: hidden;
+}
+
+/* 트랙 = 5기기 세트를 2벌 이어붙여(총 10칸) -50% 이동으로 매끄럽게 루프.
+   10칸 × 10%(트랙 기준) = 200% 폭. -50% 트랙 = 정확히 세트 1벌만큼 이동. */
+.track {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  object-fit: cover;
+  width: 200%;
+  display: flex;
+  /* 스텝(스냅) 모션: 한 칸씩 이동 → 중앙에 감속하며 "걸림" → 잠깐 멈춤 → 다음 칸.
+     easeInOutQuint(detent 느낌)이 각 이동 구간마다 적용돼, 홀드에서 부드럽게 출발했다가
+     중앙에 딱 물리며 정지한다. */
+  animation: anchorScroll var(--anchor-T) cubic-bezier(0.83, 0, 0.17, 1) infinite;
+  will-change: transform;
+}
+
+.slot {
+  flex: 0 0 10%; /* 트랙의 10% = 박스의 20% */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.device {
+  position: relative;
+  height: var(--h, 50%); /* 기기별 상대 높이(박스 대비), 원본 비율 맞춤 */
+  display: flex;
+}
+
+.device img {
+  height: 100%;
+  width: auto;
+  display: block;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* 검정 실루엣(항상) — 사용자가 제공한 디테일 있는 흑백 렌더를 그대로 사용.
+   (CSS brightness(0)로 만들면 차체 라인/AMUGEONA 로고/노트북 화면 등
+   내부 디테일이 사라져 프로젝터에서 검은 덩어리로만 보임.) */
+.black {
+  position: relative;
+}
+
+/* 컬러 레이어 — 중앙 통과 순간에만 opacity 0→1→0으로 켜짐. */
+.color {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
   opacity: 0;
-  transition: opacity 160ms linear;
+  animation: anchorLit var(--anchor-T) linear infinite;
+  will-change: opacity;
 }
 
-.boxVideoPlaying {
-  opacity: 1;
+/* 각 기기가 정중앙에 오는 순간에 컬러가 peak가 되도록 음수 딜레이로 위상 조정.
+   컬러 keyframe은 phase 0(=100%)에서 lit → 딜레이 D면 t≡D(mod 7.3s)에 lit. */
+.slot[data-device="phone"] .color  { animation-delay: 0s; }
+.slot[data-device="laptop"] .color { animation-delay: calc(var(--anchor-T) * -0.8); }
+.slot[data-device="buds"] .color   { animation-delay: calc(var(--anchor-T) * -0.6); }
+.slot[data-device="car"] .color    { animation-delay: calc(var(--anchor-T) * -0.4); }
+.slot[data-device="box"] .color    { animation-delay: calc(var(--anchor-T) * -0.2); }
+
+/* 5스텝: 각 스텝 20% 중 앞 10%는 홀드(중앙 멈춤), 이어 10%(더 넉넉히) 동안 다음 칸으로
+   느긋하게 이동. 한 칸 = 트랙의 10%(=박스 20%). 100%=-50%에서 다음 세트로 이어짐. */
+@keyframes anchorScroll {
+  0%,  10%  { transform: translate3d(0, 0, 0); }
+  20%, 30%  { transform: translate3d(-10%, 0, 0); }
+  40%, 50%  { transform: translate3d(-20%, 0, 0); }
+  60%, 70%  { transform: translate3d(-30%, 0, 0); }
+  80%, 90%  { transform: translate3d(-40%, 0, 0); }
+  100%      { transform: translate3d(-50%, 0, 0); }
 }
 
-.boxPoster {
+/* 홀드(중앙 멈춤) 구간에 컬러 ON. 중앙으로 미끄러져 들어오며(92→100%) 켜지고,
+   0~10% 유지, 빠져나가며(10→15%) 꺼짐 → 나머지는 흑백. */
+@keyframes anchorLit {
+  0%,  10% { opacity: 1; }
+  15%      { opacity: 0; }
+  92%      { opacity: 0; }
+  100%     { opacity: 1; }
+}
+
+/* 앵커(중앙) 표시 점 — 기기가 활성화되는 고정 중심. */
+.anchorDot {
   position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  left: 50%;
+  bottom: 14%;
+  width: clamp(10px, 0.95vw, 18px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #111111;
+  transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track { animation: none; }
+  .color { animation: none; opacity: 0; }
+  /* 정지 상태에선 중앙(폰)만 컬러로 고정 = 포스터 프레임과 동일. */
+  .slot[data-device="phone"] .color { opacity: 1; }
 }
 
 @media (max-width: 720px) {
