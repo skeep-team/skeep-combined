@@ -30,7 +30,7 @@
 
 .headline {
   color: #000;
-  font-family: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, var(--font-pretendard), sans-serif;
+  font-family: "Helvetica Now Display", var(--font-pretendard), -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 52px;
   font-weight: 500;
   line-height: normal;

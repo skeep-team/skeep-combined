@@ -21,6 +21,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
+    @font-face {
+      font-family: 'T1 Glicky';
+      src: url('../fonts/T1GlickyRegular.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     /* requestAnimationFrame이 직접 스크롤을 보간하는 동안에는 native smooth를 끈다. */
@@ -33,7 +40,7 @@
       --edge-padding: clamp(24px, 8.3vw, 160px);
       background: #fff;
       color: #0e1825;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
@@ -169,10 +176,10 @@
 
     /* ── 1. HERO ─────────────────────────────────── */
     .sec-hero {
-      background: #000;
+      background: #171A1F;
       width: 100%;
       height: 100vh;
-      padding: clamp(64px, 8vw, 120px) var(--edge-padding) clamp(90px, 11vw, 150px);
+      padding: clamp(88px, 10vw, 160px) var(--edge-padding) clamp(90px, 11vw, 150px);   /* top 소폭↑ = 전체 요소 아주 조금 아래로 */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -196,9 +203,11 @@
       cursor: pointer;
     }
     .hero-eyebrow {
-      font-size: clamp(16px,1.85vw,28px); font-weight: 600; line-height: 1.5;
-      letter-spacing: -0.03em; text-transform: uppercase;
-      color: #ff0b6c; margin-bottom: 12px;
+      font-family: 'T1 Glicky', 'Pretendard', sans-serif;
+      font-size: clamp(16px,1.85vw,28px); font-weight: 400; line-height: 1.5;
+      letter-spacing: 0; text-transform: uppercase;
+      color: #ff0b6c; margin-top: 20px; margin-bottom: 12px;   /* 텍스트 블록 아래로 */
+      transition: color 0.6s ease;   /* 사진 바뀔 때 색 순환 */
     }
     .hero-h1 {
       font-size: clamp(28px,3.6vw,56px); font-weight: 700; line-height: 1.36;
@@ -206,8 +215,8 @@
       white-space: nowrap;   /* 한글 메인 타이틀 한 줄 고정 */
     }
     .hero-body {
-      font-size: clamp(13px,1.55vw,21px); font-weight: 500; line-height: 1.48;
-      letter-spacing: -0.03em; color: rgba(255,255,255,.82); max-width: 1120px;
+      font-size: clamp(13px,1.55vw,21px); font-weight: 300; line-height: 1.48;
+      letter-spacing: -0.03em; color: rgba(255,255,255,.7); max-width: 1120px;
     }
     /* ── 인트로 Coverflow 갤러리 (Originkit 이식 → 바닐라 CSS 3D, 무스 호환) ── */
     .hero-coverflow {
@@ -216,6 +225,7 @@
       height: clamp(276px, 38vh, 440px);
       /* 사진(코버플로우)을 텍스트 위로 올림 (flex order). 여백은 아래쪽으로 뒤집는다. */
       order: -1;
+      margin-top: clamp(52px, 8vh, 104px);    /* 손+말풍선과 안 겹치게 블록 전체를 아래로 */
       margin-bottom: clamp(48px, 7vh, 105px);
       display: flex; align-items: center; justify-content: center;
       perspective: 1600px;
@@ -223,15 +233,33 @@
     }
     .hcf-stage {
       position: relative;
-      width: clamp(220px, 27vw, 368px);
-      height: clamp(276px, 38vh, 440px);
+      z-index: 1;   /* 블러 글로우 위 */
+      width: clamp(170px, 21vw, 300px);
+      height: clamp(170px, 21vw, 300px);   /* 정사각 타일 (작게) */
       transform-style: preserve-3d;
     }
+    /* 표지 카드 뒤 소프트 글로우 — filter blur 대신 radial-gradient(무스 호환).
+       색은 중앙 사진 바뀔 때마다 순환(JS). @property로 부드럽게 전환(미지원 브라우저는 즉시 전환). */
+    @property --glow {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #FF3385;
+    }
+    .hero-glow {
+      display: none;   /* 뒤 원형 컬러 글로우 제거 (영어 라벨 색순환 JS는 유지) */
+      position: absolute; left: 50%; top: 34%;
+      width: clamp(540px, 66vw, 1200px); height: clamp(300px, 34vw, 620px);
+      background: radial-gradient(ellipse at center, var(--glow) 0%, transparent 70%);
+      opacity: 0.27;
+      transform: translate(-50%, -50%);
+      transition: --glow 0.6s ease;
+      z-index: 0; pointer-events: none;
+    }
+    /* 텍스트는 글로우 위로 */
+    .hero-eyebrow, .hero-h1, .hero-body { position: relative; z-index: 1; }
     .hcf-card {
       position: absolute; left: 50%; top: 50%;
       width: 100%; height: 100%;
-      border-radius: 30px; overflow: hidden;
-      background: #1a1a1a;
       transform-style: preserve-3d;
       transform-origin: center center;
       transform: translate(-50%, -50%);
@@ -241,35 +269,25 @@
     .hcf-card img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: cover; display: block; user-select: none;
+      object-fit: contain; display: block; user-select: none;   /* 타일 전체(모양) 보이게 */
     }
-    .hcf-card::after {   /* 비활성 카드 딤 (opacity 60 → dim 0.4) */
-      content: ""; position: absolute; inset: 0;
-      background: #000; opacity: .4;
-      transition: opacity .6s cubic-bezier(.22,1,.36,1);
-      pointer-events: none;
+    /* ── 인트로: 손 인사 칩 1개 — 중앙(선택된) 타일 바로 위에 떠있고, 타일 바뀔 때마다 문구가 영→한→일→중 순환 ── */
+    .hero-hand-solo {
+      position: absolute; left: 50%; bottom: calc(100% + 48px);   /* 중앙 타일 상단 위로 (겹침 방지 간격) */
+      transform: translateX(calc(-50% - 4px));   /* 아주 조금 좌측으로 */
+      z-index: 200; pointer-events: none;            /* 선택된 도형 위에 뜸 */
     }
-    .hcf-card.is-active::after { opacity: 0; }
-    /* ── 인트로 배경: 3개 손 인사 칩 (제자리 흔들림 = CSS keyframe → 무스 호환), 코버플로우 뒤 ── */
-    .hero-hands { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-    .hand-chip { position: absolute; display: flex; align-items: center; gap: 10px;
+    .hand-chip { display: flex; align-items: center;
       animation: chipBob 3.6s ease-in-out infinite; will-change: transform; }
-    .hand-chip .hand-ico { width: 52px; height: 52px; flex: 0 0 auto;
-      transform-origin: 34% 82%; animation: handWave 2.9s ease-in-out infinite; }
-    .hand-chip .hand-ico img { display: block; width: 52px; height: 52px; }
-    .hand-chip .hand-lbl { background: rgba(46,46,50,0.92); color: #fff;
+    .hand-chip .hand-lbl { display: inline-flex; align-items: center; gap: 9px;
+      background: #2F3640; color: #fff;
       border-radius: 999px 999px 12px 999px;   /* 오른쪽 하단 코너만 라운드 작게 = 말풍선 꼬리 느낌 */
-      padding: 11px 22px; font-size: clamp(16px,1.45vw,23px); font-weight: 600; line-height: 1.1;
-      letter-spacing: 0.1px; white-space: nowrap;
-      box-shadow: 0 5px 18px rgba(0,0,0,0.45);
-      opacity: 1; transition: opacity .2s ease; }
-    /* 배치: 사진(코버플로우)이 위로 올라가서, 인사 칩도 카드 팬 주변으로 끌어올림.
-       좌-상(Hola), 좌-중하(Encantado), 우-상(Buenas) — 카드 좌우를 감싼다. */
-    .hand-chip.c1 { top: 24%; left: 9%; }
-    .hand-chip.c2 { top: 46%; left: 6%; animation-delay: -1.2s; }
-    .hand-chip.c3 { top: 30%; right: 4%; animation-delay: -2.4s; }
-    .hand-chip.c2 .hand-ico { animation-delay: -0.8s; }
-    .hand-chip.c3 .hand-ico { animation-delay: -1.7s; }
+      padding: 11px 22px 11px 18px; font-size: clamp(16px,1.45vw,23px); font-weight: 500; line-height: 1.1;
+      letter-spacing: 0.1px; white-space: nowrap; }
+    .hand-chip .hand-ico { width: 26px; height: 26px; flex: 0 0 auto;   /* 말풍선 안에 쏙 들어가게 축소 */
+      transform-origin: 34% 82%; animation: handWave 2.9s ease-in-out infinite; }
+    .hand-chip .hand-ico img { display: block; width: 26px; height: 26px; }
+    .hand-chip .hand-txt { display: inline-block; opacity: 1; transition: opacity .18s ease; }
     @keyframes chipBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(0.6deg); } }
     @keyframes handWave { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
     @media (prefers-reduced-motion: reduce) {
@@ -490,7 +508,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       height: 100vh;
       overflow: hidden;
       text-align: center;
-      background: #000;
+      background: #000;   /* 레터박스(사진 바깥) 배경색 */
       isolation: isolate;
       perspective: 1500px;
     }
@@ -591,8 +609,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       top: 50%;
       --t1-rise: 0px;                 /* 처음엔 화면 정중앙 */
       width: max-content;
-      font-size: clamp(30px,3.15vw,50px); font-weight: 500; line-height: 1.3;
-      letter-spacing: -0.04em; color: #fff; white-space: nowrap;
+      font-family: 'T1 Glicky', 'Pretendard', sans-serif;
+      font-size: clamp(38px,4.4vw,70px); font-weight: 500; line-height: 1.3;
+      letter-spacing: 0; text-transform: uppercase; color: #fff; white-space: nowrap;
       transform: translate(-50%, -50%) translateY(var(--t1-rise));   /* 제자리 고정 (morph 위해 드리프트 제거) */
       opacity: 1;
       transition: opacity .16s linear;
@@ -609,8 +628,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       top: 50%;
       width: calc(100% - (var(--edge-padding) * 2));
       transform: translate(-50%, -50%);
-      font-size: clamp(30px,3.15vw,50px); font-weight: 500; line-height: 1.3;
-      letter-spacing: -0.04em; color: #fff;
+      font-family: 'T1 Glicky', 'Pretendard', sans-serif;
+      font-size: clamp(38px,4.4vw,70px); font-weight: 500; line-height: 1.3;
+      letter-spacing: 0; text-transform: uppercase; color: #fff;
       opacity: 0;
       transition: opacity .16s linear;
       will-change: opacity;
@@ -807,7 +827,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: sticky;
       top: 0;
       height: 100vh;
-      background: #0B192B;
+      background: #F1F1F1;   /* 사진은 .agent-photo-bg 레이어에서 아래→위 페이드인 */
       display: flex;
       align-items: flex-start;
       padding: clamp(72px, 12vh, 160px) var(--edge-padding) 0;
@@ -819,6 +839,100 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .agent-sticky.is-light {
       background: #fff;
+    }
+    /* 배경 사진: #F1F1F1 위에 아래→위로 떠오르며 페이드인 (무스 호환: opacity+transform) */
+    .agent-photo-bg {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background: url('assets/agent-bg-grid.png') center center / cover no-repeat;
+      opacity: 0;
+      transform: translate3d(0, 42px, 0);
+      transition: opacity 1.05s ease, transform 1.2s cubic-bezier(.22,1,.36,1);
+      will-change: opacity, transform;
+    }
+    .agent-photo-bg.revealed {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+    /* 디테일(밝은) 뷰에서는 사진 배경 숨김 → 흰 배경 위 탭 콘텐츠 */
+    .agent-sticky.is-light .agent-photo-bg {
+      opacity: 0;
+      transform: translate3d(0, 0, 0);
+      transition: opacity .45s ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .agent-photo-bg { transform: none; transition: opacity .5s ease; }
+      .agent-photo-bg.revealed { transform: none; }
+    }
+    .agent-flow {
+      display: none;   /* 새 배경 이미지(#83)에 사진이 이미 포함 → 기기 타일 숨김 */
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      visibility: visible;
+      will-change: opacity;
+      contain: layout paint;
+    }
+    .agent-flow.is-hidden {
+      visibility: hidden;
+    }
+    .agent-flow-card {
+      position: absolute;
+      width: clamp(230px, 25vw, 500px);
+      aspect-ratio: 1;
+      will-change: transform;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .agent-flow-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+    .agent-flow-card--laptop {
+      left: 7%;
+      top: -9%;
+      transform: rotate(-8deg) translateZ(0);
+    }
+    .agent-flow-card--vending {
+      left: 24%;
+      top: 1%;
+      transform: rotate(-5deg) translateZ(0);
+    }
+    .agent-flow-card--display {
+      left: 57%;
+      top: 1%;
+      transform: rotate(10deg) translateZ(0);
+    }
+    .agent-flow-card--phone {
+      right: -3%;
+      top: 9%;
+      width: clamp(260px, 29vw, 560px);
+    }
+    .agent-flow-card--elevator {
+      left: 2%;
+      bottom: -13%;
+      transform: rotate(-10deg) translateZ(0);
+    }
+    .agent-flow-card--kiosk {
+      left: 27%;
+      bottom: -17%;
+      transform: rotate(-10deg) translateZ(0);
+    }
+    .agent-flow-card--shelter {
+      left: 50%;
+      bottom: -23%;
+      width: clamp(260px, 29vw, 560px);
+    }
+    .agent-flow-card--fridge {
+      right: -4%;
+      bottom: -15%;
+      width: clamp(260px, 29vw, 560px);
+      transform: rotate(8deg) translateZ(0);
     }
     .agent-bg-video {
       display: none;
@@ -879,9 +993,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
-    /* 텍스트 묶음 뒤에만 검정 블러 딤 — 그리드 위, 텍스트 아래에서 가독성 확보 */
+    /* 텍스트 묶음 뒤 검정 딤 제거 (배경이 밝은 이미지 + 검정 텍스트라 불필요) */
     .agent-left::before {
-      content: "";
+      content: none;
       position: absolute;
       left: 50%; top: 50%;
       transform: translate3d(-50%, -50%, 0);
@@ -902,14 +1016,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       50%      { -webkit-text-fill-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.3); }
     }
     .agent-title {
-      font-size: clamp(30px,4.4vw,66px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
-      color: #fff;
+      font-family: 'T1 Glicky', 'Pretendard', sans-serif;
+      text-transform: uppercase;
+      font-size: clamp(40px,6vw,87px); font-weight: 400; line-height: 1.4; letter-spacing: 0;
+      color: #000;
       background: none;
-      -webkit-text-fill-color: #fff;
+      -webkit-text-fill-color: #000;
       animation: none;
       --agent-gradient-opacity: 1;
       --agent-black-opacity: 0;
-      margin-bottom: clamp(12px, 1.5vw, 26px);
+      margin-bottom: clamp(2px, 0.4vw, 10px);
       position: relative;
       align-self: center;
       text-align: center;
@@ -956,7 +1072,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: -0.03em;
-      color: rgba(255,255,255,.74);
+      color: rgba(17,17,17,.74);
       width: max-content;
       margin-top: 0;
       transition: color .45s ease, font-size .45s ease;
@@ -1026,6 +1142,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── Prism Grid 배경 (큐브 대체): hover 시 칸이 파스텔로 켜졌다 1s 페이드아웃 ── */
     .agent-grid-bg {
+      display: none;   /* 새 배경 이미지에 그리드 포함 → 프리즘 그리드 숨김 */
       position: absolute;
       inset: 0;
       z-index: 0;
@@ -1135,7 +1252,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .principle-mini-title {
       margin: 0;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(14px,1.4vw,26px);
       font-weight: 600;
       line-height: 1.35;
@@ -1152,11 +1269,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       margin: 0;
     }
     .principle-mini-title .thin {
-      font-family: 'Pretendard', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
       font-weight: 400;
     }
     .principle-mini-note {
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(10px,0.98vw,14px);
       font-weight: 500;
       line-height: 1.45;
@@ -1302,7 +1419,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       z-index: 2;
     }
     .diagram-journey-title {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
       font-size: 1.31cqw;
       font-weight: 400;
       line-height: 1;
@@ -1312,7 +1429,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .diagram-journey-desc {
       width: 56%;
       margin-top: .53cqw;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: .53cqw;
       font-weight: 400;
       line-height: 1.5;
@@ -1451,6 +1568,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-visual-image.active {
       opacity: 1;
       transform: none;
+    }
+    .layer-visual-placeholder {
+      background: #D9DDE3;
     }
     .layers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.8vw, 28px);
@@ -2456,7 +2576,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: .6;
     }
     .sd-flow-card span {
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-weight: 400;
       font-size: clamp(13px,1.4vw,24px);
       line-height: .96;
@@ -3005,7 +3125,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
-      color: #000; font-family: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+      color: #000; font-family: "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
@@ -3176,6 +3296,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     });
   })();
   </script>
+  <div class="hero-glow" aria-hidden="true"></div>
   <p class="hero-eyebrow">Skeep Intelligence System™</p>
   <h1 class="hero-h1">내가 이 세상의 주인공인 것처럼</h1>
   <p class="hero-body">
@@ -3186,11 +3307,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   <div class="hero-coverflow" aria-hidden="true">
     <div class="hcf-stage" data-coverflow>
-      <div class="hcf-card"><img src="assets/hero-face-1.jpg" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/hero-face-2.jpg" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/hero-face-3.jpg" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/hero-face-4.jpg" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/hero-face-5.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-1.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-2.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-3.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-4.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-5.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-6.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-7.png" alt="" decoding="async"></div>
+      <div class="hcf-card"><img src="assets/agent-dev-8.png" alt="" decoding="async"></div>
     </div>
   </div>
   <script>
@@ -3200,28 +3324,27 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     var cards = [].slice.call(stage.querySelectorAll('.hcf-card'));
     var n = cards.length;
     if (n < 2) return;
-    // Originkit Coverflow 파라미터 (autoplay, showTitle:false, rightToLeft)
-    var GAP = 8, TILT = 12, SIDE = 8, SCALE_STEP = 0.16, DEPTH = 240, MAX_VISIBLE = 2, DELAY = 2500;
-    var active = 0;
+    // 디바이스 타일 플랫 코버플로우 (틸트/뎁스 없이 translateX + scale, 조율하다 스타일)
+    var SCALE_STEP = 0.06, MAX_VISIBLE = 2, DELAY = 2200;
+    var active = 0;   // 첫 장면 중앙 = 첫 타일
+    function gapPx() { return stage.offsetWidth * 1.04; }   // 타일 폭 기준 → 거의 붙게
     function render() {
+      var G = gapPx();
       for (var i = 0; i < n; i++) {
         var rel = i - active;
         if (rel > n / 2) rel -= n;
         if (rel < -n / 2) rel += n;
         var ax = Math.abs(rel);
         var visible = ax <= MAX_VISIBLE;
-        var sc = Math.max(0.4, 1 - ax * SCALE_STEP);
-        var tx = rel * (GAP * 30);
-        var tz = -ax * DEPTH;
-        var ry = -rel * TILT;
-        var rz = rel * SIDE;
+        var sc = Math.max(0.5, 1 - ax * SCALE_STEP);
         var c = cards[i];
-        c.style.transform = 'translate(-50%,-50%) translateX(' + tx + 'px) translateZ(' + tz + 'px) rotateY(' + ry + 'deg) rotateZ(' + rz + 'deg) scale(' + sc + ')';
-        c.style.opacity = visible ? '1' : '0';
+        c.style.transform = 'translate(-50%,-50%) translateX(' + (rel * G) + 'px) scale(' + sc + ')';
+        c.style.opacity = visible ? (rel === 0 ? '1' : '0.3') : '0';   // 중앙만 선명, 양옆 딤
         c.style.zIndex = String(100 - ax);
         c.classList.toggle('is-active', rel === 0);
       }
     }
+    window.addEventListener('resize', render);
     render();
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) {
@@ -3234,52 +3357,73 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   })();
   </script>
   <script>
-  /* 인트로 배경: 3개 손 인사 칩 — 제자리에서 살짝 흔들림(CSS keyframe). 라벨은 5개 언어로 순환.
-     영어(Hi/Hello/Nice to meet you) → 한국어 → 일본어 → 중국어 → 스페인어. 무스 호환(rAF/canvas 없음). */
+  /* 표지 뒤 블러 원: 중앙 사진(coverflow active)이 바뀔 때마다 색 순환 */
   (function () {
-    var hero = document.querySelector('.sec-hero');
-    if (!hero) return;
-    var HAND = 'assets/skeep-cursor-hand.png';
-    // 슬롯 0,1,2 별 짧은 인사말 (언어 순서: 영-한-일-중-스페인)
-    var LANGS = [
-      ['Hi', 'Hello', 'Nice to meet you'],   // English
-      ['안녕', '안녕하세요', '반가워요'],        // 한국어
-      ['やあ', 'こんにちは', 'はじめまして'],     // 日本語
-      ['嗨', '你好', '很高兴认识你'],            // 中文
-      ['Hola', 'Buenas', 'Encantado']         // Espanol
-    ];
-    // 배치: c1 상단-좌(슬롯0 Hi), c2 하단-좌(슬롯2 Nice to meet you), c3 우-중앙(슬롯1 Hello)
-    var SLOTS = [['c1', 0], ['c2', 2], ['c3', 1]];
-    var layer = document.createElement('div');
-    layer.className = 'hero-hands';
-    layer.setAttribute('aria-hidden', 'true');
-    var lbls = [];
-    SLOTS.forEach(function (sl) {
-      var chip = document.createElement('div');
-      chip.className = 'hand-chip ' + sl[0];
-      var ico = document.createElement('div');
-      ico.className = 'hand-ico';
-      ico.innerHTML = '<img src="' + HAND + '" alt="" decoding="async">';
-      var lbl = document.createElement('div');
-      lbl.className = 'hand-lbl';
-      lbl.textContent = LANGS[0][sl[1]];
-      chip.appendChild(ico);
-      chip.appendChild(lbl);
-      layer.appendChild(chip);
-      lbls.push({ el: lbl, s: sl[1] });
+    var glow = document.querySelector('.hero-glow');
+    if (!glow) return;
+    var eyebrow = document.querySelector('.hero-eyebrow');   // SKEEP INTELLIGENCE SYSTEM™ (빨강)
+    var COLORS = ['#FF6B3D', '#FFCADF', '#F1F1F1', '#E7FF96', '#F1F1F1', '#09421A', '#89DFF0', '#F1F1F1'];
+    var idx = 0;   // 첫 색부터 시작
+    function apply() {
+      var c = COLORS[idx % COLORS.length];
+      glow.style.setProperty('--glow', c);   // radial-gradient 색 (무스 호환)
+      if (eyebrow) eyebrow.style.color = c;   // 영어 라벨 색도 함께 순환
+    }
+    apply();
+    document.addEventListener('skeep:coverflow', function () {
+      idx = (idx + 1) % COLORS.length;
+      apply();
     });
-    hero.appendChild(layer);
+  })();
+  </script>
+  <script>
+  /* 인트로: 손 인사 칩 1개 — 중앙(선택된) 타일 바로 위에 뜸. 타일이 바뀔 때(skeep:coverflow)마다
+     문구가 영어→한국어→일본어→중국어 순서로 바뀌고, 각 언어 안에서는 인사말을 랜덤으로 고른다.
+     무스 호환(rAF/canvas 없음, CSS keyframe 흔들림). */
+  (function () {
+    var stage = document.querySelector('[data-coverflow]');
+    if (!stage) return;
+    var HAND = 'assets/skeep-cursor-hand.png';
+    // 언어 순서: 영어 → 한국어 → 일본어 → 중국어. 각 언어별 인사말 여러 개 중 랜덤.
+    var LANGS = [
+      ['Hi', 'Hello', 'Hey there', 'Nice to meet you'],   // English
+      ['안녕', '안녕하세요', '반가워요', '어서 와요'],          // 한국어
+      ['やあ', 'こんにちは', 'はじめまして', 'ようこそ'],        // 日本語
+      ['嗨', '你好', '很高兴认识你', '欢迎']                    // 中文
+    ];
+    var solo = document.createElement('div');
+    solo.className = 'hero-hand-solo';
+    solo.setAttribute('aria-hidden', 'true');
+    var chip = document.createElement('div');
+    chip.className = 'hand-chip';
+    var lbl = document.createElement('div');
+    lbl.className = 'hand-lbl';
+    var ico = document.createElement('div');
+    ico.className = 'hand-ico';
+    ico.innerHTML = '<img src="' + HAND + '" alt="" decoding="async">';
+    var txt = document.createElement('span');
+    txt.className = 'hand-txt';
+    lbl.appendChild(ico);   // 손 아이콘을 말풍선 안, 텍스트 왼쪽에
+    lbl.appendChild(txt);
+    chip.appendChild(lbl);
+    solo.appendChild(chip);
+    stage.appendChild(solo);
 
     var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var li = 0;
-    function setLang(idx) { lbls.forEach(function (o) { o.el.textContent = LANGS[idx][o.s]; }); }
-    function cycle() {
-      li = (li + 1) % LANGS.length;
-      if (reduceMotion) { setLang(li); return; }
-      lbls.forEach(function (o) { o.el.style.opacity = '0'; });
-      window.setTimeout(function () { setLang(li); lbls.forEach(function (o) { o.el.style.opacity = '1'; }); }, 200);
+    var li = 0, last = -1;
+    function pick(idx) {
+      var arr = LANGS[idx], j = Math.floor(Math.random() * arr.length);
+      if (arr.length > 1 && j === last) j = (j + 1) % arr.length;   // 직전과 다른 문구로
+      last = j; return arr[j];
     }
-    window.setInterval(cycle, 2600);
+    function setText() { txt.textContent = pick(li); }
+    setText();   // 첫 장면: 영어
+    document.addEventListener('skeep:coverflow', function () {
+      li = (li + 1) % LANGS.length;   // 영 → 한 → 일 → 중 순환
+      if (reduceMotion) { setText(); return; }
+      txt.style.opacity = '0';
+      window.setTimeout(function () { setText(); txt.style.opacity = '1'; }, 180);
+    });
   })();
   </script>
 
@@ -3521,7 +3665,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
     </div>
     <div class="phil-media-row">
-      <iframe class="phil-side-morph" src="smeureulda.html?embed=morph&v=4" title="Morphing objects interaction" loading="lazy"></iframe>
+      <iframe class="phil-side-morph" src="smeureulda.html?embed=morph&v=7" title="Morphing objects interaction" loading="lazy"></iframe>
       <canvas class="phil-side-blob" id="philBlob" aria-hidden="true"></canvas>
       <canvas class="phil-side-ball" id="philBall" aria-hidden="true"></canvas>
     </div>
@@ -3534,6 +3678,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <section class="sec-agent-detail fi" data-agent-scroll>
   <div class="agent-sticky">
     <video class="agent-bg-video" src="assets/input-hero-bg.mp4" poster="assets/input-hero-bg-poster.jpg" autoplay loop muted playsinline aria-hidden="true"></video>
+    <div class="agent-flow" data-agent-flow aria-hidden="true">
+      <div class="agent-flow-card agent-flow-card--laptop"><img src="assets/agent-dev-8.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--vending"><img src="assets/agent-dev-7.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--display"><img src="assets/agent-dev-5.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--phone"><img src="assets/agent-dev-6.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--elevator"><img src="assets/agent-dev-1.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--kiosk"><img src="assets/agent-dev-2.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--shelter"><img src="assets/agent-dev-3.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--fridge"><img src="assets/agent-dev-4.png" alt="" decoding="async"></div>
+    </div>
     <div class="agent-row">
       <div class="agent-left" data-agent-left>
         <div class="agent-cube-stage" data-agent-cube aria-hidden="true">
@@ -3699,7 +3853,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
       <img class="diagram-left" src="assets/context-left-v2.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
-      <img class="diagram-right" src="assets/context-right-v2.png" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
+      <img class="diagram-right" src="assets/context-right-v2.png?v=20260724-2023" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -3735,10 +3889,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   11. SYSTEM LAYERS
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers>
-  <div class="layer-visual" aria-live="polite">
-    <img class="layer-visual-image active" src="assets/database-layer-flow-v2.png" alt="상시 레이어의 컨텍스트 플로우" data-layer-image="passive">
-    <img class="layer-visual-image" src="assets/passive-layer-flow-v2.png" alt="활성 레이어의 컨텍스트 플로우" data-layer-image="active">
-    <img class="layer-visual-image" src="assets/active-layer-flow-v2.png" alt="데이터베이스 구조의 컨텍스트 플로우" data-layer-image="database">
+  <div class="layer-visual" aria-hidden="true">
+    <div class="layer-visual-image layer-visual-placeholder active" data-layer-image="passive"></div>
+    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="active"></div>
+    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="database"></div>
   </div>
   <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
     <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive">
@@ -4013,7 +4167,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     padding-top: clamp(48px, 4vw, 64px);
     background: #fff;
     color: #111;
-    font-family: "Helvetica Neue", Helvetica, Arial, "Pretendard", sans-serif;
+    font-family: "Helvetica Now Display", "Pretendard", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   /* Sticker Peel — Originkit interaction */
@@ -5481,6 +5635,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     const cards = [...philScroll.querySelectorAll('[data-phil-card]')];
     const morphFrame = philScroll.querySelector('.phil-side-morph');
     const labels = ['Philosophy 01', 'Philosophy 02', 'Philosophy 03'];
+    const morphBackgrounds = ['#FF3385', '#FF3385', '#FF6B3D'];
     const baseDevicePixelRatio = window.devicePixelRatio || 1;
     let currentPhil = -1;
     let ticking = false;
@@ -5499,6 +5654,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       cards.forEach((card, i) => card.classList.toggle('active', i === index));
       philScroll.classList.toggle('phil-stage-2', index === 1);
       philScroll.classList.toggle('phil-stage-3', index === 2);
+      morphFrame?.contentWindow?.postMessage({
+        type: 'setMorphBackground',
+        color: morphBackgrounds[index]
+      }, '*');
     }
 
     function updatePhil() {
@@ -5530,12 +5689,22 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const restartMorphAnimation = () => {
         if (morphFrameVisible) morphFrame.contentWindow?.postMessage({ type: 'restartMorphAnimation' }, '*');
       };
+      const syncMorphBackground = () => {
+        const index = currentPhil < 0 ? 0 : currentPhil;
+        morphFrame.contentWindow?.postMessage({
+          type: 'setMorphBackground',
+          color: morphBackgrounds[index]
+        }, '*');
+      };
       new IntersectionObserver(entries => {
         const wasVisible = morphFrameVisible;
         morphFrameVisible = entries[0].isIntersecting;
         if (morphFrameVisible && !wasVisible) restartMorphAnimation();
       }, { threshold: 0.25 }).observe(morphFrame);
-      morphFrame.addEventListener('load', restartMorphAnimation);
+      morphFrame.addEventListener('load', () => {
+        syncMorphBackground();
+        restartMorphAnimation();
+      });
     }
   }
 
@@ -5650,7 +5819,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const ancX = W * 0.47, ancY = H * 0.52;
       const prog = time / T, seg = Math.floor(prog), u = prog - seg;
 
-      ctx.fillStyle = '#FF8963'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#FF6B3D'; ctx.fillRect(0, 0, W, H);
 
       for (let k = -1; k <= 2; k++) {
         const rel = k - u;
@@ -5707,6 +5876,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   if (agentScroll) {
     const agentSticky = agentScroll.querySelector('.agent-sticky');
     const agentBgVideo = agentScroll.querySelector('.agent-bg-video');
+    const agentFlow = agentScroll.querySelector('[data-agent-flow]');
     const agentLeft = agentScroll.querySelector('[data-agent-left]');
     const agentTitle = agentScroll.querySelector('.agent-title');
     const agentCube = agentScroll.querySelector('[data-agent-cube]');
@@ -5730,6 +5900,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     agentGridLit.className = 'agent-grid-lit';
     agentGrid.appendChild(agentGridLit);
     agentSticky.insertBefore(agentGrid, agentSticky.firstChild);
+
+    // ── 배경 사진 레이어: 진입 시 아래→위로 페이드인 (한 번만) ──
+    const agentPhotoBg = document.createElement('div');
+    agentPhotoBg.className = 'agent-photo-bg';
+    agentPhotoBg.setAttribute('aria-hidden', 'true');
+    agentSticky.insertBefore(agentPhotoBg, agentSticky.firstChild);
     // (터치 시 격자칸 켜지는 인터랙션 제거 — 정적 그리드 배경만 유지)
 
     // ── 타이틀 "Migratable Agent" — 스크램블/글리치/hover 효과 제거, 원문 정적 유지 ──
@@ -5764,7 +5940,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const leftWidth = agentLeft.offsetWidth;
       const pillsWidth = agentPills.offsetWidth;
       const baseWidth = Math.max(leftWidth, subWidth, pillsWidth);
-      const introTitleScale = 1.38;
+      const introTitleScale = 1.06;
       const baseLeftHeight =
         (agentTitle.offsetHeight * introTitleScale) +
         agentSub.offsetHeight +
@@ -5786,7 +5962,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         centerX,
         centerY:
           (window.innerHeight - (cubeBlockHeight + baseLeftHeight)) / 2 -
-          stickyPaddingTop + 48,
+          stickyPaddingTop + 75,
         stickyPaddingLeft,
         lineMetrics,
         cubeShift: (baseWidth - leftWidth) / 2,
@@ -5805,6 +5981,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         relativeTop < window.innerHeight * 0.88 &&
         relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
       if (agentIntroStartedAt === null && isEntering) { agentIntroStartedAt = now; titleScrambleEnter(); }
+      if (isEntering) agentPhotoBg.classList.add('revealed');   // 배경 사진 아래→위 페이드인 (한 번)
       const introElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
       const titleIn = smooth(introElapsed / 700);
       const subIn = smooth((introElapsed - 160) / 700);
@@ -5814,14 +5991,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const bgDrift = smooth((progress - 0.36) / 0.42);
       // intro video dissolves out as the section reveals its content
       if (agentBgVideo) agentBgVideo.style.opacity = (1 - smooth((progress - 0.35) / 0.35)).toFixed(3);
-      const titleScale = 1.38 - move * 0.50;
+      const titleScale = 1.06 - move * 0.18;
       const leftViewportX =
         agentMetrics.stickyPaddingLeft +
         (agentMetrics.centerX - agentMetrics.stickyPaddingLeft) * (1 - move);
       const detailClean = smooth((move - 0.12) / 0.38);
+      const flowOpacity = titleIn * (1 - smooth((progress - 0.36) / 0.20));
 
       agentSticky.classList.toggle('is-light', detailClean > 0.5);
       titleDetailMode = detailClean > 0.5;   // 디테일 뷰 진입 시 스크램블 정지 (CSS is-light와 동기화)
+      if (agentFlow) {
+        agentFlow.style.opacity = flowOpacity.toFixed(3);
+        agentFlow.classList.toggle('is-hidden', flowOpacity < 0.015);
+      }
       agentGrid.style.opacity = (titleIn * (1 - detailClean)).toFixed(3);
       agentLeft.style.setProperty('--dim-opacity', (titleIn * (1 - detailClean)).toFixed(3));
       agentTitle.style.opacity = titleIn;

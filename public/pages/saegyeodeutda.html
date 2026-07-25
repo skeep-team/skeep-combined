@@ -8,12 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
+    @font-face {
+      font-family: 'T1 Glicky';
+      src: url('../fonts/T1GlickyRegular.otf') format('opentype');
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Medium.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Bold.woff2') format('woff2'); font-weight:700; font-style:normal; font-display:swap; }
+    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-ExtraBold.woff2') format('woff2'); font-weight:800; font-style:normal; font-display:swap; }
+    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Black.woff2') format('woff2'); font-weight:900; font-style:normal; font-display:swap; }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
       background: #fff; color: #0e1825;
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
     }
     p { margin: 0; }
@@ -68,8 +78,8 @@
       z-index: 0;
       overflow: hidden;
       /* fill the viewport responsively (cover) with a matching grey fallback */
-      background-color: #b9bec3;
-      background-image: url("assets/sensing-hero-people-3.png");
+      background-color: #EDEEEF;
+      background-image: url("assets/sd-hero-people-light.png");
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
@@ -91,7 +101,7 @@
     .sd-hero-dim {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.42);
+      background: transparent;   /* 밝은 배경 이미지 → 어두운 딤 제거 */
       z-index: 1;
     }
     .sd-hero h1 {
@@ -107,18 +117,20 @@
     }
     .sd-intro {
       display: flex;
-      flex-direction: column;
-      gap: 52px;
+      flex-direction: row;           /* 글 왼쪽 · 인터랙션 오른쪽 */
+      align-items: center;
+      gap: clamp(32px, 5vw, 100px);
     }
     .sd-copy-block {
       display: flex;
       flex-direction: column;
       gap: clamp(12px, 1.6vw, 28px);
-      max-width: 760px;
+      flex: 0 0 auto;
+      max-width: min(42%, 560px);
     }
     .sd-title {
       font-size: clamp(24px,4vw,54px);
-      font-weight: 600;
+      font-weight: 700;
       line-height: 1.3;
       letter-spacing: -0.03em;
     }
@@ -130,14 +142,17 @@
       color: #0e1825;
     }
     .sd-pill-row {
-      width: 100%;
+      flex: 1 1 0;          /* 글 옆 남는 폭만 차지 → 가로 길이 짧아짐 */
+      min-width: 0;
       display: flex;
       align-items: stretch;
       gap: clamp(6px, 0.8vw, 14px);
     }
     .sd-pill {
-      height: clamp(84px, 11.5vw, 210px);
-      border-radius: 999px;
+      height: clamp(120px, 17vw, 220px);
+      border-radius: clamp(60px,8.5vw,110px);
+      flex-basis: 0;      /* 폭을 순수 flex-grow로만 결정 → 같은 grow면 폭 동일 */
+      min-width: 0;       /* 글자 내용 폭에 갇히지 않도록 */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -146,41 +161,45 @@
       letter-spacing: -0.02em;
       color: #0e1825;
       overflow: hidden;
-      will-change: flex-grow;
+      will-change: flex-grow, border-radius;
       animation-duration: 9s;
       animation-timing-function: cubic-bezier(.65, 0, .35, 1);
       animation-iteration-count: infinite;
     }
     .sd-pill-sensing {
-      background: linear-gradient(135deg, #ff0a6c 0%, #ff6bb3 55%, #ffb199 100%);
-      color: #fff;
+      background: #FFCADF;
+      color: #FF3385;
       animation-name: sdPillSensing;
     }
     .sd-pill-input {
-      background: linear-gradient(135deg, #ffe9b3 0%, #ffedc9 50%, #ffcda0 100%);
+      background: #DAFF61;
+      color: #A1D202;
       animation-name: sdPillInput;
     }
     .sd-pill-pause {
-      background: linear-gradient(135deg, #bfe4ff 0%, #eaf6ff 60%, #ffffff 100%);
+      background: #A5E0F0;
+      color: #0A67DE;
       animation-name: sdPillPause;
     }
+    /* 작은(축소) 상태는 flex-grow:3(폭 동일) + border-radius 999px(원형),
+       확장(flex-grow:7) 상태는 border-radius 4px(라운드 사각) 로 함께 몰핑 */
     @keyframes sdPillSensing {
-      0%, 14%   { flex-grow: 7; }
-      28%, 47%  { flex-grow: 1; }
-      61%, 80%  { flex-grow: 2; }
-      100%      { flex-grow: 7; }
+      0%, 14%   { flex-grow: 7; border-radius: 4px; }
+      28%, 47%  { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      61%, 80%  { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      100%      { flex-grow: 7; border-radius: 4px; }
     }
     @keyframes sdPillInput {
-      0%, 14%   { flex-grow: 2; }
-      28%, 47%  { flex-grow: 2; }
-      61%, 80%  { flex-grow: 7; }
-      100%      { flex-grow: 2; }
+      0%, 14%   { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      28%, 47%  { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      61%, 80%  { flex-grow: 7; border-radius: 4px; }
+      100%      { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
     }
     @keyframes sdPillPause {
-      0%, 14%   { flex-grow: 1; }
-      28%, 47%  { flex-grow: 7; }
-      61%, 80%  { flex-grow: 1; }
-      100%      { flex-grow: 1; }
+      0%, 14%   { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      28%, 47%  { flex-grow: 7; border-radius: 4px; }
+      61%, 80%  { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
+      100%      { flex-grow: 3; border-radius: clamp(60px,8.5vw,110px); }
     }
     @media (prefers-reduced-motion: reduce) {
       .sd-pill { animation: none; flex-grow: 1 !important; }
@@ -265,10 +284,12 @@
       will-change: transform;
     }
     .sd-sensing-title {
-      font-size: clamp(32px,4.8vw,72px);
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      text-transform: uppercase;
+      font-size: clamp(26px,3.9vw,58px);
       line-height: 1.4;
       font-weight: 600;
-      letter-spacing: -0.04em;
+      letter-spacing: -0.01em;
       white-space: nowrap;
       max-width: 100%;
       color: #0e1825;
@@ -316,13 +337,10 @@
     }
     .sd-scroll-card p {
       font-size: clamp(13px, 1.6vw, 23.333px);
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.3;
       letter-spacing: -1.1667px;
-      background: linear-gradient(180deg, #3b0018 0%, #4b5869 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #4b5869;
       margin: 0;
     }
     .sd-two-col {
@@ -514,7 +532,7 @@
       transform: translateX(-50%);
       width: 100vw;
       height: 92%;
-      background: #FFF3D1;
+      background: #89DFF0;
       border-radius: 0;
       pointer-events: none;
       transition: background .7s ease,
@@ -613,7 +631,7 @@
       width: 218px;
       height: 34px;
       z-index: 1;
-      mix-blend-mode: multiply;
+      mix-blend-mode: normal;   /* 흰색 스팟이 파랑 배경 위에 보이도록 */
       pointer-events: none;
       transition: left 0.35s ease, opacity .55s ease;
       transform: translateX(-50%);
@@ -750,20 +768,23 @@
     }
     .sd-card-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 508px));
+      justify-content: center;
       gap: 46px;
-      height: 560px;
-      align-items: stretch;
+      height: auto;
+      align-items: start;
     }
     .sd-info-card {
-      border-radius: 44px;
+      border-radius: 40px;
       overflow: hidden;
       position: relative;
       background: #0E1825;
-      height: 100%;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 508 / 603;
       isolation: isolate;
       transform: translateZ(0);
-      clip-path: inset(0 round 44px);
+      clip-path: inset(0 round 40px);
     }
     .sd-card-img {
       position: absolute;
@@ -778,24 +799,58 @@
       height: 100%;
       object-fit: cover;
       object-position: center center;
-      transform: scale(1.035);
+      transform: none;
     }
-    /* 스크림·핑크 글로우는 이미지에 이미 포함 → CSS 오버레이 제거 */
-    .sd-card-glow { display: none; }
+    .sd-info-card {
+      --card-orb-x: 18%;
+      --card-orb-y: 92%;
+    }
+    .sd-info-card:nth-child(2) {
+      --card-orb-x: 62%;
+      --card-orb-y: 94%;
+    }
+    .sd-info-card:nth-child(3) {
+      --card-orb-x: 42%;
+      --card-orb-y: 91%;
+    }
+    .sd-card-glow {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .sd-card-dots {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .sd-card-dots i {
+      position: absolute;
+      width: 15.608px;
+      height: 15.608px;
+      border-radius: 50%;
+      background: #F1F1F1;
+    }
+    .sd-card-dots i:nth-child(1) { top: 23px; left: 23px; }
+    .sd-card-dots i:nth-child(2) { top: 23px; right: 23px; }
+    .sd-card-dots i:nth-child(3) { bottom: 23px; left: 23px; }
+    .sd-card-dots i:nth-child(4) { right: 23px; bottom: 23px; }
     .sd-card-text {
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: clamp(20px, 3vw, 40px);
+      inset: 0;
+      padding: 49px 40px 40px;
       display: flex;
       flex-direction: column;
-      gap: clamp(16px, 2.5vw, 40px);
+      align-items: center;
+      text-align: center;
+      gap: 0;
       z-index: 2;
     }
     .sd-card-text h3 {
       margin: 0;
-      font-size: clamp(18px,2.75vw,52px);
+      font-size: clamp(32px,3.125vw,60px);
       line-height: 1.5;
       font-weight: 600;
       letter-spacing: -0.03em;
@@ -803,19 +858,21 @@
     }
     .sd-card-text h3 span {
       display: block;
-      font-size: clamp(11px,1.32vw,24px);
-      font-weight: 600;
+      font-size: clamp(18px,1.46vw,28px);
+      font-weight: 400;
       color: #D0D7E0;
       letter-spacing: -0.02em;
-      margin-top: 2px;
+      margin-top: 0;
     }
     .sd-card-text p {
-      margin: 0;
-      font-size: clamp(11px,1.15vw,21px);
+      width: 100%;
+      margin: auto 0 0;
+      font-size: clamp(16px,1.25vw,24px);
       line-height: 1.5;
-      font-weight: 500;
+      font-weight: 400;
       color: #C4CCD7;
       letter-spacing: -0.03em;
+      text-align: center;
     }
     .input-hero-scroll {
       position: relative;
@@ -1278,7 +1335,7 @@
     }
     .sd-flow-card.c1 h4 { font-weight: 700; }
     .sd-flow-card span {
-      font-family: 'Bebas Neue', 'Arial Narrow', 'Pretendard', sans-serif;
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
       font-weight: 400;
       font-size: 36px;
       line-height: .96;
@@ -1694,12 +1751,13 @@
 
     @media (max-width: 1100px) {
       .sd-card-list {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 508px);
+        justify-content: center;
         height: auto;
         gap: 24px;
       }
       .sd-info-card {
-        height: clamp(360px, 70vw, 480px);
+        height: auto;
       }
       .sd-summary {
         grid-template-columns: 1fr;
@@ -1811,7 +1869,7 @@
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
-      color: #000; font-family: "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+      color: #000; font-family: "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
@@ -1867,7 +1925,7 @@
 <section class="sd-sensing-scene" id="sensing-scene-scroll">
   <div class="sd-sensing-sticky">
     <div class="sd-sensing-layer sd-sensing-primary">
-      <img class="sd-compass" src="assets/sensing-compass-v3.png" alt="탐지를 상징하는 나침반 모티프">
+      <img loading="lazy" class="sd-compass" src="assets/sensing-compass-v3.png?v=5" alt="탐지를 상징하는 나침반 모티프">
       <div class="sd-sensing-text">
         <h2 class="sd-sensing-title">Sensing Logic</h2>
         <p class="sd-caption-scroll">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
@@ -1881,13 +1939,13 @@
     <div class="sd-sensing-layer sd-sensing-detail">
       <div class="sd-two-col">
         <div class="sd-orbit-visual">
-          <img class="sd-orbit-radar" src="assets/sensing-radar-v3.png" alt="발견을 상징하는 레이더 모티프">
-          <img class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png" alt="24시간 센싱을 상징하는 시계 모티프">
+          <img loading="lazy" class="sd-orbit-radar" src="assets/sensing-radar-v3.png?v=2" alt="발견을 상징하는 레이더 모티프">
+          <img loading="lazy" class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png" alt="24시간 센싱을 상징하는 시계 모티프">
           <div class="sd-orbit-trail" aria-hidden="true">
-            <img src="assets/sensing-clock-v3.png" alt="">
-            <img src="assets/sensing-clock-v3.png" alt="">
-            <img src="assets/sensing-clock-v3.png" alt="">
-            <img src="assets/sensing-clock-v3.png" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
           </div>
         </div>
         <div class="sd-text-right">
@@ -1912,14 +1970,14 @@
     <div class="sd-walk-content">
       <div class="sd-walk-row">
         <div class="sd-walk-box" aria-hidden="true"></div>
-        <img class="sd-walk-shadow" id="walk-shadow" src="assets/walk-shadow.svg" alt="">
-        <img class="sd-walk-person is-walk-final-person" data-foot-x="0.554" src="assets/walk-person-1.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.png" alt="">
-        <img class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.png" alt="">
+        <img loading="lazy" class="sd-walk-shadow" id="walk-shadow" src="assets/walk-shadow.svg" alt="">
+        <img loading="lazy" class="sd-walk-person is-walk-final-person" data-foot-x="0.554" src="assets/walk-person-1.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.png" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.png" alt="">
         <div class="sd-walk-final-title" aria-hidden="true">Input Logic</div>
       </div>
       <div class="sd-walk-caption">
@@ -1943,24 +2001,27 @@
 <section class="sd-section sd-card-section fi">
   <div class="sd-card-list">
     <article class="sd-info-card">
-      <div class="sd-card-img"><img src="assets/input-card-voice.png" alt="음성 발화 입력 예시"></div>
+      <div class="sd-card-img"><img loading="lazy" src="assets/input-card-voice.png?v=20260725-2" alt="음성 발화 입력 예시"></div>
       <div class="sd-card-glow"></div>
+      <div class="sd-card-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="sd-card-text">
         <h3>음성 발화<span>Voice Input</span></h3>
         <p>사용자가 직접 건네는 발화 신호의 경우 음성 데이터와 함께 목소리의 톤, 높낮이, 속도 등 미세한 운율 모두를 명시적 인풋으로 포착합니다.</p>
       </div>
     </article>
     <article class="sd-info-card">
-      <div class="sd-card-img"><img src="assets/input-card-text.png" alt="텍스트 입력 예시"></div>
+      <div class="sd-card-img"><img loading="lazy" src="assets/input-card-text.png?v=20260725-2" alt="텍스트 입력 예시"></div>
       <div class="sd-card-glow"></div>
+      <div class="sd-card-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="sd-card-text">
         <h3>텍스트 입력<span>Text Input</span></h3>
-        <p>타이핑을 통해 입력된 문자 신호의 경우 구두점이나 부사처럼 사용자가 텍스트에 남긴 미세한 흔적들을 명시적 인풋으로 획득합니다.</p>
+        <p>타이핑을 통해 입력된 문자 신호의 경우구두점이나 부사처럼 사용자가 텍스트에 남긴 미세한 흔적들을 명시적 인풋으로 획득합니다.</p>
       </div>
     </article>
     <article class="sd-info-card">
-      <div class="sd-card-img"><img src="assets/input-card-context.png" alt="행동 및 맥락 입력 예시"></div>
+      <div class="sd-card-img"><img loading="lazy" src="assets/input-card-context.png?v=20260725-2" alt="행동 및 맥락 입력 예시"></div>
       <div class="sd-card-glow"></div>
+      <div class="sd-card-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
       <div class="sd-card-text">
         <h3>행동 및 맥락<span>Contextual Input</span></h3>
         <p>사용자가 직접 말하지 않은 암묵적 신호로, 스키퍼블에 있는 외재적 데이터와 사용자 고유의 내재적 루틴을 입체적으로 종합해 받아들입니다.</p>
@@ -1971,7 +2032,7 @@
 
 <div class="input-hero-scroll">
 <section class="sd-summary-hero sd-summary-dissolve" id="inputHeroSec">
-  <video class="sd-summary-hero-video" id="inputHeroVideo" src="assets/input-logic-hero-bg.mp4" autoplay muted playsinline preload="auto" aria-hidden="true"></video>
+  <video class="sd-summary-hero-video" id="inputHeroVideo" src="assets/input-logic-hero-bg.mp4" autoplay muted playsinline preload="none" aria-hidden="true"></video>
   <p class="sd-summary-hero-label fi d1">Input Logic</p>
   <div class="sd-summary-hero-body">
     <h2 class="fi dd2">액티브 레이어를 여는 첫 단추</h2>
@@ -2002,7 +2063,7 @@
   </div>
   <div class="sd-flow-time-state" aria-hidden="true">
       <div class="sd-flow-time-inner">
-        <img class="sd-flow-time-avatar" src="assets/pause-avatar.svg" alt="">
+        <img loading="lazy" class="sd-flow-time-avatar" src="assets/pause-avatar.svg" alt="">
         <div class="sd-flow-time-card">
           <p class="sd-flow-rest-copy">스킵, 우리 시간 좀 갖자</p>
           <p class="sd-flow-card-logic-copy" aria-hidden="true">Pause Logic</p>
@@ -2250,8 +2311,8 @@
     function responsiveTitleSize(large) {
       const vw = window.innerWidth;
       return large
-        ? Math.min(124, Math.max(54, vw * 0.08))
-        : Math.min(48, Math.max(32, vw * 0.045));
+        ? Math.min(98, Math.max(44, vw * 0.063))
+        : Math.min(38, Math.max(26, vw * 0.036));
     }
     const sOrbitVisual = sensingScene.querySelector('.sd-orbit-visual');
     // Same left inset the icon already sits at (.sd-sensing-layer's own padding),

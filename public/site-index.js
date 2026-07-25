@@ -7,18 +7,22 @@
   var path = window.location.pathname.replace(/\/$/, '') || '/';
   var basePath = path === '/skeep-combined' || path.indexOf('/skeep-combined/') === 0 ? '/skeep-combined' : '';
   var relativePath = basePath ? path.slice(basePath.length) || '/' : path;
-  // 로컬 파일(file://)로 열었을 때: 3개 정적 페이지는 같은 폴더 상대경로로 연결,
-  // 허브·Next 라우트는 서버가 있어야 동작하므로 비활성 처리. 배포(웹서버)에선 원래대로.
+  // 로컬 파일(file://)로 열었을 때: 3개 정적 페이지는 같은 폴더 상대경로로 연결.
+  // 허브·Next 라우트는 로컬 파일에서 갈 방법이 없으니(서버 필요) 로컬 프리뷰 서버
+  // (http://localhost:4180)로 새 탭에 연결한다 — 배포 사이트가 아니라 로컬에서
+  // 작업 중인 내용을 봐야 하므로. 로컬 서버가 안 떠 있으면 그 탭만 연결 실패한다.
+  // 배포(웹서버)에서 직접 열었을 때는 원래대로 상대경로.
   var isFile = window.location.protocol === 'file:';
+  var liveBase = 'http://localhost:4180/skeep-combined';
   var items = [
-    { label: '인덱스', href: isFile ? '' : basePath + '/', match: ['/'], disabled: isFile },
+    { label: '인덱스', href: isFile ? liveBase + '/' : basePath + '/', match: ['/'], external: isFile },
     { label: '오버뷰', href: isFile ? 'index.html' : basePath + '/pages/index.html', match: ['/pages/index.html'] },
     { label: '새겨듣다', href: isFile ? 'saegyeodeutda.html' : basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
     { label: '스며들다', href: isFile ? 'smeureulda.html' : basePath + '/pages/smeureulda.html', match: ['/pages/smeureulda.html'] },
-    { label: '조율하다', href: isFile ? '' : basePath + '/negotiation', match: ['/negotiation'], disabled: isFile },
-    { label: '빌려쓰다', href: isFile ? '' : basePath + '/principles', match: ['/principles'], disabled: isFile },
-    { label: '지켜주다', href: isFile ? '' : basePath + '/service2', match: ['/service2'], disabled: isFile },
-    { label: '기억하다', href: isFile ? '' : basePath + '/service3', match: ['/service3'], disabled: isFile },
+    { label: '조율하다', href: isFile ? liveBase + '/negotiation' : basePath + '/negotiation', match: ['/negotiation'], external: isFile },
+    { label: '빌려쓰다', href: isFile ? liveBase + '/principles' : basePath + '/principles', match: ['/principles'], external: isFile },
+    { label: '지켜주다', href: isFile ? liveBase + '/service2' : basePath + '/service2', match: ['/service2'], external: isFile },
+    { label: '기억하다', href: isFile ? liveBase + '/service3' : basePath + '/service3', match: ['/service3'], external: isFile },
     { label: '비즈니스', href: '', match: ['/business'], disabled: true }
   ];
 
@@ -43,7 +47,8 @@
       var active = index === activeIndex ? ' is-active' : '';
       var current = index === activeIndex ? ' aria-current="page"' : '';
       if (item.disabled) return '<li><button class="skeep-site-index__link' + active + '" type="button" aria-disabled="true">' + item.label + '</button></li>';
-      return '<li><a class="skeep-site-index__link' + active + '" href="' + item.href + '"' + current + '>' + item.label + '</a></li>';
+      var targetAttrs = item.external ? ' target="_blank" rel="noopener"' : '';
+      return '<li><a class="skeep-site-index__link' + active + '" href="' + item.href + '"' + current + targetAttrs + '>' + item.label + '</a></li>';
     }).join(''),
     '</ul></div>'
   ].join('');

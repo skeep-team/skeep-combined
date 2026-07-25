@@ -6,6 +6,7 @@ import { EnvironmentCollage } from "../components/sections/EnvironmentCollage";
 import { FeaturePillar } from "../components/sections/FeaturePillar";
 import { Hero } from "../components/sections/Hero";
 import { IcebreakSkip } from "../components/sections/IcebreakSkip";
+import { InteractionBlueprint } from "../components/sections/InteractionBlueprint";
 import { Principles } from "../components/sections/Principles";
 import { RoleFlow } from "../components/sections/RoleFlow";
 
@@ -20,6 +21,7 @@ export default function PrinciplesPage() {
       <Hero />
       <IcebreakSkip />
       <RoleFlow />
+      <InteractionBlueprint />
       <Detour />
       <Principles />
       <FeaturePillar

@@ -2,7 +2,6 @@
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, type Variants } from "framer-motion";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { bebasNeue } from "../../fonts/bebasNeue";
 import styles from "./SkeepExperience.module.css";
 
 const SNAP_IDLE_DELAY = 140;
@@ -37,7 +36,7 @@ function clampedProgress(start: number, end: number, value: number) {
 function IntentVisual() {
   return (
     <div className={styles.intentStage}>
-      <p className={`${styles.intentLabel} ${bebasNeue.className}`}>INTENT</p>
+      <p className={styles.intentLabel}>INTENT</p>
       <span className={styles.intentCircle} aria-hidden="true" />
     </div>
   );
