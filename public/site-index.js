@@ -23,7 +23,7 @@
     { label: '빌려쓰다', href: isFile ? liveBase + '/principles' : basePath + '/principles', match: ['/principles'], external: isFile },
     { label: '지켜주다', href: isFile ? liveBase + '/service2' : basePath + '/service2', match: ['/service2'], external: isFile },
     { label: '기억하다', href: isFile ? liveBase + '/service3' : basePath + '/service3', match: ['/service3'], external: isFile },
-    { label: '비즈니스', href: '', match: ['/business'], disabled: true }
+    { label: '비즈니스', href: isFile ? liveBase + '/business' : basePath + '/business', match: ['/business'], external: isFile }
   ];
 
   var activeIndex = items.findIndex(function (item) {

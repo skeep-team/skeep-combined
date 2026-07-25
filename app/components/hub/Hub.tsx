@@ -35,7 +35,15 @@ const SLIDES: Slide[] = [
   { tag: "Principle 4", href: "/service2", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/service2.jpg`, heading: ["기기에는 흔적 없이", "내 맥락은 끊김 없이"] } },
   { tag: "Principle 5", href: "/service3", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/service3.jpg`, heading: ["당신다운 경험의 시작"] } },
   { tag: "Principle 6", href: "/negotiation", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/negotiation.jpg`, heading: ["당신이 원하는 그대로", "가장 자연스럽게"] } },
-  { tag: "Business" },
+  {
+    tag: "Business",
+    href: `${BASE_PATH}/business`,
+    thumbnail: {
+      kind: "image",
+      src: `${BASE_PATH}/thumbs/business.jpg`,
+      heading: ["세상 모든 시간을 연결해온", "Migratable Agent, Skeep"],
+    },
+  },
 ];
 
 // Poster image sits behind the video and is always visible; the video starts

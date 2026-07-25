@@ -29,7 +29,7 @@ const groups = [
       { label: "장소 찾기", href: `${BASE_PATH}/principles` },
       { label: "제품 찾기", href: `${BASE_PATH}/principles` },
       { label: "서비스 찾기", href: `${BASE_PATH}/principles` },
-      { label: "비즈니스", href: `${BASE_PATH}/principles` },
+      { label: "비즈니스", href: `${BASE_PATH}/business` },
     ],
   },
 ];

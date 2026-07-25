@@ -1227,7 +1227,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 100%;
     }
     .principle-mini-card {
-      --card-bg: #E2E8EF;
+      --card-bg: #F1F1F1;
       --card-ink: #0E1825;
       --card-dot: rgba(14, 24, 37, .24);
       width: auto;
@@ -1816,11 +1816,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-tab:hover { transform: translateY(-2px); }
     .ux-tab.active { border-color: #ff0b6c; background: #fff; }
     .ux-left-holder { margin-top: clamp(20px, 2.4vw, 36px); }
-    .ux-left-panel, .ux-right-panel { display: none; }
-    .ux-left-panel.active { display: block; }
-    .ux-right-panel.active { display: flex; flex-direction: column; gap: clamp(12px, 1.2vw, 18px); }
-    @keyframes uxPanelFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .ux-left-panel.active, .ux-right-panel.active { animation: uxPanelFade .85s ease both; }
+    .ux-left-panel, .ux-right-panel {
+      display: none; opacity: 0; transform: translateY(10px); filter: blur(4px);
+      /* opacity/filter stay on a gentle, evenly-paced curve so the outgoing panel is
+         still partly visible when the incoming one starts — a real overlap, not a
+         vanish-then-reappear blink. transform keeps the punchier ease-out. */
+      transition: opacity .25s ease, transform .25s cubic-bezier(.23,1,.32,1), filter .25s ease;
+    }
+    .ux-left-panel.active, .ux-left-panel.leaving { display: block; }
+    .ux-right-panel.active, .ux-right-panel.leaving { display: flex; flex-direction: column; gap: clamp(12px, 1.2vw, 18px); }
+    .ux-left-panel.active, .ux-right-panel.active { opacity: 1; transform: translateY(0); filter: blur(0); }
+    .ux-left-panel.leaving, .ux-right-panel.leaving { opacity: 0; transform: translateY(-8px); filter: blur(4px); }
     @keyframes uxBgFade { from { opacity: 0; } to { opacity: 1; } }
     .ux-logic-sticky.ux-bg-in::before { animation: uxBgFade .85s ease both; }
 
@@ -4463,89 +4469,62 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </div>
 
 <!-- ═══════════════════════
-  BALL TRAIL MOTION (lead-in, above UX Logic)
+  SQUARE → STRIPE MORPH (lead-in, above UX Logic)
 ═══════════════════════ -->
-<section class="bt-band" aria-hidden="true">
-  <canvas class="bt-canvas" id="btCanvas"></canvas>
+<section class="sq-morph-band" aria-hidden="true">
+  <div class="sq-morph">
+    <span class="sq-morph-seg seg1"></span>
+    <span class="sq-morph-seg seg2"></span>
+    <span class="sq-morph-seg seg3"></span>
+    <span class="sq-morph-seg seg4"></span>
+    <span class="sq-morph-seg seg5"></span>
+    <span class="sq-morph-seg seg6"></span>
+    <span class="sq-morph-seg seg7"></span>
+  </div>
 </section>
 <style>
-  .bt-band { width: 100%; background: #fff; padding: clamp(12px, 3vh, 48px) 0; overflow: hidden; }
-  .bt-canvas { display: block; width: 100%; height: clamp(220px, 32vh, 400px); }
+  .sq-morph-band { width: 100%; background: #fff; padding: clamp(40px, 6vh, 96px) 0;
+    overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  /* overflow:hidden here is what makes the segments read as ONE shape while gap:0 —
+     the container's own border-radius clips them into a single seamless block.
+     Only once the gap keyframe opens up do the pieces visually separate. */
+  .sq-morph { --sq-size: min(350px, 40vw, 40vh); --bar-w: min(760px, 64vw);
+    display: flex; gap: 0; overflow: hidden; width: var(--sq-size);
+    height: var(--sq-size);
+    animation: sqMorphShape 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .sq-morph-seg { flex: 1 1 0; height: 100%; }
+  .seg1 { animation: sqMorphColor1 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg2 { animation: sqMorphColor2 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg3 { animation: sqMorphColor3 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg4 { animation: sqMorphColor4 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg5 { animation: sqMorphColor5 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg6 { animation: sqMorphColor6 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  .seg7 { animation: sqMorphColor7 3.6s cubic-bezier(.77,0,.175,1) infinite; }
+  /* beat 1 (0-8%): one tall square. beat 2 (30%): flattens into one long bar, still
+     a single unbroken shape. beat 3 (55-65%): the bar splits into 7 colored pieces.
+     beat 4 (88%): pieces rejoin into one dark bar before growing back into the square. */
+  @keyframes sqMorphShape {
+    0%, 8%    { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
+    30%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
+    55%, 65%  { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 3px; }
+    88%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
+    100%      { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
+  }
+  @keyframes sqMorphColor1 { 0%, 30% { background: #262629; } 55%, 65% { background: #F72A76; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor2 { 0%, 30% { background: #262629; } 55%, 65% { background: #FAC1D9; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor3 { 0%, 30% { background: #262629; } 55%, 65% { background: #97DAEB; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor4 { 0%, 30% { background: #262629; } 55%, 65% { background: #F65D33; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor5 { 0%, 30% { background: #262629; } 55%, 65% { background: #73FB81; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor6 { 0%, 30% { background: #262629; } 55%, 65% { background: #D1FC53; } 88%, 100% { background: #262629; } }
+  @keyframes sqMorphColor7 { 0%, 30% { background: #262629; } 55%, 65% { background: #2759D8; } 88%, 100% { background: #262629; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sq-morph, .sq-morph-seg { animation: none; }
+    .sq-morph { width: var(--bar-w); height: clamp(26px, 3.6vh, 42px); gap: 3px; }
+    .seg1 { background: #F72A76; } .seg2 { background: #FAC1D9; } .seg3 { background: #97DAEB; }
+    .seg4 { background: #F65D33; } .seg5 { background: #73FB81; } .seg6 { background: #D1FC53; }
+    .seg7 { background: #2759D8; }
+  }
 </style>
-<script>
-(() => {
-  const cv = document.getElementById('btCanvas');
-  if (!cv) return;
-  const ctx = cv.getContext('2d');
-  let W = 0, H = 0, DPR = 1;
-  function resize(){
-    DPR = Math.min(2, window.devicePixelRatio || 1);
-    const r = cv.getBoundingClientRect();
-    W = Math.max(1, r.width); H = Math.max(1, r.height);
-    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  }
-  const ro = new ResizeObserver(resize); ro.observe(cv); resize();
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // downward-opening arc (∩): low ends, peak in the middle
-  function P0(){ return [-0.04 * W, 0.86 * H]; }
-  function P1(){ return [ 0.50 * W, 0.06 * H]; }
-  function P2(){ return [ 1.04 * W, 0.86 * H]; }
-  function bez(s){ const [a0,b0]=P0(),[a1,b1]=P1(),[a2,b2]=P2(),u=1-s;
-    return [u*u*a0+2*u*s*a1+s*s*a2, u*u*b0+2*u*s*b1+s*s*b2]; }
-  function tan(s){ const [a0,b0]=P0(),[a1,b1]=P1(),[a2,b2]=P2(),u=1-s;
-    return Math.atan2(2*u*(b1-b0)+2*s*(b2-b1), 2*u*(a1-a0)+2*s*(a2-a1)); }
-
-  // UX Logic 카드의 활성 색을 같은 순서로 사용합니다.
-  const COLORS=[
-    [251,110,156], // 새겨듣다  #FB6E9C
-    [105,230,255], // 스며들다  #69E6FF
-    [255,245,104], // 조율하다  #FFF568
-    [159,235,118], // 빌려쓰다  #9FEB76
-    [213,110,251], // 지켜주다  #D56EFB
-    [255,151,82],  // 기억하다  #FF9752
-  ];
-  const rgba=(c,a)=>`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
-
-  const TRAIL=COLORS.length, GAP=0.082, PASS=2.7, CYCLE=3.9, FLIPS=3.4;
-
-  function frame(t){
-    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
-    const headS=((t%CYCLE)/PASS)*1.30;
-    const R=Math.min(W,H)*0.10;
-    for(let k=TRAIL-1;k>=0;k--){
-      const s=headS-k*GAP;
-      if(s<0||s>1.02) continue;
-      const [x,y]=bez(s), ang=tan(s);
-      const flip=Math.abs(Math.cos(s*Math.PI*FLIPS));
-      const ry=R*Math.max(0.10,flip), rx=R;
-      const fade=1-k/TRAIL;
-      const alpha=0.55+0.45*fade;
-      const scale=0.62+0.38*fade;
-      // 진행 방향(왼쪽 → 오른쪽)이 카드 1번 → 6번 색 순서가 되도록 매핑합니다.
-      const col=COLORS[TRAIL-1-k];
-      ctx.save();
-      ctx.translate(x,y); ctx.rotate(ang); ctx.scale(scale,scale);
-      ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);
-      ctx.fillStyle=rgba(col,alpha); ctx.fill();
-      ctx.restore();
-    }
-  }
-
-  let running=false, raf=0;
-  function loop(now){ if(!running) return; frame(now/1000); raf=requestAnimationFrame(loop); }
-  if(reduce){ frame(1.2); }
-  else {
-    const io=new IntersectionObserver((es)=>{
-      const vis=es[0].isIntersecting;
-      if(vis && !running){ running=true; raf=requestAnimationFrame(loop); }
-      else if(!vis && running){ running=false; cancelAnimationFrame(raf); }
-    }, {threshold:0});
-    io.observe(cv);
-  }
-})();
-</script>
 
 
 
@@ -4736,10 +4715,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     });
   });
 
+  let swapTimeout = null;
   function setActive(i) {
+    if (tabs[i]?.classList.contains('active') && !swapTimeout) return;
     tabs.forEach((t, k) => t.classList.toggle('active', k === i));
-    lefts.forEach((t, k) => t.classList.toggle('active', k === i));
-    rights.forEach((t, k) => t.classList.toggle('active', k === i));
     const stateBg = tabs[i]?.dataset.stateBg;
     const accent = tabs[i]?.dataset.accent;
     if (sticky && stateBg) sticky.style.setProperty('--ux-state-bg', `url("${stateBg}")`);
@@ -4750,6 +4729,34 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       void sticky.offsetWidth;   // reflow to restart the animation
       sticky.classList.add('ux-bg-in');
     }
+
+    if (swapTimeout) { clearTimeout(swapTimeout); swapTimeout = null; }
+
+    // fade the outgoing panel out (if one is actually showing); snap away any
+    // panel that was mid-transition from a rapid re-click so it never lingers
+    let hadActive = false;
+    [lefts, rights].forEach((panels) => {
+      panels.forEach((el, k) => {
+        if (k === i) return;
+        if (el.classList.contains('active')) { el.classList.remove('active'); el.classList.add('leaving'); hadActive = true; }
+        else el.classList.remove('leaving');
+      });
+    });
+    lefts[i]?.classList.remove('leaving');
+    rights[i]?.classList.remove('leaving');
+
+    const finish = () => {
+      lefts.forEach((el) => el.classList.remove('leaving'));
+      rights.forEach((el) => el.classList.remove('leaving'));
+      lefts[i]?.classList.add('active');
+      rights[i]?.classList.add('active');
+      swapTimeout = null;
+    };
+    // wait out most of the exit fade before the new panel enters (skipped
+    // entirely when interrupting a still-leaving panel, so rapid clicks
+    // through the six tabs stay snappy rather than queueing delays)
+    if (hadActive) swapTimeout = setTimeout(finish, 130);
+    else finish();
   }
   tabs.forEach((t, i) => t.addEventListener('click', () => setActive(i)));
   setActive(0);
