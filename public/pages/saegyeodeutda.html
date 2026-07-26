@@ -681,15 +681,16 @@
       transform: translateY(12px) scale(.98);
       pointer-events: none;
     }
+    .sd-walk-scene.is-pre-final .sd-walk-person.is-walk-final-person,
     .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
       position: absolute;
-      left: calc(50% - clamp(300px, 21vw, 440px));
-      top: 50%;
+      left: calc(50% - clamp(220px, 17.2vw, 340px));
+      top: 41%;
       width: clamp(92px, 7.2vw, 148px);
       height: auto;
       opacity: 1;
       filter: grayscale(0);
-      transform: translate(-50%, -50%) scale(1) !important;
+      transform: translate(-50%, -50%) scale(1);
     }
     .sd-walk-shadow {
       position: absolute;
@@ -726,10 +727,11 @@
     }
     .sd-walk-final-title {
       position: absolute;
-      left: calc(50% - clamp(460px, 23vw, 640px));
-      top: calc(50% + 80px);
-      transform: translateY(-50%) translateX(32px);
+      left: calc(50% - clamp(220px, 17.2vw, 340px));
+      top: 73%;
+      transform: translate(-50%, -50%) translateY(20px);
       display: block;
+      text-align: center;
       opacity: 0;
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
       font-size: clamp(56px, 6.1vw, 120px);
@@ -761,7 +763,7 @@
     }
     .sd-walk-scene.is-pre-final .sd-walk-final-title {
       opacity: 1;
-      transform: translateY(-50%) translateX(0);
+      transform: translate(-50%, -50%) translateY(0);
       transition-delay: .7s;
     }
     /* final: slide the whole person + "Input Logic" group to screen center */
@@ -782,12 +784,13 @@
         flex-basis: clamp(72px, 11.5vw, 104px);
         width: clamp(72px, 11.5vw, 104px);
       }
+      .sd-walk-scene.is-pre-final .sd-walk-person.is-walk-final-person,
       .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
-        left: calc(50% - clamp(150px, 24vw, 230px));
+        left: calc(50% - clamp(220px, 17.2vw, 340px));
         width: clamp(74px, 10vw, 104px);
       }
       .sd-walk-final-title {
-        left: calc(50% - clamp(50px, 7vw, 86px));
+        left: calc(50% - clamp(220px, 17.2vw, 340px));
         font-size: clamp(44px, 9vw, 78px);
       }
     }
@@ -2683,9 +2686,44 @@
         finalMoveStarted = false;
         return;
       }
+      // FLIP: switching to position:absolute for the centered layout is an
+      // instant layout-mode change CSS can't transition on its own — the
+      // person would just teleport. Record where it visually sits first, let
+      // the class swap jump it, then compensate with an inverse transform and
+      // animate that back to zero so it reads as one continuous move.
+      //
+      // The row itself also animates (translateX) on this same class add, and
+      // that shift changes the absolutely-positioned person's on-screen rect
+      // too — so both need their transitions killed before the "after"
+      // measurement, or that read lands mid-transition instead of at the true
+      // end state and the whole delta is wrong.
+      const row = scene.querySelector('.sd-walk-row');
+      const beforeRect = finalPerson.getBoundingClientRect();
+      const prevPersonTransition = finalPerson.style.transition;
+      const prevRowTransition = row ? row.style.transition : '';
+      finalPerson.style.transition = 'none';
+      if (row) row.style.transition = 'none';
+
       scene.classList.add('is-pre-final');
       if (shadow) shadow.style.opacity = '0';
-      finalPerson.style.transform = 'scale(1.04)';
+      // eslint-disable-next-line no-unused-expressions
+      finalPerson.offsetWidth; // force layout now, transitions off -> true end state
+      const afterRect = finalPerson.getBoundingClientRect();
+      const dx = beforeRect.left + beforeRect.width / 2 - (afterRect.left + afterRect.width / 2);
+      const dy = beforeRect.top + beforeRect.height / 2 - (afterRect.top + afterRect.height / 2);
+      // the CSS rule's own translate(-50%,-50%) centers the element on its
+      // (left, top) anchor point — chain the FLIP delta after it so both
+      // apply together instead of the inline style replacing it outright.
+      finalPerson.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(1.04)`;
+      // eslint-disable-next-line no-unused-expressions
+      finalPerson.offsetWidth; // paint the compensated starting position before re-enabling transitions
+      finalPerson.style.transition = prevPersonTransition;
+      if (row) row.style.transition = prevRowTransition;
+      // eslint-disable-next-line no-unused-expressions
+      finalPerson.offsetWidth;
+      requestAnimationFrame(() => {
+        finalPerson.style.transform = 'translate(-50%, -50%) scale(1.04)';
+      });
       window.setTimeout(() => {
         walkComplete = true;
         stepping = false;
@@ -2701,7 +2739,16 @@
       const sceneTop = rect.top + window.scrollY;
       const total = scene.offsetHeight - window.innerHeight;
       if (total > 0) {
+        // this scroll is meant to land instantly (it's the scroll-jacking
+        // engine's own position sync, called every ~400ms by auto-advance) —
+        // the page's global `scroll-behavior: smooth` would otherwise animate
+        // it, so consecutive calls stack up and never settle, leaving the
+        // walker's on-screen position drifting whenever something (like the
+        // final-move FLIP) reads it mid-scroll.
+        const prevScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = 'auto';
         window.scrollTo(0, sceneTop + ((totalSteps - current) / (totalSteps + 1)) * total);
+        document.documentElement.style.scrollBehavior = prevScrollBehavior;
       }
       setTimeout(() => { stepping = false; }, stepDuration);
     }

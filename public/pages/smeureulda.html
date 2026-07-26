@@ -164,9 +164,9 @@
       height: clamp(520px, 68vh, 680px);
       max-height: calc(100svh - 160px);
       min-height: 0;
-      border-radius: 32px;
-      background: #F4F8FC;
-      box-shadow: inset 0 4px 37.3px rgba(205,218,233,0.22);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -183,33 +183,113 @@
       transform: translateY(0) scale(1);
     }
     .keepon-chain {
-      display: flex; flex-direction: row; align-items: center; justify-content: center;
-      gap: 14px; margin: 0;
+      display: grid;
+      grid-template-columns: auto clamp(220px, 20vw, 300px);
+      align-items: center;
+      justify-content: center;
+      gap: clamp(48px, 7vw, 120px);
+      width: min(100%, 1120px);
+      margin: 0;
     }
     .chain-prefix {
-      font-size: clamp(22px,3.6vw,48px); font-weight: 600; line-height: 60px; letter-spacing: -0.03em; white-space: nowrap;
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(28px,4vw,60px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.055em;
+      white-space: nowrap;
     }
-    .chain-prefix strong { font-weight: 700; }
-    .keepon-chain-viewport {
-      width: 200px; height: 300px; overflow: hidden; position: relative;
+    .chain-prefix > span {
+      display: inline-block;
+      vertical-align: baseline;
     }
-    /* mask-image가 무스(Tizen)에서 어두운 박스로 깨져서, 카드 배경색(#F4F8FC) 그라데이션 오버레이로 위/아래 페이드 (무스 호환) */
-    .keepon-chain-viewport::before,
-    .keepon-chain-viewport::after {
-      content: ""; position: absolute; left: 0; right: 0; height: 30%;
-      z-index: 2; pointer-events: none;
+    .chain-prefix strong {
+      display: inline-block;
+      margin-left: .12em;
+      font-family: inherit;
+      font-weight: 400;
+      letter-spacing: inherit;
+      text-transform: uppercase;
     }
-    .keepon-chain-viewport::before { top: 0; background: linear-gradient(180deg, #F4F8FC 0%, rgba(244,248,252,0) 100%); }
-    .keepon-chain-viewport::after { bottom: 0; background: linear-gradient(0deg, #F4F8FC 0%, rgba(244,248,252,0) 100%); }
-    .keepon-chain-track {
-      width: 100%; margin: 0;
-      transition: transform .55s cubic-bezier(.16,1,.3,1);
-      will-change: transform;
+    .swipe-stack-shell {
+      --stack-width: clamp(220px, 20vw, 300px);
+      --caption-height: calc(var(--stack-width) * .20);
+      position: relative;
+      width: var(--stack-width);
+      height: var(--stack-width);
+      perspective: 1000px;
+      overflow: visible;
+      touch-action: none;
     }
-    .chain-word {
-      height: 60px; line-height: 60px; margin: 0; flex-shrink: 0;
-      font-size: clamp(22px,3.6vw,48px); font-weight: 400; letter-spacing: -0.03em; white-space: nowrap;
-      text-align: left; transition: opacity .55s ease;
+    .swipe-card {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      appearance: none;
+      overflow: hidden;
+      background: #15191f;
+      box-shadow: none;
+      cursor: default;
+      user-select: none;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+      transition:
+        transform .38s cubic-bezier(.22,1,.36,1),
+        opacity .28s ease,
+        box-shadow .24s ease;
+    }
+    .swipe-card-image {
+      position: absolute;
+      inset: 0 0 var(--caption-height);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      pointer-events: none;
+    }
+    .swipe-card-label {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: var(--caption-height);
+      display: grid;
+      place-items: center;
+      background: #15191f;
+      color: #fff;
+      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(24px, 2.2vw, 34px);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      pointer-events: none;
+    }
+    .swipe-card:first-child {
+      cursor: grab;
+    }
+    .swipe-card:first-child:active {
+      cursor: grabbing;
+      box-shadow: none;
+    }
+    .swipe-card.is-dragging {
+      transition: none;
+    }
+    @media (max-width: 720px) {
+      .keepon-chain {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 36px;
+      }
+      .chain-prefix {
+        white-space: normal;
+        text-align: center;
+      }
+      .swipe-stack-shell {
+        --stack-width: min(58vw, 240px);
+      }
     }
 
     /* ── 3-4. sticky transition: 목적은 행동으로 → TWO-COL ── */
@@ -542,7 +622,7 @@
       overflow: hidden;
       margin-left: 0;
       margin-right: 0;
-      background: #FD0A6B;
+      background: #FF6B3D;
       isolation: isolate;
       position: relative;
     }
@@ -1158,20 +1238,28 @@
     <div class="keepon-panel-sticky">
       <div class="keepon-panel">
         <div class="keepon-chain">
-          <span class="chain-prefix">That's How <strong>Skeep AI™</strong></span>
-          <div class="keepon-chain-viewport">
-            <div class="keepon-chain-track" id="keeponChainTrack">
-              <p class="chain-word">Plans</p>
-              <p class="chain-word">Acts</p>
-              <p class="chain-word">Reads</p>
-              <p class="chain-word">Thinks</p>
-              <p class="chain-word">Works</p>
-              <p class="chain-word">Plans</p>
-              <p class="chain-word">Acts</p>
-              <p class="chain-word">Reads</p>
-              <p class="chain-word">Thinks</p>
-              <p class="chain-word">Works</p>
-            </div>
+          <span class="chain-prefix"><span>That's How</span><strong>SKEEP AI™</strong></span>
+          <div class="swipe-stack-shell" id="keeponSwipeStack" aria-label="Skeep AI 이미지 카드 스택">
+            <button class="swipe-card" type="button" aria-label="Reads 이미지 카드">
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-reading.png')"></span>
+              <span class="swipe-card-label">Reads</span>
+            </button>
+            <button class="swipe-card" type="button" aria-label="Thinks 이미지 카드">
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-blue-shirt.png')"></span>
+              <span class="swipe-card-label">Thinks</span>
+            </button>
+            <button class="swipe-card" type="button" aria-label="Works 이미지 카드">
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-workspace.png')"></span>
+              <span class="swipe-card-label">Works</span>
+            </button>
+            <button class="swipe-card" type="button" aria-label="Plans 이미지 카드">
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-planning.png')"></span>
+              <span class="swipe-card-label">Plans</span>
+            </button>
+            <button class="swipe-card" type="button" aria-label="Acts 이미지 카드">
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-wellness.png')"></span>
+              <span class="swipe-card-label">Acts</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1278,26 +1366,32 @@
         const ctx = cv.getContext('2d');
         const off = document.createElement('canvas');
         const octx = off.getContext('2d');
+        const tint = document.createElement('canvas');
+        const tctx = tint.getContext('2d');
         let W, H, DPR, cx, cy, MIN;
         function resize() {
           DPR = Math.min(2, window.devicePixelRatio || 1);
           W = cv.clientWidth; H = cv.clientHeight;
           if (!W || !H) return;
-          cv.width = off.width = Math.round(W * DPR);
-          cv.height = off.height = Math.round(H * DPR);
+          cv.width = off.width = tint.width = Math.round(W * DPR);
+          cv.height = off.height = tint.height = Math.round(H * DPR);
           cx = W / 2; cy = H / 2; MIN = Math.min(W, H);
         }
         new ResizeObserver(resize).observe(cv); resize();
 
         const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const corners = [[-1,-1],[1,-1],[-1,1],[1,1]];
-        const COLORS = [[250,137,219], [117,66,252], [85,189,129]];  // 핑크 #FA89DB → 보라 #7542FC → 초록 #55BD81
+        const COLOR_PAIRS = [
+          { background: [255,107,61], foreground: [165,224,240] },
+          { background: [9,66,26], foreground: [130,255,143] },
+          { background: [255,51,133], foreground: [255,202,223] }
+        ];
         const lerpC = (a,b,k)=>`rgb(${Math.round(a[0]+(b[0]-a[0])*k)},${Math.round(a[1]+(b[1]-a[1])*k)},${Math.round(a[2]+(b[2]-a[2])*k)})`;
 
         const STATES = {
           circle: { off: 0.185,   half: 0.082,  rx: 0.082 },
           clover: { off: 0.105,   half: 0.120,  rx: 0.120 },
-          square: { off: 0.07625, half: 0.13125, rx: 0.040 },
+          square: { off: 0.07625, half: 0.13125, rx: 0 },
         };
         const lerp = (a,b,k)=>a+(b-a)*k;
         const easeIO = t => t<0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
@@ -1306,7 +1400,6 @@
         const HOLD = 1.1, MORPH = 0.9, SEG = HOLD + MORPH;
         const HOLD_DEG = 46, MORPH_DEG = 44;
         const GOO = 0.038, CONTRAST = 22;
-
         function roundedRect(g, x, y, w, h, r) {
           r = Math.min(r, w/2, h/2);
           g.moveTo(x+r, y);
@@ -1317,15 +1410,14 @@
           g.closePath();
         }
 
-        function render(A, B, k, angleDeg, bg) {
+        function render(A, B, k, angleDeg, bg, fg) {
           const p = {
             off:  lerp(A.off,  B.off,  k) * MIN,
             half: lerp(A.half, B.half, k) * MIN,
             rx:   lerp(A.rx,   B.rx,   k) * MIN,
           };
           octx.setTransform(DPR, 0, 0, DPR, 0, 0);
-          octx.fillStyle = '#000';
-          octx.fillRect(0, 0, W, H);
+          octx.clearRect(0, 0, W, H);
           octx.save();
           octx.translate(cx, cy);
           octx.rotate(angleDeg * Math.PI / 180);
@@ -1342,11 +1434,19 @@
           ctx.globalCompositeOperation = 'source-over';
           ctx.fillStyle = bg;
           ctx.fillRect(0, 0, cv.width, cv.height);
-          ctx.filter = `blur(${(MIN * GOO * DPR).toFixed(1)}px) contrast(${CONTRAST})`;
-          ctx.globalCompositeOperation = 'lighten';
-          ctx.drawImage(off, 0, 0);
-          ctx.filter = 'none';
+
+          tctx.setTransform(1, 0, 0, 1, 0, 0);
+          tctx.clearRect(0, 0, tint.width, tint.height);
+          tctx.filter = `blur(${(MIN * GOO * DPR).toFixed(1)}px) contrast(${CONTRAST})`;
+          tctx.globalCompositeOperation = 'source-over';
+          tctx.drawImage(off, 0, 0);
+          tctx.filter = 'none';
+          tctx.globalCompositeOperation = 'source-in';
+          tctx.fillStyle = fg;
+          tctx.fillRect(0, 0, tint.width, tint.height);
+
           ctx.globalCompositeOperation = 'source-over';
+          ctx.drawImage(tint, 0, 0);
         }
 
         let raf = 0, visible = true, start = performance.now();
@@ -1363,12 +1463,29 @@
             ? HOLD_DEG * (local / HOLD)
             : HOLD_DEG + MORPH_DEG * ((local - HOLD) / MORPH);
           const angle = absSeg * (HOLD_DEG + MORPH_DEG) + segAngle;
-          const cA = COLORS[absSeg % 3], cB = COLORS[(absSeg + 1) % 3];
-          render(A, B, k, angle, lerpC(cA, cB, k));
+          const pairA = COLOR_PAIRS[absSeg % 3], pairB = COLOR_PAIRS[(absSeg + 1) % 3];
+          render(
+            A,
+            B,
+            k,
+            angle,
+            lerpC(pairA.background, pairB.background, k),
+            lerpC(pairA.foreground, pairB.foreground, k)
+          );
         }
 
         if (reduce) {
-          (function once(){ if(!W){ resize(); requestAnimationFrame(once); return; } render(STATES.square, STATES.square, 1, 0, lerpC(COLORS[0], COLORS[0], 0)); })();
+          (function once(){
+            if(!W){ resize(); requestAnimationFrame(once); return; }
+            render(
+              STATES.square,
+              STATES.square,
+              1,
+              0,
+              lerpC(COLOR_PAIRS[0].background, COLOR_PAIRS[0].background, 0),
+              lerpC(COLOR_PAIRS[0].foreground, COLOR_PAIRS[0].foreground, 0)
+            );
+          })();
         } else {
           if ('IntersectionObserver' in window) {
             new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(cv);
@@ -2056,61 +2173,146 @@
     typeIo.observe(keeponTitle);
   }
 
-  const chainTrack = document.getElementById('keeponChainTrack');
-  if (chainTrack) {
-    const itemHeight = 60;
-    const visibleRows = 5;
-    const centerRow = 2;
-    const cycleLen = 5;
-    const items = [...chainTrack.children];
-    let chainIdx = 2;
+  const swipeStack = document.getElementById('keeponSwipeStack');
+  if (swipeStack) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let autoTimer = 0;
+    let isVisible = false;
+    let isDragging = false;
+    let isAnimating = false;
+    let dragCard = null;
+    let startX = 0;
+    let startY = 0;
+    let dragX = 0;
+    let dragY = 0;
 
-    function applyChainOpacity() {
-      items.forEach((el, i) => {
-        const dist = Math.abs(i - chainIdx);
-        if (dist === 0) el.style.opacity = 1;
-        else if (dist === 1) el.style.opacity = 0.45;
-        else if (dist === 2) el.style.opacity = 0.18;
-        else el.style.opacity = 0;
-      });
-    }
-    function applyChainWeight() {
-      items.forEach((el, i) => {
-        el.style.fontWeight = i === chainIdx ? 700 : 400;
-      });
-    }
-    function applyChainTransform() {
-      chainTrack.style.transform = `translateY(-${(chainIdx - centerRow) * itemHeight}px)`;
-    }
+    const positionCard = (card, index, immediate = false) => {
+      const cards = [...swipeStack.children];
+      const stackLayout = [
+        { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
+        { x: 0, y: -4, rotate: -14, scale: .98, opacity: .64 },
+        { x: 0, y: -7, rotate: 16, scale: .96, opacity: .42 },
+        { x: 0, y: -10, rotate: -28, scale: .94, opacity: .26 },
+        { x: 0, y: -12, rotate: 28, scale: .92, opacity: .14 }
+      ];
+      const layout = stackLayout[index] || stackLayout[stackLayout.length - 1];
 
-    chainTrack.style.transition = 'none';
-    applyChainTransform();
-    applyChainOpacity();
-    applyChainWeight();
-    void chainTrack.offsetHeight;
-    chainTrack.style.transition = '';
-
-    function snapChainBack() {
-      chainTrack.style.transition = 'none';
-      chainIdx = 2;
-      applyChainTransform();
-      applyChainOpacity();
-      applyChainWeight();
-      void chainTrack.offsetHeight;
-      chainTrack.style.transition = '';
-    }
-    setInterval(() => {
-      // safety: if a wrap was ever missed (e.g. tab backgrounded), never run off
-      if (chainIdx >= 2 + cycleLen) snapChainBack();
-      chainIdx++;
-      applyChainTransform();
-      applyChainOpacity();
-      applyChainWeight();
-      // deterministic wrap that does not depend on transitionend firing
-      if (chainIdx === 2 + cycleLen) {
-        setTimeout(snapChainBack, 600);
+      if (immediate) card.style.transition = 'none';
+      card.style.zIndex = String(cards.length - index);
+      card.style.opacity = String(layout.opacity);
+      card.style.transform = `translate3d(${layout.x}px, ${layout.y}px, ${-index * 10}px) rotate(${layout.rotate}deg) scale(${layout.scale})`;
+      if (immediate) {
+        void card.offsetHeight;
+        card.style.transition = '';
       }
-    }, 1600);
+    };
+
+    const layoutCards = (immediate = false) => {
+      [...swipeStack.children].forEach((card, index) => {
+        positionCard(card, index, immediate);
+      });
+    };
+
+    const recycleCardToBack = card => {
+      swipeStack.appendChild(card);
+      const lastIndex = swipeStack.children.length - 1;
+      const backOpacity = .14;
+
+      card.style.transition = 'none';
+      positionCard(card, lastIndex);
+      card.style.opacity = '0';
+      const fade = card.animate(
+        [{ opacity: 0 }, { opacity: backOpacity }],
+        { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' }
+      );
+      card.style.opacity = String(backOpacity);
+      card.style.transition = '';
+      fade.finished.then(() => fade.cancel()).catch(() => {});
+      isAnimating = false;
+    };
+
+    const scheduleAuto = () => {
+      clearInterval(autoTimer);
+      if (!isVisible || reducedMotion) return;
+      autoTimer = window.setInterval(() => cycleTopCard(1), 1800);
+    };
+
+    const cycleTopCard = (direction = 1) => {
+      if (isAnimating || isDragging) return;
+
+      const cards = [...swipeStack.children];
+      const topCard = cards[0];
+      if (!topCard) return;
+
+      isAnimating = true;
+      topCard.style.transform = `translate3d(${direction * 340}px, -28px, 80px) rotate(${direction * 16}deg) scale(1.03)`;
+      topCard.style.opacity = '0';
+      cards.slice(1).forEach((card, index) => positionCard(card, index));
+
+      window.setTimeout(() => {
+        recycleCardToBack(topCard);
+      }, 320);
+    };
+
+    const finishDrag = (event) => {
+      if (!isDragging || !dragCard) return;
+
+      isDragging = false;
+      dragCard.releasePointerCapture?.(event.pointerId);
+      dragCard.classList.remove('is-dragging');
+      const distance = Math.hypot(dragX, dragY);
+
+      if (distance > 50) {
+        const direction = dragX === 0 ? 1 : Math.sign(dragX);
+        const currentCard = dragCard;
+        isAnimating = true;
+        currentCard.style.transform = `translate3d(${direction * 340}px, ${dragY}px, 80px) rotate(${direction * 16}deg) scale(1.03)`;
+        currentCard.style.opacity = '0';
+        [...swipeStack.children].slice(1).forEach((card, index) => positionCard(card, index));
+        window.setTimeout(() => {
+          recycleCardToBack(currentCard);
+          scheduleAuto();
+        }, 320);
+      } else {
+        positionCard(dragCard, 0);
+        scheduleAuto();
+      }
+
+      dragCard = null;
+    };
+
+    swipeStack.addEventListener('pointerdown', event => {
+      const topCard = swipeStack.firstElementChild;
+      if (event.target !== topCard || isAnimating) return;
+      clearInterval(autoTimer);
+      isDragging = true;
+      dragCard = topCard;
+      startX = event.clientX;
+      startY = event.clientY;
+      dragX = 0;
+      dragY = 0;
+      topCard.setPointerCapture?.(event.pointerId);
+      topCard.classList.add('is-dragging');
+    });
+
+    swipeStack.addEventListener('pointermove', event => {
+      if (!isDragging || !dragCard) return;
+      dragX = event.clientX - startX;
+      dragY = event.clientY - startY;
+      dragCard.style.transform = `translate3d(${dragX}px, ${dragY}px, 40px) rotate(${dragX / 18}deg) scale(1.04)`;
+    });
+
+    swipeStack.addEventListener('pointerup', finishDrag);
+    swipeStack.addEventListener('pointercancel', finishDrag);
+
+    const stackObserver = new IntersectionObserver(entries => {
+      isVisible = entries[0].isIntersecting;
+      if (isVisible) scheduleAuto();
+      else clearInterval(autoTimer);
+    }, { threshold: .35 });
+
+    layoutCards(true);
+    stackObserver.observe(swipeStack);
   }
 
   const mlCarousel = document.querySelector('[data-ml-carousel]');

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import styles from "./Business.module.css";
 import PestelSection from "./PestelSection";
+import VisaSkeepScroll from "./VisaSkeepScroll";
+import PositioningScroll from "./PositioningScroll";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const tailSections = [
-  { file: "business-04-tail-clean.png", height: 1270 },
-  { file: "business-05.png", height: 2800 },
   { file: "business-06.png", height: 2800 },
   { file: "business-07.png", height: 2800 },
   { file: "business-08.png", height: 2800 },
@@ -43,6 +43,8 @@ export default function BusinessPage() {
           />
         ))}
         <PestelSection />
+        <VisaSkeepScroll />
+        <PositioningScroll />
         {tailSections.map((section) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img

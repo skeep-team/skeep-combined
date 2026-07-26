@@ -28,6 +28,13 @@
       font-style: normal;
       font-display: swap;
     }
+    @font-face {
+      font-family: 'Skeep Helvetica Now Display';
+      src: url('assets/HelveticaNowDisplay-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     /* requestAnimationFrame이 직접 스크롤을 보간하는 동안에는 native smooth를 끈다. */
@@ -1572,6 +1579,176 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-visual-placeholder {
       background: #D9DDE3;
     }
+    .layer-visual-image--database {
+      background: #000;
+      display: grid;
+      place-items: center;
+      container-type: inline-size;
+    }
+    .layer-visual-image--database.active { pointer-events: auto; }
+    .database-cards {
+      width: 82.7%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .42cqw;
+    }
+    .database-card {
+      aspect-ratio: 392 / 346;
+      position: relative;
+      border-radius: 1.66cqw;
+      background: transparent;
+      color: #222;
+      text-align: left;
+      cursor: pointer;
+      perspective: 80cqw;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .database-card:focus-visible {
+      outline: .16cqw solid #ff4991;
+      outline-offset: .3cqw;
+    }
+    .database-card-flipper {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      transform-style: preserve-3d;
+      transition: transform .68s cubic-bezier(.2,.75,.25,1);
+      will-change: transform;
+    }
+    .database-card.is-flipped .database-card-flipper {
+      transform: rotateY(180deg);
+    }
+    .database-cards.is-intro-pending .database-card-flipper {
+      transform: rotateY(180deg);
+    }
+    .database-cards.is-intro-animating .database-card-flipper {
+      animation: database-card-intro-flip .78s cubic-bezier(.2,.75,.25,1) both;
+    }
+    .database-cards.is-intro-animating .database-card:nth-child(2) .database-card-flipper { animation-delay: .12s; }
+    .database-cards.is-intro-animating .database-card:nth-child(3) .database-card-flipper { animation-delay: .24s; }
+    .database-cards.is-intro-animating .database-card:nth-child(4) .database-card-flipper { animation-delay: .36s; }
+    @keyframes database-card-intro-flip {
+      0%   { transform: rotateY(180deg); }
+      82%  { transform: rotateY(-5deg); }
+      100% { transform: rotateY(0); }
+    }
+    .database-card-face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      background: #fff;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .database-card-face--back {
+      transform: rotateY(180deg);
+    }
+    .database-card-head {
+      height: 30.64%;
+      padding: .83cqw 1.25cqw;
+      background: #0a67de;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #89dff0;
+      line-height: 1.5;
+      letter-spacing: -.04em;
+    }
+    .database-card:nth-child(2) .database-card-head {
+      color: #89dff0;
+    }
+    .database-card:nth-child(3) .database-card-head {
+      color: #89dff0;
+    }
+    .database-card:nth-child(4) .database-card-head {
+      color: #89dff0;
+    }
+    .database-card .database-card-back-head {
+      background: #c4ccd7;
+    }
+    .database-card:last-child .database-card-back-head { background: #c4ccd7; }
+    .database-card-kicker {
+      font-family: 'Skeep Helvetica Now Display', 'Helvetica Now Display', sans-serif;
+      font-size: 1.26cqw;
+      font-weight: 400;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .database-card-title {
+      font-size: 1.26cqw;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+    .database-card-body {
+      height: 69.36%;
+      padding: .83cqw 1.25cqw;
+      display: flex;
+      flex-direction: column;
+      gap: .83cqw;
+    }
+    .database-card-items {
+      display: flex;
+      flex-direction: column;
+      gap: .83cqw;
+    }
+    .database-card-item {
+      display: flex;
+      align-items: center;
+      gap: .625cqw;
+      min-width: 0;
+    }
+    .database-card-icon {
+      display: block;
+      width: 2.08cqw;
+      height: 2.08cqw;
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+    .database-card:nth-child(3) .database-card-item:nth-child(2) .database-card-icon {
+      padding: .416cqw .416cqw .016cqw;
+      border-radius: .416cqw;
+      background: rgba(196, 204, 215, .4);
+    }
+    .database-card-copy {
+      min-width: 0;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .database-card-layer {
+      font-size: .65cqw;
+      letter-spacing: -.02em;
+    }
+    .database-card-label {
+      font-size: 1.26cqw;
+      letter-spacing: -.04em;
+      white-space: nowrap;
+    }
+    .database-card-note {
+      margin-top: auto;
+      color: #66717f;
+      font-size: .86cqw;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -.04em;
+    }
+    .database-card-back-body {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 1.04cqw;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.03em;
+    }
+    .database-card-back-body p:last-child { color: #66717f; }
+    @media (prefers-reduced-motion: reduce) {
+      .database-card-flipper { transition: none; }
+      .database-cards.is-intro-pending .database-card-flipper,
+      .database-cards.is-intro-animating .database-card-flipper {
+        transform: none;
+        animation: none;
+      }
+    }
     .layers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.8vw, 28px);
       padding: 0 var(--edge-padding);
@@ -1592,15 +1769,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-name { font-size: clamp(19px,1.55vw,24px); font-weight: 750; line-height: 1.25; letter-spacing: -0.025em; color: #0e1825; }
     .layer-en   { margin-top: 3px; font-size: clamp(13px,1vw,15px); font-weight: 500; line-height: 1.4; letter-spacing: -0.02em; color: rgba(0,0,0,.58); }
     .layer-desc { font-size: clamp(13px,1.05vw,15px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; color: rgba(0,0,0,.55); }
-    /* 컬러 카드: 상시=파랑 / 활성=초록 / 데이터베이스=핑크 (Image #38 색상코드) */
-    .layer-card[data-layer]            { background: #FFD1E2; border-color: transparent; }
-    /* 선택된(활성) 카드: 연핑크 배경 + 핑크 텍스트 (#80 참조) */
-    .layer-card[data-layer]:not(.faded) .layer-name { color: #EA366E; }
-    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(234,54,110,.82); }
-    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(234,54,110,.78); }
-    .layer-card[data-layer] .layer-name { color: #fff; }
-    .layer-card[data-layer] .layer-en   { color: rgba(255,255,255,.82); }
-    .layer-card[data-layer] .layer-desc { color: rgba(255,255,255,.78); }
+    /* 선택된 카드: 진한 네이비 배경 + 흰 텍스트 */
+    .layer-card[data-layer]            { background: #89DFF0; border-color: transparent; }
+    .layer-card[data-layer]:not(.faded) .layer-name { color: #0A67DE; }
+    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(10,103,222,.82); }
+    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(10,103,222,.78); }
+    .layer-card[data-layer] .layer-name { color: #0A67DE; }
+    .layer-card[data-layer] .layer-en   { color: rgba(10,103,222,.82); }
+    .layer-card[data-layer] .layer-desc { color: rgba(10,103,222,.78); }
     /* 비선택(선택 색상이 아닌) 카드는 회색 처리 */
     .layer-card.faded[data-layer] { background: #E7EAEE; opacity: 1; }
     .layer-card.faded[data-layer] .layer-name { color: #6B7280; }
@@ -1631,6 +1807,51 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         margin-top: 48px;
         pointer-events: auto;
       }
+      .layer-visual {
+        aspect-ratio: auto;
+        height: 248px;
+      }
+      .layer-visual-image--database {
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+      }
+      .layer-visual-image--database::-webkit-scrollbar { display: none; }
+      .database-cards {
+        width: max-content;
+        flex: 0 0 auto;
+        grid-template-columns: repeat(4, 220px);
+        gap: 8px;
+        padding: 0 24px;
+      }
+      .database-card { border-radius: 18px; }
+      .database-card:focus-visible {
+        outline-width: 2px;
+        outline-offset: 3px;
+      }
+      .database-card-head { padding: 10px 13px; }
+      .database-card-kicker,
+      .database-card-title { font-size: 14px; }
+      .database-card-body {
+        padding: 10px 13px;
+        gap: 8px;
+      }
+      .database-card-items { gap: 8px; }
+      .database-card-item { gap: 7px; }
+      .database-card-icon {
+        width: 24px;
+        height: 24px;
+      }
+      .database-card:nth-child(3) .database-card-item:nth-child(2) .database-card-icon {
+        padding: 4.8px 4.8px .19px;
+        border-radius: 4.8px;
+      }
+      .database-card-layer { font-size: 7px; }
+      .database-card-label { font-size: 14px; }
+      .database-card-note { font-size: 9px; }
+      .database-card-back-body { font-size: 11px; }
     }
 
     /* ── 11. PACKET INTRO ────────────────────────── */
@@ -1770,11 +1991,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     /* ── UX Logic — big-cards suck-in → tab scene ── */
-    .ux-logic-wrap { position: relative; height: 300vh; --p: 0; --lp: 0; margin-top: clamp(48px, 8vh, 160px); }
+    .ux-logic-wrap { position: relative; height: 460vh; --p: 0; --lp: 0; margin-top: clamp(48px, 8vh, 160px); }
     .ux-logic-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden;
       display: flex; align-items: flex-start; padding: clamp(90px, 13vh, 170px) var(--edge-padding) 0; }
 
     /* intro block (top) — fades out as you scroll */
+    .ux-intro-block { display: none; }
     .ux-intro-block { position: absolute; left: var(--edge-padding); right: var(--edge-padding);
       top: clamp(90px, 13vh, 170px); pointer-events: none;
       display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(40px, 5vw, 90px);
@@ -1802,8 +2024,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-tabbar { opacity: clamp(0, calc((var(--p) - 0.6) * 9), 1); }
     /* panels revealed from BELOW after the cards settle, sliding up */
     .ux-left-holder, .ux-right-holder {
-      opacity: clamp(0, calc((var(--p) - 0.72) * 5), 1);
-      transform: translateY(calc((1 - clamp(0, calc((var(--p) - 0.7) * 4), 1)) * 80px)); }
+      opacity: 0; transform: translateY(70px);
+      transition: opacity .55s ease, transform .6s cubic-bezier(.22,1,.32,1); }
+    .ux-logic-wrap.detail-in .ux-left-holder,
+    .ux-logic-wrap.detail-in .ux-right-holder {
+      opacity: 1; transform: translateY(0); transition-delay: .9s; }
     .ux-left-col { flex: 1.12 1 0; min-width: 0; }
     .ux-right-holder { flex: 1 1 0; min-width: 0; }
     .ux-tabbar { display: flex; gap: clamp(10px, 1vw, 16px); }
@@ -1815,18 +2040,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transition: border-color .25s ease, background-color .25s ease, transform .2s ease; }
     .ux-tab:hover { transform: translateY(-2px); }
     .ux-tab.active { border-color: #ff0b6c; background: #fff; }
-    .ux-left-holder { margin-top: clamp(20px, 2.4vw, 36px); }
+    .ux-left-holder { margin-top: clamp(180px, 30vh, 380px); }
+    /* 패널: 절대배치로 겹쳐 → active만 보이며 부드럽게 크로스페이드 (레이아웃 점프/디스플레이 팝 제거) */
     .ux-left-panel, .ux-right-panel {
-      display: none; opacity: 0; transform: translateY(10px); filter: blur(4px);
-      /* opacity/filter stay on a gentle, evenly-paced curve so the outgoing panel is
-         still partly visible when the incoming one starts — a real overlap, not a
-         vanish-then-reappear blink. transform keeps the punchier ease-out. */
-      transition: opacity .25s ease, transform .25s cubic-bezier(.23,1,.32,1), filter .25s ease;
+      position: absolute; top: 0; left: 0; right: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity .4s ease;
     }
-    .ux-left-panel.active, .ux-left-panel.leaving { display: block; }
-    .ux-right-panel.active, .ux-right-panel.leaving { display: flex; flex-direction: column; gap: clamp(12px, 1.2vw, 18px); }
-    .ux-left-panel.active, .ux-right-panel.active { opacity: 1; transform: translateY(0); filter: blur(0); }
-    .ux-left-panel.leaving, .ux-right-panel.leaving { opacity: 0; transform: translateY(-8px); filter: blur(4px); }
+    .ux-right-panel { display: flex; flex-direction: column; gap: clamp(12px, 1.2vw, 18px); }
+    .ux-left-panel.active, .ux-right-panel.active { opacity: 1; pointer-events: auto; }
+    .ux-left-holder { position: relative; min-height: clamp(150px, 20vh, 240px); }
+    .ux-right-holder { position: relative; min-height: clamp(400px, 52vh, 660px); }
     @keyframes uxBgFade { from { opacity: 0; } to { opacity: 1; } }
     .ux-logic-sticky.ux-bg-in::before { animation: uxBgFade .85s ease both; }
 
@@ -1839,29 +2063,59 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-right-holder .stage-logic-title { font-size: clamp(18px,1.7vw,24px); }
     .ux-right-holder .stage-logic-desc { font-size: clamp(13px,1.05vw,15px); }
 
-    /* ── UX Logic — DARK MODE (black bg, white text) ── */
-    .sec-ux-intro { background: #000; border-top-color: rgba(255,255,255,0.1); }
-    .sec-ux-intro .ux-title { color: #fff; }
-    .sec-ux-intro .ux-right { color: rgba(255,255,255,0.6); }
-    .ux-logic-sticky { background: #000; opacity: 0; transition: opacity 1s ease; }
-    .ux-logic-sticky.vis { opacity: 1; }
-    .ux-bigcard .kr { color: #fff; }
-    .ux-bigcard .sub { color: #fff; opacity: max(0, calc(0.4 - var(--p) * 2.4)); }
-    .ux-tab { background: rgba(255,255,255,0.08); color: #fff; }
-    .ux-tab.active { border-color: #ff0b6c; background: rgba(255,255,255,0.16); }
-    .ux-left-panel .stage-kr { color: #fff; }
-    .ux-left-panel .stage-desc { color: rgba(255,255,255,0.6); }
-    .ux-left-panel .stage-en { background: rgba(255,11,108,0.14); border-color: #ff0b6c; color: #ff6aa8; }
-    .ux-right-holder .stage-logic-card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.09); }
-    .ux-right-holder .stage-logic-title { color: #fff; }
-    .ux-right-holder .stage-logic-desc { color: #fff; opacity: 0.5; }
-    .ux-right-holder .stage-logic-tag { background: rgba(255,255,255,0.16); color: #fff; }
+
+
+    /* ── UX Logic 빅카드 컬러 (흰 배경 통합) ── */
+    .ux-bigcards-inner .ux-bigcard { background: #EDEEF0 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(1) { background: #FF3385 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(2) { background: #A1D202 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(3) { background: #A5E0F0 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(4) { background: #0A67DE !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(5) { background: #09421A !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(6) { background: #280047 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(1) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(1) .sub { color: #FFCADF !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(2) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(2) .sub { color: #DAFF61 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(3) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(3) .sub { color: #FF6B3D !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(4) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(4) .sub { color: #F5F5F5 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(5) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(5) .sub { color: #82FF8F !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(6) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(6) .sub { color: #FFF2A8 !important; }
+    .ux-bigcards-inner .ux-bigcard .sub { opacity: .8 !important; }
+
+    /* ── 인트로(sq-morph)를 ux-logic-sticky 안으로 병합 ── */
+    /* 상단 텍스트(A→B): 인트로 동안 보이다가 흔입이 시작되면 사라짐 */
+    .ux-logic-sticky .uxl-top { position: absolute; left: var(--edge-padding); right: var(--edge-padding);
+      top: clamp(90px, 13vh, 170px); z-index: 3; pointer-events: none;
+      opacity: clamp(0, calc((0.20 - var(--p)) * 9), 1); }
+    /* 카드 박스: bigcards와 동일한 위치/변환으로 좌상단 탭으로 빨려들음 */
+    /* 카드 박스: 인트로 동안 화면 중하단에 고정, 스택은 카드 자체가 수행 */
+    .ux-logic-sticky .uxl-cards { position: absolute; pointer-events: none; z-index: 5; left: var(--edge-padding); right: var(--edge-padding);
+      top: clamp(90px, 13vh, 170px); align-items: flex-start; justify-content: center;
+      min-height: 0; perspective: 1500px; transition: transform .85s cubic-bezier(.22,1,.32,1);
+      transform: translate(calc(var(--mv,0) * -30vw), calc(38vh - var(--mv,0) * 36vh)) scale(calc(1 + var(--mv,0) * 0.12));
+      opacity: 1; }
+
+    /* ── 6색 카드 자체가 3D 레이어로 겹쳐짐 (--sp: 0→1) ── */
+    .ux-logic-sticky .ux-tabbar { visibility: hidden; }
+    .ux-logic-sticky .sq-morph.stacking { overflow: visible; transform-style: preserve-3d;
+      transform: rotateX(calc(15deg * var(--sp,0))) rotateY(calc(-44deg * var(--sp,0))); }
+    .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { opacity: calc(1 - 0.2 * var(--sp,0));
+      transition: opacity .2s ease; }
+    .ux-logic-sticky .sq-morph.stacking .sq-card-txt { opacity: clamp(0, calc(1 - var(--sp,0) * 4), 1) !important; }
+    .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { pointer-events: auto; cursor: pointer; }
+    .ux-logic-sticky .sq-morph.settled .sq-morph-seg { transition: transform .3s cubic-bezier(.22,1,.32,1), opacity .2s ease; }
+    .ux-logic-sticky .sq-morph.stacking .seg1 { transform: translateX(calc(2.5 * 100% * var(--sp,0))) translateZ(calc(85px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg2 { transform: translateX(calc(1.5 * 100% * var(--sp,0))) translateZ(calc(51px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg3 { transform: translateX(calc(0.5 * 100% * var(--sp,0))) translateZ(calc(17px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg4 { transform: translateX(calc(-0.5 * 100% * var(--sp,0))) translateZ(calc(-17px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg5 { transform: translateX(calc(-1.5 * 100% * var(--sp,0))) translateZ(calc(-51px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg6 { transform: translateX(calc(-2.5 * 100% * var(--sp,0))) translateZ(calc(-85px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    @media (prefers-reduced-motion: reduce) { .ux-logic-sticky .sq-morph.stacking { transform: rotateX(15deg) rotateY(-44deg); } }
 
     /* ── UX Logic — Figma design (node 4293-1653) ── */
     .ux-logic-sticky {
       --ux-state-bg: url('../인트로/네모배경1.png');
       isolation: isolate;
-      background: #000;
+      background: #fff;
     }
     .ux-logic-sticky::before {
       content: "";
@@ -1870,14 +2124,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       z-index: -1;
       pointer-events: none;
       background: var(--ux-state-bg) left bottom / cover no-repeat;
-      opacity: clamp(0, calc((var(--p) - 0.58) * 7.15), 1);
+      opacity: 0;
     }
     /* tabs: square, top-left text; active = pink gradient */
     .ux-tabbar { gap: clamp(9px, 0.82vw, 16px); }
     .ux-tabbar .ux-tab {
       flex: 0 0 auto; width: clamp(80px, 6.35vw, 122px); aspect-ratio: 1; height: auto;
       border: none; border-radius: clamp(12px, 0.9vw, 17px);
-      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.62);
+      background: rgba(14,24,37,0.05); color: rgba(14,24,37,0.55);
       align-items: flex-start; padding: clamp(13px,1vw,18px) clamp(11px,0.95vw,15px) 0;
       font-weight: 700; font-size: clamp(13px, 1.15vw, 22px); }
     .ux-tabbar .ux-tab.active {
@@ -1893,24 +2147,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-left-panel .stage-kr {
       margin: 0; line-height: 1.5; font-weight: 700; letter-spacing: -0.04em;
       font-size: clamp(34px, 3.4vw, 66px);
-      background: var(--ux-accent, #FB6E9C);
-      -webkit-background-clip: text; background-clip: text; color: transparent; }
+      color: #111; }
     .stage-arrow { flex: 0 0 auto; width: clamp(42px,3.2vw,62px); height: clamp(42px,3.2vw,62px);
       border-radius: 50%; background: var(--ux-accent, #FB6E9C); display: inline-flex; align-items: center; justify-content: center; }
     .stage-arrow svg { width: 44%; height: 44%; }
     .stage-arrow svg path { stroke: #000; }
-    .ux-left-panel .stage-desc { color: #fff; opacity: 1; font-weight: 500;
+    .ux-left-panel .stage-desc { color: #3a4655; opacity: 1; font-weight: 500;
       font-size: clamp(18px, 1.78vw, 34px); margin: 0; line-height: 1.5; }
     /* logic cards */
     .ux-right-holder .stage-logic-card {
-      background: rgba(231,234,240,0.1); -webkit-backdrop-filter: blur(10.4px); backdrop-filter: blur(10.4px);
+      background: #F1F1F1;
       border: none; border-radius: clamp(20px,1.5vw,28px);
       padding: clamp(26px,2.1vw,38px) clamp(26px,2.3vw,42px) clamp(24px,1.9vw,35px); gap: clamp(12px,1.1vw,17px); }
-    .ux-right-holder .stage-logic-title { color: #fff; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em; }
+    .ux-right-holder .stage-logic-title { color: #0e1825; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em; }
     .ux-right-holder .stage-logic-tag {
-      background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-weight: 500;
+      background: rgba(14,24,37,0.06); color: rgba(14,24,37,0.62); font-weight: 500;
       font-size: clamp(14px,0.92vw,17.5px); border-radius: 19px; padding: clamp(7px,0.46vw,9px) clamp(13px,0.92vw,18px); }
-    .ux-right-holder .stage-logic-desc { color: #fff; opacity: 0.4; font-weight: 500; font-size: clamp(14px,1.28vw,24.5px); }
+    .ux-right-holder .stage-logic-desc { color: #3a4655; opacity: 0.75; font-weight: 500; font-size: clamp(14px,1.28vw,24.5px); }
 
     /* compact right-side card column */
     @media (min-width: 900px) {
@@ -3354,11 +3607,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     render();
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) {
-      window.setInterval(function () {
+      function hcfAdvance() {
         active = (active + 1) % n;
         render();
         document.dispatchEvent(new CustomEvent('skeep:coverflow', { detail: { index: active } }));
-      }, DELAY);
+      }
+      // 첫 타일(주황 엘베)에 더 오래 머문 뒤 자동 전환 시작
+      window.setTimeout(function () { hcfAdvance(); window.setInterval(hcfAdvance, DELAY); }, DELAY + 2200);
     }
   })();
   </script>
@@ -3895,10 +4150,146 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   11. SYSTEM LAYERS
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers>
-  <div class="layer-visual" aria-hidden="true">
-    <div class="layer-visual-image layer-visual-placeholder active" data-layer-image="passive"></div>
-    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="active"></div>
-    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="database"></div>
+  <div class="layer-visual">
+    <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false"></div>
+    <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert></div>
+    <div class="layer-visual-image layer-visual-image--database" data-layer-image="database" aria-hidden="true" inert>
+      <div class="database-cards is-intro-pending">
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="성향 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Propensity</p>
+                <p class="database-card-title">성향</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-talk.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">소통 선호 방식</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-danger.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">위험 감수 성향</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-workflow.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">작업 스타일</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Propensity</p>
+                <p class="database-card-title">성향</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>성향은 사용자가 평소 편하게 느끼는 소통 방식과 작업 방식을 가리킵니다.</p>
+                <p>이를 통해 각 환경은 여러 사용자가 편하게 느끼는 방식과 속도로 소통할 수 있게 됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="위임 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Delegate</p>
+                <p class="database-card-title">위임</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-trust.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">자동화 신뢰 수준</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-delegate.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">행동 위임 범위</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Delegate</p>
+                <p class="database-card-title">위임</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>위임은 사용자가 에이전트에게 얼마나 맡기고, 어디까지 확인하고 싶어하는지를 가리킵니다.</p>
+                <p>이를 통해 각 환경은 조용히 대신 처리할 영역과 사용자에게 알릴 영역을 구분합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="상태 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">State</p>
+                <p class="database-card-title">상태</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-energy.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">감정 에너지 상태</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-time.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">시간적 압박</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">State</p>
+                <p class="database-card-title">상태</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>상태는 지금 이 순간 사용자의 신체-감정적 컨디션과 시간적 여유를 가리킵니다.</p>
+                <p>이를 통해 각 환경은 같은 사람이라도 순간에 맞춰 개입의 강도와 속도를 조절합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="명시적 제한 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Explicit Limit</p>
+                <p class="database-card-title">명시적 제한</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-money.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">금전적 제한</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-lock.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">정보 공유 제한</p></div>
+                  </div>
+                </div>
+                <p class="database-card-note">* 사용자가 직접 발화하여 외부 환경에 지시하기를<br>&nbsp;&nbsp;&nbsp;금지한 사항</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Explicit Limit</p>
+                <p class="database-card-title">명시적 제한</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>명시적 제한은 사용자가 직접 설정한, 바뀌지 않는 절대 규칙을 가리킵니다.</p>
+                <p>필요시에 이를 패킷으로 전달 해 사용자가 그은 선을 넘지 않도록 하며, 이 규칙은 상황에 따라 최우선으로 고려됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
   </div>
   <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
     <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive">
@@ -3940,6 +4331,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </section>
 <script>
 (() => {
+  const source = document.querySelector('[data-layer-image="database"] .database-cards');
+  if (!source) return;
+  document.querySelectorAll('[data-layer-image="passive"], [data-layer-image="active"]').forEach((layer) => {
+    layer.append(source.cloneNode(true));
+  });
+})();
+</script>
+
+<script>
+(() => {
   const section = document.querySelector('.sec-layers');
   if (!section) return;
   const tabs = [...section.querySelectorAll('.layer-card[data-layer]')];
@@ -3950,7 +4351,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       tab.classList.toggle('faded', !selected);
       tab.setAttribute('aria-selected', String(selected));
     });
-    images.forEach((image) => image.classList.toggle('active', image.dataset.layerImage === layer));
+    images.forEach((image) => {
+      const selected = image.dataset.layerImage === layer;
+      image.classList.toggle('active', selected);
+      image.setAttribute('aria-hidden', String(!selected));
+      image.toggleAttribute('inert', !selected);
+    });
+    section.dispatchEvent(new CustomEvent('skeep:layerchange', { detail: { layer } }));
   };
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => selectLayer(tab.dataset.layer));
@@ -3961,6 +4368,91 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
     });
   });
+})();
+</script>
+
+<script>
+(() => {
+  const layerVisual = document.querySelector('.layer-visual');
+  const layerSection = document.querySelector('.sec-layers');
+  const sequence = document.querySelector('[data-system-flow-sequence]');
+  const cardGroups = [...document.querySelectorAll('.database-cards')];
+  const cards = document.querySelectorAll('.database-card');
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let introVisible = false;
+  const introTimers = new WeakMap();
+
+  const finishIntro = (group) => {
+    if (!group) return;
+    group.classList.remove('is-intro-pending', 'is-intro-animating');
+    group.removeAttribute('aria-busy');
+    const timer = introTimers.get(group);
+    if (timer) {
+      clearTimeout(timer);
+      introTimers.delete(group);
+    }
+  };
+
+  const layerSceneVisible = () => {
+    return window.matchMedia('(max-width: 768px)').matches || sequence?.classList.contains('show-layers');
+  };
+
+  const startActiveIntro = () => {
+    if (!introVisible || !layerSceneVisible()) return;
+    const group = document.querySelector('.layer-visual-image.active .database-cards');
+    if (!group || group.dataset.introPlayed === 'true') return;
+    group.dataset.introPlayed = 'true';
+    if (reduceMotion) {
+      finishIntro(group);
+      return;
+    }
+    group.setAttribute('aria-busy', 'true');
+    group.classList.add('is-intro-animating');
+    group.classList.remove('is-intro-pending');
+    introTimers.set(group, setTimeout(() => finishIntro(group), 1220));
+  };
+
+  const flipCard = (card) => {
+    const group = card.closest('.database-cards');
+    if (group?.classList.contains('is-intro-animating')) finishIntro(group);
+    const flipped = card.classList.toggle('is-flipped');
+    card.setAttribute('aria-pressed', String(flipped));
+    card.setAttribute('aria-label', `${card.querySelector('.database-card-title')?.textContent || '데이터베이스'} 카드 ${flipped ? '앞면 보기' : '뒤집기'}`);
+    card.querySelector('.database-card-face--front')?.setAttribute('aria-hidden', String(flipped));
+    card.querySelector('.database-card-face--back')?.setAttribute('aria-hidden', String(!flipped));
+  };
+  cards.forEach((card) => {
+    card.addEventListener('click', () => flipCard(card));
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        flipCard(card);
+      }
+    });
+  });
+
+  if ('IntersectionObserver' in window && layerVisual) {
+    const introObserver = new IntersectionObserver(([entry]) => {
+      introVisible = entry.isIntersecting && entry.intersectionRatio >= .35;
+      if (introVisible) startActiveIntro();
+    }, { threshold: [.35] });
+    introObserver.observe(layerVisual);
+  } else {
+    introVisible = true;
+  }
+
+  layerSection?.addEventListener('skeep:layerchange', startActiveIntro);
+  if (sequence && 'MutationObserver' in window) {
+    new MutationObserver(startActiveIntro).observe(sequence, { attributes: true, attributeFilter: ['class'] });
+  }
+  window.addEventListener('resize', startActiveIntro, { passive: true });
+
+  if (reduceMotion) {
+    cardGroups.forEach((group) => {
+      group.dataset.introPlayed = 'true';
+      finishIntro(group);
+    });
+  }
 })();
 </script>
 
@@ -4079,15 +4571,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       b.s = tg.s;
     }
     balls.sort((p, q) => p.pz - q.pz);
-    ctx.fillStyle = '#40B875';
+    ctx.fillStyle = '#3FB875';
     ctx.fillRect(0, 0, W, H);
     const DR = Rmaj + Rmin;
     for (const b of balls) {
       const nz = Math.max(0, Math.min(1, (b.pz + DR)/(2*DR)));
-      const g = b.g;                          // 0 scattered (pure white) … 1 gathered (yellow #FFE74E)
-      const Ly = 46 + nz*20;                  // gathered-yellow lightness (depth-shaded)
+      const g = b.g;                          // 0 scattered (pure white) … 1 gathered (lime #FFF261)
+      const Ly = 62 + nz*12;                  // gathered-lime lightness (depth-shaded, ~#FFF261)
       ctx.beginPath(); ctx.arc(b.px, b.py, BR*b.s, 0, Math.PI*2);
-      ctx.fillStyle = `hsl(51, ${g*100}%, ${100 - (100 - Ly)*g}%)`; ctx.fill();
+      ctx.fillStyle = `hsl(55, ${g*100}%, ${100 - (100 - Ly)*g}%)`; ctx.fill();
     }
     raf = requestAnimationFrame(frame);
   }
@@ -4230,6 +4722,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     left: 20px;
     right: 20px;
     text-align: center;
+    font-family: 'T1 Glicky', 'Pretendard', sans-serif;
     font-size: clamp(24px, 2.5vw, 40px);
     font-weight: 500;
     line-height: 1;
@@ -4457,74 +4950,74 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <!-- ═══════════════════════
   17. UX LOGIC SUMMARY
 ═══════════════════════ -->
-<div class="sec-summary fi">
-  <div class="summary-row">
-    <div class="summary-label">UX Logic</div>
-    <div class="summary-desc">
-      사용자의 목적이 발생하는 순간부터<br>
-      그 목적이 달성되고 흔적 없이 사라지기까지,<br>
-      스킵 경험의 기반이 되는 로직을 보여줍니다.
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════
-  SQUARE → STRIPE MORPH (lead-in, above UX Logic)
-═══════════════════════ -->
-<section class="sq-morph-band" aria-hidden="true">
-  <div class="sq-morph">
-    <span class="sq-morph-seg seg1"></span>
-    <span class="sq-morph-seg seg2"></span>
-    <span class="sq-morph-seg seg3"></span>
-    <span class="sq-morph-seg seg4"></span>
-    <span class="sq-morph-seg seg5"></span>
-    <span class="sq-morph-seg seg6"></span>
-    <span class="sq-morph-seg seg7"></span>
-  </div>
-</section>
+<!-- ═══════════════════════ UX LOGIC 리드인 (고정 pin) ═══════════════════════ -->
 <style>
-  .sq-morph-band { width: 100%; background: #fff; padding: clamp(40px, 6vh, 96px) 0;
-    overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  /* overflow:hidden here is what makes the segments read as ONE shape while gap:0 —
-     the container's own border-radius clips them into a single seamless block.
-     Only once the gap keyframe opens up do the pieces visually separate. */
+  /* ① 진입 시(1회): 검정 정사각 → 막대 → (중간부터) 6색 분할
+     ② 스크롤 한 번 더 → 한 번에 커지며(.grown) 카드 글자 채워짐. 전부 sq-morph 스코프. */
+  /* 고정(pin) 씬: 상단 텍스트 + 카드가 한 화면에 고정. 전부 uxl-* / sq-morph 스코프. */
+  .uxl-scene { position: relative; width: 100%; height: 280vh; background: #fff;
+    margin-top: clamp(60px, 9vh, 160px); }
+  .uxl-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; background: #fff;
+    box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;
+    padding: clamp(56px, 9vh, 130px) var(--edge-padding) clamp(120px, 20vh, 300px); }
+  .uxl-top { position: relative; z-index: 2; min-height: clamp(190px, 22vw, 340px); }
+  .uxl-row { display: flex; gap: clamp(120px, 18vw, 420px); align-items: flex-start;
+    position: absolute; top: 0; left: 0; right: 0; transition: opacity .55s ease; }
+  .uxl-a { opacity: 1; }
+  .uxl-b { opacity: 0; pointer-events: none; }
+  .uxl-top.swap .uxl-a { opacity: 0; pointer-events: none; }
+  .uxl-top.swap .uxl-b { opacity: 1; pointer-events: auto; }
+  .uxl-left { flex-shrink: 0; display: flex; flex-direction: column; gap: clamp(16px, 2vw, 36px); }
+  .uxl-label { font-size: clamp(16px,1.6vw,24px); font-weight: 600; line-height: 1.3;
+    letter-spacing: -0.03em; text-transform: uppercase; color: #ff0b6c; white-space: nowrap; }
+  .uxl-a .uxl-label { padding-top: 4px; }
+  .uxl-title { margin: 0; font-size: clamp(23px,2.7vw,40px); font-weight: 700; line-height: 1.3;
+    letter-spacing: -0.03em; color: #0e1825; }
+  .uxl-desc { font-size: clamp(15px,1.7vw,30px); font-weight: 600; line-height: 1.35;
+    letter-spacing: -0.02em; color: #0e1825; max-width: 1008px; }
+  .uxl-desc-b { font-size: clamp(14px,1.1vw,20px); font-weight: 500; line-height: 1.6;
+    color: #3a4655; max-width: 760px; padding-top: clamp(6px, 1vw, 14px); }
+  .uxl-cards { display: flex; align-items: flex-end; justify-content: center; min-height: 0; }
   .sq-morph { --sq-size: min(350px, 40vw, 40vh); --bar-w: min(760px, 64vw);
-    display: flex; gap: 0; overflow: hidden; width: var(--sq-size);
-    height: var(--sq-size);
-    animation: sqMorphShape 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .sq-morph-seg { flex: 1 1 0; height: 100%; }
-  .seg1 { animation: sqMorphColor1 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg2 { animation: sqMorphColor2 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg3 { animation: sqMorphColor3 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg4 { animation: sqMorphColor4 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg5 { animation: sqMorphColor5 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg6 { animation: sqMorphColor6 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg7 { animation: sqMorphColor7 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  /* beat 1 (0-8%): one tall square. beat 2 (30%): flattens into one long bar, still
-     a single unbroken shape. beat 3 (55-65%): the bar splits into 7 colored pieces.
-     beat 4 (88%): pieces rejoin into one dark bar before growing back into the square. */
-  @keyframes sqMorphShape {
-    0%, 8%    { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
-    30%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
-    55%, 65%  { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 3px; }
-    88%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
-    100%      { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
-  }
-  @keyframes sqMorphColor1 { 0%, 30% { background: #262629; } 55%, 65% { background: #F72A76; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor2 { 0%, 30% { background: #262629; } 55%, 65% { background: #FAC1D9; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor3 { 0%, 30% { background: #262629; } 55%, 65% { background: #97DAEB; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor4 { 0%, 30% { background: #262629; } 55%, 65% { background: #F65D33; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor5 { 0%, 30% { background: #262629; } 55%, 65% { background: #73FB81; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor6 { 0%, 30% { background: #262629; } 55%, 65% { background: #D1FC53; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor7 { 0%, 30% { background: #262629; } 55%, 65% { background: #2759D8; } 88%, 100% { background: #262629; } }
+    --bar-h: clamp(26px, 3.6vh, 42px);
+    --big-w: min(1680px, 94vw); --big-h: calc((min(1680px, 94vw) - 90px) / 6); --big: 0;
+    display: flex; gap: 0; overflow: hidden;
+    width: var(--sq-size); height: var(--sq-size); border-radius: 0;
+    transition: width .9s cubic-bezier(.77,0,.175,1), height .7s cubic-bezier(.22,1,.36,1),
+                gap .6s ease, border-radius .6s ease,
+                transform .8s cubic-bezier(.22,1,.32,1); }
+  .sq-morph-seg { flex: 1 1 0; height: 100%; position: relative; overflow: hidden;
+    background: #262629; border-radius: 0;
+    transition: background .85s ease, border-radius .6s ease,
+                transform .8s cubic-bezier(.22,1,.32,1), opacity .45s ease; }
+  .sq-card-txt { position: absolute; inset: 0; padding: clamp(14px, 1.5vw, 30px);
+    display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+    opacity: 0; pointer-events: none; transition: opacity .5s ease .25s;
+    font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; }
+  .sq-morph.grown .sq-card-txt { opacity: 1; }
+  .sq-card-txt b { font-weight: 700; font-size: clamp(15px, 1.6vw, 30px); color: var(--card-txt, #14161a);
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: .35em; }
+  .sq-card-txt i { font-style: normal; font-weight: 500; font-size: clamp(11px, 1.02vw, 18px);
+    color: var(--card-txt, rgba(0,0,0,.5)); opacity: .82; line-height: 1.5; letter-spacing: -0.02em; }
+  .sq-morph.is-in { width: var(--bar-w); height: var(--bar-h); gap: 0; border-radius: 0; }
+  .sq-morph.is-in.split {
+    width: calc(var(--bar-w) + (var(--big-w) - var(--bar-w)) * var(--big));
+    height: calc(var(--bar-h) + (var(--big-h) - var(--bar-h)) * var(--big));
+    gap: calc(3px + 15px * var(--big));
+    border-radius: 0; }
+  .sq-morph.grown { --big: 1; }
+  .sq-morph.is-in.split .sq-morph-seg { border-radius: 0; }
+  .sq-morph.is-in.split .seg1 { background: #FF3385; --card-txt: #FFCADF; }
+  .sq-morph.is-in.split .seg2 { background: #A1D202; --card-txt: #DAFF61; }
+  .sq-morph.is-in.split .seg3 { background: #A5E0F0; --card-txt: #FF6B3D; }
+  .sq-morph.is-in.split .seg4 { background: #0A67DE; --card-txt: #F5F5F5; }
+  .sq-morph.is-in.split .seg5 { background: #09421A; --card-txt: #82FF8F; }
+  .sq-morph.is-in.split .seg6 { background: #280047; --card-txt: #FFF2A8; }
   @media (prefers-reduced-motion: reduce) {
-    .sq-morph, .sq-morph-seg { animation: none; }
-    .sq-morph { width: var(--bar-w); height: clamp(26px, 3.6vh, 42px); gap: 3px; }
-    .seg1 { background: #F72A76; } .seg2 { background: #FAC1D9; } .seg3 { background: #97DAEB; }
-    .seg4 { background: #F65D33; } .seg5 { background: #73FB81; } .seg6 { background: #D1FC53; }
-    .seg7 { background: #2759D8; }
+    .sq-morph, .sq-morph-seg { transition: none; }
   }
 </style>
+
 
 
 
@@ -4533,35 +5026,39 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <div class="ux-logic-wrap">
   <div class="ux-logic-sticky">
-    <div class="ux-intro-block">
-      <div class="ux-left">
-        <p class="ux-label">Skeep UX Logic</p>
-        <p class="ux-title">쉿. 보이지 않게<br>그러나 가장 완벽하게</p>
+    <div class="uxl-top" id="uxlTop">
+      <div class="uxl-row uxl-a">
+        <div class="uxl-label">UX Logic</div>
+        <div class="uxl-desc">사용자의 목적이 발생하는 순간부터<br>그 목적이 달성되고 흔적 없이 사라지기까지,<br>스킵 경험의 기반이 되는 로직을 보여줍니다.</div>
       </div>
-      <p class="ux-right">
-        스킵은 사용자가 어디에 있든 항상 곁에서 조용히 기다리고 있습니다. 평소엔 주변을 살피며 준비 상태를 유지하다가, 사용자의 목적이 생기는 순간 그 목적을 이해하고 실행하고 마무리짓는 플로우가 매끄럽게 이어지죠.
-      </p>
+      <div class="uxl-row uxl-b">
+        <div class="uxl-left">
+          <div class="uxl-label">Skeep UX Logic</div>
+          <h2 class="uxl-title">쉿. 보이지 않게<br>그러나 가장 완벽하게</h2>
+        </div>
+        <div class="uxl-desc uxl-desc-b">스킵은 사용자가 어디에 있든 항상 곁에서 조용히 기다리고 있습니다. 평소엔 주변을 살피며 준비 상태를 유지하다가, 사용자의 목적이 생기는 순간 그 목적을 이해하고 실행하고 마무리짓는 플로우가 매끄럽게 이어지죠.</div>
+      </div>
     </div>
-    <div class="ux-bigcards" aria-hidden="true">
-      <div class="ux-bigcards-inner">
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.05)"><span class="kr">새겨듣다</span><span class="sub">Sensing<br>Input<br>Pause</span></div>
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.07)"><span class="kr">스며들다</span><span class="sub">Morphing<br>Parsing<br>Mapping</span></div>
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.09)"><span class="kr">조율하다</span><span class="sub">Negotiation</span></div>
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.11)"><span class="kr">빌려쓰다</span><span class="sub">Borrowing<br>Download</span></div>
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.13)"><span class="kr">지켜주다</span><span class="sub">Keep</span></div>
-        <div class="ux-bigcard" style="background: rgba(255,255,255,0.15)"><span class="kr">기억하다</span><span class="sub">Seeyou</span></div>
+    <div class="uxl-cards">
+      <div class="sq-morph" aria-hidden="true">
+        <span class="sq-morph-seg seg1"><span class="sq-card-txt"><b>새겨듣다</b><i>Sensing<br>Input<br>Pause</i></span></span>
+        <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>스며들다</b><i>Morphing<br>Parsing<br>Mapping</i></span></span>
+        <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>조율하다</b><i>Negotiation</i></span></span>
+        <span class="sq-morph-seg seg4"><span class="sq-card-txt"><b>빌려쓰다</b><i>Borrowing<br>Download</i></span></span>
+        <span class="sq-morph-seg seg5"><span class="sq-card-txt"><b>지켜주다</b><i>Keep</i></span></span>
+        <span class="sq-morph-seg seg6"><span class="sq-card-txt"><b>기억하다</b><i>Seeyou</i></span></span>
       </div>
     </div>
 
     <div class="ux-scene">
       <div class="ux-left-col">
       <div class="ux-tabbar" role="tablist" aria-label="UX Logic 단계">
-        <button class="ux-tab" type="button" data-i="0" data-accent="#FB6E9C" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
-        <button class="ux-tab" type="button" data-i="1" data-accent="#69E6FF" data-card-bg="../인트로/네모2.png" data-state-bg="../인트로/네모배경2.png">스며들다</button>
-        <button class="ux-tab" type="button" data-i="2" data-accent="#FFF568" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
-        <button class="ux-tab" type="button" data-i="3" data-accent="#9FEB76" data-card-bg="../인트로/네모4.png" data-state-bg="../인트로/네모배경4.png">빌려쓰다</button>
-        <button class="ux-tab" type="button" data-i="4" data-accent="#D56EFB" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
-        <button class="ux-tab" type="button" data-i="5" data-accent="#FF9752" data-card-bg="../인트로/네모6.png" data-state-bg="../인트로/네모배경6.png">기억하다</button>
+        <button class="ux-tab" type="button" data-i="0" data-accent="#FF3385" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
+        <button class="ux-tab" type="button" data-i="1" data-accent="#A1D202" data-card-bg="../인트로/네모2.png" data-state-bg="../인트로/네모배경2.png">스며들다</button>
+        <button class="ux-tab" type="button" data-i="2" data-accent="#A5E0F0" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
+        <button class="ux-tab" type="button" data-i="3" data-accent="#0A67DE" data-card-bg="../인트로/네모4.png" data-state-bg="../인트로/네모배경4.png">빌려쓰다</button>
+        <button class="ux-tab" type="button" data-i="4" data-accent="#09421A" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
+        <button class="ux-tab" type="button" data-i="5" data-accent="#280047" data-card-bg="../인트로/네모6.png" data-state-bg="../인트로/네모배경6.png">기억하다</button>
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
@@ -4717,46 +5214,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   let swapTimeout = null;
   function setActive(i) {
-    if (tabs[i]?.classList.contains('active') && !swapTimeout) return;
-    tabs.forEach((t, k) => t.classList.toggle('active', k === i));
-    const stateBg = tabs[i]?.dataset.stateBg;
-    const accent = tabs[i]?.dataset.accent;
-    if (sticky && stateBg) sticky.style.setProperty('--ux-state-bg', `url("${stateBg}")`);
+    if (tabs[i] && tabs[i].classList.contains('active')) return;
+    tabs.forEach(function (t, k) { t.classList.toggle('active', k === i); });
+    var accent = tabs[i] && tabs[i].dataset.accent;
     if (sticky && accent) sticky.style.setProperty('--ux-accent', accent);
-    // dissolve the stage background in on every switch
-    if (sticky) {
-      sticky.classList.remove('ux-bg-in');
-      void sticky.offsetWidth;   // reflow to restart the animation
-      sticky.classList.add('ux-bg-in');
-    }
-
-    if (swapTimeout) { clearTimeout(swapTimeout); swapTimeout = null; }
-
-    // fade the outgoing panel out (if one is actually showing); snap away any
-    // panel that was mid-transition from a rapid re-click so it never lingers
-    let hadActive = false;
-    [lefts, rights].forEach((panels) => {
-      panels.forEach((el, k) => {
-        if (k === i) return;
-        if (el.classList.contains('active')) { el.classList.remove('active'); el.classList.add('leaving'); hadActive = true; }
-        else el.classList.remove('leaving');
-      });
-    });
-    lefts[i]?.classList.remove('leaving');
-    rights[i]?.classList.remove('leaving');
-
-    const finish = () => {
-      lefts.forEach((el) => el.classList.remove('leaving'));
-      rights.forEach((el) => el.classList.remove('leaving'));
-      lefts[i]?.classList.add('active');
-      rights[i]?.classList.add('active');
-      swapTimeout = null;
-    };
-    // wait out most of the exit fade before the new panel enters (skipped
-    // entirely when interrupting a still-leaving panel, so rapid clicks
-    // through the six tabs stay snappy rather than queueing delays)
-    if (hadActive) swapTimeout = setTimeout(finish, 130);
-    else finish();
+    // 절대배치 스택 크로스페이드 — active만 opacity 1, 나머지 0
+    lefts.forEach(function (el, k) { el.classList.toggle('active', k === i); });
+    rights.forEach(function (el, k) { el.classList.toggle('active', k === i); });
   }
   tabs.forEach((t, i) => t.addEventListener('click', () => setActive(i)));
   setActive(0);
@@ -4770,16 +5234,69 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   }
 
   const desktop = () => matchMedia('(min-width: 900px)').matches;
-  let ticking = false;
+  const morph  = wrap.querySelector('.sq-morph');
+  const uxlTop = wrap.querySelector('#uxlTop');
+  const reduce = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 3D 스택 카드 개별 선택 → 해당 디테일 전환 + 선택 카드 위로 살짝 뽑힘
+  var segEls = morph ? Array.prototype.slice.call(morph.querySelectorAll('.sq-morph-seg')) : [];
+  function selectSeg(i){   // 클릭: 해당 카드 뽑힘 + 디테일(제목/화살표색) 전환
+    segEls.forEach(function(el,k){ el.style.setProperty('--pop', k===i ? '1' : '0'); });
+    setActive(i);
+  }
+  segEls.forEach(function(el,i){ el.addEventListener('click', function(){ selectSeg(i); }); });
+  if (segEls.length) segEls[0].style.setProperty('--pop','1');
+  let expanded = false, grown = false, ticking = false, stacked = false, popTimer = null;
   function update() {
     ticking = false;
-    if (!desktop()) { wrap.style.setProperty('--p', '1'); wrap.style.setProperty('--lp', '1'); if (scene) scene.style.pointerEvents = 'auto'; return; }
+    if (!desktop() || reduce) {
+      wrap.style.setProperty('--p', '1'); wrap.style.setProperty('--lp', '1');
+      if (scene) scene.style.pointerEvents = 'auto';
+      if (morph) morph.classList.add('is-in', 'split', 'grown');
+      if (uxlTop) uxlTop.classList.add('swap');
+      return;
+    }
     const top = wrap.getBoundingClientRect().top;
     const scrolled = Math.max(0, -top);
-    const DELAY = innerHeight * 0.7;   // scroll this far (big cards held) before the reveal begins
-    const p = Math.min(1, Math.max(0, (scrolled - DELAY) / (innerHeight * 0.85)));
+    const vh = innerHeight;
+    // ① 인트로(1회): 검정 정사각 → 막대 → 6색 분할 → 커짐
+    if (morph) {
+      if (!expanded && scrolled > vh * 0.05) {
+        expanded = true; morph.classList.add('is-in');
+        setTimeout(() => morph.classList.add('split'), 420);
+      }
+      if (expanded && !grown && scrolled > vh * 0.8) {
+        grown = true; morph.classList.add('split', 'grown');
+      }
+    }
+    // ② 상단 텍스트 A→B (양방향)
+    if (uxlTop) uxlTop.classList.toggle('swap', scrolled > vh * 0.9);
+    // ③ 인트로 이후: 카드가 좌상단 탭으로 빨려들며 디테일 드러남
+    const DELAY = vh * 2.0;             // 다 자란 상태(#142)를 충분히 머문 뒤 흡입
+    const p = Math.min(1, Math.max(0, (scrolled - DELAY) / (vh * 0.9)));
     wrap.style.setProperty('--p', p.toFixed(3));
     wrap.style.setProperty('--lp', Math.min(1, p / 0.7).toFixed(3)); // landing progress (cards settle by p=0.7)
+    // ④ 시작 지점을 넘으면 한 번에 '슉' (스크롤 스크럽 X) — 스택 형성+좌측 이동, 이어서 pop
+    var go = p > 0.06;
+    if (go && !stacked) {
+      stacked = true;
+      wrap.classList.add('detail-in');
+      if (morph) morph.classList.add('stacking');
+      wrap.style.setProperty('--sp', '1');
+      wrap.style.setProperty('--mv', '1');
+      if (popTimer) clearTimeout(popTimer);
+      popTimer = setTimeout(function () {
+        wrap.style.setProperty('--popk', '1');
+        if (morph) morph.classList.add('settled');
+      }, 820);
+    } else if (!go && stacked) {
+      stacked = false;
+      wrap.classList.remove('detail-in');
+      if (popTimer) { clearTimeout(popTimer); popTimer = null; }
+      if (morph) morph.classList.remove('stacking', 'settled');
+      wrap.style.setProperty('--sp', '0');
+      wrap.style.setProperty('--mv', '0');
+      wrap.style.setProperty('--popk', '0');
+    }
     if (scene) scene.style.pointerEvents = p > 0.75 ? 'auto' : 'none';
   }
   function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
