@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./PestelSection.module.css";
 
 const items = [
@@ -50,10 +50,75 @@ const items = [
 
 export default function PestelSection() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const timerRef = useRef<number | null>(null);
+  const hasTriggeredRef = useRef(false);
+  const hasUserInteractedRef = useRef(false);
   const isOpen = activeIndex !== null;
 
+  const cancelAutoOpen = () => {
+    hasUserInteractedRef.current = true;
+
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const handleSelect = (index: number) => {
+    cancelAutoOpen();
+    setActiveIndex(index);
+  };
+
+  const handleBack = () => {
+    cancelAutoOpen();
+    setActiveIndex(null);
+  };
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          !entry.isIntersecting ||
+          hasTriggeredRef.current ||
+          hasUserInteractedRef.current
+        ) {
+          return;
+        }
+
+        hasTriggeredRef.current = true;
+        observer.disconnect();
+
+        timerRef.current = window.setTimeout(() => {
+          timerRef.current = null;
+
+          if (!hasUserInteractedRef.current) {
+            setActiveIndex(0);
+          }
+        }, 1000);
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+
+      if (timerRef.current !== null) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <section className={styles.section} aria-label="PESTEL 분석">
+    <section ref={sectionRef} className={styles.section} aria-label="PESTEL 분석">
       <div className={`${styles.rail} ${isOpen ? styles.railOpen : ""}`}>
         {items.map((item, index) => {
           const isActive = activeIndex === index;
@@ -68,7 +133,7 @@ export default function PestelSection() {
                 type="button"
                 aria-expanded={isActive}
                 aria-label={`${item.category} 상세 내용 보기`}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => handleSelect(index)}
               >
                 <span className={styles.letter} aria-hidden="true">
                   {item.letter}
@@ -88,7 +153,7 @@ export default function PestelSection() {
                     className={styles.backButton}
                     type="button"
                     aria-label="전체 PESTEL 카드로 돌아가기"
-                    onClick={() => setActiveIndex(null)}
+                    onClick={handleBack}
                   >
                     <span aria-hidden="true">←</span>
                   </button>

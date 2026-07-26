@@ -5,7 +5,7 @@ import PestelSection from "./PestelSection";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const tailSections = [
-  { file: "business-04-tail.png", height: 1300 },
+  { file: "business-04-tail-clean.png", height: 1270 },
   { file: "business-05.png", height: 2800 },
   { file: "business-06.png", height: 2800 },
   { file: "business-07.png", height: 2800 },

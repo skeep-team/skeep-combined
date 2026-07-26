@@ -669,18 +669,39 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: relative; z-index: 1;
       border-top: none;
     }
+    /* A(초기)·B(카드 펼쳐지면) 두 버전을 겹쳐두고 크로스페이드 */
+    .summary-stack { position: relative; min-height: clamp(190px, 22vw, 340px); }
     .summary-row {
       display: flex; gap: clamp(180px, 22vw, 460px); align-items: flex-start;
+      position: absolute; top: 0; left: 0; right: 0;
+      transition: opacity .55s ease;
     }
+    .summary-a { opacity: 1; }
+    .summary-b { opacity: 0; pointer-events: none; }
+    .sec-summary.swap .summary-a { opacity: 0; pointer-events: none; }
+    .sec-summary.swap .summary-b { opacity: 1; pointer-events: auto; }
+    .summary-left { flex-shrink: 0; display: flex; flex-direction: column; gap: clamp(20px, 2.4vw, 44px); }
     .summary-label {
       font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.03em; text-transform: uppercase;
-      color: #ff0b6c; flex-shrink: 0; white-space: nowrap;
-      padding-top: 4px;
+      color: #ff0b6c; white-space: nowrap;
     }
-    .summary-desc {
+    .summary-title {
+      margin: 0;
+      font-size: clamp(28px,4vw,60px); font-weight: 700; line-height: 1.3;
+      letter-spacing: -0.03em; color: #0e1825;
+    }
+    /* A: 원래 굵은 desc */
+    .summary-a .summary-label { padding-top: 4px; }
+    .summary-a .summary-desc {
       font-size: clamp(15px,1.7vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.02em; max-width: 1008px; color: #0e1825;
+    }
+    /* B: 문단 desc */
+    .summary-b .summary-desc {
+      font-size: clamp(15px,1.5vw,26px); font-weight: 500; line-height: 1.6;
+      letter-spacing: -0.02em; max-width: 780px; color: #3a4655;
+      padding-top: clamp(6px, 1vw, 16px);
     }
 
     /* ── 5. PHILOSOPHY SLIDES ────────────────────── */
@@ -1572,6 +1593,161 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-visual-placeholder {
       background: #D9DDE3;
     }
+    .layer-visual-image--database {
+      background: #000;
+      display: grid;
+      place-items: center;
+      container-type: inline-size;
+    }
+    .layer-visual-image--database.active { pointer-events: auto; }
+    .database-cards {
+      width: 82.7%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .42cqw;
+    }
+    .database-card {
+      aspect-ratio: 392 / 346;
+      position: relative;
+      border-radius: 1.66cqw;
+      background: transparent;
+      color: #222;
+      text-align: left;
+      cursor: pointer;
+      perspective: 80cqw;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .database-card:focus-visible {
+      outline: .16cqw solid #ff4991;
+      outline-offset: .3cqw;
+    }
+    .database-card-flipper {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      transform-style: preserve-3d;
+      transition: transform .68s cubic-bezier(.2,.75,.25,1);
+      will-change: transform;
+    }
+    .database-card.is-flipped .database-card-flipper {
+      transform: rotateY(180deg);
+    }
+    .database-cards.is-intro-pending .database-card-flipper {
+      transform: rotateY(180deg);
+    }
+    .database-cards.is-intro-animating .database-card-flipper {
+      animation: database-card-intro-flip .78s cubic-bezier(.2,.75,.25,1) both;
+    }
+    .database-cards.is-intro-animating .database-card:nth-child(2) .database-card-flipper { animation-delay: .12s; }
+    .database-cards.is-intro-animating .database-card:nth-child(3) .database-card-flipper { animation-delay: .24s; }
+    .database-cards.is-intro-animating .database-card:nth-child(4) .database-card-flipper { animation-delay: .36s; }
+    @keyframes database-card-intro-flip {
+      0%   { transform: rotateY(180deg); }
+      82%  { transform: rotateY(-5deg); }
+      100% { transform: rotateY(0); }
+    }
+    .database-card-face {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: inherit;
+      background: #fff;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .database-card-face--back {
+      transform: rotateY(180deg);
+    }
+    .database-card-head {
+      height: 30.64%;
+      padding: .83cqw 1.25cqw;
+      background: #ff94bf;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #000;
+      line-height: 1.5;
+      letter-spacing: -.04em;
+    }
+    .database-card:last-child .database-card-head { background: #ff4991; }
+    .database-card-back-head { background: #c4ccd7; }
+    .database-card:last-child .database-card-back-head { background: #8390a2; }
+    .database-card-kicker {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.26cqw;
+      font-weight: 400;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .database-card-title {
+      font-size: 1.26cqw;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+    .database-card-body {
+      height: 69.36%;
+      padding: .83cqw 1.25cqw;
+      display: flex;
+      flex-direction: column;
+      gap: .83cqw;
+    }
+    .database-card-items {
+      display: flex;
+      flex-direction: column;
+      gap: .83cqw;
+    }
+    .database-card-item {
+      display: flex;
+      align-items: center;
+      gap: .625cqw;
+      min-width: 0;
+    }
+    .database-card-icon {
+      display: block;
+      width: 2.08cqw;
+      height: 2.08cqw;
+      flex: 0 0 auto;
+      object-fit: contain;
+    }
+    .database-card-copy {
+      min-width: 0;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .database-card-layer {
+      font-size: .65cqw;
+      letter-spacing: -.02em;
+    }
+    .database-card-label {
+      font-size: 1.26cqw;
+      letter-spacing: -.04em;
+      white-space: nowrap;
+    }
+    .database-card-note {
+      margin-top: auto;
+      color: #66717f;
+      font-size: .86cqw;
+      font-weight: 500;
+      line-height: 1.5;
+      letter-spacing: -.04em;
+    }
+    .database-card-back-body {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 1.04cqw;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.03em;
+    }
+    .database-card-back-body p:last-child { color: #66717f; }
+    @media (prefers-reduced-motion: reduce) {
+      .database-card-flipper { transition: none; }
+      .database-cards.is-intro-pending .database-card-flipper,
+      .database-cards.is-intro-animating .database-card-flipper {
+        transform: none;
+        animation: none;
+      }
+    }
     .layers-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.8vw, 28px);
       padding: 0 var(--edge-padding);
@@ -1631,6 +1807,47 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         margin-top: 48px;
         pointer-events: auto;
       }
+      .layer-visual {
+        aspect-ratio: auto;
+        height: 248px;
+      }
+      .layer-visual-image--database {
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+      }
+      .layer-visual-image--database::-webkit-scrollbar { display: none; }
+      .database-cards {
+        width: max-content;
+        flex: 0 0 auto;
+        grid-template-columns: repeat(4, 220px);
+        gap: 8px;
+        padding: 0 24px;
+      }
+      .database-card { border-radius: 18px; }
+      .database-card:focus-visible {
+        outline-width: 2px;
+        outline-offset: 3px;
+      }
+      .database-card-head { padding: 10px 13px; }
+      .database-card-kicker,
+      .database-card-title { font-size: 14px; }
+      .database-card-body {
+        padding: 10px 13px;
+        gap: 8px;
+      }
+      .database-card-items { gap: 8px; }
+      .database-card-item { gap: 7px; }
+      .database-card-icon {
+        width: 24px;
+        height: 24px;
+      }
+      .database-card-layer { font-size: 7px; }
+      .database-card-label { font-size: 14px; }
+      .database-card-note { font-size: 9px; }
+      .database-card-back-body { font-size: 11px; }
     }
 
     /* ── 11. PACKET INTRO ────────────────────────── */
@@ -3895,10 +4112,146 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   11. SYSTEM LAYERS
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers>
-  <div class="layer-visual" aria-hidden="true">
-    <div class="layer-visual-image layer-visual-placeholder active" data-layer-image="passive"></div>
-    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="active"></div>
-    <div class="layer-visual-image layer-visual-placeholder" data-layer-image="database"></div>
+  <div class="layer-visual">
+    <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false"></div>
+    <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert></div>
+    <div class="layer-visual-image layer-visual-image--database" data-layer-image="database" aria-hidden="true" inert>
+      <div class="database-cards is-intro-pending">
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="성향 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Propensity</p>
+                <p class="database-card-title">성향</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-talk.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">소통 선호 방식</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-danger.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">위험 감수 성향</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-workflow.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">작업 스타일</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Propensity</p>
+                <p class="database-card-title">성향</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>성향은 사용자가 평소 편하게 느끼는 소통 방식과 작업 방식을 가리킵니다.</p>
+                <p>이를 통해 각 환경은 여러 사용자가 편하게 느끼는 방식과 속도로 소통할 수 있게 됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="위임 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Delegate</p>
+                <p class="database-card-title">위임</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-trust.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">자동화 신뢰 수준</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-delegate.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">행동 위임 범위</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Delegate</p>
+                <p class="database-card-title">위임</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>위임은 사용자가 에이전트에게 얼마나 맡기고, 어디까지 확인하고 싶어하는지를 가리킵니다.</p>
+                <p>이를 통해 각 환경은 조용히 대신 처리할 영역과 사용자에게 알릴 영역을 구분합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="상태 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">State</p>
+                <p class="database-card-title">상태</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-energy.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">감정 에너지 상태</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-time.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">시간적 압박</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">State</p>
+                <p class="database-card-title">상태</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>상태는 지금 이 순간 사용자의 신체-감정적 컨디션과 시간적 여유를 가리킵니다.</p>
+                <p>이를 통해 각 환경은 같은 사람이라도 순간에 맞춰 개입의 강도와 속도를 조절합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="명시적 제한 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Explicit Limit</p>
+                <p class="database-card-title">명시적 제한</p>
+              </header>
+              <div class="database-card-body">
+                <div class="database-card-items">
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-money.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">금전적 제한</p></div>
+                  </div>
+                  <div class="database-card-item">
+                    <img class="database-card-icon" src="assets/db-icon-lock.svg" alt="">
+                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">정보 공유 제한</p></div>
+                  </div>
+                </div>
+                <p class="database-card-note">* 사용자가 직접 발화하여 외부 환경에 지시하기를<br>&nbsp;&nbsp;&nbsp;금지한 사항</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Explicit Limit</p>
+                <p class="database-card-title">명시적 제한</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>명시적 제한은 사용자가 직접 설정한, 바뀌지 않는 절대 규칙을 가리킵니다.</p>
+                <p>필요시에 이를 패킷으로 전달 해 사용자가 그은 선을 넘지 않도록 하며, 이 규칙은 상황에 따라 최우선으로 고려됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
   </div>
   <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
     <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive">
@@ -3940,6 +4293,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </section>
 <script>
 (() => {
+  const source = document.querySelector('[data-layer-image="database"] .database-cards');
+  if (!source) return;
+  document.querySelectorAll('[data-layer-image="passive"], [data-layer-image="active"]').forEach((layer) => {
+    layer.append(source.cloneNode(true));
+  });
+})();
+</script>
+
+<script>
+(() => {
   const section = document.querySelector('.sec-layers');
   if (!section) return;
   const tabs = [...section.querySelectorAll('.layer-card[data-layer]')];
@@ -3950,7 +4313,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       tab.classList.toggle('faded', !selected);
       tab.setAttribute('aria-selected', String(selected));
     });
-    images.forEach((image) => image.classList.toggle('active', image.dataset.layerImage === layer));
+    images.forEach((image) => {
+      const selected = image.dataset.layerImage === layer;
+      image.classList.toggle('active', selected);
+      image.setAttribute('aria-hidden', String(!selected));
+      image.toggleAttribute('inert', !selected);
+    });
+    section.dispatchEvent(new CustomEvent('skeep:layerchange', { detail: { layer } }));
   };
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => selectLayer(tab.dataset.layer));
@@ -3961,6 +4330,91 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
     });
   });
+})();
+</script>
+
+<script>
+(() => {
+  const layerVisual = document.querySelector('.layer-visual');
+  const layerSection = document.querySelector('.sec-layers');
+  const sequence = document.querySelector('[data-system-flow-sequence]');
+  const cardGroups = [...document.querySelectorAll('.database-cards')];
+  const cards = document.querySelectorAll('.database-card');
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  let introVisible = false;
+  const introTimers = new WeakMap();
+
+  const finishIntro = (group) => {
+    if (!group) return;
+    group.classList.remove('is-intro-pending', 'is-intro-animating');
+    group.removeAttribute('aria-busy');
+    const timer = introTimers.get(group);
+    if (timer) {
+      clearTimeout(timer);
+      introTimers.delete(group);
+    }
+  };
+
+  const layerSceneVisible = () => {
+    return window.matchMedia('(max-width: 768px)').matches || sequence?.classList.contains('show-layers');
+  };
+
+  const startActiveIntro = () => {
+    if (!introVisible || !layerSceneVisible()) return;
+    const group = document.querySelector('.layer-visual-image.active .database-cards');
+    if (!group || group.dataset.introPlayed === 'true') return;
+    group.dataset.introPlayed = 'true';
+    if (reduceMotion) {
+      finishIntro(group);
+      return;
+    }
+    group.setAttribute('aria-busy', 'true');
+    group.classList.add('is-intro-animating');
+    group.classList.remove('is-intro-pending');
+    introTimers.set(group, setTimeout(() => finishIntro(group), 1220));
+  };
+
+  const flipCard = (card) => {
+    const group = card.closest('.database-cards');
+    if (group?.classList.contains('is-intro-animating')) finishIntro(group);
+    const flipped = card.classList.toggle('is-flipped');
+    card.setAttribute('aria-pressed', String(flipped));
+    card.setAttribute('aria-label', `${card.querySelector('.database-card-title')?.textContent || '데이터베이스'} 카드 ${flipped ? '앞면 보기' : '뒤집기'}`);
+    card.querySelector('.database-card-face--front')?.setAttribute('aria-hidden', String(flipped));
+    card.querySelector('.database-card-face--back')?.setAttribute('aria-hidden', String(!flipped));
+  };
+  cards.forEach((card) => {
+    card.addEventListener('click', () => flipCard(card));
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        flipCard(card);
+      }
+    });
+  });
+
+  if ('IntersectionObserver' in window && layerVisual) {
+    const introObserver = new IntersectionObserver(([entry]) => {
+      introVisible = entry.isIntersecting && entry.intersectionRatio >= .35;
+      if (introVisible) startActiveIntro();
+    }, { threshold: [.35] });
+    introObserver.observe(layerVisual);
+  } else {
+    introVisible = true;
+  }
+
+  layerSection?.addEventListener('skeep:layerchange', startActiveIntro);
+  if (sequence && 'MutationObserver' in window) {
+    new MutationObserver(startActiveIntro).observe(sequence, { attributes: true, attributeFilter: ['class'] });
+  }
+  window.addEventListener('resize', startActiveIntro, { passive: true });
+
+  if (reduceMotion) {
+    cardGroups.forEach((group) => {
+      group.dataset.introPlayed = 'true';
+      finishIntro(group);
+    });
+  }
 })();
 </script>
 
@@ -4458,12 +4912,25 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   17. UX LOGIC SUMMARY
 ═══════════════════════ -->
 <div class="sec-summary fi">
-  <div class="summary-row">
-    <div class="summary-label">UX Logic</div>
-    <div class="summary-desc">
-      사용자의 목적이 발생하는 순간부터<br>
-      그 목적이 달성되고 흔적 없이 사라지기까지,<br>
-      스킵 경험의 기반이 되는 로직을 보여줍니다.
+  <div class="summary-stack">
+    <!-- A: 처음(카드 펼쳐지기 전) -->
+    <div class="summary-row summary-a">
+      <div class="summary-label">Skeep UX Logic</div>
+      <div class="summary-desc">
+        사용자의 목적이 발생하는 순간부터<br>
+        그 목적이 달성되고 흔적 없이 사라지기까지,<br>
+        스킵 경험의 기반이 되는 로직을 보여줍니다.
+      </div>
+    </div>
+    <!-- B: 카드에 글자가 다 들어왔을 때로 바뀜 -->
+    <div class="summary-row summary-b">
+      <div class="summary-left">
+        <div class="summary-label">Skeep UX Logic</div>
+        <h2 class="summary-title">쉿. 보이지 않게<br>그러나 가장 완벽하게</h2>
+      </div>
+      <div class="summary-desc">
+        스킵은 사용자가 어디에 있든 항상 곁에서 조용히 기다리고 있습니다. 평소엔 주변을 살피며 준비 상태를 유지하다가, 사용자의 목적이 생기는 순간 그 목적을 이해하고 실행하고 마무리짓는 플로우가 매끄럽게 이어지죠.
+      </div>
     </div>
   </div>
 </div>
@@ -4473,58 +4940,97 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="sq-morph-band" aria-hidden="true">
   <div class="sq-morph">
-    <span class="sq-morph-seg seg1"></span>
-    <span class="sq-morph-seg seg2"></span>
-    <span class="sq-morph-seg seg3"></span>
-    <span class="sq-morph-seg seg4"></span>
-    <span class="sq-morph-seg seg5"></span>
-    <span class="sq-morph-seg seg6"></span>
-    <span class="sq-morph-seg seg7"></span>
+    <span class="sq-morph-seg seg1"><span class="sq-card-txt"><b>새겨듣다</b><i>Sensing<br>Input<br>Pause</i></span></span>
+    <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>스며들다</b><i>Morphing<br>Parsing<br>Mapping</i></span></span>
+    <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>조율하다</b><i>Negotiation</i></span></span>
+    <span class="sq-morph-seg seg4"><span class="sq-card-txt"><b>빌려쓰다</b><i>Borrowing<br>Download</i></span></span>
+    <span class="sq-morph-seg seg5"><span class="sq-card-txt"><b>지켜주다</b><i>Keep</i></span></span>
+    <span class="sq-morph-seg seg6"><span class="sq-card-txt"><b>기억하다</b><i>Seeyou</i></span></span>
   </div>
 </section>
 <style>
-  .sq-morph-band { width: 100%; background: #fff; padding: clamp(40px, 6vh, 96px) 0;
+  /* UX Logic 리드인: ① 검정 정사각 → 검정 막대 → 6색 분할(진입 시 자동, 1회)
+     ② 스크롤 한 번 → 한 번에 "슉" 커지며(.grown) 카드 글자가 채워짐 (스크롤-연동 아님) */
+  .sq-morph-band { width: 100%; background: #fff; box-sizing: border-box;
+    height: calc(min(300px, 28vw) + clamp(120px, 20vh, 240px));
+    padding: clamp(48px, 8vh, 120px) 0;
     overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  /* overflow:hidden here is what makes the segments read as ONE shape while gap:0 —
-     the container's own border-radius clips them into a single seamless block.
-     Only once the gap keyframe opens up do the pieces visually separate. */
   .sq-morph { --sq-size: min(350px, 40vw, 40vh); --bar-w: min(760px, 64vw);
-    display: flex; gap: 0; overflow: hidden; width: var(--sq-size);
-    height: var(--sq-size);
-    animation: sqMorphShape 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .sq-morph-seg { flex: 1 1 0; height: 100%; }
-  .seg1 { animation: sqMorphColor1 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg2 { animation: sqMorphColor2 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg3 { animation: sqMorphColor3 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg4 { animation: sqMorphColor4 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg5 { animation: sqMorphColor5 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg6 { animation: sqMorphColor6 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  .seg7 { animation: sqMorphColor7 3.6s cubic-bezier(.77,0,.175,1) infinite; }
-  /* beat 1 (0-8%): one tall square. beat 2 (30%): flattens into one long bar, still
-     a single unbroken shape. beat 3 (55-65%): the bar splits into 7 colored pieces.
-     beat 4 (88%): pieces rejoin into one dark bar before growing back into the square. */
-  @keyframes sqMorphShape {
-    0%, 8%    { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
-    30%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
-    55%, 65%  { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 3px; }
-    88%       { width: var(--bar-w);   height: clamp(26px, 3.6vh, 42px);  border-radius: 6px;  gap: 0; }
-    100%      { width: var(--sq-size); height: var(--sq-size); border-radius: 20px; gap: 0; }
-  }
-  @keyframes sqMorphColor1 { 0%, 30% { background: #262629; } 55%, 65% { background: #F72A76; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor2 { 0%, 30% { background: #262629; } 55%, 65% { background: #FAC1D9; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor3 { 0%, 30% { background: #262629; } 55%, 65% { background: #97DAEB; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor4 { 0%, 30% { background: #262629; } 55%, 65% { background: #F65D33; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor5 { 0%, 30% { background: #262629; } 55%, 65% { background: #73FB81; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor6 { 0%, 30% { background: #262629; } 55%, 65% { background: #D1FC53; } 88%, 100% { background: #262629; } }
-  @keyframes sqMorphColor7 { 0%, 30% { background: #262629; } 55%, 65% { background: #2759D8; } 88%, 100% { background: #262629; } }
+    --bar-h: clamp(26px, 3.6vh, 42px);
+    --big-w: min(1680px, 94vw); --big-h: min(300px, 28vw); --big: 0;
+    display: flex; gap: 0; overflow: hidden;
+    width: var(--sq-size); height: var(--sq-size); border-radius: 20px;
+    transition: width .9s cubic-bezier(.77,0,.175,1), height .7s cubic-bezier(.22,1,.36,1),
+                gap .6s ease, border-radius .6s ease; }
+  .sq-morph-seg { flex: 1 1 0; height: 100%; position: relative; overflow: hidden;
+    background: #262629; border-radius: 0;
+    transition: background .85s ease, border-radius .6s ease; }
+  /* 카드 글자 (.grown 되면 나타남) */
+  .sq-card-txt { position: absolute; inset: 0; padding: clamp(14px, 1.5vw, 30px);
+    display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+    opacity: 0; pointer-events: none; transition: opacity .5s ease .25s;
+    font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; }
+  .sq-morph.grown .sq-card-txt { opacity: 1; }
+  .sq-card-txt b { font-weight: 700; font-size: clamp(15px, 1.6vw, 30px); color: #14161a;
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: .35em; }
+  .sq-card-txt i { font-style: normal; font-weight: 500; font-size: clamp(11px, 1.02vw, 18px);
+    color: rgba(0,0,0,.5); line-height: 1.5; letter-spacing: -0.02em; }
+  /* ① 검정 정사각 → 검정 막대 */
+  .sq-morph.is-in { width: var(--bar-w); height: var(--bar-h); gap: 0; border-radius: 8px; }
+  /* ② 6색 분할 (컬러 바) */
+  .sq-morph.is-in.split {
+    width: calc(var(--bar-w) + (var(--big-w) - var(--bar-w)) * var(--big));
+    height: calc(var(--bar-h) + (var(--big-h) - var(--bar-h)) * var(--big));
+    gap: calc(3px + 15px * var(--big));
+    border-radius: calc(6px + 12px * var(--big)); }
+  /* ③ 스크롤 한 번 → --big 을 1로 (트랜지션으로 한 번에 슉 커짐) */
+  .sq-morph.grown { --big: 1; }
+  .sq-morph.is-in.split .sq-morph-seg { border-radius: calc(6px + 12px * var(--big)); }
+  .sq-morph.is-in.split .seg1 { background: #F72A76; }
+  .sq-morph.is-in.split .seg2 { background: #FAC1D9; }
+  .sq-morph.is-in.split .seg3 { background: #97DAEB; }
+  .sq-morph.is-in.split .seg4 { background: #F65D33; }
+  .sq-morph.is-in.split .seg5 { background: #73FB81; }
+  .sq-morph.is-in.split .seg6 { background: #D1FC53; }
   @media (prefers-reduced-motion: reduce) {
-    .sq-morph, .sq-morph-seg { animation: none; }
-    .sq-morph { width: var(--bar-w); height: clamp(26px, 3.6vh, 42px); gap: 3px; }
-    .seg1 { background: #F72A76; } .seg2 { background: #FAC1D9; } .seg3 { background: #97DAEB; }
-    .seg4 { background: #F65D33; } .seg5 { background: #73FB81; } .seg6 { background: #D1FC53; }
-    .seg7 { background: #2759D8; }
+    .sq-morph, .sq-morph-seg { transition: none; }
   }
 </style>
+<script>
+(function () {
+  var band = document.querySelector('.sq-morph-band');
+  if (!band) return;
+  var morph = band.querySelector('.sq-morph');
+  if (!morph) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { morph.classList.add('is-in'); morph.classList.add('split'); morph.classList.add('grown'); return; }
+  var expanded = false, grown = false, ticking = false;
+  function update() {
+    ticking = false;
+    var r = band.getBoundingClientRect();
+    var vh = window.innerHeight;
+    // ① 화면 중앙쯤 오면 인트로 1회: 검정 정사각 → 막대 → (중간부터) 6색 분할
+    if (!expanded && r.top < vh * 0.62 && r.bottom > vh * 0.38) {
+      expanded = true;
+      morph.classList.add('is-in');
+      window.setTimeout(function () { morph.classList.add('split'); }, 420);
+    }
+    // ② 스크롤을 더 내려 밴드가 위로 올라오면 딱 한 번 "슉" 커짐
+    if (expanded && !grown && r.top < vh * 0.22) {
+      grown = true;
+      morph.classList.add('split');   // 아직이면 보장
+      morph.classList.add('grown');
+      // 카드에 글자가 다 들어온 뒤 상단 텍스트를 B로 크로스페이드
+      var sum = document.querySelector('.sec-summary');
+      if (sum) window.setTimeout(function () { sum.classList.add('swap'); }, 750);
+    }
+  }
+  function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+</script>
 
 
 
