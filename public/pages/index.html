@@ -2098,7 +2098,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-logic-sticky .ux-tabbar { visibility: hidden; }
     .ux-logic-sticky .sq-morph.stacking { overflow: visible; transform-style: preserve-3d;
       transform: rotateX(calc(15deg * var(--sp,0))) rotateY(calc(-44deg * var(--sp,0))); }
-    .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { opacity: calc(1 - 0.2 * var(--sp,0));
+    .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { opacity: calc(1 - 0.1 * var(--sp,0));
       transition: opacity .2s ease; }
     .ux-logic-sticky .sq-morph.stacking .sq-card-txt { opacity: clamp(0, calc(1 - var(--sp,0) * 4), 1) !important; }
     .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { pointer-events: auto; cursor: pointer; }
@@ -3926,7 +3926,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
     </div>
     <div class="phil-media-row">
-      <iframe class="phil-side-morph" src="smeureulda.html?embed=morph&v=7" title="Morphing objects interaction" loading="lazy"></iframe>
+      <iframe class="phil-side-morph" src="smeureulda.html?embed=morph&v=11" title="Morphing objects interaction" loading="lazy"></iframe>
       <canvas class="phil-side-blob" id="philBlob" aria-hidden="true"></canvas>
       <canvas class="phil-side-ball" id="philBall" aria-hidden="true"></canvas>
     </div>
@@ -4500,7 +4500,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </div>
 <style>
   .packet-donut-wrap { display: flex; justify-content: center; width: 100%; padding: clamp(180px, 18vw, 320px) var(--edge-padding) clamp(36px, 4.5vw, 64px); border-top: none; }
-  .packet-donut { width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: clamp(22px, 2.2vw, 34px); overflow: hidden; background: #40B875; }
+  .packet-donut { width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: clamp(22px, 2.2vw, 34px); overflow: hidden; background: #A1D202; }
   .packet-donut canvas { display: block; width: 100%; height: 100%; }
   @media (max-width: 760px){ .packet-donut { width: 92vw; } }
 </style>
@@ -4571,15 +4571,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       b.s = tg.s;
     }
     balls.sort((p, q) => p.pz - q.pz);
-    ctx.fillStyle = '#3FB875';
+    ctx.fillStyle = '#A1D202';
     ctx.fillRect(0, 0, W, H);
-    const DR = Rmaj + Rmin;
     for (const b of balls) {
-      const nz = Math.max(0, Math.min(1, (b.pz + DR)/(2*DR)));
-      const g = b.g;                          // 0 scattered (pure white) … 1 gathered (lime #FFF261)
-      const Ly = 62 + nz*12;                  // gathered-lime lightness (depth-shaded, ~#FFF261)
       ctx.beginPath(); ctx.arc(b.px, b.py, BR*b.s, 0, Math.PI*2);
-      ctx.fillStyle = `hsl(55, ${g*100}%, ${100 - (100 - Ly)*g}%)`; ctx.fill();
+      ctx.fillStyle = '#DAFF61'; ctx.fill();
     }
     raf = requestAnimationFrame(frame);
   }

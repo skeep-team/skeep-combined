@@ -302,26 +302,26 @@
       inset: 0;
       border-radius: 0;
       opacity: 1;
-      background: #171A1F;
+      background: #0A67DE;
       animation: scSheetColor 6s ease-in-out infinite;
       will-change: background-color, opacity;
     }
-    .sc-sheet:nth-child(1)  { transform: translateZ(-80px); --c: #280047; }
-    .sc-sheet:nth-child(2)  { transform: translateZ(-64px); --c: #82FF8F; }
-    .sc-sheet:nth-child(3)  { transform: translateZ(-48px); --c: #09421A; }
-    .sc-sheet:nth-child(4)  { transform: translateZ(-32px); --c: #A5E0F0; }
-    .sc-sheet:nth-child(5)  { transform: translateZ(-16px); --c: #0A67DE; }
-    .sc-sheet:nth-child(6)  { transform: translateZ(0);     --c: #FFC9B8; }
-    .sc-sheet:nth-child(7)  { transform: translateZ(16px);  --c: #FF6B3D; }
-    .sc-sheet:nth-child(8)  { transform: translateZ(32px);  --c: #DAFF61; }
-    .sc-sheet:nth-child(9)  { transform: translateZ(48px);  --c: #A1D202; }
-    .sc-sheet:nth-child(10) { transform: translateZ(64px);  --c: #FFCADF; }
-    .sc-sheet:nth-child(11) { transform: translateZ(80px);  --c: #FF3385; }
+    .sc-sheet:nth-child(1)  { transform: translateZ(-80px); --c: #89DFF0; }
+    .sc-sheet:nth-child(2)  { transform: translateZ(-64px); --c: #89DFF0; }
+    .sc-sheet:nth-child(3)  { transform: translateZ(-48px); --c: #89DFF0; }
+    .sc-sheet:nth-child(4)  { transform: translateZ(-32px); --c: #89DFF0; }
+    .sc-sheet:nth-child(5)  { transform: translateZ(-16px); --c: #89DFF0; }
+    .sc-sheet:nth-child(6)  { transform: translateZ(0);     --c: #89DFF0; }
+    .sc-sheet:nth-child(7)  { transform: translateZ(16px);  --c: #89DFF0; }
+    .sc-sheet:nth-child(8)  { transform: translateZ(32px);  --c: #89DFF0; }
+    .sc-sheet:nth-child(9)  { transform: translateZ(48px);  --c: #89DFF0; }
+    .sc-sheet:nth-child(10) { transform: translateZ(64px);  --c: #89DFF0; }
+    .sc-sheet:nth-child(11) { transform: translateZ(80px);  --c: #89DFF0; }
     @keyframes scSheetColor {
-      0%,  13%  { background-color: var(--c); opacity: 0.8; }  /* 육각 → 색 */
-      27%, 44%  { background-color: #171A1F; opacity: 0.6; }   /* 사각 → 검정 */
-      60%       { background-color: var(--c); opacity: 0.8; }  /* 시트 → 색 */
-      85%, 100% { background-color: var(--c); opacity: 0.8; }  /* 육각 → 색 */
+      0%,  3%   { background-color: var(--c); opacity: 0.55; }  /* 육각 (아주 짧게) */
+      12%, 16%  { background-color: #0A67DE; opacity: 0.6; }   /* 사각 병합 (아주 짧게) */
+      40%, 68%  { background-color: var(--c); opacity: 0.55; }  /* 시트 펼침 */
+      95%, 100% { background-color: var(--c); opacity: 0.55; }  /* 육각 (loop) */
     }
     @media (prefers-reduced-motion: reduce) {
       .sc-sheet { animation: none; background: var(--c); }
@@ -329,10 +329,10 @@
     /* 슬라이스 간격(scaleZ)을 펄스: 붙으면 near-solid(사각/육각), 벌어지면 반투명 시트.
        레퍼런스: 육각 hold → 사각 hold → 시트 → 육각 hold */
     @keyframes scCubeSpin {
-      0%,  13%  { transform: rotateX(32deg) rotateY(45deg) scaleZ(0.42); }  /* 육각(붙음=검정) */
-      27%, 44%  { transform: rotateX(0deg)  rotateY(0deg)  scaleZ(0.2); }   /* 사각(붙음=검정) */
-      60%       { transform: rotateX(16deg) rotateY(58deg) scaleZ(1.5); }   /* 갈라진 시트(색 터짐) */
-      85%, 100% { transform: rotateX(32deg) rotateY(45deg) scaleZ(0.42); }  /* 육각(붙음, loop) */
+      0%,  3%   { transform: rotateX(32deg) rotateY(45deg) scaleZ(0.42); }  /* 육각 (아주 짧게) */
+      12%, 16%  { transform: rotateX(0deg)  rotateY(0deg)  scaleZ(0.2); }   /* 사각 (아주 짧게) */
+      40%, 68%  { transform: rotateX(16deg) rotateY(58deg) scaleZ(1.5); }   /* 갈라진 시트 펼침 (hold) */
+      95%, 100% { transform: rotateX(32deg) rotateY(45deg) scaleZ(0.42); }  /* 육각 (loop) */
     }
     @media (prefers-reduced-motion: reduce) {
       .sc-cube { animation: none; transform: rotateX(32deg) rotateY(45deg) scaleZ(0.5); }
@@ -598,7 +598,7 @@
       transform: translateX(-50%);
       width: 100vw;
       height: 92%;
-      background: #89DFF0;
+      background: #FF6B3D;
       border-radius: 0;
       pointer-events: none;
       transition: background .7s ease,
@@ -616,7 +616,7 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: #0E1825;
+      background: #A5E0F0;
       opacity: 0;
       transition: opacity .8s ease;
       pointer-events: none;
@@ -671,26 +671,19 @@
       gap: 0;
       align-items: center;
     }
-    .sd-walk-scene.is-pre-final .sd-walk-person:not(.is-walk-final-person) {
+    /* the final person fades out in place along with everyone else — no
+       position:absolute hand-off, no jump, just the same settle-and-vanish
+       every other walker gets. The dark square + "Input Logic" text carry
+       this scene's ending on their own. */
+    .sd-walk-scene.is-pre-final .sd-walk-person {
       opacity: 0;
       transform: scale(.98);
       pointer-events: none;
     }
-    .sd-walk-scene.is-final .sd-walk-person:not(.is-walk-final-person) {
+    .sd-walk-scene.is-final .sd-walk-person {
       opacity: 0;
       transform: translateY(12px) scale(.98);
       pointer-events: none;
-    }
-    .sd-walk-scene.is-pre-final .sd-walk-person.is-walk-final-person,
-    .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
-      position: absolute;
-      left: calc(50% - clamp(220px, 17.2vw, 340px));
-      top: 41%;
-      width: clamp(92px, 7.2vw, 148px);
-      height: auto;
-      opacity: 1;
-      filter: grayscale(0);
-      transform: translate(-50%, -50%) scale(1);
     }
     .sd-walk-shadow {
       position: absolute;
@@ -726,9 +719,12 @@
       pointer-events: none;
     }
     .sd-walk-final-title {
+      /* centered on the box, not the row (its containing block) — matches
+         the box's own left/bottom + translate formula so both land on the
+         same point regardless of viewport size */
       position: absolute;
       left: calc(50% - clamp(220px, 17.2vw, 340px));
-      top: 73%;
+      top: calc(50% + 95px);
       transform: translate(-50%, -50%) translateY(20px);
       display: block;
       text-align: center;
@@ -739,7 +735,7 @@
       font-weight: 500;
       letter-spacing: 0;
       text-transform: uppercase;
-      color: #fff;
+      color: #FF6B3D;
       white-space: nowrap;
       pointer-events: none;
       transition: opacity .85s ease, transform .85s cubic-bezier(.22, 1, .36, 1);
@@ -783,11 +779,6 @@
       .sd-walk-person {
         flex-basis: clamp(72px, 11.5vw, 104px);
         width: clamp(72px, 11.5vw, 104px);
-      }
-      .sd-walk-scene.is-pre-final .sd-walk-person.is-walk-final-person,
-      .sd-walk-scene.is-final .sd-walk-person.is-walk-final-person {
-        left: calc(50% - clamp(220px, 17.2vw, 340px));
-        width: clamp(74px, 10vw, 104px);
       }
       .sd-walk-final-title {
         left: calc(50% - clamp(220px, 17.2vw, 340px));
@@ -1741,6 +1732,93 @@
         animation: none;
       }
     }
+    /* Pause summary: the square walks in place, pivoting on each lower corner. */
+    .sd-summary-video-band {
+      width: min(100%, 560px);
+      aspect-ratio: 4 / 3;
+      background: #280047;
+    }
+    .sd-summary-orb {
+      top: 50%;
+      right: auto;
+      bottom: auto;
+      left: 50%;
+      width: 34%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border-radius: 0;
+      background: transparent;
+      opacity: 1;
+      transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      animation: sd-summary-square-tread 2.8s linear 1 both;
+      animation-play-state: paused;
+      will-change: transform;
+    }
+    .sd-summary-orb-face {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #FFF2A8;
+      transform: rotate(0deg);
+      transform-origin: 100% 100%;
+      animation: sd-summary-square-step 2.8s linear 1 both;
+      animation-play-state: paused;
+      will-change: transform;
+    }
+    .sd-summary-orb-shadow {
+      display: none;
+    }
+    .sd-summary-section.vis .sd-summary-orb,
+    .sd-summary-section.vis .sd-summary-orb-face {
+      animation-play-state: running;
+    }
+    @keyframes sd-summary-square-tread {
+      0%, 5% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+      21%, 24% {
+        transform: translate3d(-150%, -50%, 0) rotate(0deg);
+      }
+      24.01%, 26% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+      42%, 45% {
+        transform: translate3d(-150%, -50%, 0) rotate(0deg);
+      }
+      45.01%, 47% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+      63%, 66% {
+        transform: translate3d(-150%, -50%, 0) rotate(0deg);
+      }
+      66.01%, 68% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+      84%, 87% {
+        transform: translate3d(-150%, -50%, 0) rotate(0deg);
+      }
+      87.01%, 100% {
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+    }
+    @keyframes sd-summary-square-step {
+      0%, 5%, 24.01%, 26%, 45.01%, 47%, 66.01%, 68%, 87.01%, 100% {
+        transform: rotate(0deg);
+      }
+      21%, 24%, 42%, 45%, 63%, 66%, 84%, 87% {
+        transform: rotate(90deg);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sd-summary-orb {
+        animation: none;
+        transform: translate3d(-50%, -50%, 0) rotate(0deg);
+      }
+      .sd-summary-orb-face {
+        animation: none;
+        transform: none;
+      }
+    }
     .sd-summary-copy {
       display: flex;
       flex-direction: column;
@@ -1837,7 +1915,7 @@
         flex-basis: auto;
         flex-direction: column;
       }
-      .sd-summary-video-band { width: min(100%, 420px); }
+      .sd-summary-video-band { width: min(100%, 560px); }
       .sd-summary-copy {
         flex-direction: column;
         gap: clamp(14px, 3vw, 22px);
@@ -1988,7 +2066,7 @@
 <section class="sd-sensing-scene" id="sensing-scene-scroll">
   <div class="sd-sensing-sticky">
     <div class="sd-sensing-layer sd-sensing-primary">
-      <img loading="lazy" class="sd-compass" src="assets/sensing-compass-v3.png?v=5" alt="탐지를 상징하는 나침반 모티프">
+      <img loading="lazy" class="sd-compass" src="assets/sensing-compass-v3.png?v=6" alt="탐지를 상징하는 나침반 모티프">
       <div class="sd-sensing-text">
         <h2 class="sd-sensing-title">Sensing Logic</h2>
         <p class="sd-caption-scroll">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
@@ -2002,13 +2080,13 @@
     <div class="sd-sensing-layer sd-sensing-detail">
       <div class="sd-two-col">
         <div class="sd-orbit-visual">
-          <img loading="lazy" class="sd-orbit-radar" src="assets/sensing-radar-v3.png?v=2" alt="발견을 상징하는 레이더 모티프">
-          <img loading="lazy" class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png" alt="24시간 센싱을 상징하는 시계 모티프">
+          <img loading="lazy" class="sd-orbit-radar" src="assets/sensing-radar-v3.png?v=3" alt="발견을 상징하는 레이더 모티프">
+          <img loading="lazy" class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png?v=2" alt="24시간 센싱을 상징하는 시계 모티프">
           <div class="sd-orbit-trail" aria-hidden="true">
-            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
           </div>
         </div>
         <div class="sd-text-right">
@@ -2174,7 +2252,7 @@
 <section id="pause-summary" class="sd-section sd-summary-section fi">
   <div class="sd-summary-video-band">
     <div class="sd-summary-orb-scene" aria-hidden="true">
-      <span class="sd-summary-orb"></span>
+      <span class="sd-summary-orb"><span class="sd-summary-orb-face"></span></span>
       <span class="sd-summary-orb-shadow sd-summary-orb-shadow-outer"></span>
       <span class="sd-summary-orb-shadow sd-summary-orb-shadow-inner"></span>
     </div>
@@ -2686,44 +2764,11 @@
         finalMoveStarted = false;
         return;
       }
-      // FLIP: switching to position:absolute for the centered layout is an
-      // instant layout-mode change CSS can't transition on its own — the
-      // person would just teleport. Record where it visually sits first, let
-      // the class swap jump it, then compensate with an inverse transform and
-      // animate that back to zero so it reads as one continuous move.
-      //
-      // The row itself also animates (translateX) on this same class add, and
-      // that shift changes the absolutely-positioned person's on-screen rect
-      // too — so both need their transitions killed before the "after"
-      // measurement, or that read lands mid-transition instead of at the true
-      // end state and the whole delta is wrong.
-      const row = scene.querySelector('.sd-walk-row');
-      const beforeRect = finalPerson.getBoundingClientRect();
-      const prevPersonTransition = finalPerson.style.transition;
-      const prevRowTransition = row ? row.style.transition : '';
-      finalPerson.style.transition = 'none';
-      if (row) row.style.transition = 'none';
-
+      // the final person is hidden in this square (see .is-walk-final-person
+      // CSS) — just fade the shadow and reveal the box/title, no position
+      // animation to run on it.
       scene.classList.add('is-pre-final');
       if (shadow) shadow.style.opacity = '0';
-      // eslint-disable-next-line no-unused-expressions
-      finalPerson.offsetWidth; // force layout now, transitions off -> true end state
-      const afterRect = finalPerson.getBoundingClientRect();
-      const dx = beforeRect.left + beforeRect.width / 2 - (afterRect.left + afterRect.width / 2);
-      const dy = beforeRect.top + beforeRect.height / 2 - (afterRect.top + afterRect.height / 2);
-      // the CSS rule's own translate(-50%,-50%) centers the element on its
-      // (left, top) anchor point — chain the FLIP delta after it so both
-      // apply together instead of the inline style replacing it outright.
-      finalPerson.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(1.04)`;
-      // eslint-disable-next-line no-unused-expressions
-      finalPerson.offsetWidth; // paint the compensated starting position before re-enabling transitions
-      finalPerson.style.transition = prevPersonTransition;
-      if (row) row.style.transition = prevRowTransition;
-      // eslint-disable-next-line no-unused-expressions
-      finalPerson.offsetWidth;
-      requestAnimationFrame(() => {
-        finalPerson.style.transform = 'translate(-50%, -50%) scale(1.04)';
-      });
       window.setTimeout(() => {
         walkComplete = true;
         stepping = false;
