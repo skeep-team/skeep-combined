@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import styles from "./Hub.module.css";
 
@@ -296,14 +296,36 @@ export function Hub() {
   // a swipe doesn't also fire the card underneath it as a click.
   const wasDragging = useRef(false);
 
-  function handleDragStart() {
-    wasDragging.current = true;
+  // Plain pointer tracking instead of framer-motion's `drag` — that ran a
+  // real-time spring simulation (dragElastic/dragTransition) on every frame
+  // of every swipe, which is expensive to keep up with on weak/embedded CPUs.
+  // This does the same offset+velocity threshold check with no physics loop.
+  const dragStateRef = useRef<{ startX: number; startTime: number; active: boolean } | null>(null);
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragStateRef.current = { startX: e.clientX, startTime: performance.now(), active: false };
   }
 
-  function handleDragEnd(_: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) {
-    if (info.offset.x < -DRAG_OFFSET_THRESHOLD || info.velocity.x < -DRAG_VELOCITY_THRESHOLD) {
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const state = dragStateRef.current;
+    if (!state) return;
+    if (!state.active && Math.abs(e.clientX - state.startX) > 4) {
+      state.active = true;
+      wasDragging.current = true;
+    }
+  }
+
+  function handlePointerUp(e: React.PointerEvent<HTMLDivElement>) {
+    const state = dragStateRef.current;
+    dragStateRef.current = null;
+    if (!state || !state.active) return;
+    const offsetX = e.clientX - state.startX;
+    const elapsedMs = Math.max(1, performance.now() - state.startTime);
+    const velocityX = (offsetX / elapsedMs) * 1000; // px/s, same unit framer-motion used
+    if (offsetX < -DRAG_OFFSET_THRESHOLD || velocityX < -DRAG_VELOCITY_THRESHOLD) {
       goNext();
-    } else if (info.offset.x > DRAG_OFFSET_THRESHOLD || info.velocity.x > DRAG_VELOCITY_THRESHOLD) {
+    } else if (offsetX > DRAG_OFFSET_THRESHOLD || velocityX > DRAG_VELOCITY_THRESHOLD) {
       goPrev();
     }
     // Let the click handlers see the flag first, then clear it for the next gesture.
@@ -354,14 +376,12 @@ export function Hub() {
         </div>
       </header>
 
-      <motion.div
+      <div
         className={styles.stage}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.22}
-        dragTransition={{ bounceStiffness: 520, bounceDamping: 50 }}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         <button
           type="button"
@@ -438,7 +458,7 @@ export function Hub() {
             fast={isScrubbing || isRestoring}
           />
         </button>
-      </motion.div>
+      </div>
 
       <div
         className={styles.pagination}
