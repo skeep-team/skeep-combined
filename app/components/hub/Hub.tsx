@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import styles from "./Hub.module.css";
@@ -341,8 +340,16 @@ export function Hub() {
     };
   }
 
-  function handleCenterClick(e: React.MouseEvent) {
-    if (wasDragging.current) e.preventDefault();
+  function handleCenterClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (wasDragging.current) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    e.preventDefault();
+    window.location.assign(href);
   }
 
   return (
@@ -397,11 +404,11 @@ export function Hub() {
           />
         </button>
 
-        {current.href && current.external ? (
+        {current.href ? (
           <a
             href={current.href}
             className={`${styles.card} ${styles.cardCenter}`}
-            onClick={handleCenterClick}
+            onClick={(e) => handleCenterClick(e, current.href!)}
             draggable={false}
           >
             <CardContent
@@ -414,23 +421,6 @@ export function Hub() {
               <ArrowRightIcon />
             </span>
           </a>
-        ) : current.href ? (
-          <Link
-            href={current.href}
-            className={`${styles.card} ${styles.cardCenter}`}
-            onClick={handleCenterClick}
-            draggable={false}
-          >
-            <CardContent
-              slideKey={current.href}
-              thumbnail={current.thumbnail}
-              tag={current.tag}
-              fast={isScrubbing || isRestoring}
-            />
-            <span className={styles.enterButton}>
-              <ArrowRightIcon />
-            </span>
-          </Link>
         ) : (
           <div className={`${styles.card} ${styles.cardCenter}`}>
             <CardContent
