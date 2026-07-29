@@ -352,6 +352,10 @@ export function Hub() {
     window.location.assign(href);
   }
 
+  function stopEnterPointer(e: React.PointerEvent<HTMLSpanElement>) {
+    e.stopPropagation();
+  }
+
   return (
     <div className={styles.hub}>
       <AmbientBackdrop
@@ -417,7 +421,13 @@ export function Hub() {
               tag={current.tag}
               fast={isScrubbing || isRestoring}
             />
-            <span className={styles.enterButton}>
+            <span
+              className={styles.enterButton}
+              onPointerDown={stopEnterPointer}
+              onPointerMove={stopEnterPointer}
+              onPointerUp={stopEnterPointer}
+              onPointerCancel={stopEnterPointer}
+            >
               <ArrowRightIcon />
             </span>
           </a>
