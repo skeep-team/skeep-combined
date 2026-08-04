@@ -1,0 +1,180 @@
+/* 왼쪽에 연표 레일을 세우고, 오른쪽에 기존 항목들을 그대로 흘린다. */
+.timeline {
+  display: grid;
+  grid-template-columns: clamp(88px, 8.6vw, 165px) minmax(0, 1fr);
+  gap: clamp(24px, 2.6vw, 50px);
+  padding: 0 8.33vw 8vw;
+}
+
+/* 항목들과 같이 굴러가다가, 연표 구간에서만 화면에 붙는다. */
+.rail {
+  position: sticky;
+  top: calc(var(--business-tabbar-h, 0px) + 18vh);
+  height: max-content;
+  padding-block: clamp(8px, 1vw, 18px);
+}
+
+.railTrack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.2vw, 62px);
+  padding-left: clamp(18px, 1.7vw, 32px);
+}
+
+/* 점선 세로선. 첫 점과 마지막 점 사이만 잇는다. */
+.railTrack::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  bottom: 0.55em;
+  border-left: 2px dotted #d3d7de;
+}
+
+.railItem {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #c3c7ce;
+  font-size: clamp(18px, 1.55vw, 30px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-align: left;
+  cursor: pointer;
+  /* 크기를 바꾸면 레일 전체가 밀리므로, 자리는 그대로 두고 확대만 한다. */
+  transform-origin: left center;
+  transition:
+    color 0.32s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.railItem i {
+  position: absolute;
+  left: calc(-1 * clamp(18px, 1.7vw, 32px));
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  background: #d3d7de;
+  transform: translateY(-50%);
+  transition:
+    background-color 0.32s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.railItem[data-active="true"] {
+  color: #ff076a;
+  font-weight: 600;
+  transform: scale(1.22);
+}
+
+.railItem[data-active="true"] i {
+  background: #ff076a;
+  /* 항목이 확대되면 점도 같이 커 보이도록 되돌려 잡는다. */
+  transform: translateY(-50%) scale(1.18);
+}
+
+.railItem:focus-visible {
+  outline: 2px solid #ff076a;
+  outline-offset: 6px;
+}
+
+/* ---------- 오른쪽 항목들 (기존 .timelineEntry와 같은 규격) ---------- */
+
+.entries {
+  display: grid;
+  gap: 8vw;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  align-items: center;
+  gap: 7.2vw;
+  min-height: 31vw;
+}
+
+.visual {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: clamp(20px, 2.1vw, 40px);
+  background: linear-gradient(180deg, #e7eaf0 0%, #fff 100%);
+}
+
+.copy {
+  max-width: 50vw;
+}
+
+.copy p,
+.copy h3 {
+  margin: 0;
+}
+
+.year {
+  margin-bottom: 0.75vw !important;
+  color: #ff076a;
+  font-size: clamp(22px, 2.1vw, 40px);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.copy h3 {
+  margin-bottom: 1.35vw;
+  font-size: clamp(26px, 2.7vw, 52px);
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.05em;
+}
+
+.copy h3 span {
+  display: block;
+}
+
+.copy > p:last-child {
+  max-width: 50vw;
+  font-size: clamp(13px, 1.25vw, 24px);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.04em;
+}
+
+@media (max-width: 980px) {
+  .timeline {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-inline: 24px;
+  }
+
+  /* 좁은 화면에서는 레일이 자리를 너무 먹어서 접는다. */
+  .rail {
+    display: none;
+  }
+
+  .entries {
+    gap: 64px;
+  }
+
+  .entry {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    min-height: 0;
+  }
+
+  .copy,
+  .copy > p:last-child {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .railItem,
+  .railItem i {
+    transition: none;
+  }
+}

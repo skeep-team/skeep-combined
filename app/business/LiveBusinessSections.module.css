@@ -1,0 +1,375 @@
+.sectionHeader,
+.valueHeader,
+.footprintHeader {
+  position: relative;
+  display: grid;
+  grid-template-columns: 13.7vw 1fr auto;
+  align-items: start;
+  width: 100%;
+  min-height: 14.58vw;
+  padding: 4.75vw 8.33vw 3vw;
+  color: #000;
+  background: #fff;
+  scroll-margin-top: var(--business-tabbar-h, 0px);
+}
+
+.sectionHeader h2,
+.valueHeader h2,
+.footprintHeader h2,
+.sectionHeader p,
+.valueHeader p,
+.footprintHeader p {
+  margin: 0;
+  line-height: 1.38;
+  letter-spacing: -0.045em;
+}
+
+.sectionHeader h2,
+.valueHeader h2,
+.footprintHeader h2 {
+  font-size: clamp(22px, 2.08vw, 40px);
+  font-weight: 600;
+}
+
+.sectionHeader p,
+.valueHeader p,
+.footprintHeader p {
+  font-size: clamp(22px, 2.08vw, 40px);
+  font-weight: 400;
+}
+
+.spaciousHeader {
+  align-items: end;
+  min-height: 44.79vw;
+  padding-bottom: 4.8vw;
+}
+
+.marker {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(8px, 0.72vw, 14px);
+  height: clamp(54px, 5.2vw, 100px);
+  margin-top: 0.2vw;
+}
+
+.marker i {
+  display: block;
+  width: clamp(5px, 0.42vw, 8px);
+  background: #f7f8fa;
+}
+
+.valueSection {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1920 / 1340;
+  color: #000;
+  background: #fff;
+  scroll-margin-top: var(--business-tabbar-h, 0px);
+}
+
+.valueHeader {
+  position: absolute;
+  inset: 0 0 auto;
+}
+
+.canvasGrid {
+  position: absolute;
+  top: 26.8%;
+  right: 8.33%;
+  bottom: 4.8%;
+  left: 8.33%;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: 1fr 1fr 0.72fr;
+  grid-template-areas:
+    "partners activities value relationships segments"
+    "partners resources value channels segments"
+    "cost cost revenue revenue revenue";
+  gap: clamp(10px, 1.04vw, 20px);
+}
+
+.canvasCard {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 1.65vw, 32px);
+  overflow: hidden;
+  padding: clamp(18px, 1.45vw, 28px);
+  border-radius: clamp(16px, 1.65vw, 32px);
+  color: #000;
+  background: #e7eaf0;
+}
+
+.canvasCard[data-dark="true"] {
+  color: #fff;
+  background: #778391;
+}
+
+.canvasCard h3,
+.canvasCard p {
+  margin: 0;
+}
+
+.canvasCard h3 {
+  font-size: clamp(16px, 1.45vw, 28px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+}
+
+.canvasCard > div {
+  display: grid;
+  gap: clamp(7px, 0.56vw, 11px);
+}
+
+.canvasCard p {
+  color: rgba(0, 0, 0, 0.58);
+  font-size: clamp(10px, 0.94vw, 18px);
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.canvasCard[data-dark="true"] p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.canvasCard[data-area="partners"] { grid-area: partners; }
+.canvasCard[data-area="activities"] { grid-area: activities; }
+.canvasCard[data-area="resources"] { grid-area: resources; }
+.canvasCard[data-area="value"] { grid-area: value; }
+.canvasCard[data-area="relationships"] { grid-area: relationships; }
+.canvasCard[data-area="channels"] { grid-area: channels; }
+.canvasCard[data-area="segments"] { grid-area: segments; }
+.canvasCard[data-area="cost"] { grid-area: cost; }
+.canvasCard[data-area="revenue"] { grid-area: revenue; }
+
+.wideCard {
+  display: grid;
+  grid-template-columns: 30% 1fr;
+}
+
+.wideCard > div {
+  align-content: start;
+}
+
+.revenueColumns {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2vw !important;
+}
+
+.footprint {
+  color: #000;
+  background: #fff;
+  scroll-margin-top: var(--business-tabbar-h, 0px);
+}
+
+.footprintHeader {
+  padding-top: 7.4vw;
+  padding-bottom: 1.5vw;
+}
+
+.footprintIntro {
+  display: grid;
+  grid-template-columns: 45% 1fr;
+  align-items: start;
+  padding: 3.6vw 8.33vw 5.6vw;
+}
+
+.footprintIntro h3,
+.footprintIntro p {
+  margin: 0;
+}
+
+.footprintIntro h3 {
+  font-size: clamp(34px, 4.05vw, 78px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.055em;
+}
+
+.footprintIntro p {
+  padding-top: 0.6vw;
+  font-size: clamp(17px, 1.82vw, 35px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.045em;
+}
+
+.closing {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1920 / 888;
+  color: #000;
+  background: #fff;
+}
+
+.closingCopy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  padding-top: 6.6vw;
+  text-align: center;
+}
+
+.closingCopy h2,
+.closingCopy p,
+.closingCopy small {
+  margin: 0;
+}
+
+.closingCopy h2 {
+  font-size: clamp(22px, 2.3vw, 44px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.045em;
+}
+
+.closingCopy p {
+  margin-top: 3.1vw;
+  font-size: clamp(14px, 1.5vw, 29px);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.04em;
+}
+
+.closingCopy a {
+  margin-top: 5.2vw;
+  padding: 1.05vw 2.6vw;
+  border-radius: 999px;
+  color: #fff;
+  background: #a4a4a4;
+  font-size: clamp(16px, 1.65vw, 32px);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.closingCopy small {
+  margin-top: 6.1vw;
+  color: #aab7c9;
+  font-size: clamp(11px, 1.05vw, 20px);
+  font-weight: 400;
+}
+
+.closingPanel {
+  position: absolute;
+  right: 8.33vw;
+  bottom: 0;
+  left: 8.33vw;
+  height: 19%;
+  border-radius: 0 0 clamp(22px, 2.1vw, 40px) clamp(22px, 2.1vw, 40px);
+  background: #e7eaf0;
+}
+
+@media (max-width: 860px) {
+  .sectionHeader,
+  .valueHeader,
+  .footprintHeader,
+  .spaciousHeader {
+    grid-template-columns: 1fr 1.4fr;
+    min-height: auto;
+    padding: 56px 24px;
+  }
+
+  .marker {
+    display: none;
+  }
+
+  .valueSection,
+  .closing {
+    aspect-ratio: auto;
+  }
+
+  .valueHeader {
+    position: static;
+  }
+
+  .canvasGrid {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+    padding: 0 24px 64px;
+  }
+
+  .canvasCard,
+  .canvasCard[data-area] {
+    grid-area: auto;
+    min-height: 260px;
+  }
+
+  .wideCard,
+  .revenueColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .footprintIntro {
+    grid-template-columns: 1fr;
+  }
+
+  .footprintIntro {
+    gap: 36px;
+    padding: 40px 24px 72px;
+  }
+
+  .closing {
+    aspect-ratio: auto;
+  }
+
+  .valueHeader {
+    position: static;
+  }
+
+  .canvasGrid {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+    padding: 0 24px 64px;
+  }
+
+  .canvasCard,
+  .canvasCard[data-area] {
+    grid-area: auto;
+    min-height: 260px;
+  }
+
+  .wideCard,
+  .revenueColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .footprintIntro {
+    grid-template-columns: 1fr;
+  }
+
+  .footprintIntro {
+    gap: 36px;
+    padding: 40px 24px 72px;
+  }
+
+  .closing {
+    min-height: 760px;
+    padding-inline: 24px;
+  }
+
+  .closingCopy {
+    padding-top: 100px;
+  }
+
+  .closingCopy p br {
+    display: none;
+  }
+
+  .closingCopy a {
+    margin-top: 72px;
+    padding: 16px 28px;
+  }
+
+  .closingCopy small {
+    margin-top: 88px;
+  }
+}

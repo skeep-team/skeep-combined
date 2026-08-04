@@ -1,0 +1,112 @@
+.stage {
+  position: relative;
+  /* 재생은 시간이 몰고 간다. 이 여유는 핀이 걸려 있는 구간(= 여유 - 100vh)이 재생
+     시간보다 길어서, 계속 스크롤해도 끝까지 보고 지나가라고 두는 것이다. */
+  height: 280vh;
+  background: #000;
+}
+
+/* 이 구간에서는 목차 바를 감추므로 화면 전체를 쓴다. 바 높이를 빼면
+   글줄이 그만큼 아래로 처져 보인다. */
+.pin {
+  position: sticky;
+  top: 0;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.line {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  max-width: 100%;
+  margin: 0;
+  padding-inline: 4vw;
+  font-size: clamp(35px, 4.2vw, 80px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+}
+
+/* 접히는 건 flex 항목의 폭이라, 남는 조각들은 justify-content: center를 따라
+   저절로 가운데로 다시 모인다. 위치를 따로 계산할 필요가 없다. */
+.chunk {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--w, auto);
+  overflow: hidden;
+  color: #fff;
+  white-space: pre;
+  transition:
+    width 720ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 420ms ease;
+}
+
+/* 폭을 아직 재지 못했으면 접지 않는다 — 0으로 굳어 버리면 영영 안 열린다. */
+.line[data-measured="true"] .chunk[data-future="true"] {
+  width: 0;
+  opacity: 0;
+}
+
+/* 1박자: the intro / the flow가 그대로 사라진다(윤곽선도 남기지 않는다).
+   자리는 아직 그대로 둬서 SKIP·KEEP이 제자리에 선다. */
+.stage[data-step="1"] .chunk[data-fade="true"],
+.stage[data-step="2"] .chunk[data-fade="true"],
+.stage[data-step="3"] .chunk[data-fade="true"] {
+  opacity: 0;
+}
+
+/* 2박자: 빠진 말과 IP·K가 폭 0으로 접혀 SK와 EEP이 맞붙는다 → SKEEP. */
+.stage[data-step="2"] .line[data-measured="true"] .chunk[data-drop="true"],
+.stage[data-step="3"] .line[data-measured="true"] .chunk[data-drop="true"] {
+  width: 0;
+  opacity: 0;
+}
+
+/* 3박자: to the future가 폭을 열면서 같이 떠오른다. 2박자에서 미리 자리를 잡아 두면
+   보이지도 않는 여백 때문에 SKEEP이 가운데에서 왼쪽으로 밀려 보인다. */
+.stage[data-step="3"] .line[data-measured="true"] .chunk[data-future="true"] {
+  width: var(--w, auto);
+  opacity: 1;
+}
+
+@media (max-width: 980px) {
+  .stage {
+    height: 240vh;
+  }
+
+  .line {
+    padding-inline: 6vw;
+    font-size: clamp(24px, 6.4vw, 44px);
+  }
+}
+
+/* 모션을 줄이면 마지막 문장만 보여준다. */
+@media (prefers-reduced-motion: reduce) {
+  .stage {
+    height: auto;
+  }
+
+  .pin {
+    position: relative;
+    height: auto;
+    padding-block: clamp(80px, 12vh, 160px);
+  }
+
+  .chunk {
+    transition: none;
+  }
+
+  .line[data-measured="true"] .chunk[data-drop="true"] {
+    width: 0;
+    opacity: 0;
+  }
+
+  .line[data-measured="true"] .chunk[data-future="true"] {
+    width: var(--w, auto);
+    opacity: 1;
+  }
+}

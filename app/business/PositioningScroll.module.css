@@ -1,50 +1,51 @@
 .sequence {
+  --side-fade: 0;
+  --center-fade: 0;
+  --hero-reveal: 0;
+  /* 세 카드의 펼침과 마지막 히어로 모핑을 같은 빠른 리듬으로 연결한다. */
+  --card-expand-duration: 950ms;
+  --card-expand-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
   position: relative;
-  height: 430vh;
-  min-height: 3200px;
   background: #fff;
+  scroll-margin-top: var(--business-tabbar-h, 0px);
+}
+
+/* 핀이 걸리는 구간. 헤더는 이 밖에 있어서 그냥 스크롤로 지나간다. */
+.track {
+  position: relative;
+  height: 620vh;
+  min-height: 4700px;
 }
 
 .sticky {
   position: sticky;
-  top: 0;
+  top: var(--business-tabbar-h, 0px);
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - var(--business-tabbar-h, 0px));
   overflow: hidden;
   background: #fff;
 }
 
-.scene {
+/* scene 0~3이 전부 같은 .sceneCards 하나를 공유한다 — 단계가 넘어갈 때마다
+   기존 카드까지 통째로 다시 나타나지 않도록, 이 블록 자체는 처음부터 떠
+   있고 절대 다시 페이드하지 않는다. 새로 추가되는 카드만 .secondSlotCard /
+   .thirdSlotCard가 각자 오른쪽에서 슬라이드-인한다. */
+.sceneCards {
   position: absolute;
   inset: 0;
   padding: clamp(44px, 5.4vh, 76px) clamp(32px, 5.8vw, 112px);
-  opacity: 0;
-  transform: translate3d(0, 8px, 0);
-  transition:
-    opacity 500ms cubic-bezier(.22, 1, .36, 1),
-    transform 600ms cubic-bezier(.22, 1, .36, 1);
-  pointer-events: none;
-  will-change: opacity, transform;
 }
 
-.sequence[data-scene="0"] .sceneOne,
-.sequence[data-scene="1"] .sceneTwo,
-.sequence[data-scene="2"] .sceneThree,
-.sequence[data-scene="3"] .sceneFour {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  transition:
-    opacity 850ms cubic-bezier(.22, 1, .36, 1) 540ms,
-    transform 1000ms cubic-bezier(.22, 1, .36, 1) 540ms;
-  pointer-events: auto;
-}
-
+/* 앞선 섹션들(Corporate Mission / Market Imperative)과 같이 그냥 흘러가는 머리글이다.
+   핀 구간 밖에 있어서 스크롤하면 화면 밖으로 나간다. */
 .sectionHeader {
   display: grid;
   grid-template-columns: minmax(180px, 240px) minmax(220px, 1fr) auto;
   align-items: start;
   gap: clamp(50px, 7vw, 150px);
-  min-height: 24vh;
+  padding: clamp(90px, 12vw, 180px) clamp(32px, 5.8vw, 112px)
+    clamp(56px, 6vw, 96px);
 }
 
 .sectionHeader strong,
@@ -59,7 +60,7 @@
 .sectionHeader strong,
 .termCard strong,
 .valueCard h3 {
-  font-family: "Helvetica Now Display", var(--font-pretendard), sans-serif;
+  font-family: var(--font-elza), "Helvetica Now Display", var(--font-pretendard), sans-serif;
 }
 
 .headerMark {
@@ -125,9 +126,232 @@
   width: 100%;
 }
 
-.sceneThree {
+.progressGrid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) minmax(0, 1fr)
+    minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(20px, 1.4vw, 30px);
+  width: 100%;
+  transition:
+    grid-template-columns var(--card-expand-duration) var(--card-expand-ease),
+    gap var(--card-expand-duration) var(--card-expand-ease),
+    height var(--card-expand-duration) var(--card-expand-ease);
+}
+
+/* 마지막 단계: 양옆 열이 접히고 가운데 열만 남아 화면을 다 쓴다.
+   fr끼리 보간되도록 세 열의 형태(minmax)를 같게 맞춰 뒀다. */
+.sequence[data-expanded="true"] .progressGrid {
+  grid-template-columns:
+    minmax(0, 0fr) minmax(0, 1fr)
+    minmax(0, 0fr);
+  gap: 0;
+  height: 100%;
+}
+
+.sceneCards .progressGrid > .valueCard,
+.sceneCards .thirdSlotCard .valueCard {
+  opacity: calc(1 - var(--side-fade));
+  transition:
+    height var(--card-expand-duration) var(--card-expand-ease),
+    opacity 0s linear;
+}
+
+/* 두 번째 칸: scene 0에서는 헤드라인 문구가 2~3열을 가로질러 넓게 자리하고,
+   scene 1부터는 헤드라인이 사라지며 카드가 오른쪽에서 밀려 들어와 2열
+   하나만 차지한다. */
+.secondSlot {
+  display: grid;
+  grid-column: 2 / 4;
+  grid-row: 1;
+  min-width: 0;
+  /* 헤드라인이 다 사라진 뒤에야 2열 폭으로 좁아지도록, 페이드아웃이
+     끝나는 시점(400ms)까지는 넓은 스팬을 유지한다. */
+  transition: grid-column 0s linear 400ms;
+}
+
+.sequence[data-scene="1"] .secondSlot,
+.sequence[data-scene="2"] .secondSlot,
+.sequence[data-scene="3"] .secondSlot {
+  grid-column: 2 / 3;
+}
+
+.secondSlot > * {
+  grid-area: 1 / 1;
+}
+
+.secondSlotHeadline {
+  opacity: 1;
+  transition: opacity 400ms ease;
+}
+
+.sequence[data-scene="1"] .secondSlotHeadline,
+.sequence[data-scene="2"] .secondSlotHeadline,
+.sequence[data-scene="3"] .secondSlotHeadline {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.secondSlotCard {
+  height: 100%;
   display: flex;
   align-items: center;
+  opacity: 0;
+  transform: translate3d(36px, 0, 0);
+  transition:
+    opacity 500ms cubic-bezier(.22, 1, .36, 1),
+    transform 600ms cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+
+.sequence[data-scene="1"] .secondSlotCard,
+.sequence[data-scene="2"] .secondSlotCard,
+.sequence[data-scene="3"] .secondSlotCard {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+/* 세 번째 칸: scene 0~1에서는 헤드라인 문구, scene 2부터는 새 카드로 바뀐다.
+   같은 그리드 셀에 겹쳐 두고 서로 교차 전환한다 — 헤드라인이 있던 자리에
+   카드가 오른쪽에서 밀려 들어오며 "새로 붙는" 느낌을 준다. */
+.thirdSlot {
+  display: grid;
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.thirdSlot > * {
+  grid-area: 1 / 1;
+}
+
+.thirdSlotHeadline {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+.sequence[data-scene="1"] .thirdSlotHeadline {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.thirdSlotCard {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translate3d(36px, 0, 0);
+  transition:
+    opacity 500ms cubic-bezier(.22, 1, .36, 1),
+    transform 600ms cubic-bezier(.22, 1, .36, 1);
+  pointer-events: none;
+}
+
+.thirdSlotCard .valueCard {
+  width: 100%;
+}
+
+.sequence[data-scene="2"] .thirdSlotCard,
+.sequence[data-scene="3"] .thirdSlotCard {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+}
+
+/* 가운데 슬롯: 카드 얼굴과 패널 얼굴이 같은 자리에서 교대한다. */
+/* .secondSlotCard가 flex라, 폭을 지정하지 않으면 이 칸이 내용 크기로 줄어들면서
+   왼쪽에 붙어버린다. 칸 전체를 채워야 펼쳤을 때 패널이 화면 폭까지 자라고 가운데에 선다. */
+.morphSlot {
+  position: relative;
+  align-self: center;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sequence[data-expanded="true"] .morphSlot {
+  align-self: stretch;
+}
+
+/* 되돌아올 때는 짧게 줄인다. 전환 시간은 도착 상태의 규칙에서 읽히므로,
+   커질 때(expanded=true)는 아래 규칙의 긴 시간, 접힐 때는 여기 짧은 시간이 쓰인다.
+   길게 두면 양옆 카드는 이미 제자리인데 가운데만 한참 작은 채로 남아,
+   위로 되돌아올 때 가운데 카드가 혼자 쪼그라들어 보였다. */
+.morphSlot .valueCard {
+  width: 100%;
+  height: clamp(180px, 18.8vw, 320px);
+  transition:
+    height 240ms var(--card-expand-ease),
+    border-radius 240ms var(--card-expand-ease),
+    background-color 240ms var(--card-expand-ease);
+}
+
+.sequence[data-scene="3"] .morphSlot .valueCard {
+  height: clamp(260px, 29.4vw, 560px);
+}
+
+.morphSlot .valueCardTop,
+.morphSlot .valueCard > .valueCollapse {
+  opacity: calc(1 - var(--center-fade));
+}
+
+.morphSlot .valueCardTop {
+  transition: opacity 0s linear;
+}
+
+.morphSlot .valueCard > .valueCollapse {
+  transition:
+    max-height var(--card-expand-duration) var(--card-expand-ease),
+    opacity 0s linear;
+}
+
+.sequence[data-expanded="true"] .morphSlot .valueCard {
+  height: 100%;
+  min-height: 100%;
+  border-radius: 0;
+  background: #070707;
+}
+
+.morphSlot .heroPanel {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  opacity: var(--hero-reveal);
+  pointer-events: none;
+  transition: opacity 120ms linear;
+}
+
+.sequence[data-expanded="true"] .morphSlot .heroPanel {
+  pointer-events: auto;
+}
+
+/* 마지막 단계에서는 더 이상 카드가 아니라 전체 화면 장면으로 보이게 한다.
+   스티키 영역의 안쪽 여백을 완전히 제거해 검은 패널이 네 모서리까지 닿는다. */
+.sequence[data-expanded="true"] .sceneCards {
+  padding: 0;
+}
+
+.progressHeadline {
+  align-self: center;
+  margin: 0;
+  color: #000;
+  font-size: clamp(34px, 3.5vw, 70px);
+  font-weight: 650;
+  line-height: 1.32;
+  letter-spacing: -0.065em;
+  text-align: center;
+}
+
+.sceneCards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: padding var(--card-expand-duration) var(--card-expand-ease);
 }
 
 .valueGrid {
@@ -137,98 +361,212 @@
   width: 100%;
 }
 
+/* 접혔을 땐 제목만 담아 낮고, 펼치면 시안의 정사각(720:750)까지 자란다.
+   aspect-ratio는 전환이 안 되므로 같은 크기를 min-height로 환산해 잡았다
+   (3열 그리드에서 카드 폭은 화면 폭의 약 28.5%라 정사각 높이가 ≈29.4vw다). */
 .valueCard {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: min(72vh, 720px);
-  padding: clamp(38px, 3.8vw, 76px) clamp(30px, 3vw, 58px);
+  /* 그리드가 stretch라 그냥 두면 옆 헤드라인 높이만큼 늘어난다. 제 높이를 지키게 앉힌다. */
+  align-self: center;
+  align-items: center;
+  /* 접혀 있을 땐 설명 칸의 높이가 0이라, space-between으로 두면 제목만 위로 붙어 보인다.
+     펼쳐진 뒤에야 제목은 위, 설명은 아래로 벌린다. */
+  justify-content: center;
+  height: clamp(180px, 18.8vw, 320px);
+  min-height: 0;
+  padding: clamp(34px, 3.6vw, 68px) clamp(24px, 3vw, 56px);
   border-radius: clamp(28px, 2.4vw, 48px);
-  background: #e9ebf1;
+  text-align: center;
+  transition: height var(--card-expand-duration) var(--card-expand-ease);
 }
 
-.valueCard span {
-  margin-bottom: 18px;
-  color: #ff076a;
+.sequence[data-scene="3"] .valueCard {
+  justify-content: space-between;
+  height: clamp(260px, 29.4vw, 560px);
+}
+
+/* 라벨과 설명은 펼쳐질 때 같이 열린다. 여백까지 안쪽에 둬야 접혔을 때 자국이 남지 않는다. */
+.valueCollapse {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height var(--card-expand-duration) var(--card-expand-ease),
+    opacity 280ms ease 80ms;
+}
+
+.sequence[data-scene="3"] .valueCollapse {
+  max-height: 9em;
+  opacity: 1;
+}
+
+.sequence[data-scene="3"] .morphSlot .valueCollapse {
+  opacity: calc(1 - var(--center-fade));
+}
+
+.valueCardUsers {
+  color: #ff6b3d;
+  background: #a5e0f0;
+}
+
+.valueCardPartners {
+  color: #e7ff96;
+  background: #280047;
+}
+
+.valueCardEcosystem {
+  color: #ff3385;
+  background: #ffcadf;
+}
+
+.valueCardTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valueLabel {
+  display: block;
+  margin-bottom: clamp(14px, 1.2vw, 22px);
+  color: inherit;
   font-size: clamp(18px, 1.35vw, 28px);
   font-weight: 650;
+  line-height: 1;
 }
 
 .valueCard h3 {
+  display: flex;
+  flex-direction: column;
   margin: 0;
-  color: #050505;
+  color: inherit;
   font-size: clamp(38px, 3vw, 62px);
   font-weight: 700;
-  line-height: 1.12;
+  line-height: 1.18;
   letter-spacing: -0.05em;
 }
 
 .valueCard p {
-  margin: clamp(28px, 3vh, 42px) 0 0;
-  color: #111;
+  margin: 0;
+  color: inherit;
   font-size: clamp(16px, 1.25vw, 25px);
   font-weight: 500;
-  line-height: 1.7;
+  line-height: 1.55;
   letter-spacing: -0.045em;
 }
 
-.sceneFour {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.valueTitleLine,
+.valueBodyLine {
+  display: block;
 }
 
+/* 패널은 시안 프레임(1600×1237) 비율을 그대로 쓴다. 높이는 스티키 영역이 정해주고
+   폭이 거기서 따라 나오므로, 화면이 아무리 넓어져도 시안처럼 세로가 살아 있는 비율이 된다.
+   안쪽 치수는 전부 패널 높이(= 뷰포트의 약 82%) 기준 vh로, 시안의 1237 대비 비율 그대로 옮겼다.
+   폭에 눌리는 화면에서는 vw 쪽이 작아지므로 min()으로 넘치지 않게 막는다. */
 .heroPanel {
-  display: grid;
-  grid-template-columns: minmax(0, 68fr) minmax(0, 32fr);
-  gap: clamp(48px, 5vw, 100px);
-  width: 100%;
-  min-height: 86vh;
-  padding: clamp(58px, 7vw, 130px);
+  --copy-width: min(870px, 54.4%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  aspect-ratio: 1600 / 1237;
+  /* 안쪽 치수는 전부 패널 폭 기준(cqw)이라 시안의 1600 대비 비율이 화면과 무관하게 유지된다.
+     cqw를 모르는 브라우저는 앞줄의 vh 폴백을 그대로 쓴다(대략치라 조금 어긋날 수 있다). */
+  container-type: size;
+  /* 시안보다 위아래 여백을 줄여, 리드는 더 위로 카피는 더 아래로 붙이고
+     그만큼 남는 자리를 가운데 콜라주가 가져간다. */
+  padding: 2.9vh 0 4.1vh;
+  padding: 2.55cqw 0 3.6cqw;
   border-radius: clamp(30px, 2.6vw, 52px);
-  background: #e9ebf1;
+  background: #070707;
+  color: #fff;
+  text-align: center;
 }
 
+/* 펼쳐진 히어로는 원본 시안의 카드 비율과 최대 폭 제한을 해제하고,
+   탭바 아래의 가용 뷰포트를 그대로 채운다. */
+.sequence[data-expanded="true"] .heroPanel {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+/* strong은 인라인이라 폭 제한이 먹지 않는다. */
+.heroLede {
+  display: block;
+  max-width: var(--copy-width);
+  color: #e7eaf0;
+  opacity: 0.8;
+  font-size: clamp(14px, min(1.5vw, 2.15vh), 22px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+
+/* 시안에서 콜라주는 패널 폭의 1367/1600을 차지한다. */
 .heroVisual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #c7c9cf;
-  font-size: clamp(18px, 1.5vw, 30px);
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 93%;
+  margin: 1.05vh 0 2vh;
+  margin: 0.92cqw 0 1.76cqw;
+}
+
+.heroVisual picture,
+.heroVisual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 콜라주 아래쪽이 배경으로 녹아들게 덮는다(시안의 268/1237 ≈ 22%지만
+   여기선 이미지 박스 기준이라 조금 더 크게 잡아야 같은 인상이 난다). */
+.heroVisual::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 37.8%;
+  background: linear-gradient(to bottom, rgba(7, 7, 7, 0), #070707);
+  pointer-events: none;
 }
 
 .heroCopy {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  color: #050505;
+  align-items: center;
+  gap: clamp(14px, 1.8vh, 20px);
+  width: 100%;
 }
 
 .heroCopy h2 {
   margin: 0;
-  font-size: clamp(46px, 4vw, 80px);
+  font-size: clamp(34px, min(4vw, 5.4vh), 56px);
   font-weight: 650;
-  line-height: 1.28;
-  letter-spacing: -0.06em;
-}
-
-.heroCopy strong {
-  margin-top: clamp(32px, 4vh, 56px);
-  font-size: clamp(18px, 1.4vw, 28px);
-  line-height: 1.55;
-  letter-spacing: -0.045em;
+  line-height: 1.24;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
 }
 
 .heroCopy p {
-  margin: clamp(28px, 3vh, 46px) 0 0;
-  font-size: clamp(17px, 1.35vw, 27px);
-  font-weight: 480;
-  line-height: 1.7;
-  letter-spacing: -0.045em;
+  max-width: var(--copy-width);
+  margin: 0;
+  font-size: clamp(14px, min(1.5vw, 2.15vh), 22px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
 }
 
 @media (max-width: 980px) {
-  .sequence {
+  .track {
     height: 390vh;
     min-height: 2800px;
   }
@@ -246,9 +584,7 @@
     height: auto;
   }
 
-  .sceneOne,
-  .sceneTwo {
-    display: flex;
+  .sceneCards {
     flex-direction: column;
     justify-content: center;
   }
@@ -261,30 +597,43 @@
     min-height: 180px;
   }
 
+  .progressGrid,
   .valueGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(10px, 1.4vw, 18px);
+  }
+
+  .progressHeadline {
+    font-size: clamp(24px, 3.5vw, 42px);
   }
 
   .valueCard {
     min-height: 0;
   }
 
-  .valueCard p br,
-  .heroCopy p br {
+  .valueCard p br {
     display: none;
   }
 
+  /* 좁은 화면에선 시안 비율을 고집하면 패널이 쪼그라들어서 폭을 다 쓰게 둔다. */
   .heroPanel {
-    grid-template-columns: 1fr;
+    --copy-width: 100%;
+
+    container-type: normal;
+    width: 100%;
+    aspect-ratio: auto;
+    padding-block: clamp(28px, 4vh, 48px);
+    padding-inline: clamp(20px, 4vw, 48px);
   }
 
   .heroVisual {
+    width: 100%;
     min-height: 24vh;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sequence {
+  .track {
     height: auto;
     min-height: 0;
   }
@@ -295,11 +644,8 @@
     overflow: visible;
   }
 
-  .sequence[data-scene] .scene {
+  .sceneCards {
     position: relative;
     min-height: 100vh;
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 }

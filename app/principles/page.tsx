@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import styles from "./page.module.css";
 import { Footer } from "../components/layout/Footer";
 import { CTA } from "../components/sections/CTA";
 import { Detour } from "../components/sections/Detour";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function PrinciplesPage() {
   return (
-    <main>
+    <main className={styles.page}>
       <Hero />
       <IcebreakSkip />
       <RoleFlow />

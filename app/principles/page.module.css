@@ -1,0 +1,35 @@
+/* 영문·숫자는 Elza Condensed Medium 한 벌만 사용한다. Elza에 없는 한글
+   글리프는 다음 순서의 Pretendard로 자연스럽게 폴백된다.
+
+   unicode-range가 좁은 이유: 이건 Trial 판이라 실제 윤곽이 들어 있는 글자가
+   공백·쉼표·마침표·하이픈·숫자·영문 대소문자뿐이다. 나머지 273자($ / % & @ ™ ® 따옴표
+   괄호 등)는 전부 같은 네모 상자로 대체돼 있어서, 범위에 넣으면 글자가 □로 깨진다.
+   범위 밖으로 빼두면 브라우저가 알아서 Pretendard로 넘긴다. */
+@font-face {
+  font-family: "Elza Condensed Medium Principles";
+  src: url("../fonts/ElzaCond-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0020, U+002C-002E, U+0030-0039, U+0041-005A, U+0061-007A;
+}
+
+.page,
+.page * {
+  font-family: "Elza Condensed Medium Principles", var(--font-pretendard), sans-serif !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* 이 페이지의 영문은 전부 대문자로 표기한다. 상속되므로 하위 전체에 적용되고,
+   한글·숫자·기호에는 영향이 없다. */
+.page {
+  text-transform: uppercase;
+}
+
+/* button/input은 UA 스타일이 text-transform 상속을 끊어서 따로 걸어야 한다. */
+.page button,
+.page input,
+.page select,
+.page textarea {
+  text-transform: uppercase;
+}

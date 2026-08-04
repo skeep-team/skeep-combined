@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { CursorProvider } from "./components/ui/Cursor";
+import { elza } from "./fonts/elza";
 import { pretendard } from "./fonts/pretendard";
 import "./globals.css";
 
@@ -17,7 +18,7 @@ export default function RootLayout({
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={`${pretendard.variable} ${elza.variable}`}>
       <head>
         <link rel="stylesheet" href={`${basePath}/site-index.css`} />
       </head>

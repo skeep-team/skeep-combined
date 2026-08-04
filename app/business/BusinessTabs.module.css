@@ -1,0 +1,86 @@
+/* 좌표는 원본 시안(business-02-top.png, 1920px 기준)에서 그대로 따옴.
+   160/1920 = 8.333vw(좌 여백), 285/1920 = 14.84vw(항목 폭),
+   44/1920 = 2.29vw(폰트), 44/1920 = 2.29vw(구분선~텍스트 간격).
+   vw로 두면 옆의 1920px 시안 이미지들과 어떤 창 폭에서도 정렬이 맞는다. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #ffffff;
+  /* 높이는 100px 고정. 여백으로 잡으면 글줄 높이 반올림 때문에 1~2px씩 어긋나서,
+     칸 자체를 100px로 두고 안쪽을 가운데 정렬한다. 이 값이 곧 --business-tabbar-h가
+     되어 아래 sticky 섹션들의 고정 위치를 정한다. */
+  display: flex;
+  align-items: flex-start;
+  height: 95px;
+  /* 위 24 + 글줄 51 + 아래 20. 가운데 정렬로 두면 아래 여백이 위와 똑같이 24가 돼서
+     목차가 아래로 처져 보였다. 위는 고정하고 아래만 직접 잡는다. */
+  padding-block: 24px 0;
+  padding-left: 8.333vw;
+  /* 6칸 × 14.76vw = 88.56vw. 좌 여백 8.333vw를 빼면 오른쪽에 3.1vw만 남는다.
+     여기서 8.333vw를 주면 칸이 줄어 'Proposition'이 구분선을 넘어간다. */
+  padding-right: 3.1vw;
+  /* .canvas가 line-height: 0 이라 여기서 되돌린다. */
+  line-height: normal;
+  transition: opacity 0.4s ease;
+}
+
+/* 마지막 슬로건 구간은 글줄 하나만 남기고 비운다 — SloganMorph가 핀이 걸린 동안
+   html에 표시를 달고, 그때만 목차가 사라진다. */
+:global(html[data-business-tabs="hidden"]) .bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 14.76vw));
+  width: 100%;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0 0 0 clamp(10px, 1.05vw, 22px);
+  border: 0;
+  border-left: 1px solid #e6e8ec;
+  background: none;
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  text-align: left;
+  /* 버튼은 UA 스타일이 text-transform을 끊어서 .page의 대문자 규칙이 여기까지 안 왔다. */
+  text-transform: uppercase;
+  color: #c7cad1;
+  cursor: pointer;
+  transition: color 0.24s ease;
+}
+
+.tab:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.tab:hover {
+  color: #8b9099;
+}
+
+.tab[data-active="true"],
+.tab[data-active="true"]:hover {
+  color: #111111;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #ff076a;
+  outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+}

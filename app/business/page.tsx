@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
 import styles from "./Business.module.css";
-import PestelSection from "./PestelSection";
+import BusinessTabs from "./BusinessTabs";
+import CorporateMission from "./CorporateMission";
+import EnterprisePricingFlip from "./EnterprisePricingFlip";
+import ExperiencePricingFlip from "./ExperiencePricingFlip";
+import FootprintIntro from "./FootprintIntro";
+import HeroIntro from "./HeroIntro";
 import VisaSkeepScroll from "./VisaSkeepScroll";
 import PositioningScroll from "./PositioningScroll";
+import ScrollFadeIn from "./ScrollFadeIn";
+import {
+  BusinessClosing,
+  FootprintSection,
+  SectionHeader,
+  ValueProposition,
+} from "./LiveBusinessSections";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
-const tailSections = [
-  { file: "business-06.png", height: 2800 },
-  { file: "business-07.png", height: 2800 },
-  { file: "business-08.png", height: 2800 },
-  { file: "business-09.png", height: 2400 },
-  { file: "business-10.png", height: 888 },
-];
-
-const introSections = [
-  { file: "business-01.png", height: 2800 },
-  { file: "business-02-top.png", height: 2280 },
-];
 
 export const metadata: Metadata = {
   title: "Skeep Business",
@@ -29,35 +28,50 @@ export default function BusinessPage() {
     <main className={styles.page}>
       <h1 className={styles.srOnly}>Skeep 비즈니스 모델</h1>
       <div className={styles.canvas}>
-        {introSections.map((section, index) => (
-          // eslint-disable-next-line @next/next/no-img-element
+        {/* 히어로는 화면을 붙잡고 타이틀 → About Skeep → "끊임없는 도전 정신"으로 페이드 전환한다. */}
+        <HeroIntro />
+
+        {/* 2026·2031 연혁은 시안 PNG 안에 글자가 박혀 있어 흐릿했다.
+            business-01 y1965 ~ business-02a-intro y400 구간을 도려내고 라이브 텍스트로 옮겼다. */}
+        <FootprintIntro />
+
+        <ScrollFadeIn className={styles.fadeIn}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            key={section.file}
             className={styles.section}
-            src={`${BASE_PATH}/business/sections/${section.file}`}
+            src={`${BASE_PATH}/business/sections/business-02a-tail.png`}
             width={1920}
-            height={section.height}
+            height={300}
             alt=""
-            loading={index < 2 ? "eager" : "lazy"}
+            loading="eager"
             decoding="async"
           />
-        ))}
-        <PestelSection />
+        </ScrollFadeIn>
+
+        <BusinessTabs />
+
+        <CorporateMission />
+        <SectionHeader
+          id="market-imperative"
+          english={["Market", "Imperative"]}
+          korean={["스킵할 수 밖에", "없었던 이유"]}
+        />
+
+        {/* PESTEL 레일은 VisaSkeepScroll 안에서 한 벌만 그리고, 그대로 접히며 VISA로 이어진다. */}
         <VisaSkeepScroll />
         <PositioningScroll />
-        {tailSections.map((section) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={section.file}
-            className={styles.section}
-            src={`${BASE_PATH}/business/sections/${section.file}`}
-            width={1920}
-            height={section.height}
-            alt=""
-            loading="lazy"
-            decoding="async"
-          />
-        ))}
+
+        <SectionHeader
+          id="business-portfolio"
+          english={["Business", "Portfolio"]}
+          korean={["스킵 비즈니스", "포트폴리오"]}
+          spacious
+        />
+        <ExperiencePricingFlip />
+        <EnterprisePricingFlip />
+        <ValueProposition />
+        <FootprintSection />
+        <BusinessClosing />
       </div>
     </main>
   );

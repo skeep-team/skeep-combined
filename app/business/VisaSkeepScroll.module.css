@@ -1,16 +1,23 @@
+/* PESTEL 레일 → VISA → Skeep이 한 화면에서 이어지는 구간.
+   레일은 여기 한 벌만 있다. 열린 카드가 그대로 접히면서 오른쪽에 VISA 카피가 들어온다. */
 .sequence {
+  /* 접히는 진행도(0~1). JS가 인라인으로 덮어쓴다. */
+  --fold: 0;
+
   position: relative;
-  height: 220vh;
-  min-height: 1260px;
+  /* 카드 여섯 장을 차례로 넘기고, 접고, Skeep 장면까지 가야 해서 여유가 길다.
+     짧으면 한 장당 스크롤이 한 칸도 안 돼서 순식간에 지나간다. */
+  height: 620vh;
+  min-height: 3600px;
   line-height: 1.5;
   background: #fff;
 }
 
 .sticky {
   position: sticky;
-  top: 0;
+  top: var(--business-tabbar-h, 0px);
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - var(--business-tabbar-h, 0px));
   overflow: hidden;
   background: #fff;
 }
@@ -24,41 +31,377 @@
 }
 
 .visaScene {
-  display: grid;
-  grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
-  gap: clamp(48px, 4vw, 84px);
+  display: flex;
+  gap: calc(var(--fold) * clamp(48px, 4vw, 84px));
   opacity: 1;
   transform: translate3d(0, 0, 0);
   transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1) 720ms,
-    transform 1050ms cubic-bezier(.22, 1, .36, 1) 720ms;
+    gap 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1) 720ms,
+    transform 1050ms cubic-bezier(0.22, 1, 0.36, 1) 720ms;
+  /* 카드만 누를 수 있게 하고 나머지는 스크롤을 방해하지 않는다. */
   pointer-events: none;
 }
 
-.pestelBars {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+/* ---------- PESTEL 레일 ---------- */
+
+.rail {
+  --card-bg: #e9ebf2;
+  --letter: #dce1e9;
+
+  display: flex;
+  flex: 0 1 calc(100% - (var(--fold) * 42%));
   gap: clamp(12px, 1vw, 22px);
+  min-width: 0;
   height: min(66vh, 680px);
+  pointer-events: auto;
+  transition: flex-basis 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: flex-basis;
 }
 
-.pestelBar {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 12%;
+/* 다 접힌 뒤에는 카드가 눌리지 않게 한다. */
+.sequence[data-folded="true"] .rail {
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
   overflow: hidden;
   border-radius: clamp(22px, 2.1vw, 42px);
-  color: rgba(222, 226, 233, var(--bar-color-alpha));
-  font-size: clamp(82px, 9.2vw, 188px);
-  font-weight: 700;
-  line-height: 1;
-  background: rgba(235, 237, 242, var(--bar-bg-alpha));
+  background: var(--card-bg);
+  transition: flex-grow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: flex-grow;
 }
 
+/* Economic·Environmental 카드만 사진을 사용한다. 원본 이미지의 어두운 결을
+   유지하면서 흰 글자가 안정적으로 읽힐 정도의 얕은 딤만 한 겹 올린다. */
+.cardWithImage {
+  color: #fff;
+  background: #071126;
+}
+
+.cardImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 카드가 좁고 길어서 가운데 정렬이면 좌우가 똑같이 잘린다. 왼쪽을 살리고
+     오른쪽만 잘리게 왼쪽에 붙인다. */
+  object-position: left center;
+}
+
+/* 사진마다 밝기가 달라서 28%로는 밝은 사진(동전 등) 위 흰 글자가 안 읽혔다.
+   아래로 갈수록 짙어지는 딤을 얹어, 글이 앉는 하단을 확실히 눌러준다. */
+.cardWithImage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(3 8 20 / 30%) 0%,
+      rgb(3 8 20 / 46%) 46%,
+      rgb(3 8 20 / 72%) 100%
+    );
+  pointer-events: none;
+}
+
+.cardWithImage .selectButton {
+  z-index: 2;
+  color: #fff;
+}
+
+.cardWithImage .letter {
+  color: rgb(255 255 255 / 22%);
+}
+
+.cardWithImage .detailFade {
+  z-index: 3;
+}
+
+.cardWithImage .backButton {
+  z-index: 4;
+  border-color: rgb(255 255 255 / 72%);
+  color: #fff;
+}
+
+/* 열린 카드만 넓어지고, 접힐수록(--fold) 다시 같은 폭으로 돌아온다. */
+.railOpen .cardActive {
+  flex-grow: calc(1 + ((1 - var(--fold)) * 4.4));
+}
+
+.selectButton {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  color: #111;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+}
+
+.selectButton:focus-visible,
+.backButton:focus-visible {
+  outline: 3px solid #ff3385;
+  outline-offset: -5px;
+}
+
+/* 왼쪽 고정. 가운데 정렬로 두면 카드가 넓어질 때 글자가 새 중심을 따라
+   오른쪽으로 끌려가 보인다. 아래 카테고리·제목과 같은 왼쪽 선에 맞춘다. */
+.letter {
+  position: absolute;
+  top: 13%;
+  left: clamp(20px, 2vw, 38px);
+  color: var(--letter);
+  font-size: clamp(112px, 12vw, 240px);
+  font-weight: 700;
+  line-height: 1;
+  transition:
+    font-size 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.railOpen .letter {
+  top: 17%;
+  font-size: clamp(86px, 8.7vw, 170px);
+}
+
+/* 열린 카드의 글자는 접히면서 다시 떠오른다. */
+.cardActive .letter {
+  opacity: clamp(0, calc((var(--fold) - 0.2) * 2), 1);
+  transition:
+    font-size 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 500ms ease 400ms;
+}
+
+.summary {
+  position: absolute;
+  right: clamp(20px, 2vw, 38px);
+  bottom: clamp(26px, 3vw, 52px);
+  left: clamp(20px, 2vw, 38px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category {
+  display: block;
+  font-size: clamp(16px, 1.05vw, 22px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.title {
+  display: block;
+  font-size: clamp(18px, 1.25vw, 26px);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.045em;
+  white-space: pre-line;
+}
+
+/* 열린 카드의 내용은 접히기 시작하면 먼저 사라진다.
+   .detail에는 등장 애니메이션이 걸려 있고 애니메이션이 opacity를 덮어쓰기 때문에,
+   접히는 투명도는 반드시 바깥 층에서 줘야 한다. */
+.backButton,
+.detailFade {
+  opacity: clamp(0, calc(1 - (var(--fold) * 2.8)), 1);
+  transition: opacity 380ms ease;
+}
+
+.detailFade {
+  position: absolute;
+  inset: 0;
+  transform: translate3d(calc(var(--fold) * -20px), 0, 0);
+  pointer-events: none;
+  transition:
+    opacity 380ms ease,
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.backButton {
+  position: absolute;
+  top: clamp(24px, 2.8vw, 48px);
+  left: clamp(24px, 2.8vw, 48px);
+  z-index: 2;
+  display: grid;
+  width: clamp(56px, 4.4vw, 82px);
+  aspect-ratio: 1;
+  padding: 0;
+  place-items: center;
+  border: 2px solid #9ca1aa;
+  border-radius: 50%;
+  color: #8b9099;
+  font-size: clamp(34px, 2.7vw, 50px);
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+  background: transparent;
+}
+
+.backButton span {
+  transform: translateY(-4%);
+}
+
+.detail {
+  position: absolute;
+  right: clamp(36px, 4vw, 76px);
+  bottom: clamp(36px, 4vw, 72px);
+  left: clamp(36px, 4vw, 76px);
+  z-index: 1;
+  display: grid;
+  /* 최소 폭을 두면 카드보다 넓어져 오른쪽이 잘린다. 카드 폭에 맞춰 줄어들게 둔다. */
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+  gap: clamp(24px, 3.4vw, 88px);
+  align-items: end;
+  /* 카드가 다 커지고 나서야(.card의 flex-grow 180ms) 고정된 크기로 한 번에
+     뜬다 — 폭이 바뀌는 도중에 보이면 글줄이 프레임마다 다시 흘러 지금처럼
+     "늘어나는" 것처럼 보인다. 지연값은 반드시 .card의 전환 시간과 같이
+     움직여야 한다. */
+  animation: detailIn 480ms 180ms both ease-out;
+}
+
+.detailHeading {
+  min-width: 0;
+}
+
+.detailTitle {
+  margin: 14px 0 0;
+  font-size: clamp(26px, 2.25vw, 44px);
+  font-weight: 700;
+  line-height: 1.34;
+  letter-spacing: -0.055em;
+  white-space: pre-line;
+}
+
+.description {
+  max-width: 38em;
+  margin: 0;
+  font-size: clamp(16px, 1.15vw, 23px);
+  font-weight: 450;
+  line-height: 1.6;
+  letter-spacing: -0.035em;
+  word-break: keep-all;
+}
+
+@keyframes detailIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- VISA ---------- */
+
 .visaCopy {
+  flex: 1 1 0;
+  min-width: 0;
   align-self: start;
   padding-top: clamp(76px, 10vh, 140px);
+  opacity: clamp(0, calc((var(--fold) - 0.34) * 1.52), 1);
+  transform: translate3d(calc((1 - var(--fold)) * 34px), 0, 0);
+  transition:
+    opacity 600ms ease 380ms,
+    transform 900ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+  will-change: opacity, transform;
+}
+
+/* 단어 스왑: "에이전트 생태계에는" / "필요합니다"는 고정 텍스트로 두고,
+   VISA↔Skeep 단어(조사 포함)만 이 칸 안에서 서로 겹친 채 아래→위로
+   자리를 바꾼다. overflow:hidden으로 슬라이드 구간을 이 칸 높이로 자른다. */
+/* 겹쳐 둔 두 span 중 더 넓은 쪽("Skeep이")에 칸 너비가 맞춰지면, 좁은 쪽
+   ("VISA가")은 뒤에 보이지 않는 여백이 남아 "필요합니다"와의 간격이 더
+   벌어져 보인다. 칸 너비를 상태별로 각 단어의 실제 폭에 맞춰 직접
+   지정해서(실측: VISA가 ≈2.39em, Skeep이 ≈2.98em) 두 상태의 간격을
+   완전히 맞추고, margin-right로 기존보다 아주 조금 더 띄운다. */
+.wordSwap {
+  position: relative;
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+  width: 2.39em;
+  margin-right: 0.1em;
+  transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sequence[data-scene="skeep"] .wordSwap {
+  width: 2.98em;
+}
+
+.wordSwap > span {
+  grid-area: 1 / 1;
+  justify-self: start;
+  transition:
+    opacity 580ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.wordVisa {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.wordSkeep {
+  opacity: 0;
+  transform: translate3d(0, 100%, 0);
+}
+
+.sequence[data-scene="skeep"] .wordVisa {
+  opacity: 0;
+  transform: translate3d(0, -100%, 0);
+}
+
+.sequence[data-scene="skeep"] .wordSkeep {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* 설명 문단은 내용 자체가 달라서 기존처럼 겹쳐두고 교차 전환한다. */
+.descStack {
+  display: grid;
+}
+
+.descStack > p {
+  grid-area: 1 / 1;
+  align-self: start;
+  transition:
+    opacity 580ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.descVisa {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.descSkeep {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+}
+
+.sequence[data-scene="skeep"] .descVisa {
+  opacity: 0;
+  transform: translate3d(0, -12px, 0);
+}
+
+.sequence[data-scene="skeep"] .descSkeep {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 .headline {
@@ -67,12 +410,12 @@
   font-size: clamp(36px, 3.2vw, 66px);
   font-weight: 700;
   line-height: 1.42;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.03em;
 }
 
 .headline em {
-  margin-right: .14em;
-  font-family: "Helvetica Now Display", var(--font-pretendard), sans-serif;
+  margin-right: 0.14em;
+  font-family: var(--font-elza), "Helvetica Now Display", var(--font-pretendard), sans-serif;
   font-weight: 800;
   letter-spacing: -0.04em;
 }
@@ -90,43 +433,8 @@
   letter-spacing: -0.04em;
 }
 
-.skeepScene {
-  display: grid;
-  grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
-  gap: clamp(48px, 4vw, 84px);
-  align-content: start;
-  padding-top: clamp(96px, 15vh, 180px);
-  opacity: 0;
-  transform: translate3d(0, 8px, 0);
-  transition:
-    opacity 650ms cubic-bezier(.22, 1, .36, 1),
-    transform 750ms cubic-bezier(.22, 1, .36, 1);
-  pointer-events: none;
-}
-
-.sequence[data-scene="skeep"] .visaScene {
-  opacity: 0;
-  transform: translate3d(0, -8px, 0);
-  transition:
-    opacity 650ms cubic-bezier(.22, 1, .36, 1),
-    transform 750ms cubic-bezier(.22, 1, .36, 1);
-}
-
-.sequence[data-scene="skeep"] .skeepScene {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-  transition:
-    opacity 1000ms cubic-bezier(.22, 1, .36, 1) 680ms,
-    transform 1150ms cubic-bezier(.22, 1, .36, 1) 680ms;
-}
-
-.skeepStatement {
-  color: #858585;
-  font-size: clamp(24px, 2vw, 40px);
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: -0.045em;
-}
+/* 예전엔 회색(#858585)이라 굵기가 다르게 보였다 — VISA 설명과 완전히
+   같은 크기·굵기·색으로 맞춘다. */
 
 .skeepWord {
   color: #ff076a;
@@ -134,22 +442,32 @@
 
 @media (max-width: 980px) {
   .sequence {
-    height: 190vh;
-    min-height: 900px;
+    height: 240vh;
+    min-height: 1200px;
   }
 
   .scene,
-  .visaScene,
-  .skeepScene {
+  .visaScene {
     grid-template-columns: 1fr;
   }
 
   .visaScene {
+    display: grid;
     gap: 28px;
   }
 
-  .pestelBars {
-    height: 42vh;
+  .rail {
+    flex-basis: 100%;
+    height: 46vh;
+  }
+
+  .detail {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .description {
+    font-size: 17px;
   }
 
   .visaCopy {
@@ -157,13 +475,8 @@
   }
 
   .visaDescription br,
-  .skeepStatement br {
+  .skeepDescription br {
     display: none;
-  }
-
-  .skeepScene {
-    gap: 36px;
-    padding-top: clamp(64px, 10vh, 96px);
   }
 }
 
@@ -185,5 +498,19 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  .card,
+  .letter {
+    transition: none;
+  }
+
+  .detail {
+    animation: none;
+  }
+
+  .visaCopy {
+    opacity: 1;
+    transform: none;
   }
 }

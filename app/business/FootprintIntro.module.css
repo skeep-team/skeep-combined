@@ -1,0 +1,301 @@
+/* business-01.png y1965 ~ business-02a-intro.png y400 구간을 라이브로 옮긴 것.
+   좌표는 전부 원본 시안(1920px 폭) px 그대로다.
+   시안에서는 두 항목이 위아래로 나란히 놓여 있지만, 여기서는 화면을 붙잡아 두고
+   2026 → 2031을 위로 밀어 올리며 갈아 끼운다. */
+.sequence {
+  --px: calc(100vw / 1920);
+  /* 전환할 때 위아래로 비켜서는 거리 */
+  --shift: calc(34 * var(--px));
+
+  position: relative;
+  /* 붙잡아 두는 한 화면 + 넘길 지점까지 굴릴 여유 */
+  height: 200vh;
+  background: #fff;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+  height: 100vh;
+  color: #33363b;
+  font-family: var(--font-pretendard), sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.desktopStage {
+  position: relative;
+  top: 50%;
+  width: 100%;
+  height: calc(458 * var(--px));
+  transform: translateY(-50%);
+}
+
+.mobileList {
+  display: none;
+}
+
+.visual {
+  /* 이미지는 덩어리가 커서 글줄과 같은 거리로 움직이면 굼떠 보인다. */
+  --shift: calc(64 * var(--px));
+
+  position: absolute;
+  left: calc(1040 * var(--px));
+  top: 0;
+  overflow: hidden;
+  width: calc(720 * var(--px));
+  height: calc(458 * var(--px));
+  border-radius: calc(32 * var(--px));
+  /* 이미지가 늦게 뜨는 동안에도 시안의 회색 판이 그대로 보이게 둔다. */
+  background: linear-gradient(180deg, #e7eaf0 0%, #fff 100%);
+}
+
+.visualTrack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.visualPanel {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  will-change: opacity, transform;
+}
+
+
+.visualPanel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.copyLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ---------- 2026 ↔ 2031 전환 ----------
+   "끊임없는"은 두 장이 공유하는 글자라 제자리에 그대로 두고, 나머지(연도·첫 줄·
+   둘째 줄 뒷부분·본문·이미지)만 위로 빠져나가고 아래에서 올라온다.
+   2026은 언제나 위쪽이, 2031은 언제나 아래쪽이 대기 자리라, 되감을 때도
+   방향이 저절로 뒤집힌다. */
+.copyLayer,
+.headRest,
+.visualPanel {
+  opacity: 0;
+  transition:
+    opacity 0.32s ease-out,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.copyLayer[data-entry="0"],
+.headRest[data-entry="0"],
+.visualPanel[data-entry="0"] {
+  transform: translate3d(0, calc(-1 * var(--shift)), 0);
+}
+
+.copyLayer[data-entry="1"],
+.headRest[data-entry="1"],
+.visualPanel[data-entry="1"] {
+  transform: translate3d(0, var(--shift), 0);
+}
+
+/* 들어오는 층은 나가는 층이 비워질 때까지 기다렸다가 올라선다. */
+.sequence[data-step="0"] .copyLayer[data-entry="0"],
+.sequence[data-step="1"] .copyLayer[data-entry="1"],
+.sequence[data-step="0"] .headRest[data-entry="0"],
+.sequence[data-step="1"] .headRest[data-entry="1"],
+.sequence[data-step="0"] .visualPanel[data-entry="0"],
+.sequence[data-step="1"] .visualPanel[data-entry="1"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 0.2s;
+}
+
+.year,
+.headLead,
+.headRest,
+.keyword,
+.body {
+  position: absolute;
+  left: calc(160 * var(--px));
+  margin: 0;
+  white-space: nowrap;
+}
+
+.year {
+  top: calc(100 * var(--px));
+  font-size: calc(30 * var(--px));
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.headLead,
+.headRest,
+.keyword {
+  font-size: calc(62 * var(--px));
+  font-weight: 700;
+  line-height: 1.16;
+}
+
+.headLead {
+  top: calc(148 * var(--px));
+}
+
+.keyword {
+  /* 시안은 분홍 강조였는데 진한 회색으로 바꿨다. 본문(#111)보다 한 톤 옅어
+     문장 안에서 눌러 읽히는 강조가 된다. */
+  color: #8a9099;
+  font-style: normal;
+}
+
+.secondLine {
+  position: absolute;
+  top: calc(220 * var(--px));
+  left: calc(160 * var(--px));
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: calc(16 * var(--px));
+  white-space: nowrap;
+}
+
+.keyword,
+.headRest {
+  position: static;
+}
+
+.restStack {
+  display: grid;
+}
+
+.headRest {
+  grid-area: 1 / 1;
+}
+
+.body {
+  top: calc(321 * var(--px));
+  font-size: calc(30 * var(--px));
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.entry,
+.frame,
+.heading {
+  position: relative;
+}
+
+/* 좁은 화면에선 시안 좌표를 그대로 쓰면 글자가 읽을 수 없이 작아진다.
+   붙잡아 두는 것도 풀고 이미지 → 글 순서로 흘려보낸다. */
+@media (max-width: 860px) {
+  .sequence {
+    height: auto;
+  }
+
+  .sticky {
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 0 clamp(20px, 5vw, 48px) clamp(40px, 8vw, 80px);
+  }
+
+  .desktopStage {
+    display: none;
+  }
+
+  .mobileList {
+    display: block;
+  }
+
+  .entry {
+    display: block;
+    height: auto;
+  }
+
+  .frame {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vw, 28px);
+    height: auto;
+    padding-top: clamp(40px, 8vw, 80px);
+  }
+
+  .visual {
+    position: static;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 720 / 458;
+    border-radius: clamp(16px, 3vw, 28px);
+  }
+
+  .mobileList .visual picture,
+  .mobileList .visual img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .year,
+  .heading,
+  .body {
+    position: static;
+    white-space: normal;
+  }
+
+  .year {
+    font-size: clamp(14px, 3.4vw, 20px);
+  }
+
+  .heading {
+    font-size: clamp(26px, 6.4vw, 44px);
+  }
+
+  .heading em {
+    color: #8a9099;
+    font-style: normal;
+  }
+
+  .body {
+    font-size: clamp(14px, 3.4vw, 20px);
+  }
+}
+
+/* 붙잡지 않고 두 장을 그냥 이어서 보여준다. */
+@media (prefers-reduced-motion: reduce) {
+  .sequence {
+    height: auto;
+  }
+
+  .sticky {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+
+  .desktopStage {
+    display: none;
+  }
+
+  .mobileList {
+    display: block;
+  }
+
+  .entry {
+    height: auto;
+    padding-block: calc(120 * var(--px));
+  }
+
+  .frame {
+    position: relative;
+    min-height: calc(458 * var(--px));
+  }
+}
