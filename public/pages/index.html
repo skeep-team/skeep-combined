@@ -1852,6 +1852,37 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       line-height: 1.5;
       letter-spacing: -.04em;
     }
+    .database-card-heading {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 1.12cqw;
+      font-weight: 700;
+      line-height: 1.5;
+      letter-spacing: -.04em;
+    }
+    .database-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .42cqw;
+    }
+    .database-card-tag {
+      background: #494949;
+      color: #fff;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: .68cqw;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      padding: .33cqw .66cqw;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .database-card-desc {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: .94cqw;
+      font-weight: 400;
+      line-height: 1.5;
+      letter-spacing: -.03em;
+      color: #66717f;
+    }
     .database-card-back-body {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: .94cqw;
@@ -2003,6 +2034,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .database-card-layer { font-size: 7px; }
       .database-card-label { font-size: 13px; }
       .database-card-note { font-size: 8px; }
+      .database-card-heading { font-size: 13px; }
+      .database-card-tags { gap: 5px; }
+      .database-card-tag { font-size: 8px; padding: 4px 8px; }
+      .database-card-desc { font-size: 11px; }
       .database-card-back-body { font-size: 10px; }
     }
 
@@ -4473,8 +4508,235 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
   <div class="layer-visual">
-    <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false"></div>
-    <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert></div>
+    <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false">
+      <div class="database-cards is-intro-pending">
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="환경 리스트 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Environment List</p>
+                <p class="database-card-title">환경 리스트</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">환경 탐색</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Local sensing (RIS)</span>
+                </div>
+                <p class="database-card-desc">사용자가 사용할 수 있는 주변 환경을 찾기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Environment List</p>
+                <p class="database-card-title">환경 리스트</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>스킵은 사용자가 이동하는 동안 근처에서 감지된 모든 환경을 리스트업 합니다.</p>
+                <p>새로운 환경에 들어서는 순간 가장 먼저 참조되어, 지금 무엇을 빌려 쓸 수 있는지를 알려줍니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="기능 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Capabilities</p>
+                <p class="database-card-title">기능</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">기능 탐색</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Local sensing</span>
+                  <span class="database-card-tag">Cloud DB match</span>
+                </div>
+                <p class="database-card-desc">사용자 주변의 환경이 할 수 있는 일을 알아보기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Capabilities</p>
+                <p class="database-card-title">기능</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>주변에 있는 기기나 공간이 실제로 무엇을 해 줄 수 있는지를 정리한 정보입니다.</p>
+                <p>'무엇이 있는가'를 넘어 '그것으로 무엇을 할 수 있는가'까지 미리 파악해 둡니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="사용 가능 여부 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Availability</p>
+                <p class="database-card-title">사용 가능 여부</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">상태 탐색</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Local sensing</span>
+                  <span class="database-card-tag">standby tracking</span>
+                </div>
+                <p class="database-card-desc">환경이 지금 빌릴 수 있는 상태인지 알아보기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Availability</p>
+                <p class="database-card-title">사용 가능 여부</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>근처에 감지된 환경이라도, 지금 이 순간 실제로 쓸 수 있는 상태인지는 별개로 확인됩니다.</p>
+                <p>다른 사용자가 이미 사용 중이거나 접근할 수 없다면, 협상이 필요할 수 있음을 미리 알려줍니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="다운로드 탐색 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Expandability</p>
+                <p class="database-card-title">다운로드 탐색</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">확장 탐색</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Cloud inference</span>
+                  <span class="database-card-tag">Predicted in advance</span>
+                </div>
+                <p class="database-card-desc">환경이 가지고 있지 않은 기능은 보충 할 준비 하기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Expandability</p>
+                <p class="database-card-title">다운로드 탐색</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>지금 있는 기기만으로는 부족한 기능이 있을 때, 어떤 기능을 추가로 받아올 수 있는지 미리 가늠해 두는 정보입니다.</p>
+                <p>실제 다운로드는 목적이 생겼을 때 이루어지지만, 그 가능성은 항상 준비되어 있습니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert>
+      <div class="database-cards is-intro-pending">
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="인풋 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Input</p>
+                <p class="database-card-title">인풋</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">목적 포착</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">User speech</span>
+                  <span class="database-card-tag">Behavior based</span>
+                </div>
+                <p class="database-card-desc">사용자의 목적이 시작되는 신호</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Input</p>
+                <p class="database-card-title">인풋</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>사용자가 자신의 목표를 말이나 텍스트로 직접 전달하거나, 행동과 상황만으로 은근히 드러내는 신호입니다.</p>
+                <p>이 신호가 감지되는 순간부터 SKEEP은 목적을 읽어내는 과정을 시작합니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="파싱 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Parsing</p>
+                <p class="database-card-title">파싱</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">목적 분석</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Cloud computation</span>
+                </div>
+                <p class="database-card-desc">목적을 구현하기 위해 해야 할 일</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Parsing</p>
+                <p class="database-card-title">파싱</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>감지된 인풋을 바탕으로, 추상적인 목적을 실제로 처리 가능한 단위들로 나눈 것입니다.</p>
+                <p>하나의 목적이 여러 개의 세부 행동으로, 다시 더 구체적인 동작으로 갈라지며 정리됩니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="매핑 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Mapping</p>
+                <p class="database-card-title">매핑</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">구체화하기</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Cloud</span>
+                  <span class="database-card-tag">Passive cache</span>
+                </div>
+                <p class="database-card-desc">할 일이 구현 가능한 환경을 짝지어 주기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Mapping</p>
+                <p class="database-card-title">매핑</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>잘게 쪼갠 목적을 주변에 있는 기기와 서로 이어 붙이는 과정입니다.</p>
+                <p>어떤 기기가 어떤 일을 맡을지 짝을 지어, 실제로 목표를 수행할 수 있는 테스크로 만들어 줍니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="실행블록 카드 뒤집기">
+          <div class="database-card-flipper">
+            <div class="database-card-face database-card-face--front">
+              <header class="database-card-head">
+                <p class="database-card-kicker">Execution Block</p>
+                <p class="database-card-title">실행블록</p>
+              </header>
+              <div class="database-card-body">
+                <p class="database-card-heading">확정하기</p>
+                <div class="database-card-tags">
+                  <span class="database-card-tag">Edge execution</span>
+                </div>
+                <p class="database-card-desc">환경이 알아듣는 명령으로 전환하기</p>
+              </div>
+            </div>
+            <div class="database-card-face database-card-face--back" aria-hidden="true">
+              <header class="database-card-head database-card-back-head">
+                <p class="database-card-kicker">Execution Block</p>
+                <p class="database-card-title">실행블록</p>
+              </header>
+              <div class="database-card-body database-card-back-body">
+                <p>매핑을 거쳐 완성된, 기기가 바로 실행할 수 있는 최소 단위의 명령입니다.</p>
+                <p>같은 목적이라도 어떤 기기를 만나느냐에 따라 실행 블록의 형태는 조금씩 달라집니다.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
     <div class="layer-visual-image layer-visual-image--database" data-layer-image="database" aria-hidden="true" inert>
       <div class="database-cards is-intro-pending">
         <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="성향 카드 뒤집기">
@@ -4651,16 +4913,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </section>
 </div>
 </section>
-<script>
-(() => {
-  const source = document.querySelector('[data-layer-image="database"] .database-cards');
-  if (!source) return;
-  document.querySelectorAll('[data-layer-image="passive"], [data-layer-image="active"]').forEach((layer) => {
-    layer.append(source.cloneNode(true));
-  });
-})();
-</script>
-
 <script>
 (() => {
   const section = document.querySelector('.sec-layers');
