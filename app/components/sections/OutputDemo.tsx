@@ -16,7 +16,7 @@ const OUTPUT_STATES = [
       { ko: "효과음", en: "Sound effect" },
       { ko: "발화", en: "Speaking" },
     ],
-    body: "여러 기기를 활성화 할 때도, 스킵은 나와 상호작용 중인 환경에서 부터\n가장 가까운 신뢰를 만들어나갑니다.",
+    body: "SKEEP은 소리를 만들 수 있는 모든 환경에서 사용자에게 정보를 전달할 수 있습니다.\n스크린이 없는 스피커나 로봇이라도 재빠른 효과음과 발화를 통해 사용자와 즉각적으로 소통합니다.",
   },
   {
     key: "both",
@@ -27,7 +27,7 @@ const OUTPUT_STATES = [
       { ko: "보여주기", en: "Show" },
       { ko: "말하기", en: "Tell" },
     ],
-    body: "사용자가 상호작용 중인 환경에 스피커나 화면이 있다면,\nSKEEP은 그 환경의 기능을 활용해 정보를 전달합니다. 상황에 따라 소리와 화면을 적절히 조합하며\n사용 흐름을 끊지 않고 가장 효과적인 방식으로 소통을 이어갑니다.",
+    body: "사용자가 상호작용 중인 환경에 스피커나 화면이 있다면, SKEEP은 그 환경의 기능을 활용해 정보를 전달합니다.\n상황에 따라 소리와 화면을 적절히 조합하며 사용 흐름을 끊지 않고 가장 효과적인 방식으로 소통을 이어갑니다.",
   },
   {
     key: "visual",
@@ -76,6 +76,14 @@ export function OutputDemo() {
     <div ref={wrapperRef} className={styles.outputSequence}>
       <div className={styles.outputSticky}>
         <div className={styles.outputDemo}>
+          <div className={styles.outputTitleStack}>
+            {OUTPUT_STATES.map((state, index) => (
+              <div className={styles.outputTitle} data-active={index === step} key={state.key}>
+                <span>{state.eyebrow}</span>
+                <h3>{state.title}</h3>
+              </div>
+            ))}
+          </div>
           {/* 소리/양방향/시각 단계마다 겹치는 범위가 다른 벤 다이어그램으로 바뀐다. */}
           <div className={styles.outputDevicesStack}>
             {OUTPUT_STATES.map((state, index) => (
@@ -96,8 +104,6 @@ export function OutputDemo() {
           <div className={styles.panelStack}>
             {OUTPUT_STATES.map((state, index) => (
               <div className={styles.soundPanel} data-active={index === step} key={state.key}>
-                <span>{state.eyebrow}</span>
-                <h3>{state.title}</h3>
                 <div className={styles.chips}>
                   {state.chips.map((chip) => (
                     <b key={chip.en}>

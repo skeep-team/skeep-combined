@@ -27,7 +27,12 @@ const MORE_SLIDES = [
     alt: "Long click interaction",
   },
   {
-    frames: ["more-long-touch.png", "more-long-touch-1.png"],
+    frames: [
+      "more-long-touch.png",
+      "more-long-touch-1.png",
+      "more-long-touch-2.png",
+      "more-long-touch-3.png",
+    ],
     alt: "Long touch interaction",
   },
   { frames: ["more-voice.png"], alt: "Voice interaction" },
@@ -135,35 +140,63 @@ function MoreCarousel() {
                     data-active={isActiveFrame}
                     src={`${BASE_PATH}/blueprint/usage/${frame}`}
                     alt={isActiveFrame ? slide.alt : ""}
-                    width={2886}
-                    height={1899}
+                    width={index === 0 || index === 1 ? 1924 : 2886}
+                    height={index === 0 || index === 1 ? 1266 : 1899}
                     draggable={false}
                     key={frame}
                   />
                 );
               })}
+              {index === 0 && (
+                /* voice 배지와 같은 위치·양식의 태그 — 프레임 이미지엔 더 이상
+                   태그가 박혀 있지 않아 여기서 얹는다. */
+                <div className={styles.moreVoiceHud} aria-hidden="true">
+                  <span className={styles.moreVoicePill}>long click</span>
+                </div>
+              )}
+              {index === 1 && (
+                <div className={styles.moreVoiceHud} aria-hidden="true">
+                  <span className={styles.moreVoicePill}>long touch</span>
+                </div>
+              )}
               {index === 2 && (
                 <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  {/* 시안(Figma 8262-28287): voice 배지 + SKEEP 웨이브/로고는
+                      말풍선과 달리 처음부터 계속 떠 있는 고정 장식이다. */}
+                  <div className={styles.moreVoiceHud} aria-hidden="true">
+                    <span className={styles.moreVoicePill}>voice</span>
+                    <div className={styles.moreSkeepBadge}>
+                      <div className={styles.moreSkeepIcon}>
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                      </div>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className={styles.moreSkeepLogo}
+                        src={`${BASE_PATH}/blueprint/usage/skeep-logo.png`}
+                        alt=""
+                        width={325}
+                        height={150}
+                      />
+                    </div>
+                  </div>
+                  <p
                     className={`${styles.moreVoiceMessage} ${styles.moreVoiceMessageFirst}`}
                     data-visible={voicePhase >= 1}
-                    src={`${BASE_PATH}/blueprint/usage/more-voice-message-1.png`}
-                    alt="스킵, 재설정 할게. 스킵, 자세히 보기 알려줘."
-                    width={1806}
-                    height={578}
-                    draggable={false}
-                  />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  >
+                    스킵, 재설정 할게.
+                  </p>
+                  <p
                     className={`${styles.moreVoiceMessage} ${styles.moreVoiceMessageSecond}`}
                     data-visible={voicePhase >= 2}
-                    src={`${BASE_PATH}/blueprint/usage/more-voice-message-2.png`}
-                    alt="앵커리스트와 환경리스트중에 무엇부터 설정하시겠어요?"
-                    width={1779}
-                    height={578}
-                    draggable={false}
-                  />
+                  >
+                    환경리스트와 앵커리스트 중에 무엇을 설정하시겠어요?
+                  </p>
                 </>
               )}
             </div>
@@ -199,6 +232,44 @@ export default function UsageSequence({
   const conversationIndex = sections.findIndex(
     (section) => section.eyebrow === "Conversation",
   );
+
+  /* "환경 사용 알람"(index 0) 판/카피가 아래에서 위로 떠오르며 한 번만 나타난다.
+     이 셋은 usagePin 안에서 같은 칸에 겹쳐 있어(grid-area: 1/1) 화면에 보이는
+     시점 = usageTrack이 스크롤로 뷰포트에 들어오는 시점과 같다. Reveal(프레임
+     모션)의 1.2초 안전장치용 fallback 타이머를 썼더니, 페이지 로드 후 스크롤로
+     여기 도착하기까지 항상 1.2초가 더 걸려서 도착했을 땐 이미 타이머가 먼저
+     끝나 애니메이션 없이 다 켜져 있었다 — 그래서 순수 IntersectionObserver로
+     실제로 뷰포트에 들어오는 순간에만 켠다. */
+  const [environmentUsageShown, setEnvironmentUsageShown] = useState(false);
+  const environmentUsageRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = environmentUsageRef.current;
+
+    if (!el) {
+      return;
+    }
+
+    if (typeof IntersectionObserver === "undefined") {
+      setEnvironmentUsageShown(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setEnvironmentUsageShown(true);
+            observer.disconnect();
+          }
+        }
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   /* React의 muted 속성만으로는 DOM 프로퍼티가 제때 안 걸려서 브라우저가
      자동재생을 막는다. 직접 세워 둔다. */
@@ -297,8 +368,12 @@ export default function UsageSequence({
             className={styles.usageBlock}
             key={section.eyebrow}
             data-index={index}
+            ref={index === 0 ? environmentUsageRef : undefined}
           >
-            <div className={styles.usagePanel}>
+            <div
+              className={styles.usagePanel}
+              data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
+            >
               {/* 첫 덩이만 시안에 실제 화면이 그려져 있다. 나머지 둘은 빈 판이다. */}
               {index === 0 && (
                 <div className={styles.usageStage} aria-hidden="true">
@@ -320,25 +395,42 @@ export default function UsageSequence({
                   />
                 </div>
               )}
-              {/* 대화 덩이에는 화면 녹화 영상이 들어간다. */}
+              {/* 대화 덩이는 제공된 완성 프레임을 배경으로 쓰고, 흰색 상태 모션만
+                  투명 WebM 레이어로 분리해 얹는다. */}
               {section.eyebrow === "Conversation" && (
-                <video
-                  ref={videoRef}
-                  className={styles.usageVideo}
-                  src={`${BASE_PATH}/blueprint/usage/conversation.mp4`}
-                  poster={`${BASE_PATH}/blueprint/usage/conversation-poster.jpg`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  aria-hidden="true"
-                />
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.usageConversationBackground}
+                    src={`${BASE_PATH}/blueprint/usage/conversation-background-v4.png`}
+                    alt=""
+                    width={1924}
+                    height={1266}
+                    aria-hidden="true"
+                  />
+                  {/* 원본 영상에서 알파채널로 추출한 흰색 상태 모션만 재생한다. */}
+                  <div className={styles.usageStatusMorph}>
+                    <video
+                      ref={videoRef}
+                      className={styles.usageStatusMorphDot}
+                      src={`${BASE_PATH}/blueprint/usage/conversation-icon-alpha.webm`}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </>
               )}
               {section.eyebrow === "More" && <MoreCarousel />}
             </div>
 
-            <div className={styles.usageCopy}>
+            <div
+              className={styles.usageCopy}
+              data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
+            >
               <span>{section.eyebrow}</span>
               <h2>{section.title}</h2>
               <p>{section.body}</p>

@@ -3,6 +3,7 @@
   position: relative;
   background: var(--color-bg);
   margin-top: 180px;
+  margin-bottom: clamp(96px, 9vw, 172px);
 }
 
 .section {
@@ -20,7 +21,7 @@
   width: min(1500px, 100%);
   aspect-ratio: 1500 / 820;
   overflow: hidden;
-  background: #e7eaf0;
+  background: #F1F1F1;
   transition: border-radius 0.1s linear;
 }
 

@@ -25,20 +25,20 @@
 }
 
 .leave {
-  font-family: "Helvetica Now Display", var(--font-pretendard), sans-serif;
+  font-family: var(--font-bebas-neue), var(--font-t1glicky), "Helvetica Now Display", var(--font-pretendard), sans-serif;
   font-size: clamp(32px, 6vw, 84px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-weight: 200;
+  letter-spacing: 0;
   color: #ffffff;
 }
 
 .nothing {
   position: relative;
   margin-top: -8px;
-  font-family: "Helvetica Now Display", var(--font-pretendard), sans-serif;
+  font-family: var(--font-bebas-neue), var(--font-t1glicky), "Helvetica Now Display", var(--font-pretendard), sans-serif;
   font-size: clamp(32px, 6vw, 84px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  font-weight: 200;
+  letter-spacing: 0;
   color: #ffffff;
 }
 

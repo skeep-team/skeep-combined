@@ -92,7 +92,7 @@ export function InteractionBlueprint() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className={styles.summaryVisual}
-          src={`${BASE_PATH}/blueprint/summary/pc-main-image.png`}
+          src={`${BASE_PATH}/blueprint/summary/pc-main-image.png?v=20260807-0142`}
           alt=""
           width={1440}
           height={932}
@@ -174,10 +174,11 @@ export function InteractionBlueprint() {
       </div>
 
       <div className={styles.outputSection}>
-        <header className={styles.sectionHeader}>
-          <span>SKEEP Output</span>
-          <h2>스킵이 말하는 방법</h2>
-          <h3>SKEEP Interaction Features</h3>
+        <header className={`${styles.sectionHeader} ${styles.sectionHeaderSplit}`}>
+          <div className={styles.sectionHeaderMain}>
+            <span>SKEEP Interaction Features</span>
+            <h2>스킵이 말하는 방법</h2>
+          </div>
           <p>
             스킵은 하나의 전달 방식만을 고집하지 않습니다.
             <br />

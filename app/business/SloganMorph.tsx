@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import styles from "./SloganMorph.module.css";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 /* 한 줄이 네 박자로 변한다.
    0  SKIP THE INTRO, KEEP THE FLOW
    1  the intro / the flow 가 윤곽선으로 빠짐 (SKIP·KEEP만 남아 보임)
@@ -155,6 +157,15 @@ export default function SloganMorph() {
   return (
     <div ref={stageRef} className={styles.stage} data-step="0">
       <div className={styles.pin}>
+        <div className={styles.bg} aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${BASE_PATH}/business/slogan/business-future-rocket.png`}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
         <p
           ref={lineRef}
           className={styles.line}

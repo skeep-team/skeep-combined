@@ -8,24 +8,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
+    /* Elza Condensed Trial — 이 페이지들의 영문 서체. 다른 페이지(/business, /principles)와
+       같은 폭을 쓰도록 Text가 아닌 Condensed로 맞췄다.
+       Trial 판이라 실제 윤곽이 들어 있는 글자가 공백·쉼표·하이픈·마침표·숫자·영문
+       대소문자뿐이다. 나머지는 전부 같은 네모 상자로 대체돼 있어서, 범위에 넣으면
+       글자가 □로 깨진다. 범위 밖으로 빼두면 브라우저가 Pretendard로 넘긴다. */
+    @font-face {
+      font-family: 'Elza Cond';
+      src: url('../fonts/ElzaCond-Medium.woff2') format('woff2');
+      font-style: normal;
+      /* 굵기와 상관없이 늘 Medium 한 벌만 쓴다 — /business, /principles와 같은 방식이다.
+         큰 글자는 T1 Glicky가 맡으므로 Elza는 굵기 대비가 필요 없다. */
+      font-weight: 100 900;
+      font-display: swap;
+      unicode-range: U+0020, U+002C-002E, U+0030-0039, U+0041-005A, U+0061-007A;
+    }
     @font-face {
       font-family: 'T1 Glicky';
       src: url('../fonts/T1GlickyRegular.otf') format('opentype');
       font-weight: 400; font-style: normal; font-display: swap;
     }
-    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
-    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Medium.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
-    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Bold.woff2') format('woff2'); font-weight:700; font-style:normal; font-display:swap; }
-    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-ExtraBold.woff2') format('woff2'); font-weight:800; font-style:normal; font-display:swap; }
-    @font-face { font-family:"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Black.woff2') format('woff2'); font-weight:900; font-style:normal; font-display:swap; }
+    @font-face { font-family: 'Elza Cond',"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Regular.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+    @font-face { font-family: 'Elza Cond',"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Medium.woff2') format('woff2'); font-weight:500; font-style:normal; font-display:swap; }
+    @font-face { font-family: 'Elza Cond',"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Bold.woff2') format('woff2'); font-weight:700; font-style:normal; font-display:swap; }
+    @font-face { font-family: 'Elza Cond',"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-ExtraBold.woff2') format('woff2'); font-weight:800; font-style:normal; font-display:swap; }
+    @font-face { font-family: 'Elza Cond',"Helvetica Now Display"; src:url('../fonts/HelveticaNowDisplay-Black.woff2') format('woff2'); font-weight:900; font-style:normal; font-display:swap; }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
-      background: #fff; color: #0e1825;
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      background: #fff; color: #161A1E;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
     }
+    /* 이 페이지의 영문은 전부 대문자로 표기한다. 상속되므로 하위 전체에 적용되고,
+       한글·숫자·기호에는 영향이 없다. button/input은 UA 스타일이 상속을 끊어 따로 건다. */
+    body,
+    body button,
+    body input,
+    body select,
+    body textarea {
+      text-transform: uppercase;
+    }
+
     p { margin: 0; }
 
     .fi { opacity: 0; transform: translateY(28px); transition: opacity .65s ease, transform .65s ease; }
@@ -79,7 +104,7 @@
       overflow: hidden;
       /* fill the viewport responsively (cover) with a matching grey fallback */
       background-color: #EDEEEF;
-      background-image: url("assets/sd-hero-people-light.png");
+      background-image: url("assets/sd-hero-people-light.jpg?v=20260806-1727");
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
@@ -101,15 +126,16 @@
     .sd-hero-dim {
       position: absolute;
       inset: 0;
-      background: transparent;   /* 밝은 배경 이미지 → 어두운 딤 제거 */
+      background: rgba(14, 24, 37, 0.62);   /* 밝은 새 사진 위 흰 글씨 가독성용 딤 — 다른 페이지 히어로 딤(0.66~0.9)과 맞춤 */
       z-index: 1;
     }
     .sd-hero h1 {
       position: relative;
       z-index: 2;
-      font-size: clamp(32px,4.8vw,72px);
+      /* 히어로 문구 기준 — 조율하다와 같은 크기·굵기 */
+      font-size: clamp(36px,4.6vw,68px);
       font-weight: 600;
-      line-height: 1.4;
+      line-height: 1.2;
       letter-spacing: -0.04em;
       max-width: 1220px;
       word-break: keep-all;
@@ -139,7 +165,7 @@
       font-weight: 400;
       line-height: 1.4;
       letter-spacing: -0.03em;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-pill-row {
       flex: 1 1 0;          /* 글 옆 남는 폭만 차지 → 가로 길이 짧아짐 */
@@ -159,7 +185,7 @@
       font-size: clamp(16px, 2vw, 32px);
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: #0e1825;
+      color: #161A1E;
       overflow: hidden;
       will-change: flex-grow, border-radius;
       animation-duration: 9s;
@@ -204,7 +230,7 @@
     @media (prefers-reduced-motion: reduce) {
       .sd-pill { animation: none; flex-grow: 1 !important; }
     }
-    .sd-pink { color: #ff076a; }
+    .sd-pink { color: #6E6E6E; }
     .sd-sensing-scene {
       height: 800vh;
       position: relative;
@@ -243,7 +269,6 @@
     .sd-sensing-detail {
       opacity: 0;
       transform: translateY(42px);
-      background: linear-gradient(180deg, #fff 0%, #F4F8FC 100%);
     }
     .sd-sensing-detail .sd-two-col {
       width: 100%;
@@ -337,6 +362,39 @@
     @media (prefers-reduced-motion: reduce) {
       .sc-cube { animation: none; transform: rotateX(32deg) rotateY(45deg) scaleZ(0.5); }
     }
+    /* Pixel Dissolve (Originkit Pixel Unfold 이식, 역방향): 사진이 화면에 들어오면
+       사각 타일 단위로 무작위 순서·페이드아웃하며 분해되어 사라진다. */
+    .sd-hero-photo {
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      width: clamp(280px, 32vw, 380px);
+      height: clamp(280px, 32vw, 380px);
+      overflow: hidden;
+      border-radius: 4px;
+      transform: scale(1.35);
+      opacity: .3;
+      transition: transform .72s cubic-bezier(.34,1.56,.64,1), opacity .6s ease;
+    }
+    .sd-hero-photo.is-settled {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .sd-pixel-dissolve {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .sd-pixel-dissolve canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sd-hero-photo { transition: none; }
+    }
     .sd-sensing-text {
       flex: 1 1 0;
       max-width: 1047px;
@@ -350,26 +408,26 @@
       will-change: transform;
     }
     .sd-sensing-title {
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
       text-transform: uppercase;
       font-size: clamp(26px,3.9vw,58px);
       line-height: 1.4;
       font-weight: 600;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.04em;
       white-space: nowrap;
       max-width: 100%;
-      color: #0e1825;
+      color: #161A1E;
       transition:
         font-size .72s cubic-bezier(.22, 1, .36, 1),
         color .72s cubic-bezier(.22, 1, .36, 1);
       will-change: font-size;
     }
     .sd-caption-scroll {
-      font-size: clamp(22px,3.6vw,48px);
-      line-height: 1.4;
+      font-size: clamp(24px,4vw,54px);
+      line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.03em;
-      color: #0e1825;
+      color: #161A1E;
       opacity: 0;
       transform: translateY(16px);
       margin-top: 34px;
@@ -378,6 +436,9 @@
         opacity .72s cubic-bezier(.22, 1, .36, 1),
         transform .72s cubic-bezier(.22, 1, .36, 1);
       will-change: opacity, transform;
+    }
+    .sd-caption-scroll .num-pretendard {
+      font-family: 'Pretendard', "Helvetica Now Display", sans-serif;
     }
     .sd-scroll-cards {
       display: flex;
@@ -399,7 +460,7 @@
       height: clamp(96px, 10.4vw, 142px);
       border-radius: clamp(14px, 1.5vw, 22.4px);
       padding: clamp(14px, 1.8vw, 24px);
-      background: #ebf0f5;
+      background: #F1F1F1;
     }
     .sd-scroll-card p {
       font-size: clamp(13px, 1.6vw, 23.333px);
@@ -519,7 +580,7 @@
       line-height: 1.4;
       letter-spacing: -0.04em;
       white-space: nowrap;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-tick h2 span { color: rgba(14, 24, 37, 0.26); }
     .sd-tick-left {
@@ -598,7 +659,7 @@
       transform: translateX(-50%);
       width: 100vw;
       height: 92%;
-      background: #FF6B3D;
+      background: #A5E0F0;
       border-radius: 0;
       pointer-events: none;
       transition: background .7s ease,
@@ -616,7 +677,7 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: #A5E0F0;
+      background: #FF6B3D;
       opacity: 0;
       transition: opacity .8s ease;
       pointer-events: none;
@@ -630,8 +691,8 @@
        person + "Input Logic" group (which sits left-of-row-center) so it wraps them */
     .sd-walk-scene.is-pre-final .sd-walk-box,
     .sd-walk-scene.is-final .sd-walk-box {
-      width: min(900px, 63vw, 70vh);
-      height: min(900px, 63vw, 70vh);
+      width: min(700px, 49vw, 55vh);
+      height: min(700px, 49vw, 55vh);
       bottom: calc(50% - 95px);
       left: calc(50% - clamp(220px, 17.2vw, 340px));
       border-radius: 0;
@@ -730,12 +791,12 @@
       text-align: center;
       opacity: 0;
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
-      font-size: clamp(56px, 6.1vw, 120px);
+      font-size: clamp(44px, 4.8vw, 96px);
       line-height: 1.05;
       font-weight: 500;
       letter-spacing: 0;
       text-transform: uppercase;
-      color: #FF6B3D;
+      color: #A5E0F0;
       white-space: nowrap;
       pointer-events: none;
       transition: opacity .85s ease, transform .85s cubic-bezier(.22, 1, .36, 1);
@@ -840,7 +901,7 @@
       border-radius: 28px;
       overflow: hidden;
       position: relative;
-      background: #0E1825;
+      background: #161A1E;
       width: 100%;
       height: auto;
       aspect-ratio: 508 / 603;
@@ -883,6 +944,7 @@
       pointer-events: none;
     }
     .sd-card-dots {
+      display: none;
       position: absolute;
       inset: 0;
       z-index: 3;
@@ -893,7 +955,7 @@
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: #F1F1F1;
+      background: #FFFFFF;
     }
     .sd-card-dots i:nth-child(1) { top: 23px; left: 23px; }
     .sd-card-dots i:nth-child(2) { top: 23px; right: 23px; }
@@ -912,7 +974,7 @@
     }
     .sd-card-text h3 {
       margin: 0;
-      font-size: clamp(28px,2.7vw,52px);
+      font-size: clamp(22px,2.2vw,42px);
       line-height: 1.5;
       font-weight: 600;
       letter-spacing: -0.03em;
@@ -920,7 +982,7 @@
     }
     .sd-card-text h3 span {
       display: block;
-      font-size: clamp(18px,1.46vw,28px);
+      font-size: clamp(14px,1.2vw,22px);
       font-weight: 400;
       color: #D0D7E0;
       letter-spacing: -0.02em;
@@ -929,7 +991,7 @@
     .sd-card-text p {
       width: 100%;
       margin: auto 0 0;
-      font-size: clamp(14px,1.05vw,20px);
+      font-size: clamp(13px,1.05vw,19px);
       line-height: 1.5;
       font-weight: 400;
       color: #C4CCD7;
@@ -945,7 +1007,7 @@
       width: 100%;
       height: 100vh;
       padding: 0 var(--edge-padding);
-      background: #F4F8FC;
+      background: #FFFFFF;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -997,7 +1059,7 @@
       max-width: 900px;
     }
     .sd-summary-hero h2 {
-      color: #0e1825;
+      color: #161A1E;
       font-size: clamp(28px,4.5vw,60px);
       font-weight: 700;
       line-height: 1.5;
@@ -1034,8 +1096,8 @@
       width: min(calc(100% - 80px), 1480px);
       height: calc(336px * var(--sd-flow-scale));
       margin: 0 auto;
-      border-radius: 32px;
-      background: #0E1825;
+      border-radius: 20px;
+      background: #161A1E;
       transition: background .8s ease;
       position: sticky;
       top: 50%;
@@ -1108,8 +1170,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 32px;
-      background: #0E1825;
+      border-radius: 20px;
+      background: #161A1E;
       opacity: var(--flow-pause);
       filter: blur(var(--flow-pause-in-blur));
       transition: opacity .45s ease, filter .45s ease;
@@ -1173,8 +1235,8 @@
     .sd-flow-time-card {
       width: 1180px;
       height: 240px;
-      border-radius: 44px;
-      background: #EBF0F5;
+      border-radius: 24px;
+      background: #F1F1F1;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1252,21 +1314,12 @@
     }
     .sd-pause-logic-row {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: clamp(48px, 8vw, 160px);
+      align-items: flex-end;
+      justify-content: center;
       min-height: clamp(180px, 18vw, 260px);
     }
     .sd-summary-section {
       padding-top: clamp(24px, 3.5vw, 52px);
-    }
-    .sd-pause-logic-en {
-      font-size: clamp(48px, 5.6vw, 60pt);
-      line-height: 1.05;
-      letter-spacing: -0.055em;
-      font-weight: 700;
-      color: #000;
-      white-space: nowrap;
     }
     .sd-pause-logic-ko {
       font-size: clamp(36px, 4.2vw, 48pt);
@@ -1274,16 +1327,12 @@
       letter-spacing: -0.045em;
       font-weight: 600;
       color: #000;
-      text-align: right;
+      text-align: center;
       white-space: nowrap;
     }
     @media (max-width: 900px) {
-      .sd-pause-logic-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
       .sd-pause-logic-ko {
-        text-align: left;
+        white-space: normal;
       }
     }
     .sd-flow-panel.is-logic-visible .sd-flow-time-inner {
@@ -1327,7 +1376,7 @@
       width: 213px;
     }
     .sd-flow-side .label {
-      color: #ff076a;
+      color: #B5BABF;
       font-size: 18px;
       line-height: 1.5;
       margin: 0 0 3px 5px;
@@ -1363,7 +1412,7 @@
       flex: 0 0 250px;
       width: 250px;
       height: 249.916px;
-      border-radius: 24.64px;
+      border-radius: 16px;
       padding: 35.825px 28.66px;
       display: flex;
       flex-direction: column;
@@ -1389,7 +1438,7 @@
     }
     .sd-flow-card.c1 h4 { font-weight: 700; }
     .sd-flow-card span {
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
       font-weight: 400;
       font-size: 36px;
       line-height: .96;
@@ -1736,7 +1785,16 @@
     .sd-summary-video-band {
       width: min(100%, 560px);
       aspect-ratio: 4 / 3;
-      background: #280047;
+      background: #2E2D32;
+      position: relative;
+    }
+    .sd-summary-video-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 3%;
     }
     .sd-summary-orb {
       top: 50%;
@@ -1839,7 +1897,7 @@
       white-space: nowrap;
     }
     .sd-summary-copy h2 span {
-      color: #ff076a;
+      color: #6E6E6E;
       font-weight: 700;
       letter-spacing: -0.04em;
     }
@@ -1862,32 +1920,33 @@
       min-width: 0;
       height: clamp(180px, 16vw, 250px);
       border-radius: 28px;
-      background: #F4F8FC;
+      background: #F1F1F1;
       padding: clamp(30px, 3.2vw, 48px) clamp(28px, 3vw, 48px) clamp(26px, 2.6vw, 40px);
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
     .sd-summary-box .kicker {
-      font-size: clamp(15px,1.4vw,22px);
+      font-size: clamp(12px,1.1vw,18px);
       font-weight: 600;
       line-height: 1.3;
       letter-spacing: -0.03em;
-      color: #ff076a;
+      color: #6E6E6E;
     }
     .sd-summary-box h3 {
-      font-size: clamp(20px,1.9vw,30px);
+      font-size: clamp(16px,1.5vw,24px);
       font-weight: 600;
       line-height: 1.4;
       letter-spacing: -0.03em;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-summary-box p {
-      font-size: clamp(13px,1.15vw,18px);
+      font-size: clamp(11px,0.95vw,15px);
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: -0.03em;
-      color: #0e1825;
+      color: #161A1E;
+      opacity: 0.8;
     }
 
     @media (max-width: 1100px) {
@@ -2010,7 +2069,7 @@
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
-      color: #000; font-family: "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
@@ -2019,7 +2078,7 @@
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
       min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #0e1825; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
@@ -2066,10 +2125,10 @@
 <section class="sd-sensing-scene" id="sensing-scene-scroll">
   <div class="sd-sensing-sticky">
     <div class="sd-sensing-layer sd-sensing-primary">
-      <img loading="lazy" class="sd-compass" src="assets/sensing-compass-v3.png?v=6" alt="탐지를 상징하는 나침반 모티프">
+      <img loading="lazy" class="sd-compass" src="assets/sensing-compass-v3.png?v=20260806-2147" alt="탐지를 상징하는 나침반 모티프">
       <div class="sd-sensing-text">
         <h2 class="sd-sensing-title">Sensing Logic</h2>
-        <p class="sd-caption-scroll">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
+        <p class="sd-caption-scroll"><span class="num-pretendard">24</span>시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
         <div class="sd-scroll-cards">
           <div class="sd-scroll-card fi"><p>주변 공간의<br>물리적 도메인을<br>상시 탐색</p></div>
           <div class="sd-scroll-card fi dd2"><p>지능형<br>반사 표면<br>제어</p></div>
@@ -2080,13 +2139,13 @@
     <div class="sd-sensing-layer sd-sensing-detail">
       <div class="sd-two-col">
         <div class="sd-orbit-visual">
-          <img loading="lazy" class="sd-orbit-radar" src="assets/sensing-radar-v3.png?v=3" alt="발견을 상징하는 레이더 모티프">
-          <img loading="lazy" class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png?v=2" alt="24시간 센싱을 상징하는 시계 모티프">
+          <img loading="lazy" class="sd-orbit-radar" src="assets/sensing-radar-v3.png?v=20260806-1924" alt="발견을 상징하는 레이더 모티프">
+          <img loading="lazy" class="sd-orbit-main-clock" src="assets/sensing-clock-v3.png?v=20260806-2147" alt="24시간 센싱을 상징하는 시계 모티프">
           <div class="sd-orbit-trail" aria-hidden="true">
-            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
-            <img loading="lazy" src="assets/sensing-clock-v3.png?v=2" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=20260806-2147" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=20260806-2147" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=20260806-2147" alt="">
+            <img loading="lazy" src="assets/sensing-clock-v3.png?v=20260806-2147" alt="">
           </div>
         </div>
         <div class="sd-text-right">
@@ -2174,6 +2233,8 @@
 <div class="input-hero-scroll">
 <section class="sd-summary-hero" id="inputHeroSec">
   <video class="sd-summary-hero-video" id="inputHeroVideo" src="assets/input-logic-hero-bg.mp4" autoplay muted playsinline preload="none" aria-hidden="true"></video>
+  <!-- 기존 큐브 그래픽 백업본 (그대로 보존, 렌더는 안 함) -->
+  <!--
   <div class="sd-hero-cube fi d1" aria-hidden="true">
     <div class="sc-cube">
       <span class="sc-sheet"></span><span class="sc-sheet"></span><span class="sc-sheet"></span>
@@ -2182,6 +2243,10 @@
       <span class="sc-sheet"></span><span class="sc-sheet"></span>
     </div>
   </div>
+  -->
+  <div class="sd-hero-photo fi d1" aria-hidden="true">
+    <div class="sd-pixel-dissolve" id="sdPixelDissolve" data-src="assets/input-hero-door.png"></div>
+  </div>
   <p class="sd-summary-hero-label fi d1">Input Logic</p>
   <div class="sd-summary-hero-body">
     <h2 class="fi dd2">액티브 레이어를 여는 첫 단추</h2>
@@ -2189,6 +2254,180 @@
   </div>
 </section>
 </div>
+
+<script>
+// Pixel Dissolve — Originkit "Pixel Unfold"을 반대 방향으로 이식.
+// 타일이 무작위 순서로 하나씩 페이드아웃하며 사진이 분해되어 사라진다.
+(function () {
+  const mount = document.getElementById('sdPixelDissolve');
+  if (!mount) return;
+  const src = mount.dataset.src;
+  if (!src) return;
+
+  const PIXEL_SIZE = 22;
+  const DURATION = 1.6; // seconds
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function cubicBezierEase(x1, y1, x2, y2) {
+    const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    const sampleX = t => ((ax * t + bx) * t + cx) * t;
+    const sampleY = t => ((ay * t + by) * t + cy) * t;
+    const dX = t => (3 * ax * t + 2 * bx) * t + cx;
+    return p => {
+      let t = p;
+      for (let i = 0; i < 8; i++) {
+        const x = sampleX(t) - p, d = dX(t);
+        if (Math.abs(x) < 1e-4 || Math.abs(d) < 1e-6) break;
+        t -= x / d;
+      }
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      return sampleY(t);
+    };
+  }
+  const easeIn = cubicBezierEase(0.42, 0, 1, 1); // 사라지는 쪽이라 easeIn이 자연스럽다
+
+  const canvas = document.createElement('canvas');
+  mount.appendChild(canvas);
+  const dctx = canvas.getContext('2d');
+  const off = document.createElement('canvas');
+  const octx = off.getContext('2d');
+
+  let tiles = [];
+  let played = false;
+
+  function build(img) {
+    const dpr = window.devicePixelRatio || 1;
+    const cw = mount.clientWidth, ch = mount.clientHeight;
+    if (cw <= 0 || ch <= 0) return false;
+
+    canvas.width = Math.round(cw * dpr);
+    canvas.height = Math.round(ch * dpr);
+    canvas.style.width = cw + 'px';
+    canvas.style.height = ch + 'px';
+    off.width = canvas.width;
+    off.height = canvas.height;
+
+    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+    const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+    const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+    octx.setTransform(1, 0, 0, 1, 0, 0);
+    octx.clearRect(0, 0, off.width, off.height);
+    octx.drawImage(img, dx * dpr, dy * dpr, dw * dpr, dh * dpr);
+
+    dctx.setTransform(1, 0, 0, 1, 0, 0);
+    dctx.clearRect(0, 0, canvas.width, canvas.height);
+    dctx.drawImage(off, 0, 0);
+
+    const cols = Math.ceil(cw / PIXEL_SIZE), rows = Math.ceil(ch / PIXEL_SIZE);
+    const cxCenter = canvas.width / 2, cyCenter = canvas.height / 2;
+    const maxSpread = Math.min(canvas.width, canvas.height) * 0.4;
+    tiles = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const x = col * PIXEL_SIZE, y = row * PIXEL_SIZE;
+        // 중심에서 이 타일 쪽으로의 방향으로 흩어진다 — 화면 전체가 밖으로 퍼지는 느낌.
+        const angle = Math.atan2((y * dpr) - cyCenter, (x * dpr) - cxCenter) + (Math.random() - 0.5) * 0.6;
+        const dist = maxSpread * (0.55 + Math.random() * 0.65);
+        tiles.push({ x, y, order: 0, angle, dist });
+      }
+    }
+    for (let i = tiles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    tiles.forEach((t, i) => { t.order = i; });
+    return true;
+  }
+
+  function restoreFull() {
+    dctx.clearRect(0, 0, canvas.width, canvas.height);
+    dctx.drawImage(off, 0, 0);
+  }
+
+  // 타일이 사라지면서 제자리에서 페이드되는 대신, 중심 기준 바깥으로 퍼지며 흩어진다.
+  function dissolve(onComplete) {
+    if (!tiles.length) { if (onComplete) onComplete(); return; }
+    const dpr = window.devicePixelRatio || 1;
+    const slot = DURATION / tiles.length;
+    const start = performance.now();
+    const cw = canvas.width, ch = canvas.height;
+
+    function step(now) {
+      const elapsed = (now - start) / 1000;
+      let allDone = true;
+      dctx.clearRect(0, 0, cw, ch);
+      for (let i = 0; i < tiles.length; i++) {
+        const t = tiles[i];
+        const raw = slot > 0 ? (elapsed - t.order * slot) / slot : 1;
+        const p = Math.max(0, Math.min(1, raw));
+        if (p >= 1) continue; // 완전히 사라짐 — 더 이상 그리지 않는다
+        allDone = false;
+        const dx = Math.round(t.x * dpr), dy = Math.round(t.y * dpr);
+        const dw = Math.round((t.x + PIXEL_SIZE) * dpr) - dx;
+        const dh = Math.round((t.y + PIXEL_SIZE) * dpr) - dy;
+        if (p <= 0) {
+          dctx.drawImage(off, dx, dy, dw, dh, dx, dy, dw, dh);
+          continue;
+        }
+        const eased = easeIn(p);
+        const offsetX = Math.cos(t.angle) * t.dist * eased;
+        const offsetY = Math.sin(t.angle) * t.dist * eased;
+        dctx.globalAlpha = 1 - eased;
+        dctx.drawImage(off, dx, dy, dw, dh, dx + offsetX, dy + offsetY, dw, dh);
+        dctx.globalAlpha = 1;
+      }
+      if (!allDone) requestAnimationFrame(step);
+      else if (onComplete) onComplete();
+    }
+    requestAnimationFrame(step);
+  }
+
+  const photo = mount.closest('.sd-hero-photo');
+
+  const img = new Image();
+  img.onload = () => {
+    if (!build(img)) return;
+    if (reduce) {
+      if (photo) photo.classList.add('is-settled');
+      dctx.clearRect(0, 0, canvas.width, canvas.height); // 리듀스드 모션: 그냥 빈 상태로 정지
+      return;
+    }
+    const HOLD_EMPTY_MS = 700;   // 다 흩어져 사라진 뒤 대기
+    const HOLD_FULL_MS = 1500;   // 다시 온전한 사진으로 돌아온 뒤 대기
+
+    // 흩어져 사라짐 → 잠깐 대기 → 사진 복원 → 잠깐 대기 → 다시 흩어짐, 계속 반복.
+    const loopDissolve = () => {
+      dissolve(() => {
+        window.setTimeout(() => {
+          restoreFull();
+          window.setTimeout(loopDissolve, HOLD_FULL_MS);
+        }, HOLD_EMPTY_MS);
+      });
+    };
+
+    new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !played) {
+        played = true;
+        // 컸던 사진(투명도 30%)이 텐션감 있게(스프링 이징) 제 크기로 줄어든 다음,
+        // 그 자리에서 픽셀 단위로 분해되며 퍼져 사라지는 게 계속 루핑된다.
+        if (photo) {
+          photo.classList.add('is-settled');
+          const onSettleEnd = (e) => {
+            if (e.propertyName !== 'transform') return;
+            photo.removeEventListener('transitionend', onSettleEnd);
+            loopDissolve();
+          };
+          photo.addEventListener('transitionend', onSettleEnd);
+        } else {
+          loopDissolve();
+        }
+      }
+    }, { threshold: .5 }).observe(mount);
+  };
+  img.src = src;
+})();
+</script>
 
 <section class="sd-flow-scroll sd-flow-fadein" id="flowScrollSec">
 <div class="sd-flow-reveal-mark" aria-hidden="true"></div>
@@ -2212,7 +2451,7 @@
   </div>
   <div class="sd-flow-time-state" aria-hidden="true">
       <div class="sd-flow-time-inner">
-        <img loading="lazy" class="sd-flow-time-avatar" src="assets/pause-avatar.svg" alt="">
+        <img loading="lazy" class="sd-flow-time-avatar" src="assets/pause-avatar.png" alt="">
         <div class="sd-flow-time-card">
           <p class="sd-flow-rest-copy">스킵, 우리 시간 좀 갖자</p>
           <p class="sd-flow-card-logic-copy" aria-hidden="true">Pause Logic</p>
@@ -2244,18 +2483,13 @@
 
 <section class="sd-section sd-pause-logic-standalone fi">
   <div class="sd-pause-logic-row">
-    <p class="sd-pause-logic-en">Pause Logic</p>
-    <p class="sd-pause-logic-ko">2보 전진을 위한<br>1보 후퇴</p>
+    <p class="sd-pause-logic-ko">2보 전진을 위한 1보 후퇴</p>
   </div>
 </section>
 
 <section id="pause-summary" class="sd-section sd-summary-section fi">
   <div class="sd-summary-video-band">
-    <div class="sd-summary-orb-scene" aria-hidden="true">
-      <span class="sd-summary-orb"><span class="sd-summary-orb-face"></span></span>
-      <span class="sd-summary-orb-shadow sd-summary-orb-shadow-outer"></span>
-      <span class="sd-summary-orb-shadow sd-summary-orb-shadow-inner"></span>
-    </div>
+    <img loading="lazy" class="sd-summary-video-img" src="assets/pause-wordmark.png" alt="">
   </div>
   <div class="sd-summary-copy">
     <h2>Skip the noise Skeep the <span>pause</span></h2>
@@ -2836,8 +3070,13 @@
     window.addEventListener('scroll', maybeStartAuto, { passive: true });
     maybeStartAuto();
 
+    // 이 세 리스너는 window 전역에 걸려있어서, 이 씬에 도달하기 전 다른 섹션을
+    // 지나며 하는 스크롤/터치/키 입력에도 반응해버렸다 — isPinned()이 아직 false인
+    // 그 순간에 userTookControl이 먼저 true가 되면서, 정작 씬이 고정된 뒤에는
+    // 자동재생이 "이미 사용자가 조작함" 취급을 받아 절대 시작되지 않는 버그였다.
+    // 씬이 실제로 고정돼 있을 때의 입력만 "사용자가 넘겼다"로 인정한다.
     window.addEventListener('wheel', e => {
-      if (e.deltaY > 0) { userTookControl = true; gateForward(e); }
+      if (e.deltaY > 0 && isPinned()) { userTookControl = true; gateForward(e); }
     }, { passive: false });
 
     let touchStartY = null;
@@ -2845,7 +3084,7 @@
       touchStartY = e.touches[0].clientY;
     }, { passive: true });
     window.addEventListener('touchmove', e => {
-      if (touchStartY === null) return;
+      if (touchStartY === null || !isPinned()) return;
       const dy = touchStartY - e.touches[0].clientY;
       if (dy > 8) {
         userTookControl = true;
@@ -2855,7 +3094,7 @@
     }, { passive: false });
 
     window.addEventListener('keydown', e => {
-      if (e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ') {
+      if ((e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ') && isPinned()) {
         userTookControl = true;
         gateForward(e);
       }

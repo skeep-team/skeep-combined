@@ -96,12 +96,12 @@
   padding: clamp(18px, 1.45vw, 28px);
   border-radius: clamp(16px, 1.65vw, 32px);
   color: #000;
-  background: #e7eaf0;
+  background: #F1F1F1;
 }
 
 .canvasCard[data-dark="true"] {
   color: #fff;
-  background: #778391;
+  background: #161A1E;
 }
 
 .canvasCard h3,
@@ -130,7 +130,7 @@
 }
 
 .canvasCard[data-dark="true"] p {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .canvasCard[data-area="partners"] { grid-area: partners; }

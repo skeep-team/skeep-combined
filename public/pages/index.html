@@ -21,6 +21,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
+    /* Elza Condensed Trial — 이 페이지들의 영문 서체. 다른 페이지(/business, /principles)와
+       같은 폭을 쓰도록 Text가 아닌 Condensed로 맞췄다.
+       Trial 판이라 실제 윤곽이 들어 있는 글자가 공백·쉼표·하이픈·마침표·숫자·영문
+       대소문자뿐이다. 나머지는 전부 같은 네모 상자로 대체돼 있어서, 범위에 넣으면
+       글자가 □로 깨진다. 범위 밖으로 빼두면 브라우저가 Pretendard로 넘긴다. */
+    @font-face {
+      font-family: 'Elza Cond';
+      src: url('../fonts/ElzaCond-Medium.woff2') format('woff2');
+      font-style: normal;
+      /* 굵기와 상관없이 늘 Medium 한 벌만 쓴다 — /business, /principles와 같은 방식이다.
+         큰 글자는 T1 Glicky가 맡으므로 Elza는 굵기 대비가 필요 없다. */
+      font-weight: 100 900;
+      font-display: swap;
+      unicode-range: U+0020, U+002C-002E, U+0030-0039, U+0041-005A, U+0061-007A;
+    }
     @font-face {
       font-family: 'T1 Glicky';
       src: url('../fonts/T1GlickyRegular.otf') format('opentype');
@@ -29,7 +44,7 @@
       font-display: swap;
     }
     @font-face {
-      font-family: 'Skeep Helvetica Now Display';
+      font-family: 'Elza Cond', 'Skeep Helvetica Now Display';
       src: url('assets/HelveticaNowDisplay-Regular.woff2') format('woff2');
       font-weight: 400;
       font-style: normal;
@@ -46,12 +61,22 @@
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
       background: #fff;
-      color: #0e1825;
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      color: #161A1E;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
     }
+    /* 이 페이지의 영문은 전부 대문자로 표기한다. 상속되므로 하위 전체에 적용되고,
+       한글·숫자·기호에는 영향이 없다. button/input은 UA 스타일이 상속을 끊어 따로 건다. */
+    body,
+    body button,
+    body input,
+    body select,
+    body textarea {
+      text-transform: uppercase;
+    }
+
     body.hero-scroll-locked {
       overflow: hidden;
     }
@@ -183,7 +208,7 @@
 
     /* ── 1. HERO ─────────────────────────────────── */
     .sec-hero {
-      background: #171A1F;
+      background: #F1F1F1;
       width: 100%;
       height: 100vh;
       padding: clamp(88px, 10vw, 160px) var(--edge-padding) clamp(90px, 11vw, 150px);   /* top 소폭↑ = 전체 요소 아주 조금 아래로 */
@@ -213,27 +238,28 @@
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
       font-size: clamp(16px,1.85vw,28px); font-weight: 400; line-height: 1.5;
       letter-spacing: 0; text-transform: uppercase;
-      color: #ff0b6c; margin-top: 20px; margin-bottom: 12px;   /* 텍스트 블록 아래로 */
+      color: #9FA1A2; margin-top: 20px; margin-bottom: 12px;   /* 텍스트 블록 아래로 */
       transition: color 0.6s ease;   /* 사진 바뀔 때 색 순환 */
     }
     .hero-h1 {
-      font-size: clamp(28px,3.6vw,56px); font-weight: 700; line-height: 1.36;
-      letter-spacing: -0.04em; margin-bottom: 28px; color: #fff;
+      /* 히어로 문구 기준 — 조율하다와 같은 크기·굵기 */
+      font-size: clamp(26px,3.3vw,50px); font-weight: 700; line-height: 1.2;
+      letter-spacing: -0.04em; margin-bottom: 28px; color: #161A1E;
       white-space: nowrap;   /* 한글 메인 타이틀 한 줄 고정 */
     }
     .hero-body {
       font-size: clamp(13px,1.55vw,21px); font-weight: 300; line-height: 1.48;
-      letter-spacing: -0.03em; color: rgba(255,255,255,.7); max-width: 1120px;
+      letter-spacing: -0.03em; color: rgba(22,26,30,.7); max-width: 1120px;
     }
     /* ── 인트로 Coverflow 갤러리 (Originkit 이식 → 바닐라 CSS 3D, 무스 호환) ── */
     .hero-coverflow {
       position: relative; z-index: 2;
       width: 100%;
-      height: clamp(276px, 38vh, 440px);
+      height: clamp(300px, 46vh, 520px);
       /* 사진(코버플로우)을 텍스트 위로 올림 (flex order). 여백은 아래쪽으로 뒤집는다. */
       order: -1;
-      margin-top: clamp(52px, 8vh, 104px);    /* 손+말풍선과 안 겹치게 블록 전체를 아래로 */
-      margin-bottom: clamp(48px, 7vh, 105px);
+      margin-top: 0;    /* 말풍선이 없어져 위 여백을 없앴다 */
+      margin-bottom: clamp(14px, 2vh, 30px);   /* 아래 문구 세트를 코버플로우에 붙인다 */
       display: flex; align-items: center; justify-content: center;
       perspective: 1600px;
       pointer-events: none;
@@ -241,8 +267,10 @@
     .hcf-stage {
       position: relative;
       z-index: 1;   /* 블러 글로우 위 */
-      width: clamp(170px, 21vw, 300px);
-      height: clamp(170px, 21vw, 300px);   /* 정사각 타일 (작게) */
+      width: clamp(252px, 34.5vw, 458px);
+      height: clamp(252px, 34.5vw, 458px);   /* 정사각 무대 — 타일은 이 안에서 원본 비율대로 */
+      /* 아래 문구는 두고 카드만 살짝 위로 */
+      transform: translateY(clamp(-22px, -1.8vh, -10px));
       transform-style: preserve-3d;
     }
     /* 표지 카드 뒤 소프트 글로우 — filter blur 대신 radial-gradient(무스 호환).
@@ -264,41 +292,30 @@
     }
     /* 텍스트는 글로우 위로 */
     .hero-eyebrow, .hero-h1, .hero-body { position: relative; z-index: 1; }
+    /* 타일마다 원본 크기가 다르다. 세로/가로 어느 쪽이든 가장 긴 변(1816px, 8장 중
+       가장 넓은 사진의 가로)을 무대에 맞추고, 나머지는 그 비율만큼 작게 — 원본의
+       비율과 상대 크기를 둘 다 그대로 살린다. 세로 기준으로만 맞추면 가로로 넓은
+       사진이 무대 폭을 넘어서 유독 커 보였다. */
     .hcf-card {
       position: absolute; left: 50%; top: 50%;
-      width: 100%; height: 100%;
+      width: auto;
+      height: calc(var(--h) / 1816 * 100%);
+      aspect-ratio: var(--w) / var(--h);
       transform-style: preserve-3d;
       transform-origin: center center;
       transform: translate(-50%, -50%);
-      transition: transform .6s cubic-bezier(.22,1,.36,1), opacity .6s cubic-bezier(.22,1,.36,1);
+      /* transform은 JS가 매 프레임 새 값을 직접 그린다 — 여기 트랜지션을 걸면
+         프레임마다 바뀌는 걸 또 트랜지션하려다 밀리고 계단져 보인다.
+         opacity는 사정거리 밖으로 나갈 때만 1↔0으로 드물게 바뀌는 값이라
+         짧게 트랜지션을 걸어도 밀릴 일이 없고, 순간 켜짐/꺼짐이 깜빡여 보이던 것도 없어진다. */
+      transition: opacity .18s ease;
       will-change: transform, opacity;
     }
     .hcf-card img {
       position: absolute; inset: 0;
       width: 100%; height: 100%;
-      object-fit: contain; display: block; user-select: none;   /* 타일 전체(모양) 보이게 */
-    }
-    /* ── 인트로: 손 인사 칩 1개 — 중앙(선택된) 타일 바로 위에 떠있고, 타일 바뀔 때마다 문구가 영→한→일→중 순환 ── */
-    .hero-hand-solo {
-      position: absolute; left: 50%; bottom: calc(100% + 48px);   /* 중앙 타일 상단 위로 (겹침 방지 간격) */
-      transform: translateX(calc(-50% - 4px));   /* 아주 조금 좌측으로 */
-      z-index: 200; pointer-events: none;            /* 선택된 도형 위에 뜸 */
-    }
-    .hand-chip { display: flex; align-items: center;
-      animation: chipBob 3.6s ease-in-out infinite; will-change: transform; }
-    .hand-chip .hand-lbl { display: inline-flex; align-items: center; gap: 9px;
-      background: #2F3640; color: #fff;
-      border-radius: 999px 999px 12px 999px;   /* 오른쪽 하단 코너만 라운드 작게 = 말풍선 꼬리 느낌 */
-      padding: 11px 22px 11px 18px; font-size: clamp(16px,1.45vw,23px); font-weight: 500; line-height: 1.1;
-      letter-spacing: 0.1px; white-space: nowrap; }
-    .hand-chip .hand-ico { width: 26px; height: 26px; flex: 0 0 auto;   /* 말풍선 안에 쏙 들어가게 축소 */
-      transform-origin: 34% 82%; animation: handWave 2.9s ease-in-out infinite; }
-    .hand-chip .hand-ico img { display: block; width: 26px; height: 26px; }
-    .hand-chip .hand-txt { display: inline-block; opacity: 1; transition: opacity .18s ease; }
-    @keyframes chipBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(0.6deg); } }
-    @keyframes handWave { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
-    @media (prefers-reduced-motion: reduce) {
-      .hand-chip, .hand-chip .hand-ico { animation: none; }
+      object-fit: contain; display: block; user-select: none;   /* 원본 그대로, 자르지 않는다 */
+      border-radius: clamp(4px, 0.5vw, 9px);
     }
     .sec-hero > .hero-eyebrow,
     .sec-hero > .hero-h1,
@@ -544,27 +561,28 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       inset: 0;
       transform-style: preserve-3d;
       transform-origin: 50% 50%;
-      transform: rotateY(0deg) scale(1);
+      transform: rotateX(0deg) scale(1);
       transition: transform .78s cubic-bezier(.2,.76,.24,1);
       will-change: transform;
     }
     .skeeeep-sticky.is-flipped .skeeeep-flip-card {
-      transform: rotateY(180deg) scale(1);
+      transform: rotateX(180deg) scale(1);
     }
     .skeeeep-ring-bg {
       position: absolute;
       inset: 0;
       z-index: 1;
       pointer-events: none;
-      opacity: 1;
+      opacity: 0;   /* ZoomTextTunnel(SKEEP/INTO THE/NEW ERA) 진행 중엔 배경 없이 검정만 */
+      transition: opacity 900ms ease;
       overflow: hidden;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       background:
-        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-        url('assets/skeeeep-bg.jpg') center center / cover no-repeat,
+        url('assets/skeeeep-bg.jpg?v=20260807-0203') center center / cover no-repeat,
         #000;
     }
+    /* 문구 모션이 다 끝난 뒤에만 이 클래스가 붙어 사진이 디졸브되며 나타난다. */
     .skeeeep-ring-bg.is-in { opacity: 1; }
     /* 카드 뒷면 */
     .skeeeep-video-bg {
@@ -574,10 +592,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: none;
       overflow: hidden;
       opacity: 1;
-      transform: rotateY(180deg);
+      transform: rotateX(180deg);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      background: #000 url('assets/cinema-man-laughing-bg.jpeg') center center / cover no-repeat;
+      /* background-size는 cover(박스 크기에 따라 매번 재계산) 대신 뷰포트 기준
+         고정값(100vw auto)을 쓴다 — 박스 높이가 60vh→100vh로 자라도 사진 자체의
+         배율은 그대로 유지되고, 원래 잘려있던 위아래가 더 드러나기만 한다. */
+      background: #000 url('assets/cinema-man-laughing-bg.jpeg?v=20260807-0203') center center / 100vw auto no-repeat;
+      /* 카드가 다 뒤집힐 때까지(.78s)는 첫 사진과 똑같은 크기로 가만히 있다가,
+         뒤집기가 끝난 뒤에야(transition-delay: .78s) 화면 전체(100vh)를 채우도록
+         세로로 천천히 자라난다. 슬로모션처럼 길게 늘어지며 감속하는 ease-out. */
+      transition: top 1.4s cubic-bezier(.16,1,.3,1) .78s, bottom 1.4s cubic-bezier(.16,1,.3,1) .78s;
+    }
+    /* 부모 .skeeeep-flip-card가 60vh(top/bottom 20%)만큼만 차지하므로, 화면 전체
+       (100vh)를 채우려면 그 20vh씩을 컨테이너 대비 %로 역산해서 밖으로 확장한다. */
+    .skeeeep-sticky.is-flipped .skeeeep-video-bg {
+      top: -33.333%;
+      bottom: -33.333%;
     }
     .skeeeep-ring-bg,
     .skeeeep-video-bg {
@@ -590,13 +621,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       height: 100%;
       object-fit: cover;
       display: block;
-    }
-    .skeeeep-video-bg::after {              /* 배경 전체 50% 검정 딤 */
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      pointer-events: none;
     }
     body.hero-intro-unlocked .sec-skeeeep.fi {
       opacity: 1;
@@ -617,8 +641,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       --t1-rise: 0px;                 /* 처음엔 화면 정중앙 */
       width: max-content;
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
-      font-size: clamp(38px,4.4vw,70px); font-weight: 500; line-height: 1.3;
+      font-size: clamp(58px,7vw,112px); font-weight: 500; line-height: 1.2;
       letter-spacing: 0; text-transform: uppercase; color: #fff; white-space: nowrap;
+      text-rendering: geometricPrecision;
       transform: translate(-50%, -50%) translateY(var(--t1-rise));   /* 제자리 고정 (morph 위해 드리프트 제거) */
       opacity: 1;
       transition: opacity .16s linear;
@@ -628,24 +653,51 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transition: transform .9s cubic-bezier(.22,.61,.36,1), opacity .1s linear;
     }
     .skeeeep-sticky.sk-risen .skeeeep-t1 { --t1-rise: 0px; }   /* 늘어날 때 텍스트 제자리 고정 (상승 제거) — 반드시 단위 있는 0px (calc 유효) */
+    /* ZoomTextTunnel: 바깥(.zt-outer)은 기존 .skeeeep-t1 위치/페이드 로직을 그대로
+       쓰고, 안쪽에서만 확대·교차 애니메이션. 오버플로는 부모 .skeeeep-sticky의
+       overflow:hidden이 화면 밖으로 커지는 걸 잘라준다. */
+    .zt-outer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .zt-sizer { visibility: hidden; white-space: pre; }
+    .zt-slot {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: pre;
+      transform-origin: center center;
+      /* 작은 글자 텍스처를 GPU가 계속 확대하며 흐리게 만드는 현상을 막는다. */
+    }
     .skeeeep-t2 {
       position: absolute;
       z-index: 2;
       left: 50%;
       top: 50%;
       width: calc(100% - (var(--edge-padding) * 2));
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(1.4);
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
       font-size: clamp(38px,4.4vw,70px); font-weight: 500; line-height: 1.3;
       letter-spacing: 0; text-transform: uppercase; color: #fff;
       opacity: 0;
+      filter: blur(14px);
       transition: opacity .16s linear;
-      will-change: opacity;
+      will-change: opacity, transform, filter;
     }
     .skeeeep-sticky.is-flipped .skeeeep-t1 { opacity: 0; }
+    /* 카드 뒤집힘이 끝난 직후, 배경이 확장되는 동안 문구도 함께 등장한다.
+       커진 채 흐릿한 상태에서 제 크기로 줄어들며 선명해지는 모션은 유지한다. */
     .skeeeep-sticky.is-flipped .skeeeep-t2 {
       opacity: 1;
-      transition-delay: .34s;
+      transform: translate(-50%, -50%) scale(1);
+      filter: blur(0);
+      transition: opacity .6s ease-out .9s,
+        transform .6s cubic-bezier(.16,1,.3,1) .9s,
+        filter .6s ease-out .9s;
     }
     .skeeeep-sticky:not(.is-flipped) .skeeeep-t1 { transition-delay: .34s; }
     .skeeeep-sticky:not(.is-flipped) .skeeeep-t2 { transition-delay: 0s; }
@@ -682,12 +734,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .summary-label {
       font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.03em; text-transform: uppercase;
-      color: #ff0b6c; flex-shrink: 0; white-space: nowrap;
+      color: #6E6E6E; flex-shrink: 0; white-space: nowrap;
       padding-top: 4px;
     }
     .summary-desc {
       font-size: clamp(15px,1.7vw,32px); font-weight: 600; line-height: 1.3;
-      letter-spacing: -0.02em; max-width: 1008px; color: #0e1825;
+      letter-spacing: -0.02em; max-width: 1008px; color: #161A1E;
     }
 
     /* ── 5. PHILOSOPHY SLIDES ────────────────────── */
@@ -715,7 +767,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .phil-label-sm {
       font-size: clamp(12px,1.3vw,19px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.03em; text-transform: uppercase;
-      color: #ff0b6c; white-space: nowrap;
+      color: #6E6E6E; white-space: nowrap;
     }
     .phil-tagline {
       font-size: clamp(26px,3.6vw,52px);
@@ -734,8 +786,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     .phil-media-row {
-      flex: 0 1 490px;
-      width: min(490px, 32vw);
+      flex: 0 1 440px;
+      width: min(440px, 28.5vw);
       min-width: 0;
       display: flex;
       align-items: center;
@@ -747,7 +799,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: min(490px, 32vw);
+      width: min(440px, 28.5vw);
       aspect-ratio: 1 / 1;
       border-radius: 32px;
       overflow: hidden;
@@ -760,14 +812,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .phil-scroll.phil-stage-3 .phil-side-ball { opacity: 1; }
     .phil-side-morph {
       flex: none;
-      width: min(490px, 32vw);
+      width: min(440px, 28.5vw);
       min-width: 0;
       aspect-ratio: 1 / 1;
       display: block;
       border-radius: 32px;
       overflow: hidden;
       border: 0;
-      background: #e3ebf2;
+      background: #F1F1F1;
     }
     .phil-card-stack {
       flex: 1 1 560px;
@@ -805,7 +857,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .phil-card .card-name {
       font-size: clamp(18px,2.2vw,34px); font-weight: 600; line-height: 1.3;
-      letter-spacing: -0.04em; color: #0e1825; margin-bottom: 8px;
+      letter-spacing: -0.04em; color: #161A1E; margin-bottom: 8px;
     }
     .phil-card .card-sub {
       font-size: clamp(13px,1.25vw,21px); font-weight: 500; line-height: 1.5;
@@ -822,7 +874,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── 7. MIGRATABLE AGENT DETAIL ──────────────── */
     .sec-agent-detail {
-      background: #000; width: 100%;
+      background: #fff; width: 100%;
       height: 360vh;
       padding: 0;
       position: relative;
@@ -834,7 +886,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: sticky;
       top: 0;
       height: 100vh;
-      background: #F1F1F1;   /* 사진은 .agent-photo-bg 레이어에서 아래→위 페이드인 */
+      background: #fff;   /* 사진은 .agent-photo-bg 레이어에서 아래→위 페이드인 */
       display: flex;
       align-items: flex-start;
       padding: clamp(72px, 12vh, 160px) var(--edge-padding) 0;
@@ -847,28 +899,55 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-sticky.is-light {
       background: #fff;
     }
-    /* 배경 사진: #F1F1F1 위에 아래→위로 떠오르며 페이드인 (무스 호환: opacity+transform) */
+    /* 배경 사진: 9장이 하나씩 불규칙한 타이밍으로 확대상태(scale)에서 줄어들며 페이드인.
+       사진들이 다 나타난 뒤에 타이틀이 뒤이어 등장(JS의 TITLE_DELAY_MS).
+       피그마(8400:6406) 그대로: 카드 9장을 절대좌표(%)로 흩뿌려 놓는다 — 5장은
+       옅은 배경색 위에 30~40% 투명하게, 4장은 배경색 없이 100% 선명하게. */
     .agent-photo-bg {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
-      background: url('assets/agent-bg-grid.png') center center / cover no-repeat;
+      opacity: 1;
+      transition: opacity .45s ease;
+      will-change: opacity;
+    }
+    .agent-photo-stage {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100%; height: 100%;
+      min-width: 182.8vh;
+      min-height: 54.7vw;
+      aspect-ratio: 1925 / 1053;
+      transform: translate(-50%, -50%);
+    }
+    .agent-photo-piece {
+      position: absolute;
+      left: var(--l); top: var(--t);
+      width: var(--w); height: var(--h);
+      border-radius: var(--r, 8px);
+      overflow: hidden;
+      background: var(--bg, transparent);
       opacity: 0;
-      transform: translate3d(0, 42px, 0);
-      transition: opacity 1.05s ease, transform 1.2s cubic-bezier(.22,1,.36,1);
+      transform: scale(1.4);
+      transition: opacity .8s ease, transform .9s cubic-bezier(.22,1,.36,1);
+      transition-delay: var(--delay, 0s);
       will-change: opacity, transform;
     }
-    .agent-photo-bg.revealed {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
+    .agent-photo-piece img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .agent-photo-bg.revealed .agent-photo-piece {
+      opacity: var(--op, 1);
+      transform: scale(1);
     }
     /* 디테일(밝은) 뷰에서는 사진 배경 숨김 → 흰 배경 위 탭 콘텐츠 */
     .agent-sticky.is-light .agent-photo-bg {
       opacity: 0;
-      transform: translate3d(0, 0, 0);
       transition: opacity .45s ease;
     }
     @media (prefers-reduced-motion: reduce) {
-      .agent-photo-bg { transform: none; transition: opacity .5s ease; }
-      .agent-photo-bg.revealed { transform: none; }
+      .agent-photo-piece { transform: none; transition: opacity .5s ease; transition-delay: 0s; }
+      .agent-photo-bg.revealed .agent-photo-piece { transform: none; }
     }
     .agent-flow {
       display: none;   /* 새 배경 이미지(#83)에 사진이 이미 포함 → 기기 타일 숨김 */
@@ -1025,7 +1104,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-title {
       font-family: 'T1 Glicky', 'Pretendard', sans-serif;
       text-transform: uppercase;
-      font-size: clamp(40px,6vw,87px); font-weight: 400; line-height: 1.4; letter-spacing: 0;
+      font-size: clamp(32px,4.8vw,68px); font-weight: 400; line-height: 1.4; letter-spacing: 0;
       color: #000;
       background: none;
       -webkit-text-fill-color: #000;
@@ -1075,7 +1154,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex;
       flex-direction: column;
       gap: 0;
-      font-size: clamp(13px,1.7vw,23px);
+      font-size: clamp(12px,1.5vw,20px);
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: -0.03em;
@@ -1098,7 +1177,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .pills-row   {
       display: flex; align-items: stretch;
       gap: clamp(6px, 0.7vw, 12px);
-      background: #0e1825;
+      background: #161A1E;
       border-radius: 32px;
       padding: clamp(9px, 1.1vw, 16px);
       width: min(384px, 100%);
@@ -1119,7 +1198,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .pill-num {
       font-size: clamp(11px, 1.0vw, 17px); font-weight: 600;
-      letter-spacing: -0.02em; color: #ff0b6c;
+      letter-spacing: -0.02em; color: #6E6E6E;
     }
     .pill-label {
       font-size: clamp(14px, 1.4vw, 28px); font-weight: 600;
@@ -1235,12 +1314,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .principle-mini-card {
       --card-bg: #F1F1F1;
-      --card-ink: #0E1825;
-      --card-dot: rgba(14, 24, 37, .24);
+      --card-ink: #161A1E;
       width: auto;
       min-width: 0;
       aspect-ratio: 1 / 1;
-      border-radius: 16px;
+      border-radius: 12px;
       padding: clamp(20px, 2vw, 28px);
       position: relative;
       overflow: hidden;
@@ -1250,16 +1328,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       justify-content: center;
       gap: clamp(12px, 1.1vw, 18px);
       text-align: center;
-      background:
-        radial-gradient(circle at 16px 16px, var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 16px) 16px, var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at 16px calc(100% - 16px), var(--card-dot) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), var(--card-dot) 0 4px, transparent 4.5px),
-        var(--card-bg);
+      /* 네 모서리의 원형 핀은 뺐다. 바탕색만 남긴다. */
+      background: var(--card-bg);
     }
     .principle-mini-title {
       margin: 0;
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(14px,1.4vw,26px);
       font-weight: 600;
       line-height: 1.35;
@@ -1276,11 +1350,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       margin: 0;
     }
     .principle-mini-title .thin {
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
       font-weight: 400;
     }
     .principle-mini-note {
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(10px,0.98vw,14px);
       font-weight: 500;
       line-height: 1.45;
@@ -1288,47 +1362,76 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: var(--card-ink);
       opacity: .78;
     }
-    /* 2×2 grid so all 4 fit and any card can expand without clipping */
-    .agent-q-col { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 16px; }
+    /* Questions: Principles와 같은 정사각 카드 규격을 사용한다. */
+    .agent-q-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+      gap: 16px;
+    }
     .q-card {
-      background:
-        radial-gradient(circle at 16px 16px, rgba(14, 24, 37, .24) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 16px) 16px, rgba(14, 24, 37, .24) 0 4px, transparent 4.5px),
-        radial-gradient(circle at 16px calc(100% - 16px), rgba(14, 24, 37, .24) 0 4px, transparent 4.5px),
-        radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), rgba(14, 24, 37, .24) 0 4px, transparent 4.5px),
-        #E2E8EF;
-      border-radius: 16px;
-      padding: clamp(22px, 2.2vw, 30px) clamp(24px, 2.4vw, 34px); flex: 0 0 auto;
-      border: none; cursor: pointer; overflow: hidden;
+      position: relative;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 1.1vw, 18px);
+      padding: clamp(20px, 2vw, 28px);
+      background: #F1F1F1;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      text-align: center;
       transition: background .25s ease;
+      /* 탭 안의 카드는 부모 컬럼이 한 번에 페이드되므로 개별 .fi 페이드는 겹치지 않는다. */
+      opacity: 1;
+      transform: none;
     }
     .q-card .q-num {
-      font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.2;
-      letter-spacing: -0.02em; margin-bottom: 12px;
-      color: #0E1825;
+      font-size: clamp(10px,.98vw,14px); font-weight: 600; line-height: 1.2;
+      letter-spacing: -0.02em; margin-bottom: 0;
+      color: #161A1E;
+      opacity: .78;
     }
     .q-head {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0;
+      transition: opacity .24s ease;
     }
     .q-head .q-num { margin-bottom: 0; }
     .q-chevron { display: none; }
     .q-card .q-text {
-      font-size: clamp(14px,1.4vw,26px); font-weight: 550; line-height: 1.35;
-      letter-spacing: -0.02em; color: #0E1825;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: clamp(14px,1.4vw,26px); font-weight: 600; line-height: 1.35;
+      letter-spacing: -0.02em; color: #161A1E;
+      transition: opacity .24s ease;
     }
     .q-answer {
-      max-height: 0; opacity: 0; overflow: hidden; margin-top: 0;
+      position: absolute;
+      inset: clamp(20px, 2vw, 28px);
+      max-height: none; opacity: 0; overflow: auto; margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       font-size: clamp(12px,1.15vw,17px); font-weight: 400; line-height: 1.5;
-      letter-spacing: -0.02em; color: #0E1825;
-      transition: max-height .38s ease, opacity .28s ease, margin-top .28s ease;
+      letter-spacing: -0.02em; color: #161A1E;
+      transition: opacity .28s ease;
+      pointer-events: none;
     }
     .q-answer::before {
-      content: "A."; display: block; color: #0E1825; font-weight: 700;
+      content: "A."; display: block; color: #161A1E; font-weight: 700;
       font-size: clamp(12px,1.2vw,18px); letter-spacing: -0.02em; margin-bottom: 5px;
     }
     .q-card:hover .q-answer, .q-card.open .q-answer {
-      max-height: 300px; opacity: 1; margin-top: 16px;
+      opacity: 1;
+    }
+    .q-card:hover .q-head,
+    .q-card:hover .q-text,
+    .q-card.open .q-head,
+    .q-card.open .q-text {
+      opacity: 0;
     }
 
     /* ── 8. SYSTEM INTRO ─────────────────────────── */
@@ -1339,8 +1442,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       justify-content: space-between; gap: 64px;
     }
     .sys-left { display: flex; flex-direction: column; gap: 20px; }
-    .sys-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #ff0b6c; }
-    .sys-title { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #0e1825; }
+    .sys-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #6E6E6E; }
+    .sys-title { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #161A1E; }
     .sys-right  {
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
       letter-spacing: -0.03em; max-width: 672px; flex-shrink: 0;
@@ -1395,16 +1498,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sec-system-diagram {
       background: #fff; width: 100%;
-      padding: clamp(40px, 6vh, 68px) 0;
+      padding: clamp(14px, 2.2vh, 28px) 0 clamp(40px, 6vh, 68px);   /* 위쪽 여백을 줄여 상단 두 줄을 위로 올림 */
       display: flex; flex-direction: column;
       justify-content: center;
-      align-items: center; gap: clamp(26px, 4vh, 48px);
+      align-items: center; gap: clamp(28px, 3.6vh, 46px);   /* 텍스트-그래픽, 그래픽-토글 사이 간격 확대 */
     }
     .diagram-card {
       width: 100%;
-      background: #F4F8FC; border-radius: 0;
+      background: #F1F1F1; border-radius: 0;
       min-height: 0;
-      aspect-ratio: 3958 / 936;              /* 왼쪽 패널(546)+오른쪽(3412) 합친 비율 — 정확히 타일링 */
+      aspect-ratio: 3958 / 1167;              /* 왼쪽 패널(546)+오른쪽(3412) 합친 비율 — 정확히 타일링 (journey-*-v3 재수출 세로비 반영) */
       display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden;
       container-type: inline-size;
@@ -1418,30 +1521,33 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: #fff;
       z-index: 1;
     }
+    /* 그래픽 안에 있던 USER JOURNEY 문구를 독립된 섹션 헤더로 올린다. */
     .diagram-journey-copy {
-      position: absolute;
-      top: 5.125%;
-      left: 8.22%;
-      right: 8.22%;
-      z-index: 2;
+      width: 100%;
+      padding: 0 var(--edge-padding);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(8px, 1vh, 14px);
+      flex: 0 0 auto;
     }
     .diagram-journey-title {
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
-      font-size: 1.31cqw;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(30px, 3.2vw, 54px);
       font-weight: 400;
-      line-height: 1;
-      letter-spacing: -0.04em;
+      line-height: .95;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
+      color: #161A1E;
     }
     .diagram-journey-desc {
-      width: 56%;
-      margin-top: .53cqw;
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: .53cqw;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: clamp(16px, 1.25vw, 21px);
       font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: -0.04em;
-      color: rgba(255,255,255,.6);
+      line-height: 1.45;
+      letter-spacing: -0.02em;
+      color: rgba(0,0,0,.55);
     }
     .diagram-journey-person {
       position: absolute;
@@ -1504,6 +1610,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       min-width: 0;
       object-fit: fill;
     }
+    /* 사용자 사진을 그래픽의 첫 번째 칸으로 유지하는 래퍼 */
+    .diagram-left-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+    }
     .diagram-pair--context { opacity: 0; pointer-events: none; }
     .diagram-card.show-context .diagram-pair--journey { opacity: 0; pointer-events: none; }
     .diagram-card.show-context .diagram-pair--context { opacity: 1; pointer-events: auto; }
@@ -1523,13 +1636,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .diagram-note {
       font-size: 20px; font-weight: 400; letter-spacing: -0.02em;
     }
-    /* 컨테이너를 레이어 카드 회색(#E7EAEE)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
+    /* 컨테이너를 레이어 카드 회색(#F1F1F1)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
     .diagram-tabs {
-      background: #E7EAEE; border-radius: 32px;
+      background: #F1F1F1; border-radius: 32px;
       display: flex; gap: clamp(6px, 0.7vw, 12px);
       padding: clamp(9px, 1.1vw, 16px);
       border: none;
-      margin-top: clamp(40px, 7vh, 96px);
+      margin-top: 0;
     }
     .diagram-tab {
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
@@ -1537,7 +1650,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       min-width: 148px; background: transparent; text-align: left;
     }
     .diagram-tab.active { background: #fff; box-shadow: 0 1px 5px rgba(14,24,37,0.08); }
-    .diagram-tab .tab-n { font-size: clamp(12px, 1.1vw, 16px); font-weight: 600; color: #ff0b6c; line-height: 1.4; letter-spacing: -0.02em; text-transform: none; }
+    .diagram-tab .tab-n { font-size: clamp(12px, 1.1vw, 16px); font-weight: 600; color: #6E6E6E; line-height: 1.4; letter-spacing: -0.02em; text-transform: uppercase; }
     .diagram-tab .tab-l { font-size: 21px; font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #6B7280; transition: color .2s ease; }
     .diagram-tab.active .tab-l { color: #111; }
 
@@ -1580,7 +1693,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       background: #D9DDE3;
     }
     .layer-visual-image--database {
-      background: #000;
+      background: transparent;
       display: grid;
       place-items: center;
       container-type: inline-size;
@@ -1588,6 +1701,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-visual-image--database.active { pointer-events: auto; }
     .database-cards {
       width: 82.7%;
+      background: #161A1E;
+      padding: 2.4cqw;
+      transition: background-color .28s ease;
+      border-radius: 1cqw;
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: .42cqw;
@@ -1595,7 +1712,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .database-card {
       aspect-ratio: 392 / 346;
       position: relative;
-      border-radius: 1.66cqw;
+      border-radius: 1cqw;
       background: transparent;
       color: #222;
       text-align: left;
@@ -1640,6 +1757,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       background: #fff;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      transition: background-color .28s ease, color .28s ease;
     }
     .database-card-face--back {
       transform: rotateY(180deg);
@@ -1647,36 +1765,37 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .database-card-head {
       height: 30.64%;
       padding: .83cqw 1.25cqw;
-      background: #0a67de;
+      background: #09421A;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      color: #89dff0;
+      color: #82FF8F;
       line-height: 1.5;
       letter-spacing: -.04em;
+      transition: background-color .28s ease, color .28s ease;
     }
     .database-card:nth-child(2) .database-card-head {
-      color: #89dff0;
+      color: #82FF8F;
     }
     .database-card:nth-child(3) .database-card-head {
-      color: #89dff0;
+      color: #82FF8F;
     }
     .database-card:nth-child(4) .database-card-head {
-      color: #89dff0;
+      color: #82FF8F;
     }
     .database-card .database-card-back-head {
-      background: #c4ccd7;
+      background: #073214;
     }
-    .database-card:last-child .database-card-back-head { background: #c4ccd7; }
+    .database-card:last-child .database-card-back-head { background: #073214; }
     .database-card-kicker {
-      font-family: 'Skeep Helvetica Now Display', 'Helvetica Now Display', sans-serif;
+      font-family: 'Elza Cond', 'Skeep Helvetica Now Display', 'Helvetica Now Display', sans-serif;
       font-size: 1.26cqw;
       font-weight: 400;
       line-height: 1;
       text-transform: uppercase;
     }
     .database-card-title {
-      font-size: 1.26cqw;
+      font-size: 1.12cqw;
       font-weight: 800;
       line-height: 1.5;
     }
@@ -1721,21 +1840,21 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       letter-spacing: -.02em;
     }
     .database-card-label {
-      font-size: 1.26cqw;
+      font-size: 1.12cqw;
       letter-spacing: -.04em;
       white-space: nowrap;
     }
     .database-card-note {
       margin-top: auto;
       color: #66717f;
-      font-size: .86cqw;
+      font-size: .78cqw;
       font-weight: 500;
       line-height: 1.5;
       letter-spacing: -.04em;
     }
     .database-card-back-body {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.04cqw;
+      font-size: .94cqw;
       font-weight: 400;
       line-height: 1.5;
       letter-spacing: -.03em;
@@ -1754,7 +1873,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       padding: 0 var(--edge-padding);
     }
     .layer-card {
-      background: #F4F8FC; border-radius: 20px;
+      background: #F7F7F7; border-radius: 12px;
       padding: clamp(24px, 2.6vw, 40px) clamp(20px, 2.2vw, 36px) clamp(20px, 2vw, 34px);
       min-height: clamp(140px, 13vw, 224px);
       display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px);
@@ -1766,22 +1885,55 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-card[data-layer]:hover { transform: translateY(-3px); }
     .layer-card[data-layer]:focus-visible { outline: 2px solid #ff0b6c; outline-offset: 4px; }
     .layer-card.faded { opacity: 0.4; }
-    .layer-name { font-size: clamp(19px,1.55vw,24px); font-weight: 750; line-height: 1.25; letter-spacing: -0.025em; color: #0e1825; }
-    .layer-en   { margin-top: 3px; font-size: clamp(13px,1vw,15px); font-weight: 500; line-height: 1.4; letter-spacing: -0.02em; color: rgba(0,0,0,.58); }
-    .layer-desc { font-size: clamp(13px,1.05vw,15px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; color: rgba(0,0,0,.55); }
-    /* 선택된 카드: 진한 네이비 배경 + 흰 텍스트 */
-    .layer-card[data-layer]            { background: #89DFF0; border-color: transparent; }
-    .layer-card[data-layer]:not(.faded) .layer-name { color: #0A67DE; }
-    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(10,103,222,.82); }
-    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(10,103,222,.78); }
-    .layer-card[data-layer] .layer-name { color: #0A67DE; }
-    .layer-card[data-layer] .layer-en   { color: rgba(10,103,222,.82); }
-    .layer-card[data-layer] .layer-desc { color: rgba(10,103,222,.78); }
-    /* 비선택(선택 색상이 아닌) 카드는 회색 처리 */
-    .layer-card.faded[data-layer] { background: #E7EAEE; opacity: 1; }
-    .layer-card.faded[data-layer] .layer-name { color: #6B7280; }
-    .layer-card.faded[data-layer] .layer-en   { color: #9CA3AF; }
-    .layer-card.faded[data-layer] .layer-desc { color: #A6ACB6; }
+    .layer-name { font-size: clamp(18px,1.55vw,25px); font-weight: 750; line-height: 1.25; letter-spacing: -0.025em; color: #161A1E; }
+    .layer-en   { margin-top: 3px; font-size: clamp(11px,0.95vw,14px); font-weight: 500; line-height: 1.4; letter-spacing: -0.02em; color: rgba(0,0,0,.58); }
+    .layer-desc { font-size: clamp(12px,1.05vw,16px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; color: rgba(0,0,0,.55); }
+    /* 선택된 카드: 위쪽 4카드 헤더(진한 색 배경 + 옅은 텍스트)의 리버스 —
+       옅은 색 배경 + 그 진한 색 텍스트. 레이어별로 위 카드 헤더와 짝을 맞춘다. */
+    .layer-card[data-layer]            { background: #82FF8F; border-color: transparent; }
+    .layer-card[data-layer]:not(.faded) .layer-name { color: #09421A; }
+    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(9,66,26,.82); }
+    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(9,66,26,.78); }
+    /* 비선택 카드 2개: 레이어별 색조 없이 똑같은 연한 회색 배경 + 연한 회색 텍스트 */
+    .layer-card.faded[data-layer] { background: #F1F1F1; opacity: 1; }
+    .layer-card.faded[data-layer] .layer-name,
+    .layer-card.faded[data-layer] .layer-en,
+    .layer-card.faded[data-layer] .layer-desc { color: #A3A3A3; }
+
+    /* 레이어별 선택 팔레트: 상단 데이터 카드와 하단 선택 카드는 서로 반전 */
+    .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-head {
+      background: #FF3385;
+      color: #FFCADF;
+    }
+    .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-back-head {
+      background: #BF2664;
+      color: #FFCADF;
+    }
+    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) {
+      background: #FFCADF;
+    }
+    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-name,
+    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-en,
+    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-desc {
+      color: #FF3385;
+    }
+
+    .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-head {
+      background: #0a67de;
+      color: #89dff0;
+    }
+    .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-back-head {
+      background: #084DA7;
+      color: #89dff0;
+    }
+    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) {
+      background: #89DFF0;
+    }
+    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-name,
+    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-en,
+    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-desc {
+      color: #0A67DE;
+    }
 
     @media (min-width: 769px) and (max-width: 1100px) {
       .system-flow-sequence .layers-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1832,8 +1984,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         outline-offset: 3px;
       }
       .database-card-head { padding: 10px 13px; }
-      .database-card-kicker,
-      .database-card-title { font-size: 14px; }
+      .database-card-kicker { font-size: 14px; }
+      .database-card-title { font-size: 13px; }
       .database-card-body {
         padding: 10px 13px;
         gap: 8px;
@@ -1849,9 +2001,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         border-radius: 4.8px;
       }
       .database-card-layer { font-size: 7px; }
-      .database-card-label { font-size: 14px; }
-      .database-card-note { font-size: 9px; }
-      .database-card-back-body { font-size: 11px; }
+      .database-card-label { font-size: 13px; }
+      .database-card-note { font-size: 8px; }
+      .database-card-back-body { font-size: 10px; }
     }
 
     /* ── 11. PACKET INTRO ────────────────────────── */
@@ -1860,13 +2012,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex; flex-direction: column; align-items: center; text-align: center;
     }
     .packet-tag {
-      display: inline-block; border: none; padding: 0; text-transform: none;
+      display: inline-block; border: none; padding: 0; text-transform: uppercase;
       font-size: clamp(14px,1.6vw,22px); font-weight: 700; line-height: 1.4;
-      letter-spacing: -0.02em; color: #ff0b6c; margin-bottom: clamp(12px,1.4vw,20px);
+      letter-spacing: -0.02em; color: #6E6E6E; margin-bottom: clamp(12px,1.4vw,20px);
     }
     .packet-title {
       font-size: clamp(26px,4.2vw,58px); font-weight: 700; line-height: 1.3;
-      letter-spacing: -0.03em; margin-bottom: clamp(20px,2.4vw,32px); color: #0e1825;
+      letter-spacing: -0.03em; margin-bottom: clamp(20px,2.4vw,32px); color: #161A1E;
     }
     .packet-desc {
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
@@ -1886,29 +2038,29 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: 24px;
     }
     .qa-card {
-      background: #F4F8FC; border-radius: 24px;
+      background: #F1F1F1; border-radius: 24px;
       padding: 40px 36px; min-height: 220px;
       border: none;
       transition: background .25s ease;
     }
     .qa-card:hover {
-      background: #eef2f7;
+      background: #F1F1F1;
     }
     .qa-card .qn {
       font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.3;
       letter-spacing: -0.02em; display: block; margin-bottom: 8px;
-      color: #ff0b6c;
+      color: #6E6E6E;
     }
     .qa-card .qt {
       font-size: clamp(14px,1.4vw,26px); font-weight: 550; line-height: 1.35;
-      letter-spacing: -0.02em; color: #0e1825;
+      letter-spacing: -0.02em; color: #161A1E;
     }
     /* hover → answer expands (grid-rows 0fr→1fr animates height) */
     .qa-answer { display: grid; grid-template-rows: 0fr; opacity: 0;
       transition: grid-template-rows .42s cubic-bezier(.4,0,.2,1), opacity .3s ease; }
     .qa-answer-inner { overflow: hidden; }
     .qa-card:hover .qa-answer { grid-template-rows: 1fr; opacity: 1; }
-    .qa-answer .qa-a { display: block; color: #ff0b6c; font-weight: 700;
+    .qa-answer .qa-a { display: block; color: #6E6E6E; font-weight: 700;
       font-size: clamp(13px,1.3vw,20px); letter-spacing: -0.02em;
       padding-top: clamp(16px,1.7vw,26px); margin-bottom: 6px; }
     .qa-answer p.qa-atext { color: rgba(0,0,0,.58); font-weight: 400;
@@ -1943,7 +2095,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sk-title {
       font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3;
-      letter-spacing: -0.03em; margin: 0 0 24px; color: #0e1825;
+      letter-spacing: -0.03em; margin: 0 0 24px; color: #161A1E;
     }
     .sk-desc {
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
@@ -1964,8 +2116,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       flex: 0 0 min(34vw, 420px);
       min-width: 280px;
     }
-    .ux-label { font-size: clamp(16px,1.8vw,24px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #ff0b6c; white-space: nowrap; }
-    .ux-title { font-size: clamp(22px,3.2vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #0e1825; word-break: keep-all; }
+    .ux-label { font-size: clamp(16px,1.8vw,24px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #6E6E6E; white-space: nowrap; }
+    .ux-title { font-size: clamp(22px,3.2vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #161A1E; word-break: keep-all; }
     .ux-right  { font-size: clamp(14px,1.5vw,20px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 680px; flex: 1 1 0; min-width: 0; color: rgba(0,0,0,.55); }
 
     /* ── UX LOGIC STAGE OVERVIEW ─────────────────── */
@@ -1983,10 +2135,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-overview-card:hover { transform: translateY(-4px); }
     .ux-overview-title {
       font-size: clamp(16px,1.75vw,26px); font-weight: 600; letter-spacing: -0.04em;
-      color: #0e1825; margin-bottom: clamp(12px, 1.1vw, 16px); line-height: 1.3;}
+      color: #161A1E; margin-bottom: clamp(12px, 1.1vw, 16px); line-height: 1.3;}
     .ux-overview-sub {
       font-size: clamp(12px,1.1vw,17px); font-weight: 500; line-height: 1.45;
-      letter-spacing: -0.03em; color: #0e1825; opacity: 0.2;
+      letter-spacing: -0.03em; color: #161A1E; opacity: 0.2;
       transition: opacity .3s ease;
     }
 
@@ -2014,8 +2166,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform: translateY(calc((1 - var(--lp, 0)) * 50vh)) scale(calc(1 - var(--lp, 0) * 0.49)); }
     .ux-bigcard { flex: 1 1 0; min-width: 0; height: clamp(150px, 11vw, 182px);
       border-radius: clamp(20px, 1.7vw, 28px); padding: clamp(20px, 1.7vw, 28px) clamp(14px, 1.45vw, 24px) 0; }
-    .ux-bigcard .kr { display: block; font-size: clamp(16px,1.75vw,26px); font-weight: 600; letter-spacing: -0.04em; color: #0e1825; margin-bottom: clamp(12px,1.1vw,16px); line-height: 1.3; }
-    .ux-bigcard .sub { display: block; font-size: clamp(12px,1.1vw,17px); font-weight: 500; line-height: 1.45; letter-spacing: -0.03em; color: #0e1825; opacity: .2; }
+    .ux-bigcard .kr { display: block; font-size: clamp(16px,1.75vw,26px); font-weight: 600; letter-spacing: -0.04em; color: #161A1E; margin-bottom: clamp(12px,1.1vw,16px); line-height: 1.3; }
+    .ux-bigcard .sub { display: block; font-size: clamp(12px,1.1vw,17px); font-weight: 500; line-height: 1.45; letter-spacing: -0.03em; color: #161A1E; opacity: .2; }
 
     /* tab scene (target layout) — independent 2-column flex */
     .ux-scene { position: relative; width: 100%;
@@ -2036,7 +2188,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       border-radius: clamp(12px, 1vw, 16px); border: 1.5px solid transparent;
       background: rgba(190,197,210,0.28); cursor: pointer; text-align: left;
       display: flex; align-items: flex-start; padding: clamp(13px, 1.4vw, 18px) clamp(12px, 1.2vw, 18px) 0;
-      font-size: clamp(12px, 1.1vw, 16px); font-weight: 600; letter-spacing: -0.03em; color: #0e1825;
+      font-size: clamp(12px, 1.1vw, 16px); font-weight: 600; letter-spacing: -0.03em; color: #161A1E;
       transition: border-color .25s ease, background-color .25s ease, transform .2s ease; }
     .ux-tab:hover { transform: translateY(-2px); }
     .ux-tab.active { border-color: #ff0b6c; background: #fff; }
@@ -2067,18 +2219,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── UX Logic 빅카드 컬러 (흰 배경 통합) ── */
     .ux-bigcards-inner .ux-bigcard { background: #EDEEF0 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(1) { background: #FF3385 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(2) { background: #A1D202 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(3) { background: #A5E0F0 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(4) { background: #0A67DE !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(5) { background: #09421A !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(6) { background: #280047 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(1) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(1) .sub { color: #FFCADF !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(2) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(2) .sub { color: #DAFF61 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(3) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(3) .sub { color: #FF6B3D !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(4) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(4) .sub { color: #F5F5F5 !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(5) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(5) .sub { color: #82FF8F !important; }
-    .ux-bigcards-inner .ux-bigcard:nth-child(6) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(6) .sub { color: #FFF2A8 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(1) { background: #FF6B3D !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(2) { background: #D9FF60 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(3) { background: #F1F1F1 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(4) { background: #8BDFEF !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(5) { background: #FECADF !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(6) { background: #22AFD6 !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(1) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(1) .sub { color: #161A1E !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(2) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(2) .sub { color: #161A1E !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(3) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(3) .sub { color: #161A1E !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(4) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(4) .sub { color: #161A1E !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(5) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(5) .sub { color: #161A1E !important; }
+    .ux-bigcards-inner .ux-bigcard:nth-child(6) .kr, .ux-bigcards-inner .ux-bigcard:nth-child(6) .sub { color: #161A1E !important; }
     .ux-bigcards-inner .ux-bigcard .sub { opacity: .8 !important; }
 
     /* ── 인트로(sq-morph)를 ux-logic-sticky 안으로 병합 ── */
@@ -2100,7 +2252,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform: rotateX(calc(15deg * var(--sp,0))) rotateY(calc(-44deg * var(--sp,0))); }
     .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { opacity: calc(1 - 0.1 * var(--sp,0));
       transition: opacity .2s ease; }
-    .ux-logic-sticky .sq-morph.stacking .sq-card-txt { opacity: clamp(0, calc(1 - var(--sp,0) * 4), 1) !important; }
+    /* 카드가 스택으로 이동(.8s)하기 전에 글자부터 먼저 죽어야 좌상단 카드와 안 겹친다 —
+       기본 .sq-card-txt 트랜지션(.25s 지연 + .5s)을 쓰면 카드가 이미 움직이는 동안
+       글자가 그대로 남아 있다가 겹쳐 보이므로, 지연 없이 훨씬 빠르게 덮어쓴다. */
+    .ux-logic-sticky .sq-morph.stacking .sq-card-txt { opacity: clamp(0, calc(1 - var(--sp,0) * 4), 1) !important; transition: opacity .12s ease !important; }
     .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { pointer-events: auto; cursor: pointer; }
     .ux-logic-sticky .sq-morph.settled .sq-morph-seg { transition: transform .3s cubic-bezier(.22,1,.32,1), opacity .2s ease; }
     .ux-logic-sticky .sq-morph.stacking .seg1 { transform: translateX(calc(2.5 * 100% * var(--sp,0))) translateZ(calc(85px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
@@ -2159,7 +2314,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       background: #F1F1F1;
       border: none; border-radius: clamp(20px,1.5vw,28px);
       padding: clamp(26px,2.1vw,38px) clamp(26px,2.3vw,42px) clamp(24px,1.9vw,35px); gap: clamp(12px,1.1vw,17px); }
-    .ux-right-holder .stage-logic-title { color: #0e1825; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em; }
+    .ux-right-holder .stage-logic-title { color: #161A1E; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em; }
     .ux-right-holder .stage-logic-tag {
       background: rgba(14,24,37,0.06); color: rgba(14,24,37,0.62); font-weight: 500;
       font-size: clamp(14px,0.92vw,17.5px); border-radius: 19px; padding: clamp(7px,0.46vw,9px) clamp(13px,0.92vw,18px); }
@@ -2224,12 +2379,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .stage-left { flex-shrink: 0; width: 460px; }
     .stage-kr-label {
-      font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #ff0b6c;
+      font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #6E6E6E;
       letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 16px;
     }
     .stage-kr {
       font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3;
-      letter-spacing: -0.03em; margin-bottom: 24px; color: #0e1825;
+      letter-spacing: -0.03em; margin-bottom: 24px; color: #161A1E;
     }
     .stage-desc {
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
@@ -2241,7 +2396,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       background: #fff3f7; border-radius: 100px;
       border: 1.5px solid #ff0b6c;
       padding: 6px 20px;
-      font-size: clamp(18px,2.2vw,32px); font-weight: 600; color: #ff0b6c;
+      font-size: clamp(18px,2.2vw,32px); font-weight: 600; color: #6E6E6E;
       letter-spacing: -0.03em;
     }
     .stage-right { flex: 1; display: flex; flex-direction: column; gap: 20px; }
@@ -2249,7 +2404,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       cursor: pointer;
     }
     .stage-logic-card {
-      background: #F4F8FC; border-radius: 32px;
+      background: #F7F7F7; border-radius: 32px;
       padding: 44px 48px 40px;
       display: flex; flex-direction: column; gap: 20px;
       border: 1px solid rgba(0,0,0,0.04);
@@ -2261,7 +2416,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .stage-logic-title {
       font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3;
-      letter-spacing: -0.04em; color: #0e1825;
+      letter-spacing: -0.04em; color: #161A1E;
     }
     .stage-logic-tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .stage-logic-tag {
@@ -2271,7 +2426,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .stage-logic-desc {
       font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5;
-      letter-spacing: -0.03em; color: #0e1825; opacity: 0.4;
+      letter-spacing: -0.03em; color: #161A1E; opacity: 0.4;
     }
 
     /* ── SENSING DETAIL FROM FIGMA ─────────────────── */
@@ -2375,7 +2530,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-weight: 400;
       line-height: 1.4;
       letter-spacing: -0.03em;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-pill-row {
       display: grid;
@@ -2395,7 +2550,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       line-height: 1.4;
       letter-spacing: -0.03em;
     }
-    .sd-pink { color: #ff076a; }
+    .sd-pink { color: #6E6E6E; }
     .sd-sensing-scene {
       min-height: 1060px;
       position: relative;
@@ -2415,7 +2570,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-weight: 600;
       letter-spacing: -0.04em;
       white-space: nowrap;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-caption-right {
       position: absolute;
@@ -2551,7 +2706,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       line-height: 1.4;
       letter-spacing: -0.04em;
       white-space: nowrap;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-tick h2 span { color: #F4F8FC; }
     .sd-tick p {
@@ -2660,23 +2815,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex;
       flex-direction: column;
       gap: 40px;
-      color: #0e1825;
+      color: #161A1E;
     }
     .sd-card-text h3 {
-      font-size: clamp(18px,2.8vw,42px);
+      font-size: clamp(14px,2.2vw,34px);
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.04em;
     }
     .sd-card-text h3 span {
       display: block;
-      font-size: clamp(13px,1.6vw,26px);
+      font-size: clamp(10px,1.3vw,21px);
       letter-spacing: -0.03em;
     }
     .sd-card-text p {
-      font-size: clamp(13px,1.6vw,26px);
+      font-size: clamp(10px,1.3vw,21px);
       line-height: 1.5;
-      font-weight: 500;
+      font-weight: 400;
       opacity: .4;
       letter-spacing: -0.03em;
     }
@@ -2688,7 +2843,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       align-items: center;
     }
     .sd-active-label {
-      color: #ff076a;
+      color: #6E6E6E;
       font-size: clamp(18px,2.2vw,32px);
       font-weight: 600;
       line-height: 1.3;
@@ -2724,7 +2879,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       border-radius: 32px;
       background:
         linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 127.56%),
-        #EBF0F5;
+        #F7F7F7;
       min-height: 377px;
       padding: 42px;
       display: grid;
@@ -2733,7 +2888,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       align-items: center;
     }
     .sd-flow-side .label {
-      color: #ff076a;
+      color: #6E6E6E;
       font-size: clamp(18px,2.2vw,32px);
       margin-bottom: 4px; font-weight: 600; letter-spacing: -0.03em;}
     .sd-flow-side h3 {
@@ -2835,7 +2990,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: .6;
     }
     .sd-flow-card span {
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-weight: 400;
       font-size: clamp(13px,1.4vw,24px);
       line-height: .96;
@@ -2896,7 +3051,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-principle .kicker {
       font-size: clamp(18px,2.2vw,32px);
-      color: #ff076a;
+      color: #6E6E6E;
       line-height: 1.3;
       font-weight: 600;
       letter-spacing: -0.03em;
@@ -2969,7 +3124,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .md-big-card {
       height: 900px;
       border-radius: 32px;
-      background: #F4F8FC;
+      background: #F7F7F7;
       position: relative;
       overflow: hidden;
     }
@@ -2977,7 +3132,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       left: 90px;
       bottom: 102px;
-      color: #0e1825;
+      color: #161A1E;
     }
     .md-big-copy .eyebrow {
       font-size: clamp(18px,2.2vw,32px);
@@ -3006,7 +3161,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .md-ai-left {
       height: 900px;
       border-radius: 32px;
-      background: #F4F8FC;
+      background: #F7F7F7;
       position: relative;
       overflow: hidden;
     }
@@ -3026,7 +3181,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       border-radius: 32px;
       overflow: hidden;
       position: relative;
-      background: #F4F8FC;
+      background: #F7F7F7;
       display: flex;
       align-items: flex-end;
     }
@@ -3045,7 +3200,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       height: 200px;
       padding: 40px;
       background: linear-gradient(180deg, rgba(244,248,252,0) 0%, #F4F8FC 100%);
-      color: #0e1825;
+      color: #161A1E;
     }
     .md-ai-card-text h3 {
       font-size: clamp(18px,2.8vw,42px);
@@ -3124,7 +3279,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-kicker {
       font-size: clamp(18px,2.2vw,32px);
-      color: #ff076a;
+      color: #6E6E6E;
       line-height: 1.3;
       letter-spacing: -0.03em;
       font-weight: 600;
@@ -3151,11 +3306,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .md-principle-card {
       min-height: 267px;
       border-radius: 24px;
-      background: #F4F8FC;
+      background: #F7F7F7;
       padding: 48px 40px 40px;
     }
     .md-principle-card .mini {
-      font-size: clamp(13px,1.4vw,24px);
+      font-size: clamp(11px,1.15vw,19px);
       font-weight: 400;
       line-height: 1.3;
       letter-spacing: -0.02em;
@@ -3163,16 +3318,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       margin-bottom: 17px;
     }
     .md-principle-card h3 {
-      font-size: clamp(18px,2.8vw,42px);
+      font-size: clamp(14px,2.2vw,34px);
       line-height: 1.3;
       letter-spacing: -0.04em;
       font-weight: 600;
       margin-bottom: 17px;
     }
     .md-principle-card p {
-      font-size: clamp(13px,1.6vw,26px);
+      font-size: clamp(10px,1.3vw,21px);
       line-height: 1.5;
-      letter-spacing: -0.03em; font-weight: 500;}
+      letter-spacing: -0.03em; font-weight: 400; opacity: .8;}
     .md-ability {
       display: grid;
       grid-template-columns: 355px 1fr;
@@ -3231,7 +3386,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .md-triple-box {
       height: 516px;
       border-radius: 32px;
-      background: #F4F8FC;
+      background: #F7F7F7;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -3248,7 +3403,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       border-radius: 32px;
       background:
         radial-gradient(circle at 70% 40%, rgba(255,7,106,.14), transparent 28%),
-        #F4F8FC;
+        #F7F7F7;
       position: relative;
       overflow: hidden;
     }
@@ -3351,7 +3506,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-last-item .kicker {
       font-size: clamp(18px,2.2vw,32px);
-      color: #ff076a;
+      color: #6E6E6E;
       line-height: 1.3;
       letter-spacing: -0.03em;
       font-weight: 600;
@@ -3384,7 +3539,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
-      color: #000; font-family: "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
@@ -3393,7 +3548,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
       min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #0e1825; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
@@ -3482,7 +3637,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .diagram-tab .tab-n { font-size: clamp(12px, 1.8vw, 20px); }
       .diagram-tab .tab-l { font-size: clamp(16px, 2.2vw, 30px); }
       .hero-h1 { font-size: clamp(32px,4.8vw,72px); }
-      .skeeeep-t1, .skeeeep-t2 { font-size: clamp(22px,4.2vw,34px); }
+      .skeeeep-t1 { font-size: clamp(25px,4.7vw,38px); }
+      .skeeeep-t2 { font-size: clamp(22px,4.2vw,34px); }
       .agent-title, .packet-title, .sk-title { font-size: clamp(24px,4vw,54px); }
       .sys-title, .ux-title { font-size: clamp(24px,4vw,54px); }
       .hero-brand {
@@ -3566,14 +3722,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   <div class="hero-coverflow" aria-hidden="true">
     <div class="hcf-stage" data-coverflow>
-      <div class="hcf-card"><img src="assets/agent-dev-1.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-2.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-3.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-4.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-5.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-6.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-7.png" alt="" decoding="async"></div>
-      <div class="hcf-card"><img src="assets/agent-dev-8.png" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 1648; --h: 1414"><img src="assets/agent-dev-1.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 602; --h: 770"><img src="assets/agent-dev-2.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 1816; --h: 1262"><img src="assets/agent-dev-3.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 610; --h: 610"><img src="assets/agent-dev-4.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 872; --h: 1414"><img src="assets/agent-dev-5.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 724; --h: 740"><img src="assets/agent-dev-6.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 1736; --h: 1414"><img src="assets/agent-dev-7.jpg" alt="" decoding="async"></div>
+      <div class="hcf-card" style="--w: 758; --h: 940"><img src="assets/agent-dev-8.jpg" alt="" decoding="async"></div>
     </div>
   </div>
   <script>
@@ -3583,37 +3739,107 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     var cards = [].slice.call(stage.querySelectorAll('.hcf-card'));
     var n = cards.length;
     if (n < 2) return;
-    // 디바이스 타일 플랫 코버플로우 (틸트/뎁스 없이 translateX + scale, 조율하다 스타일)
-    var SCALE_STEP = 0.06, MAX_VISIBLE = 2, DELAY = 2200;
-    var active = 0;   // 첫 장면 중앙 = 첫 타일
-    function gapPx() { return stage.offsetWidth * 1.04; }   // 타일 폭 기준 → 거의 붙게
-    function render() {
+    // 디바이스 타일 플랫 코버플로우 (틸트/뎁스 없이 translateX + scale, 조율하다 스타일).
+    // 분석한 참고 영상과 똑같이: 정지→스냅이 아니라 한 번도 완전히 안 멈추고
+    // 계속 흐르되, 가운데 자리 근처에서만 체감상 거의 멈춘 듯 느리고 그 사이는
+    // 빠르게 훑는 연속 곡선 — 그래서 CSS 트랜지션 대신 매 프레임 rAF로 직접 그린다.
+    var SCALE_STEP = 0.17, VISIBLE_COUNT = 5, PERIOD = 2200, INITIAL_HOLD = 1600;
+    // 참고 영상의 "빠른 진입 → 가운데서 긴 체류 → 빠른 퇴장" 곡선을 흉내내는 이징.
+    // quint는 0/1 부근 기울기가 거의 0이라 체류가 길게 느껴지고, 중간만 확 지나간다.
+    function easeInOutQuint(t) {
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+    }
+    // 카드마다 폭이 달라서, 중심 간 거리를 고정하면 '보이는 틈'이 제각각이 된다.
+    // (큰 카드 옆은 좁아 보이고 작은 카드끼리는 벌어져 보인다)
+    // 그래서 이웃의 실제 폭(축소 반영)을 누적해 배치한다 — 틈은 늘 GAP으로 일정하다.
+    // 정수 위치에서만 누적하고 그 사이를 선형보간했더니, 이웃 카드 크기가 서로 많이
+    // 다를 땐 두 카드가 서로 다른 속도로 움직이는 것처럼 보여 그 틈이 전환 중에
+    // 벌어졌다 좁아졌다 했다 — 그래서 지금은 매 프레임 현재 위치 그대로 다시 정렬해
+    // 누적한다(카드 폭은 스케일과 무관하게 고정이라 미리 재둔 값을 그대로 쓴다).
+    function gapPx() { return stage.offsetWidth * 0.16; }
+    function scaleFor(ax) { return Math.max(0.5, 1 - ax * SCALE_STEP); }
+    function normRel(rel) {
+      while (rel > n / 2) rel -= n;
+      while (rel < -n / 2) rel += n;
+      return rel;
+    }
+    var baseWidth = [];
+    function measure() {
+      for (var i = 0; i < n; i++) baseWidth[i] = cards[i].offsetWidth || 1;
+    }
+    function render(activeFloat) {
       var G = gapPx();
+      var items = [];
       for (var i = 0; i < n; i++) {
-        var rel = i - active;
-        if (rel > n / 2) rel -= n;
-        if (rel < -n / 2) rel += n;
-        var ax = Math.abs(rel);
-        var visible = ax <= MAX_VISIBLE;
-        var sc = Math.max(0.5, 1 - ax * SCALE_STEP);
-        var c = cards[i];
-        c.style.transform = 'translate(-50%,-50%) translateX(' + (rel * G) + 'px) scale(' + sc + ')';
-        c.style.opacity = visible ? (rel === 0 ? '1' : '0.3') : '0';   // 중앙만 선명, 양옆 딤
-        c.style.zIndex = String(100 - ax);
-        c.classList.toggle('is-active', rel === 0);
+        var rel = normRel(i - activeFloat);
+        items.push({ i: i, rel: rel, ax: Math.abs(rel), w: baseWidth[i] * scaleFor(Math.abs(rel)) });
+      }
+      // "ax <= 문턱값"으로 보이고 숨김을 나눴더니, 중심(ax=0)이 정확히 카드 위 정수에
+      // 있는 순간이 아니면 왼쪽/오른쪽이 그 문턱을 서로 다른 타이밍에 넘어서 — 어떤
+      // 순간엔 양쪽 다 2칸씩(5장), 어떤 순간엔 한쪽만 2칸(4장)이 되며 비대칭으로
+      // 깜빡였다. 그래서 문턱 대신 "중심에서 가까운 순서로 정확히 N장"을 보이게 고정한다
+      // — 항상 같은 개수만 뜨고, 카드가 하나 빠지면 반대쪽에서 하나가 정확히 그만큼 들어온다.
+      var visible = {};
+      items.slice().sort(function (a, b) { return a.ax - b.ax; })
+        .slice(0, VISIBLE_COUNT)
+        .forEach(function (it) { visible[it.i] = true; });
+
+      items.sort(function (a, b) { return a.rel - b.rel; });
+
+      // 왼쪽부터 누적 배치한 뒤, rel=0을 지나는 지점(또는 가장 가까운 카드)이
+      // x=0에 오도록 전체를 평행이동한다 — 그래야 중앙 카드가 항상 무대 중앙에 선다.
+      var x = [], k, zeroX = 0, found = false;
+      for (k = 0; k < items.length; k++) {
+        x[k] = k === 0 ? 0 : x[k - 1] + items[k - 1].w / 2 + G + items[k].w / 2;
+        if (items[k].rel === 0) { zeroX = x[k]; found = true; }
+        else if (!found && k > 0 && items[k - 1].rel < 0 && items[k].rel > 0) {
+          var t = (0 - items[k - 1].rel) / (items[k].rel - items[k - 1].rel);
+          zeroX = x[k - 1] + t * (x[k] - x[k - 1]);
+          found = true;
+        }
+      }
+
+      for (k = 0; k < items.length; k++) {
+        var it = items[k], c = cards[it.i];
+        c.style.transform = 'translate(-50%,-50%) translateX(' + (x[k] - zeroX) + 'px) scale(' + scaleFor(it.ax) + ')';
+        // 레퍼런스 영상처럼 보이는 카드는 옅어지지 않는다 — 딤(서서히 흐려짐) 없이 항상
+        // 완전 불투명. 다만 스케일이 0.5에서 바닥을 쳐서 먼 카드도 계속 또렷하게 남아있으면
+        // 무관한 상품이 화면 가장자리에 계속 끼어 보인다 — 그래서 딤 대신 위에서 고른
+        // 상위 N장 밖은 숨긴다. 켜짐/꺼짐을 순간적으로 하면 깜빡이는 것처럼 보여서,
+        // 짧게만 페이드시킨다(오래 옅어지는 딤이 아니라 있다/없다를 빠르게 잇는 정도).
+        c.style.opacity = visible[it.i] ? '1' : '0';
+        c.style.zIndex = String(100 - Math.round(it.ax * 10));
+        c.classList.toggle('is-active', it.ax < 0.5);
       }
     }
-    window.addEventListener('resize', render);
-    render();
+    window.addEventListener('resize', function () { measure(); render(lastActiveFloat); });
+    measure();
+    var lastActiveFloat = 0;
+    render(0);
+
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduce) {
-      function hcfAdvance() {
-        active = (active + 1) % n;
-        render();
-        document.dispatchEvent(new CustomEvent('skeep:coverflow', { detail: { index: active } }));
+      var startTime = null, lastWhole = 0, raf = 0;
+      function tick(now) {
+        if (startTime === null) startTime = now;
+        var elapsed = now - startTime - INITIAL_HOLD;
+        var activeFloat;
+        if (elapsed < 0) {
+          activeFloat = 0;
+        } else {
+          var cycle = elapsed / PERIOD;
+          var whole = Math.floor(cycle);
+          activeFloat = whole + easeInOutQuint(cycle - whole);
+          if (whole !== lastWhole) {
+            lastWhole = whole;
+            document.dispatchEvent(new CustomEvent('skeep:coverflow', { detail: { index: whole % n } }));
+          }
+        }
+        lastActiveFloat = activeFloat;
+        render(activeFloat);
+        raf = requestAnimationFrame(tick);
       }
-      // 첫 타일(주황 엘베)에 더 오래 머문 뒤 자동 전환 시작
-      window.setTimeout(function () { hcfAdvance(); window.setInterval(hcfAdvance, DELAY); }, DELAY + 2200);
+      raf = requestAnimationFrame(tick);
     }
   })();
   </script>
@@ -3622,13 +3848,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   (function () {
     var glow = document.querySelector('.hero-glow');
     if (!glow) return;
-    var eyebrow = document.querySelector('.hero-eyebrow');   // SKEEP INTELLIGENCE SYSTEM™ (빨강)
     var COLORS = ['#FF6B3D', '#FFCADF', '#F1F1F1', '#E7FF96', '#F1F1F1', '#09421A', '#89DFF0', '#F1F1F1'];
     var idx = 0;   // 첫 색부터 시작
     function apply() {
       var c = COLORS[idx % COLORS.length];
       glow.style.setProperty('--glow', c);   // radial-gradient 색 (무스 호환)
-      if (eyebrow) eyebrow.style.color = c;   // 영어 라벨 색도 함께 순환
+      // 영어 라벨(eyebrow)은 고정 색(#9FA1A2)로 유지 — 더 이상 순환하지 않는다.
     }
     apply();
     document.addEventListener('skeep:coverflow', function () {
@@ -3637,61 +3862,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     });
   })();
   </script>
-  <script>
-  /* 인트로: 손 인사 칩 1개 — 중앙(선택된) 타일 바로 위에 뜸. 타일이 바뀔 때(skeep:coverflow)마다
-     문구가 영어→한국어→일본어→중국어 순서로 바뀌고, 각 언어 안에서는 인사말을 랜덤으로 고른다.
-     무스 호환(rAF/canvas 없음, CSS keyframe 흔들림). */
-  (function () {
-    var stage = document.querySelector('[data-coverflow]');
-    if (!stage) return;
-    var HAND = 'assets/skeep-cursor-hand.png';
-    // 언어 순서: 영어 → 한국어 → 일본어 → 중국어. 각 언어별 인사말 여러 개 중 랜덤.
-    var LANGS = [
-      ['Hi', 'Hello', 'Hey there', 'Nice to meet you'],   // English
-      ['안녕', '안녕하세요', '반가워요', '어서 와요'],          // 한국어
-      ['やあ', 'こんにちは', 'はじめまして', 'ようこそ'],        // 日本語
-      ['嗨', '你好', '很高兴认识你', '欢迎']                    // 中文
-    ];
-    var solo = document.createElement('div');
-    solo.className = 'hero-hand-solo';
-    solo.setAttribute('aria-hidden', 'true');
-    var chip = document.createElement('div');
-    chip.className = 'hand-chip';
-    var lbl = document.createElement('div');
-    lbl.className = 'hand-lbl';
-    var ico = document.createElement('div');
-    ico.className = 'hand-ico';
-    ico.innerHTML = '<img src="' + HAND + '" alt="" decoding="async">';
-    var txt = document.createElement('span');
-    txt.className = 'hand-txt';
-    lbl.appendChild(ico);   // 손 아이콘을 말풍선 안, 텍스트 왼쪽에
-    lbl.appendChild(txt);
-    chip.appendChild(lbl);
-    solo.appendChild(chip);
-    stage.appendChild(solo);
-
-    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var li = 0, last = -1;
-    function pick(idx) {
-      var arr = LANGS[idx], j = Math.floor(Math.random() * arr.length);
-      if (arr.length > 1 && j === last) j = (j + 1) % arr.length;   // 직전과 다른 문구로
-      last = j; return arr[j];
-    }
-    function setText() { txt.textContent = pick(li); }
-    setText();   // 첫 장면: 영어
-    document.addEventListener('skeep:coverflow', function () {
-      li = (li + 1) % LANGS.length;   // 영 → 한 → 일 → 중 순환
-      if (reduceMotion) { setText(); return; }
-      txt.style.opacity = '0';
-      window.setTimeout(function () { setText(); txt.style.opacity = '1'; }, 180);
-    });
-  })();
-  </script>
 
   <div class="hero-gnb" id="heroGnb">
     <div class="hero-gnb-shape gnb-away" id="heroGnbShape">
-      <a class="hero-gnb-card" style="background:#EBF0F5" href="saegyeodeutda.html">새겨듣다</a>
-      <a class="hero-gnb-card" style="background:#EBF0F5" href="smeureulda.html">스며들다</a>
+      <a class="hero-gnb-card" style="background:#F7F7F7" href="saegyeodeutda.html">새겨듣다</a>
+      <a class="hero-gnb-card" style="background:#F7F7F7" href="smeureulda.html">스며들다</a>
       <a class="hero-gnb-card" style="background:#E2E8EF" href="#negotiation">조율하다</a>
       <a class="hero-gnb-card" style="background:#D8DEE6" href="#borrowing">빌려쓰다</a>
       <a class="hero-gnb-card" style="background:#D0D7E0" href="#keep">지켜주다</a>
@@ -3739,11 +3914,141 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <div class="skeeeep-video-bg"></div>
       </div>
     </div>
-    <p class="skeeeep-t1" id="skeeeepT1">Skeep into the new era</p>
+    <!-- Originkit ZoomTextTunnel 이식(순수 CSS transition + JS 타이머, framer-motion
+         없이): SKEEP → INTO THE → NEW ERA 순서로 하나씩 확대되며 화면을 뚫고 지나가듯
+         사라지고, 다음 문구가 작은 크기에서 커지며 나타나는 걸 무한 반복한다.
+         .zt-sizer는 보이지 않는 채로 셋 중 가장 긴 문구 크기를 유지해 문구가
+         바뀌어도 박스 크기(가운데 정렬 기준)가 흔들리지 않게 한다. -->
+    <p class="skeeeep-t1 zt-outer" id="skeeeepT1" aria-label="SKEEP, INTO THE, NEW ERA">
+      <span class="zt-sizer" aria-hidden="true">INTO THE</span>
+      <span class="zt-slot" id="ztSlot0" aria-hidden="true"></span>
+      <span class="zt-slot" id="ztSlot1" aria-hidden="true"></span>
+    </p>
     <p class="skeeeep-t2">Skip the intro, Keep the flow</p>
     <p class="skip-sub" aria-hidden="true"></p>
   </div>
 </section>
+
+<!-- Originkit ZoomTextTunnel 이식 (framer-motion 없이 순수 CSS transition + JS
+     타이머). 원본은 두 slot을 번갈아 scale/opacity 트윈으로 크로스페이드하는
+     구조라, WAAPI 없이도 el.style.transition + rAF 한 프레임 지연만으로 동일하게
+     재현 가능하다 (경량 유지). -->
+<script>
+(() => {
+  const ZT_TEXTS = ['SKEEP', 'INTO THE', 'NEW ERA'];
+  const ZT_HOLD_MS = 300;
+  /* 35배 확대는 브라우저 합성 텍스처 한계를 넘어 글자 가장자리가 깨졌다.
+     커진 기본 글자와 함께 18배면 화면을 충분히 덮으면서도 윤곽이 선명하다. */
+  const ZT_MAX_SCALE = 18;
+  const ZT_START_SCALE = 0.28;
+  const ZT_DURATION_MS = 650;   // 1200 → 650: 확대 전환이 느리다는 피드백으로 단축
+  const ZT_FADE_MS = 280;       // 사라지는 문구는 확대(650ms)가 다 끝나기 전에 더 일찍 투명도 0에 도달
+  const ZT_EASE = 'cubic-bezier(0.7, 0, 0.25, 1)';
+  // scale/opacity는 기존의 힘있는 커브를 쓰지만, 회전은 훨씬 완만한 커브로 별도
+  // 애니메이션해 "0도에서 시작해 커지는 동안 서서히 틀어지는" 것이 눈에 보이게 한다
+  // (scale과 같은 커브를 쓰면 회전이 초반에 거의 다 끝나버려 튀어 보였음).
+  const ZT_ROTATE_EASE = 'cubic-bezier(0.33, 0, 0.2, 1)';
+  const ZT_ROTATIONS = [0, 9, -8];   // 첫 SKEEP만 0도(안 기울임), 나머지는 더 크게 틀어지게
+
+  const slot0 = document.getElementById('ztSlot0');
+  const slot1 = document.getElementById('ztSlot1');
+  const section = document.querySelector('.sec-skeeeep');
+  if (!slot0 || !slot1 || !section) return;
+  const slots = [slot0, slot1];
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) {
+    slot0.textContent = ZT_TEXTS[0];
+    slot0.style.transform = 'scale(1)';
+    slot0.style.opacity = '1';
+    slot1.style.opacity = '0';
+    return;
+  }
+
+  // scale/rotate를 하나의 transform 대신 별개의 CSS 속성으로 다뤄서, 회전만 다른
+  // 이징/커브로 독립 애니메이션할 수 있게 한다.
+  const setInstant = (el, scale, opacity, rotateDeg) => {
+    el.style.transition = 'none';
+    el.style.scale = String(scale);
+    el.style.rotate = `${rotateDeg || 0}deg`;
+    el.style.opacity = String(opacity);
+    void el.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
+  };
+  const setAnimated = (el, scale, opacity, rotateDeg) => {
+    el.style.transition = `scale ${ZT_DURATION_MS}ms ${ZT_EASE}, rotate ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
+    el.style.scale = String(scale);
+    el.style.rotate = `${rotateDeg || 0}deg`;
+    el.style.opacity = String(opacity);
+  };
+  // 사라지는 쪽 전용: 확대(scale)는 그대로 ZT_DURATION_MS만큼 이어지되, 투명도만
+  // 훨씬 짧은 ZT_FADE_MS 안에 0으로 당겨서 "다 확대되기 전에 이미 안 보이게" 만든다.
+  // 회전은 등장할 때가 아니라 이 사라지는 단계에서 일어난다 — 0도로 떠 있다가
+  // 투명해지며 커지는 동안 자기 각도로 비틀린다.
+  const setExitAnimated = (el, scale, rotateDeg) => {
+    el.style.transition = `scale ${ZT_DURATION_MS}ms ${ZT_EASE}, rotate ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
+    el.style.scale = String(scale);
+    el.style.rotate = `${rotateDeg || 0}deg`;
+    el.style.opacity = '0';
+  };
+
+  let active = 0, idx = 0, shownCount = 1;   // SKEEP은 이미 떠 있는 상태로 시작
+
+  slot0.textContent = ZT_TEXTS[0];
+  setInstant(slot0, 1, 1, ZT_ROTATIONS[0]);
+  setInstant(slot1, ZT_START_SCALE, 0, 0);
+
+  // SKEEP → INTO THE → NEW ERA 딱 한 바퀴만 돌고, NEW ERA가 확대되며 사라지면
+  // 무한반복하지 않고 곧바로 카드 플립을 트리거한다.
+  function step() {
+    window.setTimeout(() => {
+      if (shownCount >= ZT_TEXTS.length) {
+        setExitAnimated(slots[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]);
+        window.setTimeout(() => {
+          // 문구 모션이 다 끝난 뒤에야 배경 사진을 디졸브로 띄우고, 그게 다
+          // 나타난 뒤에 뒤집는다 — 문구 진행 중엔 배경 없이 검정만 유지.
+          const ringBg = document.getElementById('skeeeepRingBg');
+          if (ringBg) ringBg.classList.add('is-in');
+          window.setTimeout(() => {
+            // 사진이 다 나타난 뒤에도 곧장 뒤집지 않고, 아주 짧게만 머물러
+            // 보여준 다음 뒤집는다.
+            window.setTimeout(() => {
+              if (window.__skeeeepAutoFlip) window.__skeeeepAutoFlip();
+            }, 600);
+          }, 900);   // .skeeeep-ring-bg의 opacity transition(900ms)과 맞춤
+        }, ZT_DURATION_MS);
+        return;
+      }
+      const inc = 1 - active;
+      const nextIdx = idx + 1;
+      slots[inc].textContent = ZT_TEXTS[nextIdx];
+    setInstant(slots[inc], ZT_START_SCALE, 0, 0);
+      requestAnimationFrame(() => {
+        setAnimated(slots[inc], 1, 1, 0);                                // 다음 문구: 작게 시작해 0도인 채로 제자리 크기까지만 확대(회전 없음)
+        setExitAnimated(slots[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]); // 지금 문구: 0도에서 자기 각도로 비틀리며 확대되어 사라짐
+        window.setTimeout(() => {
+          setInstant(slots[active], ZT_START_SCALE, 0, 0);
+          active = inc;
+          idx = nextIdx;
+          shownCount++;
+          step();
+        }, ZT_DURATION_MS);
+      });
+    }, ZT_HOLD_MS);
+  }
+
+  // 스크롤로 이 섹션에 들어오는 순간부터 세도록 IntersectionObserver로 시작 시점을
+  // 잡는다 — setTimeout 기반이라 게이팅 없이 그냥 페이지 로드부터 돌리면, 사용자가
+  // 늦게 스크롤해 도착했을 때 이미 다 끝나고(심하면 플립까지 되고) 있을 수 있다.
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { io.disconnect(); step(); }
+    }, { threshold: 0.3 });
+    io.observe(section);
+  } else {
+    step();
+  }
+})();
+</script>
 
 <!-- 배경: 정적 사진으로 대체 (3D 이미지 링 제거). .is-in 등장 페이드 로직만 유지 -->
 <script>
@@ -3768,9 +4073,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const t2 = sec && sec.querySelector('.skeeeep-t2');
   const sticky = sec && sec.querySelector('.skeeeep-sticky');
   if (!sec || !t1 || !sticky) return;
-  /* 기존 e 반복 생성·스크롤 잠금·텍스트 몰핑은 3D 플립 전환으로 대체했다. */
+  /* 기존 e 반복 생성·스크롤 잠금·텍스트 몰핑은 3D 플립 전환으로 대체했다.
+     t1.textContent를 직접 건드리지 않는다 — 이제 안에 ZoomTextTunnel용
+     .zt-slot span 2개가 들어있어서, 여기서 지우면 그 구조가 날아간다. */
   sticky.classList.add('sk-shown');
-  t1.textContent = 'Skeep into the new era';
   return;
   const photoEl = sec.querySelector('#skeeeepRingBg');
 
@@ -3940,14 +4246,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="agent-sticky">
     <video class="agent-bg-video" src="assets/input-hero-bg.mp4" poster="assets/input-hero-bg-poster.jpg" autoplay loop muted playsinline aria-hidden="true"></video>
     <div class="agent-flow" data-agent-flow aria-hidden="true">
-      <div class="agent-flow-card agent-flow-card--laptop"><img src="assets/agent-dev-8.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--vending"><img src="assets/agent-dev-7.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--display"><img src="assets/agent-dev-5.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--phone"><img src="assets/agent-dev-6.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--elevator"><img src="assets/agent-dev-1.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--kiosk"><img src="assets/agent-dev-2.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--shelter"><img src="assets/agent-dev-3.png" alt="" decoding="async"></div>
-      <div class="agent-flow-card agent-flow-card--fridge"><img src="assets/agent-dev-4.png" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--laptop"><img src="assets/agent-dev-8.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--vending"><img src="assets/agent-dev-7.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--display"><img src="assets/agent-dev-5.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--phone"><img src="assets/agent-dev-6.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--elevator"><img src="assets/agent-dev-1.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--kiosk"><img src="assets/agent-dev-2.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--shelter"><img src="assets/agent-dev-3.jpg" alt="" decoding="async"></div>
+      <div class="agent-flow-card agent-flow-card--fridge"><img src="assets/agent-dev-4.jpg" alt="" decoding="async"></div>
     </div>
     <div class="agent-row">
       <div class="agent-left" data-agent-left>
@@ -4107,14 +4413,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <section class="system-flow-sequence" data-system-flow-sequence>
 <div class="system-flow-sticky">
 <section class="sec-system-diagram system-flow-scene system-flow-scene--diagram" data-system-flow-diagram>
+  <div class="diagram-journey-copy">
+    <p class="diagram-journey-title">User Journey</p>
+    <p class="diagram-journey-desc">사용자가 경험하는 이동의 흐름</p>
+  </div>
   <div class="diagram-card">
     <div class="diagram-pair diagram-pair--journey">
-      <img class="diagram-left" src="assets/journey-left.png" alt="USER JOURNEY — 사용자가 경험하는 이동의 흐름 (정면을 바라보고 서 있는 사용자)">
-      <img class="diagram-right" src="assets/journey-right-v2.png" alt="사용자 경험 플로우: 자동차·거실·세탁 공간·침실로 이어지는 이동의 흐름">
+      <div class="diagram-left-wrap">
+        <img class="diagram-left" src="assets/journey-left-v3.jpg" alt="정면을 바라보고 서 있는 사용자">
+      </div>
+      <img class="diagram-right" src="assets/journey-right-v3.jpg" alt="사용자 경험 플로우: 자동차·거실·세탁 공간·침실로 이어지는 이동의 흐름">
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
-      <img class="diagram-left" src="assets/context-left-v2.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
-      <img class="diagram-right" src="assets/context-right-v2.png?v=20260724-2023" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
+      <img class="diagram-left" src="assets/context-left-v2.png?v=20260807-2" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
+      <img class="diagram-right" src="assets/context-right-v2.png?v=20260807-4" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -4132,10 +4444,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 (() => {
   const card = document.querySelector('.sec-system-diagram .diagram-card');
   const tabs = document.querySelectorAll('.sec-system-diagram .diagram-tab');
+  const title = document.querySelector('.sec-system-diagram .diagram-journey-title');
+  const desc = document.querySelector('.sec-system-diagram .diagram-journey-desc');
   if (!card || !tabs.length) return;
+  // 탭(01/02)에 따라 제목/설명글도 같이 바뀐다 — 02(맥락 플로우) 선택 시 제목이 Context Flow로.
+  const JOURNEY_TITLE = ['User Journey', 'Context Flow'];
+  const JOURNEY_DESC = [
+    '사용자가 경험하는 이동의 흐름',
+    'SKEEP이 인지하는 맥락의 흐름',
+  ];
   const select = (i) => {
     tabs.forEach((t, k) => t.classList.toggle('active', k === i));
     card.classList.toggle('show-context', i === 1);
+    if (title) title.textContent = JOURNEY_TITLE[i];
+    if (desc) desc.innerHTML = JOURNEY_DESC[i];
   };
   tabs.forEach((tab, i) => {
     tab.addEventListener('click', () => select(i));
@@ -4149,7 +4471,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <!-- ═══════════════════════
   11. SYSTEM LAYERS
 ═══════════════════════ -->
-<section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers>
+<section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
   <div class="layer-visual">
     <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false"></div>
     <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert></div>
@@ -4346,6 +4668,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const tabs = [...section.querySelectorAll('.layer-card[data-layer]')];
   const images = [...section.querySelectorAll('.layer-visual-image[data-layer-image]')];
   const selectLayer = (layer) => {
+    section.dataset.selectedLayer = layer;
     tabs.forEach((tab) => {
       const selected = tab.dataset.layer === layer;
       tab.classList.toggle('faded', !selected);
@@ -4414,7 +4737,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   const flipCard = (card) => {
     const group = card.closest('.database-cards');
-    if (group?.classList.contains('is-intro-animating')) finishIntro(group);
+    if (group?.classList.contains('is-intro-pending') || group?.classList.contains('is-intro-animating')) {
+      group.dataset.introPlayed = 'true';
+      finishIntro(group);
+      // Force a reflow so the browser paints the reset (front-facing) state
+      // as its own frame before the flip transition starts. Without this,
+      // removing the intro classes and toggling is-flipped both land in the
+      // same style recalc, so the card snaps straight to its target angle
+      // instead of animating — this is what caused the very first click to
+      // skip the flip transition.
+      void card.offsetHeight;
+    }
     const flipped = card.classList.toggle('is-flipped');
     card.setAttribute('aria-pressed', String(flipped));
     card.setAttribute('aria-label', `${card.querySelector('.database-card-title')?.textContent || '데이터베이스'} 카드 ${flipped ? '앞면 보기' : '뒤집기'}`);
@@ -4493,97 +4826,103 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   13. PACKET INTRO
 ═══════════════════════ -->
 <!-- ═══════════════════════
-  PACKET — DONUT MOTION
+  PACKET — PROXIMITY ORBIT (vanilla port of Originkit's Proximity Orbit;
+  React/framer-motion component recreated with CSS transforms + rAF since
+  this page has no React runtime)
 ═══════════════════════ -->
 <div class="packet-donut-wrap">
-  <div class="packet-donut fi"><canvas id="packetDonut"></canvas></div>
+  <div class="packet-donut fi">
+    <div class="packet-orbit" id="packetOrbit">
+      <div class="packet-orbit-img"><img src="assets/hero-face-1.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-2.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-3.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-4.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-5.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-6.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-7.jpg" alt="" draggable="false"></div>
+      <div class="packet-orbit-img"><img src="assets/hero-face-8.jpg" alt="" draggable="false"></div>
+    </div>
+  </div>
 </div>
 <style>
-  .packet-donut-wrap { display: flex; justify-content: center; width: 100%; padding: clamp(180px, 18vw, 320px) var(--edge-padding) clamp(36px, 4.5vw, 64px); border-top: none; }
-  .packet-donut { width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: clamp(22px, 2.2vw, 34px); overflow: hidden; background: #A1D202; }
-  .packet-donut canvas { display: block; width: 100%; height: 100%; }
+  .packet-donut-wrap { display: flex; justify-content: center; width: 100%; padding: clamp(96px, 10vw, 180px) var(--edge-padding) clamp(24px, 3vw, 48px); border-top: none; }
+  .packet-donut { position: relative; width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: clamp(22px, 2.2vw, 34px); overflow: hidden; background: transparent; }
+  .packet-orbit { position: absolute; inset: 0; }
+  .packet-orbit-img {
+    position: absolute; left: 50%; top: 50%;
+    width: var(--orbit-size, 92px); height: var(--orbit-size, 92px);
+    margin: calc(var(--orbit-size, 92px) / -2) 0 0 calc(var(--orbit-size, 92px) / -2);
+    will-change: transform;
+  }
+  .packet-orbit-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    border-radius: 3px; pointer-events: auto; cursor: pointer;
+    transition: transform .2s ease;
+  }
+  .packet-orbit-img:hover img { transform: scale(1.08); }
   @media (max-width: 760px){ .packet-donut { width: 92vw; } }
 </style>
 <script>
 (() => {
-  const cv = document.getElementById('packetDonut');
-  if (!cv) return;
-  const ctx = cv.getContext('2d');
-  let W, H, DPR, cx, cy, MIN, Rmaj, Rmin, BR, FOC;
-  const NU = 34, NV = 4, TILT = 0.85, WX = 0.6, WY = 0;
+  const wrap = document.getElementById('packetOrbit');
+  if (!wrap) return;
+  const box = wrap.closest('.packet-donut');
+  const items = Array.from(wrap.querySelectorAll('.packet-orbit-img'));
+  const n = items.length;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const balls = [];
-  for (let i = 0; i < NU; i++)
-    for (let j = 0; j < NV; j++) {
-      balls.push({ u: i/NU*Math.PI*2, v: (j + (i%2)*0.5)/NV*Math.PI*2, fromA: Math.random()*Math.PI*2, toA: Math.random()*Math.PI*2 });
-    }
+
+  // orbitRadius 12 / imageScale ≈10 from the source component, sized
+  // relative to the box (matches the previous donut's proportions).
+  let W, H, MIN, radius;
   function resize(){
-    DPR = Math.min(2, devicePixelRatio || 1);
-    const r = cv.getBoundingClientRect();
-    W = Math.max(1, r.width); H = Math.max(1, r.height);
-    cv.width = Math.round(W*DPR); cv.height = Math.round(H*DPR);
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    cx = W/2; cy = H/2; MIN = Math.min(W, H);
-    Rmaj = MIN*0.30; Rmin = MIN*0.028; BR = MIN*0.036; FOC = MIN*1.7;
+    const r = box.getBoundingClientRect();
+    W = r.width; H = r.height; MIN = Math.min(W, H);
+    radius = MIN * 0.27;
+    box.style.setProperty('--orbit-size', (MIN * 0.24) + 'px');
   }
-  new ResizeObserver(resize).observe(cv); resize();
-  const easeOut = x => 1 - Math.pow(1 - x, 3);
-  const easeIn = x => x*x*x;
-  function project(u, v, t){
-    const rr = Rmaj + Rmin*Math.cos(v);
-    let x = rr*Math.cos(u), y = rr*Math.sin(u), z = Rmin*Math.sin(v);
-    const ay = WY*t, cY = Math.cos(ay), sY = Math.sin(ay);
-    let x1 = x*cY + z*sY, z1 = -x*sY + z*cY, y1 = y;
-    const ax = TILT + WX*t, cX = Math.cos(ax), sX = Math.sin(ax);
-    let y2 = y1*cX - z1*sX, z2 = y1*sX + z1*cX;
-    const s = FOC/(FOC - z2);
-    return { px: cx + x1*s, py: cy + y2*s, pz: z2, s };
+  new ResizeObserver(resize).observe(box); resize();
+
+  const DIR = -1;                    // direction: "counterclockwise"
+  const REV_MS = (20 / 2) * 1000;    // speed: 2 → 10s per revolution
+  let rot = 0, liveSpeed = 1, running = false, raf = 0, lastT = null;
+
+  function place(){
+    items.forEach((el, i) => {
+      const base = (i / n) * 360;
+      const rad = (base + rot) * Math.PI / 180;
+      const x = Math.cos(rad) * radius, y = Math.sin(rad) * radius;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      el.style.zIndex = n - i;       // stackDirection: "lastToFirst"
+    });
   }
-  const CY = 6.6, A = 0.26, S = 0.80;    // gather → spin → scatter → loop
-  let running = false, raf = 0, startT = 0, cycleIndex = -1;
-  function newCycle(ci){
-    cycleIndex = ci;
-    if (ci > 0) for (const b of balls) { b.fromA = b.toA; b.toA = Math.random()*Math.PI*2; }
-  }
-  function frame(now){
+
+  function tick(t){
     if (!running) return;
-    if (!startT) startT = now;
-    const t = reduce ? 2.4 : (now - startT)/1000;
-    const ci = Math.floor(t/CY);
-    if (ci !== cycleIndex) newCycle(ci);
-    const lt = (t % CY)/CY;
-    const D = MIN*1.15;
-    for (const b of balls) {
-      const tg = project(b.u, b.v, t);
-      if (lt < A) {                                    // gather in from scattered
-        const e = easeOut(lt/A);
-        const fx = cx + Math.cos(b.fromA)*D, fy = cy + Math.sin(b.fromA)*D;
-        b.px = fx + (tg.px - fx)*e; b.py = fy + (tg.py - fy)*e; b.pz = tg.pz - 12000*(1 - e);
-        b.g = e;
-      } else if (lt < S) {                             // hold & spin as donut
-        b.px = tg.px; b.py = tg.py; b.pz = tg.pz; b.g = 1;
-      } else {                                         // scatter out
-        const e = easeIn((lt - S)/(1 - S));
-        const tx = cx + Math.cos(b.toA)*D, ty = cy + Math.sin(b.toA)*D;
-        b.px = tg.px + (tx - tg.px)*e; b.py = tg.py + (ty - tg.py)*e; b.pz = tg.pz - 12000*e;
-        b.g = 1 - e;
-      }
-      b.s = tg.s;
+    if (lastT === null) lastT = t;
+    const dt = Math.min(t - lastT, 100);
+    lastT = t;
+    if (!reduce) {
+      rot += dt * (360 / REV_MS) * liveSpeed * DIR;
+      place();
     }
-    balls.sort((p, q) => p.pz - q.pz);
-    ctx.fillStyle = '#A1D202';
-    ctx.fillRect(0, 0, W, H);
-    for (const b of balls) {
-      ctx.beginPath(); ctx.arc(b.px, b.py, BR*b.s, 0, Math.PI*2);
-      ctx.fillStyle = '#DAFF61'; ctx.fill();
-    }
-    raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(tick);
   }
+
+  place();
   new IntersectionObserver((es) => {
     const vis = es[0].isIntersecting;
-    if (vis && !running) { running = true; startT = 0; cycleIndex = -1; raf = requestAnimationFrame(frame); }
+    if (vis && !running) { running = true; lastT = null; raf = requestAnimationFrame(tick); }
     else if (!vis && running) { running = false; cancelAnimationFrame(raf); }
-  }, { threshold: 0.3 }).observe(cv);
+  }, { threshold: 0.2 }).observe(box);
+
+  items.forEach((el, i) => {
+    el.addEventListener('mouseenter', () => {
+      el.style.zIndex = n + 10;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.zIndex = n - i;
+    });
+  });
 })();
 </script>
 
@@ -4661,7 +5000,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     padding-top: clamp(48px, 4vw, 64px);
     background: #fff;
     color: #111;
-    font-family: "Helvetica Now Display", "Pretendard", sans-serif;
+    font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   /* Sticker Peel — Originkit interaction */
@@ -4684,7 +5023,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    border-radius: clamp(20px, 2vw, 32px);
+    border-radius: 0;
     box-shadow: none !important;
     filter: none !important;
     cursor: pointer;
@@ -4738,9 +5077,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   }
   .wm-peel-dot {
     position: absolute;
-    width: clamp(10px, .9vw, 15px);
+    width: clamp(6px, .55vw, 9px);
     aspect-ratio: 1;
-    border-radius: 50%;
+    border-radius: 0;
     background: rgba(255,255,255,.9);
     transition: opacity .2s ease;
   }
@@ -4858,7 +5197,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Sticker texture canvas is unavailable.');
 
-    const radius = 72;
+    const radius = 0;
     ctx.save();
     ctx.beginPath();
     ctx.roundRect(0, 0, width, height, radius);
@@ -4965,12 +5304,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .uxl-top.swap .uxl-b { opacity: 1; pointer-events: auto; }
   .uxl-left { flex-shrink: 0; display: flex; flex-direction: column; gap: clamp(16px, 2vw, 36px); }
   .uxl-label { font-size: clamp(16px,1.6vw,24px); font-weight: 600; line-height: 1.3;
-    letter-spacing: -0.03em; text-transform: uppercase; color: #ff0b6c; white-space: nowrap; }
+    letter-spacing: -0.03em; text-transform: uppercase; color: #6E6E6E; white-space: nowrap; }
   .uxl-a .uxl-label { padding-top: 4px; }
   .uxl-title { margin: 0; font-size: clamp(23px,2.7vw,40px); font-weight: 700; line-height: 1.3;
-    letter-spacing: -0.03em; color: #0e1825; }
+    letter-spacing: -0.03em; color: #161A1E; }
   .uxl-desc { font-size: clamp(15px,1.7vw,30px); font-weight: 600; line-height: 1.35;
-    letter-spacing: -0.02em; color: #0e1825; max-width: 1008px; }
+    letter-spacing: -0.02em; color: #161A1E; max-width: 1008px; }
   .uxl-desc-b { font-size: clamp(14px,1.1vw,20px); font-weight: 500; line-height: 1.6;
     color: #3a4655; max-width: 760px; padding-top: clamp(6px, 1vw, 14px); }
   .uxl-cards { display: flex; align-items: flex-end; justify-content: center; min-height: 0; }
@@ -5003,12 +5342,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     border-radius: 0; }
   .sq-morph.grown { --big: 1; }
   .sq-morph.is-in.split .sq-morph-seg { border-radius: 0; }
-  .sq-morph.is-in.split .seg1 { background: #FF3385; --card-txt: #FFCADF; }
-  .sq-morph.is-in.split .seg2 { background: #A1D202; --card-txt: #DAFF61; }
-  .sq-morph.is-in.split .seg3 { background: #A5E0F0; --card-txt: #FF6B3D; }
-  .sq-morph.is-in.split .seg4 { background: #0A67DE; --card-txt: #F5F5F5; }
-  .sq-morph.is-in.split .seg5 { background: #09421A; --card-txt: #82FF8F; }
-  .sq-morph.is-in.split .seg6 { background: #280047; --card-txt: #FFF2A8; }
+  .sq-morph.is-in.split .seg1 { background: #FF6B3D; --card-txt: #161A1E; }
+  .sq-morph.is-in.split .seg2 { background: #D9FF60; --card-txt: #161A1E; }
+  .sq-morph.is-in.split .seg3 { background: #F1F1F1; --card-txt: #161A1E; }
+  .sq-morph.is-in.split .seg4 { background: #8BDFEF; --card-txt: #161A1E; }
+  .sq-morph.is-in.split .seg5 { background: #FECADF; --card-txt: #161A1E; }
+  .sq-morph.is-in.split .seg6 { background: #9FA1A2; --card-txt: #161A1E; }
   @media (prefers-reduced-motion: reduce) {
     .sq-morph, .sq-morph-seg { transition: none; }
   }
@@ -5049,12 +5388,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <div class="ux-scene">
       <div class="ux-left-col">
       <div class="ux-tabbar" role="tablist" aria-label="UX Logic 단계">
-        <button class="ux-tab" type="button" data-i="0" data-accent="#FF3385" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
-        <button class="ux-tab" type="button" data-i="1" data-accent="#A1D202" data-card-bg="../인트로/네모2.png" data-state-bg="../인트로/네모배경2.png">스며들다</button>
-        <button class="ux-tab" type="button" data-i="2" data-accent="#A5E0F0" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
-        <button class="ux-tab" type="button" data-i="3" data-accent="#0A67DE" data-card-bg="../인트로/네모4.png" data-state-bg="../인트로/네모배경4.png">빌려쓰다</button>
-        <button class="ux-tab" type="button" data-i="4" data-accent="#09421A" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
-        <button class="ux-tab" type="button" data-i="5" data-accent="#280047" data-card-bg="../인트로/네모6.png" data-state-bg="../인트로/네모배경6.png">기억하다</button>
+        <button class="ux-tab" type="button" data-i="0" data-accent="#FF6B3D" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
+        <button class="ux-tab" type="button" data-i="1" data-accent="#D9FF60" data-card-bg="../인트로/네모2.png" data-state-bg="../인트로/네모배경2.png">스며들다</button>
+        <button class="ux-tab" type="button" data-i="2" data-accent="#F1F1F1" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
+        <button class="ux-tab" type="button" data-i="3" data-accent="#8BDFEF" data-card-bg="../인트로/네모4.png" data-state-bg="../인트로/네모배경4.png">빌려쓰다</button>
+        <button class="ux-tab" type="button" data-i="4" data-accent="#FECADF" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
+        <button class="ux-tab" type="button" data-i="5" data-accent="#22AFD6" data-card-bg="../인트로/네모6.png" data-state-bg="../인트로/네모배경6.png">기억하다</button>
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
@@ -5785,6 +6124,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       animationTimer = window.setTimeout(() => { animating = false; }, 860);
       return true;
     };
+    // ZoomTextTunnel(SKEEP/INTO THE/NEW ERA)이 한 바퀴 다 돌면 이걸 호출해서
+    // 스크롤 입력 없이도 자동으로 뒤집는다 — animating 중이면 무시(중복 방지).
+    window.__skeeeepAutoFlip = () => { if (!flipped && !animating) setFlipped(true); };
 
     const handleDirection = direction => {
       if (!isFlipStageActive()) return false;
@@ -6234,7 +6576,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     if (!cv) return;
     const ctx = cv.getContext('2d');
     let W, H, DPR, cx, cy, MIN;
-    const RINGS = 8, GREY = [226, 235, 242], GREEN = [64, 184, 117];
+    const RINGS = 8, GREY = [226, 235, 242], ACCENT = [34, 175, 214];
     const mix = (a, b, t) => [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t];
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     function resize() {
@@ -6266,13 +6608,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       blobRaf = requestAnimationFrame(frame);
       if (!W || !H) return;
       const t = reduce ? 4 : now / 1000;
-      ctx.fillStyle = '#40B875'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#89DFF0'; ctx.fillRect(0, 0, W, H);
       const baseR = MIN * 0.33, n = 4.2, rot = t * 0.45;
       for (let i = 0; i < RINGS; i++) {
         const frac = 1 - i / RINGS;
         const wave = 1 + 0.11 * Math.sin(t * 1.5 - i * 0.85);
         const s = frac * wave;
-        const c = mix(GREY, GREEN, i / (RINGS - 1));
+        const c = mix(GREY, ACCENT, i / (RINGS - 1));
         ctx.fillStyle = `rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;
         superPath(baseR * s, baseR * s, n, rot);
         ctx.fill();
@@ -6422,9 +6764,43 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     agentSticky.insertBefore(agentGrid, agentSticky.firstChild);
 
     // ── 배경 사진 레이어: 진입 시 아래→위로 페이드인 (한 번만) ──
+    // 피그마(8400:6406) 카드 9장 그대로 — 좌표는 프레임(1925×1053) 기준 %로 환산.
+    const AGENT_PHOTO_PIECES = [
+      { src: 'agent-photo-126.jpg', l: 25.56, t: 3.61,  w: 12.26, h: 30.01, r: 6.4, bg: '#f1f1f1', op: 1 },
+      { src: 'agent-photo-132b.jpg', l: 83.58, t: 58.02, w: 13.43, h: 24.55, r: 7,   bg: '#f1f1f1', op: 1 },
+      { src: 'agent-photo-119.jpg', l: 67.95, t: 4.94,  w: 11.84, h: 29.06, r: 7,   bg: '#ffcadf', op: 1 },
+      { src: 'agent-photo-120.jpg', l: 13.92, t: 58.88, w: 13.25, h: 24.23, r: 8,   bg: '#f1f1f1', op: 1 },
+      { src: 'agent-photo-122.jpg', l: 58.46, t: 72.29, w: 13.58, h: 24.82, r: 8,   bg: '#09421a', op: 1 },
+      { src: 'agent-photo-132.jpg', l: 4.21,  t: 36.56, w: 17.51, h: 25.55, r: 8,   bg: 'transparent', op: 1 },
+      { src: 'agent-photo-123.jpg', l: 35.22, t: 6.55,  w: 17.09, h: 24.03, r: 8,   bg: '#e7ff96', op: 1 },
+      { src: 'agent-photo-121.jpg', l: 70.86, t: 20.42, w: 17.82, h: 28.20, r: 7,   bg: '#f1f1f1', op: 1 },
+      { src: 'agent-photo-124.jpg', l: 42.03, t: 64.86, w: 20.62, h: 24.50, r: 6.65, bg: '#ff6b3d', op: 1 },
+      { src: 'agent-photo-133.jpg', l: 11.79, t: 12.25, w: 6.75,  h: 12.35, r: 4,   bg: '#f1f1f1', op: 1 },   // 왼쪽 상단 귀퉁이 — 전용 이미지로 교체(기존엔 124 재사용, op는 다른 9장과 맞춰 완전 불투명으로)
+    ];
     const agentPhotoBg = document.createElement('div');
     agentPhotoBg.className = 'agent-photo-bg';
     agentPhotoBg.setAttribute('aria-hidden', 'true');
+    const agentPhotoStage = document.createElement('div');
+    agentPhotoStage.className = 'agent-photo-stage';
+    AGENT_PHOTO_PIECES.forEach((p) => {
+      const piece = document.createElement('div');
+      piece.className = 'agent-photo-piece';
+      piece.style.setProperty('--l', p.l + '%');
+      piece.style.setProperty('--t', p.t + '%');
+      piece.style.setProperty('--w', p.w + '%');
+      piece.style.setProperty('--h', p.h + '%');
+      piece.style.setProperty('--r', p.r + 'px');
+      piece.style.setProperty('--bg', p.bg);
+      piece.style.setProperty('--op', p.op);
+      piece.style.setProperty('--delay', (Math.random() * 0.65).toFixed(2) + 's');   // 하나씩 불규칙한 타이밍으로 등장
+      const img = document.createElement('img');
+      img.src = 'assets/' + p.src;
+      img.alt = '';
+      img.loading = 'eager';   // lazy면 스크롤 도달 시점에 디코딩이 안 끝나 트랜지션 중간에 팝인해서 끊겨 보임
+      piece.appendChild(img);
+      agentPhotoStage.appendChild(piece);
+    });
+    agentPhotoBg.appendChild(agentPhotoStage);
     agentSticky.insertBefore(agentPhotoBg, agentSticky.firstChild);
     // (터치 시 격자칸 켜지는 인터랙션 제거 — 정적 그리드 배경만 유지)
 
@@ -6482,7 +6858,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         centerX,
         centerY:
           (window.innerHeight - (cubeBlockHeight + baseLeftHeight)) / 2 -
-          stickyPaddingTop + 75,
+          stickyPaddingTop + 60,   // 살짝 위로 (기존 75) → 다시 조금 내림 (45 → 60)
         stickyPaddingLeft,
         lineMetrics,
         cubeShift: (baseWidth - leftWidth) / 2,
@@ -6500,8 +6876,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const isEntering =
         relativeTop < window.innerHeight * 0.88 &&
         relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
-      if (agentIntroStartedAt === null && isEntering) { agentIntroStartedAt = now; titleScrambleEnter(); }
-      if (isEntering) agentPhotoBg.classList.add('revealed');   // 배경 사진 아래→위 페이드인 (한 번)
+      const TITLE_DELAY_MS = 820;   // 사진들이 하나씩 불규칙하게 다 나타난 뒤 타이틀 등장
+      if (agentIntroStartedAt === null && isEntering) { agentIntroStartedAt = now + TITLE_DELAY_MS; titleScrambleEnter(); }
+      if (isEntering) agentPhotoBg.classList.add('revealed');   // 사진 9장 개별 페이드인(확대→축소) 트리거 (한 번)
       const introElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
       const titleIn = smooth(introElapsed / 700);
       const subIn = smooth((introElapsed - 160) / 700);

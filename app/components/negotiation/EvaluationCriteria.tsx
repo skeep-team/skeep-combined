@@ -24,10 +24,6 @@ const CRITERIA = [
   },
 ];
 
-function CardDot({ className }: { className: string }) {
-  return <span className={className} />;
-}
-
 export function EvaluationCriteria() {
   return (
     <div className={styles.wrapper}>
@@ -48,12 +44,8 @@ export function EvaluationCriteria() {
           <Reveal
             key={c.en}
             delay={i * 0.08}
-            className={i % 2 === 0 ? `${styles.card} ${styles.cardLight}` : `${styles.card} ${styles.cardDark}`}
+            className={styles.card}
           >
-            <CardDot className={styles.dotTopLeft} />
-            <CardDot className={styles.dotTopRight} />
-            <CardDot className={styles.dotBottomLeft} />
-            <CardDot className={styles.dotBottomRight} />
             <div className={styles.cardTitle}>
               <p className={styles.cardKo}>{c.ko}</p>
               <p className={styles.cardEn}>{c.en}</p>

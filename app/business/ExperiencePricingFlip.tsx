@@ -80,8 +80,11 @@ const notes = [
   "*앵커: 사용자가 직접 지정하는 환경 관리 에이전트로, 추가 결제로 확장 가능합니다.",
 ];
 
-/* 요금제 패널은 중간 폭을 보여주지 않는다. 진입 지점을 넘으면 전체를 한 번에 연다. */
-const revealAt = 0.08;
+/* 두 카드(Experience/Enterprise)가 나란히 붙어 있어서 브릿지 문구를 놓을 빈 자리가
+   없다. 그래서 진입하면 먼저 짝 카드(peer)를 지우고 문구만 뜨는 중간 단계를 거친 뒤
+   (--bridge), 스크롤을 더 내려야 패널이 실제로 펼쳐진다(--expand/--reveal). */
+const bridgeAt = 0.08;
+const revealAt = 0.24;
 
 /* 카드가 뒤집히는 지점. 되돌아오는 지점은 조금 앞에 둬서 경계에서 떨리지 않게 한다. */
 /* 카드를 하나씩 돌리지 않고, 이 지점을 넘으면 전부 한꺼번에 뒤집는다. */
@@ -109,13 +112,20 @@ export default function ExperiencePricingFlip() {
     }
 
     let count = 0;
+    let bridged = false;
     let revealed = false;
 
     const update = () => {
       const rect = section.getBoundingClientRect();
       const distance = Math.max(1, section.offsetHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / distance));
+      const nextBridged = progress >= bridgeAt;
       const nextRevealed = progress >= revealAt;
+
+      if (bridged !== nextBridged) {
+        bridged = nextBridged;
+        section.style.setProperty("--bridge", bridged ? "1" : "0");
+      }
 
       if (revealed !== nextRevealed) {
         revealed = nextRevealed;
@@ -123,6 +133,9 @@ export default function ExperiencePricingFlip() {
 
         section.style.setProperty("--expand", value);
         section.style.setProperty("--reveal", value);
+        // 흰 카드/진한 딤은 뒤집히는 순간(data-open)이 아니라 패널이 펼쳐지는
+        // 순간부터 같이 켜져야 해서, flip과 별개로 reveal 상태를 노출한다.
+        section.setAttribute("data-revealed", String(revealed));
       }
 
       if (count === 0 && progress >= flipForward) {
@@ -153,9 +166,38 @@ export default function ExperiencePricingFlip() {
       aria-label="Skeep Experience 요금제"
     >
       <div className={styles.sticky}>
+        <div className={styles.bridgeStatement}>
+          <h2>
+            <strong>나만의 세계를 만들어가는 법</strong>
+            <span>만들어진 세상에 맞추거나</span>
+            <span>그냥, 스킵하거나</span>
+          </h2>
+          <p>
+            소비자는 이제 특정 브랜드의 에이전트 생태계에<br />
+            얽매이지 않고 모든 에이전트와 내 성향을 공유 할 수 있죠.<br />
+            내 맥락을 안전하게 들고 다니는 SKEEP이, 어떤 에이전트를 만나든 나를 대신 소개해주니까요.
+          </p>
+        </div>
+
         <div className={styles.stage}>
           {/* 펼쳐지는 패널이 왼쪽부터 덮어 나가는, 오른쪽의 짝 카드 */}
           <div className={styles.peer} aria-hidden="true">
+            <div className={styles.peerBg} aria-hidden="true">
+              <picture>
+                <source
+                  srcSet={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.webp`}
+                  type="image/webp"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.png`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            </div>
+
             <div className={styles.peerIntro}>
               <p className={styles.kicker}>B2B Business</p>
               <p className={styles.title}>
@@ -175,6 +217,22 @@ export default function ExperiencePricingFlip() {
           </div>
 
           <div className={styles.panel} data-open={open}>
+            <div className={styles.panelBg} aria-hidden="true">
+              <picture>
+                <source
+                  srcSet={`${BASE_PATH}/business/pricing/pricing-experience-bg.webp`}
+                  type="image/webp"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${BASE_PATH}/business/pricing/pricing-experience-bg.png`}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            </div>
+
             <div className={styles.control} aria-hidden="true">
               <span className={styles.pill}>요금제 자세히 알아보기</span>
               <span className={styles.back}>

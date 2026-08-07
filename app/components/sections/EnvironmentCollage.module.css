@@ -97,25 +97,25 @@
    마름모로 찌그러진다. */
 @keyframes collageMorph {
   /* ① 흰 배경 · User만 (박스 숨김). 줄어들기 전 = 더 큰 "정사각형"(가로세로 비례). */
-  0%,  16% { opacity: 0; transform: rotate(0deg) scale(.54, .89); background: #EE73AE; }
+  0%,  16% { opacity: 0; transform: rotate(0deg) scale(.54, .89); background: #FF6B3D; }
   /* ② 분홍 정사각형이 축소되며 등장 → 유지 */
-  30%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #EE73AE; }
-  42%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #EE73AE; }
+  30%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #FF6B3D; }
+  42%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #FF6B3D; }
   /* ③ 크림 가로 직사각형 (변화 1) */
-  54%, 58% { opacity: 1; transform: rotate(0deg) scale(.40, .24); background: #FCF1CE; }
+  54%, 58% { opacity: 1; transform: rotate(0deg) scale(.40, .24); background: #E7FF96; }
   /* ④ 하늘색 세로 직사각형 (변화 2) */
-  70%      { opacity: 1; transform: rotate(0deg) scale(.23, .48); background: #D6EBFB; }
+  70%      { opacity: 1; transform: rotate(0deg) scale(.23, .48); background: #A5E0F0; }
   /* ⑤-a 하늘색 정사각형 먼저 완성 → ⑤-b 정사각형인 채 왼쪽으로 각도만 -15° 회전 */
-  80%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #D6EBFB; }
-  90%, 96% { opacity: 1; transform: rotate(-15deg) scale(.34, .56); background: #D6EBFB; }
-  100%     { opacity: 0; transform: rotate(-15deg) scale(.34, .56); background: #D6EBFB; }
+  80%      { opacity: 1; transform: rotate(0deg) scale(.34, .56); background: #A5E0F0; }
+  90%, 96% { opacity: 1; transform: rotate(-15deg) scale(.34, .56); background: #A5E0F0; }
+  100%     { opacity: 0; transform: rotate(-15deg) scale(.34, .56); background: #A5E0F0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .collageCard {
     animation: none;
     opacity: 1;
     transform: scale(.34, .56);
-    background: #EE73AE;
+    background: #FF6B3D;
   }
   .collageLabel {
     animation: none;

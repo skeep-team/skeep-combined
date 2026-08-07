@@ -1,6 +1,7 @@
 .section {
   position: relative;
   min-height: 100vh;
+  margin-top: clamp(160px, 18vw, 300px);
   overflow: hidden;
   background: #000000;
 }
@@ -41,7 +42,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.45);
   pointer-events: none;
 }
 

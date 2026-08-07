@@ -1,0 +1,5 @@
+.page,
+.page * {
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif !important;
+  text-transform: uppercase;
+}

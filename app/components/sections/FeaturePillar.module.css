@@ -64,14 +64,15 @@
 }
 
 .qLabel {
-  font-size: clamp(13px, 1.4vw, 24px);
+  font-size: clamp(11px, 1.15vw, 19px);
   font-weight: 400;
   letter-spacing: -0.02em;
   margin-bottom: 6px;
+  opacity: 0.5;
 }
 
 .qText {
-  font-size: clamp(15px, 1.7vw, 32px);
+  font-size: clamp(12px, 1.4vw, 26px);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.3;
@@ -83,7 +84,7 @@
 
 .aLabel {
   display: block;
-  font-size: clamp(16px, 1.8vw, 32px);
+  font-size: clamp(13px, 1.45vw, 26px);
   font-weight: 600;
   letter-spacing: -0.04em;
   color: #66717f;
@@ -91,7 +92,7 @@
 }
 
 .aText {
-  font-size: clamp(14px, 1.6vw, 28px);
+  font-size: clamp(11px, 1.3vw, 22px);
   font-weight: 400;
   letter-spacing: -0.04em;
   color: #66717f;

@@ -34,15 +34,15 @@
   inset: 0;
   overflow: hidden;
   background: #0e1825;
-  /* 원근이 짧으면 앞면이 1.4배쯤 확대돼 사진이 많이 잘린다. 넉넉히 잡아 왜곡을 줄인다. */
+  /* 원근이 짧으면 앞면이 크게 확대돼 사진이 많이 잘리므로 넉넉히 잡는다. */
   perspective: 900vh;
 }
 
+/* 여섯 면 × 2초 = 12초에 한 바퀴. 단어 전환과 같은 박자로 60도씩 돈다. */
 .cube {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  /* 여섯 면 × 2초 = 12초에 한 바퀴. 1.4초 머물고 0.6초 만에 넘어간다. */
   animation: hero-cube-turn 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
   will-change: transform;
 }
@@ -53,8 +53,6 @@
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  /* 육각기둥이라 면 사이 각은 60도, 중심에서 면까지는 높이 × cos30° = 0.866배다.
-     삼각기둥으로 하면 돌아가는 중간에 실루엣이 화면보다 낮아져 위아래가 비었다. */
   transform: rotateX(calc(var(--face) * -60deg)) translateZ(86.6vh);
 }
 
@@ -89,8 +87,6 @@
   object-fit: cover;
 }
 
-/* 여섯 면에 사진 세 장을 두 번씩 붙였으므로, 여섯 박자를 도는 동안 단어(세 박자)와
-   사진의 짝이 늘 같다 — 경험·공간·시간에 각각 정해진 사진이 붙는다. */
 @keyframes hero-cube-turn {
   0%,
   11.67% {
@@ -127,12 +123,17 @@
   }
 }
 
-/* 다른 페이지 히어로(.cubeFace::after)와 똑같은 딤이다. */
+/* 비즈니스 썸네일 카드(Hub)의 스크림과 같은 그러데이션 딤 — 위는 은은하게,
+   아래로 갈수록 짙어져 글자가 놓이는 중앙~하단부의 대비만 확보한다. */
 .backdrop::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(14, 24, 37, 0.6);
+  background: linear-gradient(
+    180deg,
+    rgba(14, 24, 37, 0.15) 0%,
+    rgba(14, 24, 37, 0.55) 100%
+  );
 }
 
 .hero .copy {
@@ -347,6 +348,10 @@
     opacity: 1;
     filter: none;
     transform: none;
+  }
+
+  .cube {
+    animation: none;
   }
 
   .band {

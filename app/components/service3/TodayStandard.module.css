@@ -40,7 +40,7 @@
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%),
-    #e7eaf0;
+    #F1F1F1;
   flex-shrink: 0;
 }
 

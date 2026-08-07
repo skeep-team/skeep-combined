@@ -5,7 +5,9 @@
 .sequence {
   --px: calc(100vw / 1920);
   --stage-top: 3vh;
-  /* 진입 전/후 두 상태만 사용한다. JS가 두 값을 동시에 0 또는 1로 바꾼다. */
+  /* 세 상태를 쓴다. --bridge가 먼저 켜져 짝 카드→문구로 바뀌고,
+     스크롤을 더 내려야 --expand/--reveal이 켜져 패널이 실제로 펼쳐진다. */
+  --bridge: 0;
   --expand: 0;
   --reveal: 0;
 
@@ -24,6 +26,52 @@
   line-height: normal;
 }
 
+/* Enterprise 시퀀스의 브릿지 문구와 같은 자리지만, 여긴 짝 카드가 그 자리를
+   먼저 차지하고 있어서 처음부터 보이면 안 된다. 짝 카드가 지워지는 --bridge
+   단계에만 떠 있다가, 패널이 실제로 펼쳐지는 --expand 단계에서 다시 사라진다. */
+.bridgeStatement {
+  position: absolute;
+  top: calc(3vh + 8 * var(--px));
+  right: calc(145 * var(--px));
+  z-index: 0;
+  width: calc(810 * var(--px));
+  text-align: right;
+  opacity: clamp(0, calc(var(--bridge) - var(--expand)), 1);
+  will-change: opacity;
+  transition: opacity 0.34s ease;
+}
+
+.bridgeStatement h2,
+.bridgeStatement p {
+  margin: 0;
+}
+
+.bridgeStatement h2 {
+  display: grid;
+  font-size: calc(60 * var(--px));
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.055em;
+}
+
+.bridgeStatement h2 strong {
+  color: #000;
+  font-weight: 600;
+}
+
+.bridgeStatement h2 span {
+  color: #8b8b8b;
+}
+
+.bridgeStatement p {
+  margin-top: calc(245 * var(--px));
+  color: #a7a7a7;
+  font-size: calc(24 * var(--px));
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.04em;
+}
+
 /* 무대 자체는 배경이 없다. 두 카드가 각자 칠하고, 그 사이 20px 틈으로 페이지 배경이 비친다. */
 .stage {
   position: absolute;
@@ -37,7 +85,9 @@
   letter-spacing: -0.04em;
 }
 
-/* 펼쳐지는 패널이 왼쪽부터 덮어 나가는, 오른쪽의 짝 카드 */
+/* 펼쳐지는 패널이 왼쪽부터 덮어 나가는, 오른쪽의 짝 카드.
+   패널이 자라기 전, 브릿지 문구가 뜨는 시점(--bridge)에 먼저 디졸브되어
+   자리를 비켜준다 — 그래야 문구가 이 카드에 가리지 않고 뜬다. */
 .peer {
   position: absolute;
   left: calc(810 * var(--px));
@@ -46,6 +96,9 @@
   height: calc(700 * var(--px));
   border-radius: calc(32 * var(--px));
   background: #e7eaf0;
+  opacity: calc(1 - var(--bridge));
+  will-change: opacity;
+  transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* 카드(790)에서 패널(1600)로 자라는 건 폭을 바꾸는 게 아니라 오른쪽을 잘라 두었다가
@@ -65,6 +118,82 @@
   contain: layout paint;
   will-change: clip-path;
   transition: clip-path 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 카드/패널 사진 배경 + 아래에서 올라오는 검정 딤(글자 가독성용) */
+.peerBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* 패널은 접힘(790)일 때가 항상 먼저 보이는 폭이라, 사진 자체를 그 폭 기준으로
+   커버시켜 인물이 접힌 카드 안에서 중심에 오게 한다. 펼쳐진 뒤(1600)엔 이 좁은
+   스트립 오른쪽으로 요금제 카드들이 덮고 지나가므로 그대로 둬도 이질감이 없다. */
+/* 패널이 접힘(790)→펼침(1600)으로 자라는 것과 같은 박자로 사진도 같이 넓어진다.
+   cover가 폭에 맞춰 다시 계산되면서 자연스럽게 더 넓은 구도가 드러난다. */
+.panelBg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc((790 + 810 * var(--expand)) * var(--px));
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  will-change: width;
+  transition: width 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panelBg picture,
+.panelBg img,
+.peerBg picture,
+.peerBg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.panelBg img {
+  object-position: 50% center;
+}
+
+.panelBg::after,
+.peerBg::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 82%;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 8, 10, 0) 0%,
+    rgba(6, 8, 10, 0.86) 100%
+  );
+  pointer-events: none;
+}
+
+/* 펼쳐지면 흰 카드가 뜨게 사진을 훨씬 진하게 눌러줘야 하는데, 크기가 자라며
+   나타나면 어색해서 같은 자리·같은 크기로 깔아두고 오퍼시티로만 디졸브시킨다.
+   뒤집히기(data-open) 전, 펼쳐지는 중간 단계부터 이미 적용되어야 해서 data-revealed로 건다. */
+.panelBg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 5, 7, 0.6) 0%,
+    rgba(4, 5, 7, 0.94) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.sequence[data-revealed="true"] .panelBg::before {
+  opacity: 1;
 }
 
 /* ---------- 왼쪽 열: 알약 ↔ 되돌아가기 화살표 ---------- */
@@ -102,7 +231,7 @@
 
 .back {
   width: calc(70 * var(--px));
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   opacity: 0;
   transform: scale(0.86);
 }
@@ -111,7 +240,8 @@
   display: block;
   width: calc(34.9 * var(--px));
   height: calc(30.4 * var(--px));
-  opacity: 0.5;
+  opacity: 0.7;
+  filter: invert(1);
 }
 
 .panel[data-open="true"] .pill {
@@ -167,19 +297,21 @@
 }
 
 .kicker {
-  color: #ff076a;
+  color: rgba(255, 255, 255, 0.72);
   font-size: calc(24 * var(--px));
   font-weight: 600;
   line-height: 1.3;
 }
 
 .title {
+  color: #fff;
   font-size: calc(50 * var(--px));
   font-weight: 600;
   line-height: 1.2;
 }
 
 .lede {
+  color: rgba(255, 255, 255, 0.86);
   font-size: calc(24 * var(--px));
   font-weight: 400;
   line-height: 1.4;
@@ -205,6 +337,12 @@
   width: calc(340 * var(--px));
 }
 
+/* "사용자와 연결하고, 그 데이터로 전략까지"가 340px에서 한 글자 모자라 줄이
+   갈라진다. 이 카드만 폭을 살짝 넓혀 의도한 3줄(<br/> 위치)대로 떨어지게 한다. */
+.peerIntro .lede {
+  width: calc(400 * var(--px));
+}
+
 .panel[data-open="true"] .introPanel {
   opacity: 0;
   transform: translateY(calc(-12 * var(--px)));
@@ -227,7 +365,11 @@
   top: calc(183 * var(--px));
   width: calc(360 * var(--px));
   height: 1px;
-  background: linear-gradient(90deg, rgba(165, 176, 191, 0) 0%, #a5b0bf 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
   opacity: 0;
 }
 
@@ -254,7 +396,7 @@
   padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
     calc(20 * var(--px));
   border-radius: calc(12 * var(--px));
-  background: rgba(255, 255, 255, 0.5);
+  background: #f1f1f1;
   font-size: calc(20 * var(--px));
   font-weight: 600;
   line-height: 1.45;
@@ -266,6 +408,7 @@
   top: calc(560 * var(--px));
   width: calc(377 * var(--px));
   margin: 0;
+  color: rgba(255, 255, 255, 0.62);
   font-size: calc(10 * var(--px));
   font-weight: 400;
   line-height: 1.45;
@@ -324,6 +467,7 @@
   border-radius: calc(24 * var(--px));
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  transition: background-color 0.42s ease;
 }
 
 .rear {
@@ -342,6 +486,21 @@
   background: #a5b0bf;
 }
 
+/* 펼쳐지면 사진 딤이 훨씬 진해지는 대신, 카드는 톤 구분 없이 전부 흰 배경으로 뜬다.
+   뒤집히기(data-open) 전, 펼쳐지는 중간 단계부터 이미 적용되어야 해서 data-revealed로 건다. */
+.sequence[data-revealed="true"] .card[data-tone="a"] .face,
+.sequence[data-revealed="true"] .card[data-tone="b"] .face,
+.sequence[data-revealed="true"] .card[data-tone="c"] .face {
+  background: #fff;
+}
+
+/* 뒤집힌 뒷면(스펙 비교)만 살짝 더 어두운 회색으로, 안의 스펙 타일(#F1F1F1)과 구분되게. */
+.sequence[data-revealed="true"] .card[data-tone="a"] .rear,
+.sequence[data-revealed="true"] .card[data-tone="b"] .rear,
+.sequence[data-revealed="true"] .card[data-tone="c"] .rear {
+  background: #d9d9d9;
+}
+
 /* ---------- 카드 앞면 ---------- */
 
 /* 줄바꿈은 시안 그대로 <br>로만 낸다. 카드 폭에 맡기면 시안과 다르게 흐른다.
@@ -357,27 +516,27 @@
 
 .frontPrice {
   margin: 0 0 calc(9.7 * var(--px));
-  color: #ff0b6c;
-  font-size: calc(24 * var(--px));
+  color: #6E6E6E;
+  font-size: calc(19 * var(--px));
   font-weight: 400;
   line-height: 1.2;
 }
 
 .card[data-tone="c"] .frontPrice,
 .card[data-tone="c"] .rearPrice {
-  color: #ed005f;
+  color: #6E6E6E;
 }
 
 .frontName {
   margin: 0 0 calc(20.1 * var(--px));
-  font-size: calc(50 * var(--px));
+  font-size: calc(40 * var(--px));
   font-weight: 600;
   line-height: 1.2;
 }
 
 .frontTagline {
   margin: 0 0 calc(42.2 * var(--px));
-  font-size: calc(24 * var(--px));
+  font-size: calc(19 * var(--px));
   font-weight: 600;
   line-height: 1.2;
 }
@@ -386,7 +545,7 @@
 .frontText {
   margin: 0;
   opacity: 0.5;
-  font-size: calc(20 * var(--px));
+  font-size: calc(16 * var(--px));
   font-weight: 400;
   line-height: 1.45;
 }
@@ -404,7 +563,7 @@
 
 .rearPrice {
   top: calc(44 * var(--px));
-  color: #ff0b6c;
+  color: #6E6E6E;
   font-weight: 400;
 }
 
@@ -441,7 +600,7 @@
   padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
     calc(20 * var(--px));
   border-radius: calc(12 * var(--px));
-  background: #f4f8fc;
+  background: #f1f1f1;
   font-size: calc(20 * var(--px));
   font-weight: 500;
   line-height: 1.45;

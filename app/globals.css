@@ -1,9 +1,9 @@
 :root {
   --color-bg: #ffffff;
-  --color-bg-soft: #f5fafe;
+  --color-bg-soft: #f1f1f1;
   --color-text: #0e1825;
   --color-text-muted: rgba(0, 0, 0, 0.55);
-  --color-accent: #ff076a;
+  --color-accent: #9fa1a2;
   --edge-padding: clamp(24px, 8.3vw, 160px);
   color-scheme: light;
 }

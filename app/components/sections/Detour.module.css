@@ -1,7 +1,7 @@
 .wrapper {
   height: 280vh;
   position: relative;
-  background: var(--color-text);
+  background: #161a1e;
   margin-top: 160px;
   margin-bottom: 160px;
 }
@@ -33,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0B192B;
+  background: #161a1e;
 }
 
 .dial {
@@ -139,3 +139,4 @@
   display: block;
   transition: opacity 0.1s linear, transform 0.1s linear;
 }
+

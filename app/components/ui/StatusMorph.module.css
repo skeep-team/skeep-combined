@@ -1,0 +1,372 @@
+/* 원본 영상 실측: 캔버스 882×886, 코어 도형 변 165px(≈18.7%), 분할 셀 대각선
+   118px/95px(≈10.7%), 점/막대 폭 35px(≈4%) 간격 23px(≈2.6%). 전체 사이클은
+   실측 8.7초 재생 + 0.8초 여백을 더해 9.5초로 루프한다. */
+/* 크기·배경은 이 컴포넌트를 쓰는 쪽 책임이다 — 부모 박스를 꽉 채운다.
+   기본(검정 배경 위 흰 도형) 밖의 배경 위에 얹을 때는 부모에서 배경을 따로 깔면 된다. */
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.stage * {
+  position: absolute;
+  display: block;
+  background: #f5f5f5;
+}
+
+/* ---------- 스파클(맨 처음 아주 옅게 반짝) ---------- */
+.sparkle {
+  top: 50%;
+  left: 50%;
+  width: 5%;
+  height: 5%;
+  clip-path: polygon(
+    50% 0%,
+    61% 39%,
+    100% 50%,
+    61% 61%,
+    50% 100%,
+    39% 61%,
+    0% 50%,
+    39% 39%
+  );
+  opacity: 0;
+  animation: sparkle 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+/* ---------- 코어(단일 도형 — 다이아몬드 → 정사각형) ---------- */
+.core {
+  top: 50%;
+  left: 50%;
+  width: 18.7%;
+  height: 18.7%;
+  opacity: 0;
+  animation: core 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+/* ---------- 4분할(펄스 + 회전 분할 공용) ---------- */
+.quad {
+  inset: 0;
+  background: none;
+  opacity: 0;
+  animation: quadVisibility 9.5s linear infinite;
+}
+
+.cell {
+  top: 50%;
+  left: 50%;
+  width: 10.7%;
+  height: 10.7%;
+  margin: -5.35% 0 0 -5.35%;
+}
+
+.cell:nth-child(1) {
+  animation: cellN 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.cell:nth-child(2) {
+  animation: cellE 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.cell:nth-child(3) {
+  animation: cellS 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.cell:nth-child(4) {
+  animation: cellW 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+/* ---------- 점 3개 → 막대(이퀄라이저) ---------- */
+.bars {
+  top: 50%;
+  left: 50%;
+  width: 4%;
+  height: 4%;
+  margin: -2% 0 0 -2%;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 2.6%;
+}
+
+.bar {
+  position: relative;
+  width: 4%;
+  height: 100%;
+  opacity: 0;
+}
+
+.bar:nth-child(1) {
+  animation: barA 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.bar:nth-child(2) {
+  animation: barB 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+.bar:nth-child(3) {
+  animation: barC 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+}
+
+/* ============ keyframes ============ */
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  10% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  22% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+}
+
+@keyframes core {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7) rotate(45deg);
+  }
+  29%,
+  32% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(45deg);
+  }
+  37% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotate(45deg);
+  }
+  42%,
+  49% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(45deg);
+  }
+  53% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8) rotate(30deg);
+  }
+  62%,
+  64% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  66%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+  }
+}
+
+@keyframes quadVisibility {
+  0%,
+  32%,
+  42%,
+  49%,
+  62%,
+  100% {
+    opacity: 0;
+  }
+  34%,
+  40%,
+  51%,
+  60% {
+    opacity: 1;
+  }
+}
+
+/* 1차 펄스(다이아몬드, 상하좌우) → 2차 분할(회전하며 대각선 모서리로) */
+@keyframes cellN {
+  0%,
+  29%,
+  32%,
+  42%,
+  49% {
+    transform: translate(0, 0) scale(0.6) rotate(45deg);
+  }
+  37% {
+    transform: translate(0, -168%) scale(1) rotate(45deg);
+  }
+  51% {
+    transform: translate(0, 0) scale(0.7) rotate(30deg);
+  }
+  57% {
+    transform: translate(-112%, -112%) scale(1) rotate(0deg);
+  }
+  62%,
+  100% {
+    transform: translate(0, 0) scale(0.6) rotate(0deg);
+  }
+}
+
+@keyframes cellE {
+  0%,
+  29%,
+  32%,
+  42%,
+  49% {
+    transform: translate(0, 0) scale(0.6) rotate(45deg);
+  }
+  37% {
+    transform: translate(168%, 0) scale(1) rotate(45deg);
+  }
+  51% {
+    transform: translate(0, 0) scale(0.7) rotate(30deg);
+  }
+  57% {
+    transform: translate(112%, -112%) scale(1) rotate(0deg);
+  }
+  62%,
+  100% {
+    transform: translate(0, 0) scale(0.6) rotate(0deg);
+  }
+}
+
+@keyframes cellS {
+  0%,
+  29%,
+  32%,
+  42%,
+  49% {
+    transform: translate(0, 0) scale(0.6) rotate(45deg);
+  }
+  37% {
+    transform: translate(0, 168%) scale(1) rotate(45deg);
+  }
+  51% {
+    transform: translate(0, 0) scale(0.7) rotate(30deg);
+  }
+  57% {
+    transform: translate(112%, 112%) scale(1) rotate(0deg);
+  }
+  62%,
+  100% {
+    transform: translate(0, 0) scale(0.6) rotate(0deg);
+  }
+}
+
+@keyframes cellW {
+  0%,
+  29%,
+  32%,
+  42%,
+  49% {
+    transform: translate(0, 0) scale(0.6) rotate(45deg);
+  }
+  37% {
+    transform: translate(-168%, 0) scale(1) rotate(45deg);
+  }
+  51% {
+    transform: translate(0, 0) scale(0.7) rotate(30deg);
+  }
+  57% {
+    transform: translate(-112%, 112%) scale(1) rotate(0deg);
+  }
+  62%,
+  100% {
+    transform: translate(0, 0) scale(0.6) rotate(0deg);
+  }
+}
+
+/* 점 3개 → 막대. 진입/퇴장 타이밍은 세 개가 같고, 70~87% 구간의 높이만
+   서로 달라 이퀄라이저처럼 들쭉날쭉해 보인다. */
+@keyframes barA {
+  0%,
+  64% {
+    opacity: 0;
+    height: 100%;
+  }
+  66%,
+  70% {
+    opacity: 1;
+    height: 100%;
+  }
+  74% {
+    height: 300%;
+  }
+  78% {
+    height: 150%;
+  }
+  82% {
+    height: 375%;
+  }
+  86% {
+    height: 200%;
+  }
+  92%,
+  100% {
+    opacity: 0;
+    height: 100%;
+  }
+}
+
+@keyframes barB {
+  0%,
+  64% {
+    opacity: 0;
+    height: 100%;
+  }
+  66%,
+  70% {
+    opacity: 1;
+    height: 100%;
+  }
+  74% {
+    height: 175%;
+  }
+  78% {
+    height: 400%;
+  }
+  82% {
+    height: 225%;
+  }
+  86% {
+    height: 350%;
+  }
+  92%,
+  100% {
+    opacity: 0;
+    height: 100%;
+  }
+}
+
+@keyframes barC {
+  0%,
+  64% {
+    opacity: 0;
+    height: 100%;
+  }
+  66%,
+  70% {
+    opacity: 1;
+    height: 100%;
+  }
+  74% {
+    height: 350%;
+  }
+  78% {
+    height: 225%;
+  }
+  82% {
+    height: 150%;
+  }
+  86% {
+    height: 300%;
+  }
+  92%,
+  100% {
+    opacity: 0;
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage * {
+    animation: none !important;
+  }
+
+  .core {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+}

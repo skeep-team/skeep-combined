@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import styles from "./page.module.css";
 import { StatementBlock } from "../components/service2/StatementBlock";
 import { AnchorEnvironment } from "../components/negotiation/AnchorEnvironment";
 import { EnvironmentLayers } from "../components/negotiation/EnvironmentLayers";
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function NegotiationPage() {
   return (
-    <main>
+    <main className={styles.page}>
       <StatementBlock
         heading={["당신이 원하는 그대로", "가장 자연스럽게"]}
         image={`${BASE_PATH}/negotiation/statement-bg.poster.jpg`}

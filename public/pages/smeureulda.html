@@ -21,6 +21,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
   <link href="../site-index.css" rel="stylesheet" />
   <style>
+    /* Elza Condensed Trial — 이 페이지들의 영문 서체. 다른 페이지(/business, /principles)와
+       같은 폭을 쓰도록 Text가 아닌 Condensed로 맞췄다.
+       Trial 판이라 실제 윤곽이 들어 있는 글자가 공백·쉼표·하이픈·마침표·숫자·영문
+       대소문자뿐이다. 나머지는 전부 같은 네모 상자로 대체돼 있어서, 범위에 넣으면
+       글자가 □로 깨진다. 범위 밖으로 빼두면 브라우저가 Pretendard로 넘긴다. */
+    @font-face {
+      font-family: 'Elza Cond';
+      src: url('../fonts/ElzaCond-Medium.woff2') format('woff2');
+      font-style: normal;
+      /* 굵기와 상관없이 늘 Medium 한 벌만 쓴다 — /business, /principles와 같은 방식이다.
+         큰 글자는 T1 Glicky가 맡으므로 Elza는 굵기 대비가 필요 없다. */
+      font-weight: 100 900;
+      font-display: swap;
+      unicode-range: U+0020, U+002C-002E, U+0030-0039, U+0041-005A, U+0061-007A;
+    }
     @font-face {
       font-family: 'T1 Glicky';
       src: url('assets/T1GlickyRegular.otf') format('opentype');
@@ -32,10 +47,20 @@
     html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
-      background: #fff; color: #0e1825;
-      font-family: "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      background: #fff; color: #161A1E;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
     }
+    /* 이 페이지의 영문은 전부 대문자로 표기한다. 상속되므로 하위 전체에 적용되고,
+       한글·숫자·기호에는 영향이 없다. button/input은 UA 스타일이 상속을 끊어 따로 건다. */
+    body,
+    body button,
+    body input,
+    body select,
+    body textarea {
+      text-transform: uppercase;
+    }
+
     p { margin: 0; }
 
     html.embed-morph,
@@ -69,7 +94,7 @@
     }
 
     .sec-parsing-intro, .sec-detail, .pill-btn-wrap, .sec-ai-banner,
-    .sec-ai-figma-summary, .sec-3cards, .sec-multilang, .sec-exec-card,
+    .sec-ai-figma-summary, .sec-3cards, .sec-mapping-assembly, .sec-exec-card,
     .sec-ai-gradient, .sec-principles-v, .sec-skip-banner,
     .sec-morphing-detail, footer {
       margin-top: clamp(48px, 6vw, 112px);
@@ -90,7 +115,7 @@
     }
     .hero-bg {
       position: absolute; inset: 0;
-      background: url('assets/smeur-cover-bg2.jpg') center center / cover no-repeat;
+      background: url('assets/smeur-cover-bg3.jpg') center center / cover no-repeat;
       z-index: 0;
     }
     .hero-dim {
@@ -100,7 +125,8 @@
     }
     .hero-title {
       position: relative; z-index: 2;
-      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
+      /* 히어로 문구 기준 — 조율하다와 같은 크기·굵기 */
+      font-size: clamp(36px,4.6vw,68px); font-weight: 600; line-height: 1.2; letter-spacing: -0.04em;
       max-width: 1220px; word-break: keep-all;
       color: #ffffff;
     }
@@ -128,7 +154,7 @@
       background: #fff;
     }
     .keepon-title-sticky {
-      background: #0E1825;
+      background: #161A1E;
       width: 100vw;
       margin-left: calc(50% - 50vw);
     }
@@ -187,18 +213,27 @@
       opacity: 1;
       transform: translateY(0) scale(1);
     }
+    /* 피그마(8588-14619) 그대로: 위에 "That's How SKEEP AI [단어]" 한 줄, 그
+       아래 가운데에 정사각 사진 한 장 — 좌우로 나란히가 아니라 위/아래로 쌓는다. */
     .keepon-chain {
-      display: grid;
-      grid-template-columns: auto clamp(220px, 20vw, 300px);
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: clamp(48px, 7vw, 120px);
+      gap: clamp(40px, 6vw, 88px);
       width: min(100%, 1120px);
       margin: 0;
     }
+    .chain-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: clamp(14px, 1.6vw, 28px);
+    }
     .chain-prefix {
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
-      font-size: clamp(28px,4vw,60px);
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(32px,4.6vw,70px);
       font-weight: 400;
       line-height: 1.05;
       letter-spacing: -0.055em;
@@ -216,15 +251,50 @@
       letter-spacing: inherit;
       text-transform: uppercase;
     }
+    /* 텍스트("That's How SKEEP AI")와 사진 스택 사이의 회전 텍스트 배지.
+       Originkit RotatingText를 이 페이지의 vanilla-JS 방식으로 이식 —
+       GSAP 대신 글자별 span + CSS transition으로 밀려 나가고/들어오는 모션.
+       스택이 뒤에서부터(Acts) 쌓이는 순서와 맞춰 Acts→Plans→Works→Thinks→Reads로 돈다. */
+    .chain-rotate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #161A1E;
+      color: #fff;
+      border-radius: clamp(6px, 0.65vw, 10px);
+      padding: clamp(6px, 0.9vw, 14px) clamp(18px, 2vw, 32px);
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(28px, 4vw, 58px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: width .45s cubic-bezier(.22, 1, .36, 1), background-color .45s ease;
+    }
+    .chain-rotate-track {
+      position: relative;
+      display: inline-flex;
+      white-space: nowrap;
+    }
+    .chain-rotate-char {
+      display: inline-block;
+      will-change: transform, opacity;
+      transition: transform .42s cubic-bezier(.22, 1, .36, 1), opacity .42s ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .chain-rotate { transition: none; }
+      .chain-rotate-char { transition: none; }
+    }
     .swipe-stack-shell {
-      --stack-width: clamp(220px, 20vw, 300px);
+      --stack-width: clamp(260px, 24vw, 360px);
       --caption-height: calc(var(--stack-width) * .20);
       position: relative;
       width: var(--stack-width);
       height: var(--stack-width);
       perspective: 1000px;
       overflow: visible;
-      touch-action: none;
     }
     .swipe-card {
       position: absolute;
@@ -247,46 +317,18 @@
         opacity .28s ease,
         box-shadow .24s ease;
     }
+    /* 카드 안 캡션 텍스트는 위 회전 배지가 단어를 이미 보여주므로 없앴다 — 사진이 카드 전체를 채운다. */
     .swipe-card-image {
       position: absolute;
-      inset: 0 0 var(--caption-height);
+      inset: 0;
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
       pointer-events: none;
     }
-    .swipe-card-label {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      height: var(--caption-height);
-      display: grid;
-      place-items: center;
-      background: #15191f;
-      color: #fff;
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
-      font-size: clamp(24px, 2.2vw, 34px);
-      font-weight: 500;
-      line-height: 1;
-      letter-spacing: -0.035em;
-      pointer-events: none;
-    }
-    .swipe-card:first-child {
-      cursor: grab;
-    }
-    .swipe-card:first-child:active {
-      cursor: grabbing;
-      box-shadow: none;
-    }
-    .swipe-card.is-dragging {
-      transition: none;
-    }
     @media (max-width: 720px) {
       .keepon-chain {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        gap: 36px;
+        gap: 44px;
       }
       .chain-prefix {
         white-space: normal;
@@ -328,7 +370,7 @@
        two-col layout, with its background layers crossfading as it moves. */
     .morph-card {
       position: absolute;
-      border-radius: 70px;
+      border-radius: 32px;
       overflow: hidden;
       color: #fff;
       will-change: top, left, width, height, border-radius;
@@ -340,7 +382,7 @@
     }
     .morph-bg-photo-a {
       inset: 0;
-      background: #2B3542 url('assets/morph-logic-background.png') center center / cover no-repeat;
+      background: #161A1E;
       opacity: 1;
     }
     .morph-bg-pink {
@@ -400,6 +442,14 @@
       padding: clamp(46px, 6.7vw, 128px);
       z-index: 1;
     }
+    /* bottom:0 하나만 있으면 카드가 클수록 텍스트 위쪽 여백만 계속 늘어난다.
+       top:0도 같이 주고 flex로 세로 중앙 정렬해 상하 여백이 항상 같게 만든다. */
+    .morph-text-a {
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
     .morph-text-b {
       opacity: 0;
       top: 0;
@@ -419,9 +469,12 @@
       border-radius: clamp(20px, 1.8vw, 32px);
       margin-bottom: clamp(24px, 2.4vw, 44px);
     }
-    /* 도미노: 입체 직육면체 — 면마다 밝기 셰이딩(불투명)으로 확실한 3D */
+    /* SKEEP AI: 두 단어 사이를 데이터 블록이 왼쪽에서 오른쪽으로 통과한 뒤
+       모든 블록이 사라지면 다시 한 문구로 닫히는 모션. */
     .two-left-3d {
+      container-type: size;
       position: relative;
+      flex-shrink: 0;
       width: clamp(560px, 52vw, 980px);
       aspect-ratio: 16 / 9;
       border-radius: clamp(20px, 1.8vw, 32px);
@@ -429,41 +482,58 @@
       background: #A5E0F0;
       overflow: hidden;
     }
-    .two-left-3d-persp {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      perspective: 680px;
+    /* Figma node 8635-14626 → 8635-14627 이식: "SK" + "P" 사이의 회색 바(원래 SKIP의
+       I 자리)가 좁은 상태에서 오른쪽으로 길게 늘어나며 P를 밀어낸다. 배경(#A5E0F0)은
+       그대로 두고, 이 박스 안에서만 반복 재생. absolute 좌표 대신 flex row +
+       justify-content:center로 구성해서, 바 너비가 얼마든 SK·바·P 묶음 전체가 항상
+       박스 가운데 정렬되어 좌우 여백이 자동으로 같아진다(바가 K를 가리는 좌표 오차도
+       원천 차단). */
+    /* S·K는 같은 단어 안 붙어 있는 글자라 더 가깝게(작은 gap), "SK" 묶음과
+       바/바와 P 사이는 그보다 넓게(큰 gap) — 두 단계 간격으로 나눴다. */
+    .skip-morph {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.34cqh;
     }
-    .two-left-3d-row {
-      position: relative; width: 96%; height: 56%;
-      transform-style: preserve-3d;
-      transform: rotateX(-34deg) rotateY(-13deg);
+    .skip-morph-sk-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6cqh;
     }
-    .tl3d-box { position: absolute; top: 50%; left: 50%; width: 56px; height: 126px; transform-style: preserve-3d; }
-    .tl3d-box > i { position: absolute; top: 50%; left: 50%; display: block; }
-    .tl3d-front  { width: 56px; height: 126px; margin: -63px 0 0 -28px; transform: translateZ(7px); background: #FF6B3D; }
-    .tl3d-back   { width: 56px; height: 126px; margin: -63px 0 0 -28px; transform: rotateY(180deg) translateZ(7px); background: #FF6B3D; }
-    .tl3d-right  { width: 15px; height: 126px; margin: -63px 0 0 -7px; transform: rotateY(90deg) translateZ(28px); background: #FF6B3D; }
-    .tl3d-left   { width: 15px; height: 126px; margin: -63px 0 0 -7px; transform: rotateY(-90deg) translateZ(28px); background: #FF6B3D; }
-    .tl3d-top    { width: 56px; height: 15px; margin: -7px 0 0 -28px; transform: rotateX(90deg) translateZ(63px); background: #FFA277; }
-    .tl3d-bottom { width: 56px; height: 15px; margin: -7px 0 0 -28px; transform: rotateX(-90deg) translateZ(63px); background: #FF6B3D; }
-    .tl3d-box:nth-child(1) { transform: translate(-50%,-50%) translateX(444px) translateZ(-576px); }
-    .tl3d-box:nth-child(2) { transform: translate(-50%,-50%) translateX(370px) translateZ(-480px); }
-    .tl3d-box:nth-child(3) { transform: translate(-50%,-50%) translateX(296px) translateZ(-384px); }
-    .tl3d-box:nth-child(4) { transform: translate(-50%,-50%) translateX(222px) translateZ(-288px); }
-    .tl3d-box:nth-child(5) { transform: translate(-50%,-50%) translateX(148px) translateZ(-192px); }
-    .tl3d-box:nth-child(6) { transform: translate(-50%,-50%) translateX(74px) translateZ(-96px); }
-    .tl3d-box:nth-child(7) { transform: translate(-50%,-50%) translateX(0px) translateZ(0px); }
-    .tl3d-box:nth-child(8) { transform: translate(-50%,-50%) translateX(-74px) translateZ(96px); }
-    .tl3d-box:nth-child(9) { transform: translate(-50%,-50%) translateX(-148px) translateZ(192px); }
-    .tl3d-box:nth-child(10) { transform: translate(-50%,-50%) translateX(-222px) translateZ(288px); }
-    .tl3d-box:nth-child(11) { transform: translate(-50%,-50%) translateX(-296px) translateZ(384px); }
-    .tl3d-box:nth-child(12) { transform: translate(-50%,-50%) translateX(-370px) translateZ(480px); }
-    .tl3d-box:nth-child(13) { transform: translate(-50%,-50%) translateX(-444px) translateZ(576px); }
-    @media (prefers-reduced-motion: reduce) { .two-left-3d-row { } }
-    .two-left-overline { font-size: clamp(14px,1.35vw,22px); font-weight: 600; line-height: 1.4; letter-spacing: -0.03em; margin-bottom: clamp(16px,1.7vw,28px); color: #ff0b6c; }
-    .two-left-h { font-size: clamp(26px,2.55vw,46px); font-weight: 700; line-height: 1.25; letter-spacing: -0.04em; margin-bottom: clamp(16px,1.7vw,26px); color: #0e1825; white-space: nowrap; }
-    .two-left-p { font-size: clamp(14px,1.2vw,21px); font-weight: 500; line-height: 1.55; letter-spacing: -0.03em; color: #0e1825; }
+    .skip-morph-letter {
+      font-family: 'T1 Glicky', 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: 32cqh;
+      line-height: 1;
+      color: #161A1E;
+      white-space: nowrap;
+    }
+    .skip-morph-bar {
+      height: 32%;
+      width: 2.5%;
+      margin-top: .8cqh;
+      background: #22AFD6;
+      flex: 0 0 auto;
+      animation: skipMorphBar 3.6s cubic-bezier(.77, 0, .175, 1) infinite;
+    }
+    /* .is-visible이 빠지면(화면 밖) 애니메이션을 멈춰 불필요한 렌더링을 아낀다. */
+    .skeep-ai-motion:not(.is-visible) .skip-morph-bar {
+      animation-play-state: paused;
+    }
+    @keyframes skipMorphBar {
+      0%, 22%  { width: 2.5%; }
+      55%, 78% { width: 58%; }
+      100%     { width: 2.5%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .skip-morph-bar { animation: none; width: 58%; }
+    }
+    .two-left-overline { font-size: clamp(14px,1.35vw,22px); font-weight: 600; line-height: 1.4; letter-spacing: -0.03em; margin-bottom: clamp(16px,1.7vw,28px); color: #6E6E6E; }
+    .two-left-h { font-size: clamp(26px,2.55vw,46px); font-weight: 700; line-height: 1.25; letter-spacing: -0.04em; margin-bottom: clamp(16px,1.7vw,26px); color: #161A1E; white-space: nowrap; }
+    .two-left-p { font-size: clamp(14px,1.2vw,21px); font-weight: 500; line-height: 1.55; letter-spacing: -0.03em; color: #161A1E; }
 
     /* ── 4. 3 white logic cards floating on the right of the final frame ── */
     .two-right {
@@ -481,23 +551,23 @@
       will-change: opacity, transform;
     }
     .logic-card:nth-child(1) {
-      background: #E7EAEE;
+      background: #F1F1F1;
       opacity: var(--logic-item-2-opacity, 0);
       transform: translateY(var(--logic-item-2-y, 56px));
     }
     .logic-card:nth-child(2) {
-      background: #E7EAEE;
+      background: #F1F1F1;
       opacity: var(--logic-item-3-opacity, 0);
       transform: translateY(var(--logic-item-3-y, 56px));
     }
     .logic-card:nth-child(3) {
-      background: #E7EAEE;
+      background: #F1F1F1;
       opacity: var(--logic-item-4-opacity, 0);
       transform: translateY(var(--logic-item-4-y, 56px));
     }
     .logic-card-top { display: none; }
     .logic-card-tag {
-      font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #ff0b6c;
+      font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #6E6E6E;
       letter-spacing: -0.03em; text-transform: uppercase;
     }
     .logic-card-desc { font-size: clamp(12px,1.35vw,22px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
@@ -516,7 +586,7 @@
       position: relative;
       height: 100vh;
       margin-top: clamp(80px, 13vh, 200px);   /* 위 도미노 섹션과 간격 */
-      background: #FFCCE5;
+      background: #FFFFFF;
       opacity: 0;
       transition: opacity 1s ease;   /* Skeep AI 섹션과 같은 뒤늦게 뜨는 dissolve */
     }
@@ -543,11 +613,11 @@
     }
     .parsing-wave span {
       display: inline-block;
-      font-family: "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
       font-size: inherit;
       font-variation-settings: 'wght' 200;
       letter-spacing: -0.02em;
-      color: #0e1825;
+      color: #161A1E;
       animation: parsingWave 1.15s cubic-bezier(.32, 0, .18, 1) infinite;
       animation-delay: calc(var(--i) * 0.09s);
     }
@@ -589,15 +659,15 @@
       justify-content: center;
       overflow: hidden;
       isolation: isolate;
-      background: #FFCCE5;
+      background: #FFFFFF;
     }
     .parsing-static-label {
       margin: 0;
       font-family: 'T1 Glicky', 'Bebas Neue', 'Pretendard', sans-serif;
-      font-size: clamp(84px, 15vw, 260px);
+      font-size: clamp(48px, 7vw, 118px);
       font-weight: 400;
       letter-spacing: 0;
-      color: #0e1825;
+      color: #161A1E;
       text-transform: uppercase;
       user-select: none;
     }
@@ -605,9 +675,9 @@
       position: absolute;
       top: 50%;
       left: -25%;
-      width: clamp(280px, 42vw, 640px);
+      width: clamp(160px, 20vw, 300px);
       aspect-ratio: 1;
-      background: #FF3385;
+      background: #161A1E;
       overflow: hidden;
       transform: translate(-50%, -50%);
       animation: parsingSweep 3.6s cubic-bezier(.5, 0, .5, 1) infinite alternate;
@@ -616,7 +686,7 @@
       0%   { left: -25%; }
       100% { left: 125%; }
     }
-    /* 네모 안에서 글자가 겹치는 부분만 연핑크(배경색)로 "비쳐" 보이도록,
+    /* 검정 네모가 지나갈 때 겹치는 글자 부분만 흰색으로 반전되도록,
        실제 라벨과 동일한 글자를 네모 안에 복제해 둔다 — 위치는 매 프레임
        JS가 실제 라벨과 겹치도록 맞춰준다(see parsingSweepSync). */
     .parsing-sweep-text {
@@ -624,10 +694,10 @@
       top: 0; left: 0;
       margin: 0;
       font-family: 'T1 Glicky', 'Bebas Neue', 'Pretendard', sans-serif;
-      font-size: clamp(84px, 15vw, 260px);
+      font-size: clamp(48px, 7vw, 118px);
       font-weight: 400;
       letter-spacing: 0;
-      color: #FFCCE5;
+      color: #FFFFFF;
       text-transform: uppercase;
       white-space: nowrap;
       user-select: none;
@@ -661,7 +731,7 @@
 
     /* ── 7. DETAIL (Parsing / Mapping) ── */
     .sec-detail { background: #fff; width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding); }
-    .detail-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; margin-bottom: 28px; }
+    .detail-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #6E6E6E; margin-bottom: 28px; }
     .detail-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; margin-bottom: 28px; }
     .detail-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 64px; }
     .sec-detail.parsing-detail-visual {
@@ -698,8 +768,154 @@
       object-fit: cover;
       mix-blend-mode: screen;
     }
-    /* 무스 호환 2D canvas 메타볼 (SVG goo 필터 대체) */
-    .pd-morph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    /* 빌려쓰다(Next.js) StatusMorph 컴포넌트 이식 — 순수 CSS keyframes만 사용
+       (JS/canvas 없음, 무빙스타일 프로젝터 기준 경량 유지). 원본 실측: 캔버스
+       882×886, 코어 도형 변 165px(≈18.7%), 분할 셀 대각선 118px/95px(≈10.7%),
+       점/막대 폭 35px(≈4%) 간격 23px(≈2.6%), 전체 사이클 9.5초 루프. */
+    .pdsm-wrap { background: #161A1E; }
+    .image-flipper-wrap {
+      background: #E7FF96;
+      border-radius: clamp(10px, 1vw, 16px);
+    }
+    .image-flipper-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .image-flipper-fallback {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    /* 박스가 정사각형이 아니라 와이드(1654:1080)라서 inset:0으로 꽉 채우면
+       가로/세로 % 기준이 서로 달라져 "정사각형" 도형들이 다 직사각형으로
+       찌그러진다. 스테이지 자체를 박스 높이 기준 정사각형으로 만들어 중앙에
+       놓으면, 안쪽 %는 가로세로가 같은 기준(스테이지 자신의 한 변)을 쓰게 돼
+       원본 컴포넌트(정사각형 컨테이너)와 동일하게 나온다. */
+    .pdsm-stage { position: absolute; top: 50%; left: 50%; height: 100%; width: auto; aspect-ratio: 1; transform: translate(-50%, -50%); }
+    .pdsm-stage * { position: absolute; display: block; background: #f5f5f5; }
+
+    .pdsm-core {
+      top: 50%; left: 50%; width: 18.7%; height: 18.7%;
+      opacity: 0;
+      animation: pdsmCore 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite;
+    }
+    .pdsm-quad {
+      inset: 0; background: none; opacity: 0;
+      animation: pdsmQuadVisibility 9.5s linear infinite;
+    }
+    .pdsm-cell {
+      top: 50%; left: 50%; width: 10.7%; height: 10.7%;
+      margin: -5.35% 0 0 -5.35%;
+    }
+    .pdsm-cell:nth-child(1) { animation: pdsmCellN 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-cell:nth-child(2) { animation: pdsmCellE 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-cell:nth-child(3) { animation: pdsmCellS 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-cell:nth-child(4) { animation: pdsmCellW 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-bars {
+      top: 50%; left: 50%; width: 4%; height: 4%; margin: -2% 0 0 -2%;
+      background: none; display: flex; align-items: center; gap: 2.6%;
+    }
+    .pdsm-bar { position: relative; width: 4%; height: 100%; opacity: 0; transform: scaleY(1); }
+    .pdsm-bar:nth-child(1) { animation: pdsmBarA 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-bar:nth-child(2) { animation: pdsmBarB 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+    .pdsm-bar:nth-child(3) { animation: pdsmBarC 9.5s cubic-bezier(0.33, 1, 0.68, 1) infinite; }
+
+    /* core의 페이드아웃 종료 지점을 34%/51%로 당겨 pdsmQuadVisibility의
+       페이드인 종료 지점(34%/51%)과 정확히 맞춘다 — 원래는 37%/53%까지
+       core가 남아있어 quad(가운데 겹친 채 페이드인)와 반투명 상태로 겹쳐
+       "다이아몬드 속에 다이아몬드"가 비치는 이중노출 고스트가 생겼었다. */
+    @keyframes pdsmCore {
+      0%, 24% { opacity: 0; transform: translate(-50%, -50%) scale(0.7) rotate(45deg); }
+      29%, 32% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(45deg); }
+      /* 34%~40%를 같은 값(opacity:0)으로 붙잡아 둔다 — 이 구간은 quad(4개
+         다이아몬드)가 완전히 펼쳐져 보이는 구간(pdsmQuadVisibility 34~40%)과
+         정확히 겹친다. 이전엔 다음 정의 지점이 42%뿐이라 34→42% 내내 core가
+         조용히 0→1로 다시 떠올라, quad가 다 펼쳐진 상태에서 가운데에 회색
+         다이아몬드가 같이 비치는("동시에 뜨는") 겹침 오류가 있었다. 40→42%
+         짧은 구간에서만 다시 떠오르게 해 quad가 사라지는 타이밍과 맞춘다. */
+      34%, 40% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) rotate(45deg); }
+      42%, 49% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(45deg); }
+      51%, 60% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) rotate(30deg); }
+      62%, 64% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      66%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.7) rotate(0deg); }
+    }
+    @keyframes pdsmQuadVisibility {
+      0%, 32%, 42%, 49%, 62%, 100% { opacity: 0; }
+      34%, 40%, 51%, 60% { opacity: 1; }
+    }
+    /* 가운데로 모였을 때(translate 0,0) 4개 cell이 정확히 같은 자리에 겹쳐
+       "하나의 도형"처럼 보여야 한다. 기존 scale(0.6)은 cell 원래 크기(10.7%)
+       기준 실제 겹친 크기가 ≈6.4%로, core(18.7%)보다 훨씬 작아서 코어와
+       퀘드가 서로 다른 개체처럼(크기가 안 맞아) 보였다. scale을 core와 같은
+       크기가 되도록(10.7% × 1.75 ≈ 18.7%) 키워서, 4개가 모여 core와 정확히
+       같은 크기의 하나의 도형으로 보이게 — 이제 "분해→합체"가 자연스럽게
+       하나로 이어진다. */
+    @keyframes pdsmCellN {
+      0%, 29%, 32%, 42%, 49% { transform: translate(0, 0) scale(1.75) rotate(45deg); }
+      37% { transform: translate(0, -168%) scale(1) rotate(45deg); }
+      51% { transform: translate(0, 0) scale(0.7) rotate(30deg); }
+      57% { transform: translate(-112%, -112%) scale(1) rotate(0deg); }
+      62%, 100% { transform: translate(0, 0) scale(1.75) rotate(0deg); }
+    }
+    @keyframes pdsmCellE {
+      0%, 29%, 32%, 42%, 49% { transform: translate(0, 0) scale(1.75) rotate(45deg); }
+      37% { transform: translate(168%, 0) scale(1) rotate(45deg); }
+      51% { transform: translate(0, 0) scale(0.7) rotate(30deg); }
+      57% { transform: translate(112%, -112%) scale(1) rotate(0deg); }
+      62%, 100% { transform: translate(0, 0) scale(1.75) rotate(0deg); }
+    }
+    @keyframes pdsmCellS {
+      0%, 29%, 32%, 42%, 49% { transform: translate(0, 0) scale(1.75) rotate(45deg); }
+      37% { transform: translate(0, 168%) scale(1) rotate(45deg); }
+      51% { transform: translate(0, 0) scale(0.7) rotate(30deg); }
+      57% { transform: translate(112%, 112%) scale(1) rotate(0deg); }
+      62%, 100% { transform: translate(0, 0) scale(1.75) rotate(0deg); }
+    }
+    @keyframes pdsmCellW {
+      0%, 29%, 32%, 42%, 49% { transform: translate(0, 0) scale(1.75) rotate(45deg); }
+      37% { transform: translate(-168%, 0) scale(1) rotate(45deg); }
+      51% { transform: translate(0, 0) scale(0.7) rotate(30deg); }
+      57% { transform: translate(-112%, 112%) scale(1) rotate(0deg); }
+      62%, 100% { transform: translate(0, 0) scale(1.75) rotate(0deg); }
+    }
+    /* height 대신 transform: scaleY() — height는 레이아웃/페인트를 매 프레임
+       유발하는 비-GPU 속성이라 컴포지터 전용(transform/opacity)으로 교체.
+       .pdsm-bars가 align-items:center라 height 증가 시 flex가 위아래로
+       재배치해 중앙 기준으로 자라 보였는데, scaleY도 기본 origin이 50% 50%라
+       똑같이 중앙 기준으로 늘어나 시각 결과는 동일하다. */
+    @keyframes pdsmBarA {
+      0%, 64% { opacity: 0; transform: scaleY(1); }
+      66%, 70% { opacity: 1; transform: scaleY(1); }
+      74% { transform: scaleY(3); }
+      78% { transform: scaleY(1.5); }
+      82% { transform: scaleY(3.75); }
+      86% { transform: scaleY(2); }
+      92%, 100% { opacity: 0; transform: scaleY(1); }
+    }
+    @keyframes pdsmBarB {
+      0%, 64% { opacity: 0; transform: scaleY(1); }
+      66%, 70% { opacity: 1; transform: scaleY(1); }
+      74% { transform: scaleY(1.75); }
+      78% { transform: scaleY(4); }
+      82% { transform: scaleY(2.25); }
+      86% { transform: scaleY(3.5); }
+      92%, 100% { opacity: 0; transform: scaleY(1); }
+    }
+    @keyframes pdsmBarC {
+      0%, 64% { opacity: 0; transform: scaleY(1); }
+      66%, 70% { opacity: 1; transform: scaleY(1); }
+      74% { transform: scaleY(3.5); }
+      78% { transform: scaleY(2.25); }
+      82% { transform: scaleY(1.5); }
+      86% { transform: scaleY(3); }
+      92%, 100% { opacity: 0; transform: scaleY(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pdsm-stage * { animation: none !important; }
+      .pdsm-core { opacity: 1; transform: translate(-50%, -50%) rotate(45deg); }
+    }
     /* 레퍼런스 영상의 3.14초 리듬: 정지 → 응집 → 단일 원 → 정지 */
     /* 순수 CSS 메타볼 goo (이미지/영상/canvas 없음, 벡터라 무한 선명, 색 정확).
        흰 원 5개를 CSS로 흩뿌렸다가 중앙으로 모아 하나로 합친다. 부모에 SVG goo 필터
@@ -746,130 +962,208 @@
     }
     .principle-grid { display: flex; gap: clamp(12px, 1.6vw, 28px); align-items: stretch; }
     .principle-card {
-      flex: 1; background: #F4F8FC; border-radius: 24px;
+      flex: 1; background: #F1F1F1; border-radius: 24px;
       padding: 48px 40px; display: flex; flex-direction: column; gap: 17px;
     }
-    .pr-num { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.3; letter-spacing: -0.02em; opacity: 0.5; }
-    .pr-title { font-size: clamp(17px,2.35vw,36px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
-    .pr-body { font-size: clamp(12px,1.35vw,22px); font-weight: 500; line-height: 1.5; letter-spacing: -0.03em; }
+    .pr-num { font-size: clamp(11px,1.15vw,19px); font-weight: 400; line-height: 1.3; letter-spacing: -0.02em; opacity: 0.5; }
+    .pr-title { font-size: clamp(14px,1.9vw,29px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
+    .pr-body { font-size: clamp(10px,1.1vw,18px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; opacity: 0.8; }
     .sec-detail.mapping-photo {
       overflow: hidden;
-      background: #F1F1F1;
-      color: #0e1825;
+      background: #fff;
+      color: #161A1E;
       padding-top: clamp(72px, 7vw, 128px);
       padding-bottom: clamp(72px, 7vw, 128px);
     }
     .mapping-editorial {
-      width: min(100%, 1760px);
+      width: min(100%, 1180px);
       margin: 0 auto;
-      display: grid;
-      grid-template-columns: minmax(390px, .82fr) minmax(560px, 1.18fr);
-      grid-template-rows: auto 1fr;
-      column-gap: clamp(56px, 6vw, 120px);
-      row-gap: clamp(52px, 5vw, 92px);
-      align-items: start;
-    }
-    .mapping-motion-frame {
-      position: relative;
-      grid-column: 1;
-      grid-row: 1 / 3;
-      width: 100%;
-      aspect-ratio: .78;
-      overflow: visible;
-      isolation: isolate;
-    }
-    .mapping-motion-stage {
-      position: absolute;
-      left: -9%;
-      bottom: 2%;
-      width: 126%;
-      height: 82%;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      perspective: 1050px;
-      transform: rotate(-15deg);
-      transform-origin: 48% 54%;
+      text-align: center;
     }
-    .mapping-cube {
-      position: relative;
-      width: clamp(210px, 25vw, 390px);
-      aspect-ratio: 1;
-      transform-style: preserve-3d;
-      animation: mappingCubeSpin 6s ease-in-out infinite;
-      will-change: transform;
-    }
-    .mapping-sheet {
-      position: absolute;
-      inset: 0;
-      border-radius: 0;
-      background: var(--mapping-color);
-      opacity: 1;
-      transform-origin: 50% 50%;
-      animation:
-        mappingSheetFan 6s cubic-bezier(.45, 0, .2, 1) infinite,
-        mappingSheetColor 6s ease-in-out infinite;
-      will-change: transform, opacity;
-    }
-    .mapping-sheet:nth-child(1)  { --mapping-color:#280047; --x-rest:-20px; --y-rest:16px; --z-rest:-90px; --r-rest:-6deg;   --x-open:-72px; --y-open:48px; --z-open:-150px; --r-open:-17deg; }
-    .mapping-sheet:nth-child(2)  { --mapping-color:#82ff8f; --x-rest:-16px; --y-rest:13px; --z-rest:-72px; --r-rest:-4.8deg; --x-open:-58px; --y-open:39px; --z-open:-120px; --r-open:-13.5deg; }
-    .mapping-sheet:nth-child(3)  { --mapping-color:#09421a; --x-rest:-12px; --y-rest:10px; --z-rest:-54px; --r-rest:-3.6deg; --x-open:-44px; --y-open:30px; --z-open:-90px;  --r-open:-10deg; }
-    .mapping-sheet:nth-child(4)  { --mapping-color:#a5e0f0; --x-rest:-8px;  --y-rest:7px;  --z-rest:-36px; --r-rest:-2.4deg; --x-open:-30px; --y-open:21px; --z-open:-60px;  --r-open:-6.5deg; }
-    .mapping-sheet:nth-child(5)  { --mapping-color:#0a67de; --x-rest:-4px;  --y-rest:4px;  --z-rest:-18px; --r-rest:-1.2deg; --x-open:-16px; --y-open:12px; --z-open:-30px;  --r-open:-3deg; }
-    .mapping-sheet:nth-child(6)  { --mapping-color:#ffc9b8; --x-rest:0px;   --y-rest:0px;  --z-rest:0px;   --r-rest:0deg;    --x-open:0px;   --y-open:0px;  --z-open:0px;    --r-open:0deg; }
-    .mapping-sheet:nth-child(7)  { --mapping-color:#ff6b3d; --x-rest:4px;   --y-rest:-4px; --z-rest:18px;  --r-rest:1.2deg;  --x-open:16px;  --y-open:-12px;--z-open:30px;   --r-open:3deg; }
-    .mapping-sheet:nth-child(8)  { --mapping-color:#daff61; --x-rest:8px;   --y-rest:-7px; --z-rest:36px;  --r-rest:2.4deg;  --x-open:30px;  --y-open:-21px;--z-open:60px;   --r-open:6.5deg; }
-    .mapping-sheet:nth-child(9)  { --mapping-color:#a1d202; --x-rest:12px;  --y-rest:-10px;--z-rest:54px;  --r-rest:3.6deg;  --x-open:44px;  --y-open:-30px;--z-open:90px;   --r-open:10deg; }
-    .mapping-sheet:nth-child(10) { --mapping-color:#ffcadf; --x-rest:16px;  --y-rest:-13px;--z-rest:72px;  --r-rest:4.8deg;  --x-open:58px;  --y-open:-39px;--z-open:120px;  --r-open:13.5deg; }
-    .mapping-sheet:nth-child(11) { --mapping-color:#ff3385; --x-rest:20px;  --y-rest:-16px;--z-rest:90px;  --r-rest:6deg;    --x-open:72px;  --y-open:-48px;--z-open:150px;  --r-open:17deg; }
-    @keyframes mappingSheetFan {
-      0%, 16%, 100% {
-        transform:
-          translate3d(var(--x-rest), var(--y-rest), var(--z-rest))
-          rotateZ(var(--r-rest));
-      }
-      48%, 72% {
-        transform:
-          translate3d(var(--x-open), var(--y-open), var(--z-open))
-          rotateZ(var(--r-open));
-      }
-    }
-    @keyframes mappingSheetColor {
-      0%, 16%, 100% { opacity: .62; }
-      48%, 72%      { opacity: .8; }
-    }
-    @keyframes mappingCubeSpin {
-      0%, 16%, 100% { transform: rotateX(28deg) rotateY(40deg) scaleZ(.78); }
-      48%, 72%      { transform: rotateX(18deg) rotateY(52deg) scaleZ(1); }
-    }
-    .mapping-copy {
-      grid-column: 2;
-      grid-row: 1;
-      padding-top: clamp(6px, 1vw, 18px);
-    }
-    .sec-detail.mapping-photo .detail-label { color: #ff2b80; }
     .sec-detail.mapping-photo .detail-h {
       max-width: 880px;
     }
+    /* 클릭 또는 2초 뒤 자동으로 뒤집히는 카드 4장 (피그마 8535-23212/23216 참고).
+       앞면 = 사진 풀블리드 + 상단 라벨, 뒷면 = 흰 박스 안에 사진 2장 — 조율하다
+       페이지 카드 그리드(EnvironmentLayers)처럼 카드 사이 여백을 두고 모서리를 둥글렸다. */
+    /* .mapping-editorial이 1180px로 좁혀 놓은 폭을 깨고, 조율하다 페이지 카드
+       그리드와 같은 폭(사이트 공통 --edge-padding 기준 좌우 여백)까지 넓힌다. */
+    .mapping-flip-row {
+      display: flex;
+      gap: clamp(8px, 1vw, 16px);
+      width: calc(100vw - var(--edge-padding) * 2);
+      margin: clamp(24px, 4vw, 56px) calc(50% - 50vw + var(--edge-padding)) clamp(32px, 4.4vw, 64px);
+    }
+    .mapping-flip-card {
+      position: relative;
+      flex: 1 1 25%;
+      aspect-ratio: 3 / 5;
+      perspective: 1600px;
+      cursor: pointer;
+    }
+    .mapping-flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(.22, 1, .36, 1);
+    }
+    .mapping-flip-card.is-flipped .mapping-flip-inner {
+      transform: rotateY(180deg);
+    }
+    .mapping-flip-front,
+    .mapping-flip-back {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-radius: clamp(8px, 1vw, 14px);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    /* 앞면 = 검정 배경 + 중앙 라벨 + 네 귀퉁이 뷰파인더 마커 (피그마 8588-14596).
+       2/4번째 카드만 살짝 밝은 #161A1E — 피그마 원본에 그렇게 되어있음. */
+    .mapping-flip-front {
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mapping-flip-card:nth-child(even) .mapping-flip-front {
+      background: #161A1E;
+    }
+    .mapping-flip-label {
+      margin: 0;
+      color: #fff;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(20px, 2.3vw, 34px);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .mapping-flip-corner {
+      position: absolute;
+      width: clamp(5px, 0.55vw, 9px);
+      height: clamp(5px, 0.55vw, 9px);
+      background: #fff;
+    }
+    .mapping-flip-corner--tl { top: clamp(10px, 1.6vw, 24px); left: clamp(10px, 1.6vw, 24px); }
+    .mapping-flip-corner--tr { top: clamp(10px, 1.6vw, 24px); right: clamp(10px, 1.6vw, 24px); }
+    .mapping-flip-corner--bl { bottom: clamp(10px, 1.6vw, 24px); left: clamp(10px, 1.6vw, 24px); }
+    .mapping-flip-corner--br { bottom: clamp(10px, 1.6vw, 24px); right: clamp(10px, 1.6vw, 24px); }
+    /* 뒷면 = 제품 사진 2장을 피그마(8588-14597/8922-20640) 프레임 좌표 그대로 배치한다.
+       .mapping-flip-front/.mapping-flip-back 공용 규칙이 이미 position:absolute; inset:0
+       을 주므로 여기서 다시 position을 선언하지 않는다 — 덮어쓰면 높이가 0이 되어버린다.
+       선택 상태에서는 크기나 위치를 바꾸지 않고 opacity만 교차하며,
+       모든 카드의 위·아래 라벨은 각각 같은 수평 기준선에 놓인다. */
+    .mapping-flip-back {
+      background: #F1F1F1;
+      transform: rotateY(180deg);
+      transition: background-color .8s ease;
+    }
+    .mapping-flip-card:nth-child(1).is-selected .mapping-flip-back { background-color: #A5E0F0; }
+    .mapping-flip-card:nth-child(2).is-selected .mapping-flip-back { background-color: #FF6B3D; }
+    .mapping-flip-card:nth-child(3).is-selected .mapping-flip-back { background-color: #FFCADF; }
+    .mapping-flip-card:nth-child(4).is-selected .mapping-flip-back { background-color: #E7FF96; }
+    /* 뒤집힌 직후엔 두 오브제 모두 20%로 죽어있다가, 카드가 선택되며
+       그 중 하나만 100%로 또렷해진다(피그마 8588-14597 → 8922-20640). */
+    .mapping-flip-back-item {
+      position: absolute;
+      inset: 0;
+      opacity: .2;
+      transition: opacity .8s ease;
+    }
+    .mapping-flip-card:nth-child(odd).is-selected .mapping-flip-back-item[data-pick="a"],
+    .mapping-flip-card:nth-child(even).is-selected .mapping-flip-back-item[data-pick="b"] {
+      opacity: 1;
+    }
+    /* 사진 배치/크기는 피그마(8588-14597 / 8922-20640) 프레임(962×1602) 좌표를
+       카드 기준 %로 그대로 옮겨 절대 배치한다 — 카드마다 사진 2장의 위치·크기가 다르다. */
+    .mapping-flip-back-photo {
+      position: absolute;
+    }
+    .mapping-flip-back-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .mapping-flip-card:nth-child(1) [data-pick="a"] .mapping-flip-back-photo { left: 15.07%; top: 13.55%; width: 65.07%; height: 29.15%; }
+    .mapping-flip-card:nth-child(1) [data-pick="b"] .mapping-flip-back-photo { left: 2.29%; top: 56.93%; width: 90.65%; height: 30.4%; }
+    .mapping-flip-card:nth-child(2) [data-pick="a"] .mapping-flip-back-photo { left: 12.06%; top: 15.3%; width: 75.88%; height: 25.66%; }
+    .mapping-flip-card:nth-child(2) [data-pick="b"] .mapping-flip-back-photo { left: 20.12%; top: 54.94%; width: 51.77%; height: 31.09%; }
+    .mapping-flip-card:nth-child(3) [data-pick="a"] .mapping-flip-back-photo { left: 25.18%; top: 15.48%; width: 53.24%; height: 25.34%; }
+    .mapping-flip-card:nth-child(3) [data-pick="b"] .mapping-flip-back-photo { left: 17.88%; top: 60.68%; width: 67.98%; height: 29.44%; }
+    .mapping-flip-card:nth-child(4) [data-pick="a"] .mapping-flip-back-photo { left: 27.86%; top: 15.86%; width: 40.96%; height: 24.59%; }
+    .mapping-flip-card:nth-child(4) [data-pick="b"] .mapping-flip-back-photo { left: 21.52%; top: 55.18%; width: 54.16%; height: 38.08%; }
+    /* 뒤집힌 뒷면 위에도 앞면과 같은 영단어 라벨을 상단에 얹는다. */
+    .mapping-flip-back-title {
+      position: absolute;
+      left: 50%;
+      top: 5%;
+      margin: 0;
+      color: #111;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-weight: 500;
+      font-size: clamp(10px, 1.05vw, 16px);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      transform: translateX(-50%);
+    }
+    .mapping-flip-back-label {
+      position: absolute;
+      left: 50%;
+      margin: 0;
+      background: #fff;
+      color: #111;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
+      font-size: clamp(11px, 1.15vw, 17px);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+      padding: 0.3em 0.8em;
+      border-radius: clamp(1.5px, 0.15vw, 3px);
+      transform: translate(-50%, -50%);
+    }
+    .mapping-flip-back-item[data-pick="a"] .mapping-flip-back-label { top: 46.63%; }
+    .mapping-flip-back-item[data-pick="b"] .mapping-flip-back-label { top: 91.5%; }
+    @media (prefers-reduced-motion: reduce) {
+      .mapping-flip-inner,
+      .mapping-flip-back-item {
+        transition: none;
+      }
+    }
     .sec-detail.mapping-photo .detail-desc {
       color: rgba(14,24,37,.62);
-      margin-bottom: 0;
+      margin-bottom: clamp(40px, 4.4vw, 64px);
+      max-width: 760px;
     }
+    /* 위 카드 줄(.mapping-flip-row)과 같은 폭(사이트 공통 --edge-padding 기준)까지
+       .mapping-editorial의 1180px 제한을 깨고 넓힌다. */
     .sec-detail.mapping-photo .principle-grid {
-      grid-column: 2;
-      grid-row: 2;
+      width: calc(100vw - var(--edge-padding) * 2);
+      margin-left: calc(50% - 50vw + var(--edge-padding));
+      margin-right: calc(50% - 50vw + var(--edge-padding));
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: clamp(14px, 1.4vw, 24px);
+      text-align: left;
       margin-top: 0;
     }
     .sec-detail.mapping-photo .principle-card {
-      min-height: clamp(235px, 17vw, 310px);
+      min-height: clamp(160px, 10vw, 220px);
       padding: clamp(24px, 2.15vw, 38px);
-      background: #ffffff;
+      background: #F1F1F1;
       border: 0;
       border-radius: 28px;
-      color: #0e1825;
+      color: #161A1E;
       box-shadow: none;
       backdrop-filter: none;
     }
@@ -878,29 +1172,8 @@
       color: rgba(14,24,37,.55);
       opacity: 1;
     }
-    .sec-detail.mapping-photo .pr-num {
-      font-size: clamp(12px, 1.15vw, 18px);
-    }
-    .sec-detail.mapping-photo .pr-title {
-      font-size: clamp(16px, 1.75vw, 28px);
-    }
     .sec-detail.mapping-photo .pr-body {
-      font-size: clamp(11px, 1.02vw, 16px);
       letter-spacing: -0.04em;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .mapping-cube {
-        animation: none;
-        transform: rotateX(18deg) rotateY(52deg) scaleZ(1);
-      }
-      .mapping-sheet {
-        animation: none;
-        background: var(--mapping-color);
-        opacity: .8;
-        transform:
-          translate3d(var(--x-open), var(--y-open), var(--z-open))
-          rotateZ(var(--r-open));
-      }
     }
     /* ── PILL BTN ── */
     .pill-btn-wrap {
@@ -968,7 +1241,7 @@
     }
     .sec-ai-figma-summary {
       position: relative;
-      background: linear-gradient(to bottom, #0E1825 0%, #000000 100%);
+      background: #FFFFFF;
       width: 100%;
       min-height: 100vh;
       padding: clamp(40px, 6vh, 80px) 0;   /* 가로 0 → 칩 풀블리드 */
@@ -995,8 +1268,8 @@
       flex: 0 0 auto; white-space: nowrap;
       padding: clamp(10px,1vw,16px) clamp(16px,1.5vw,26px);
       border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.32);
+      background: #F1F1F1;
+      color: #6E6E6E;
       font-size: clamp(13px,1.35vw,20px); font-weight: 500; letter-spacing: -0.02em;
     }
     @keyframes chipMarqueeL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -1018,9 +1291,9 @@
     .sec-ai-figma-summary.revealed .ai-chips-band {
       opacity: 1; transform: none;
     }
-    .sec-ai-figma-summary .ai-figma-label,
-    .sec-ai-figma-summary .ai-figma-h,
-    .sec-ai-figma-summary .ai-figma-p { color: #ffffff; }
+    .sec-ai-figma-summary .ai-figma-label { color: #6E6E6E; }
+    .sec-ai-figma-summary .ai-figma-h { color: #161A1E; }
+    .sec-ai-figma-summary .ai-figma-p { color: rgba(22,26,30,0.72); }
     .ai-figma-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin: 0; }
     .ai-figma-h { font-size: clamp(28px,4.4vw,60px); font-weight: 700; line-height: 1.3; letter-spacing: -0.03em; margin: 0; }
     .ai-figma-p { font-size: clamp(14px,1.7vw,22px); font-weight: 400; line-height: 1.55; letter-spacing: -0.03em; color: rgba(255,255,255,0.8); margin: 0; }
@@ -1034,16 +1307,17 @@
     }
     .cards-row { display: flex; gap: clamp(16px, 1.8vw, 32px); min-height: 0; }
     .feat-card {
-      flex: 1; background: #F4F8FC; border-radius: 32px;
+      flex: 1; background: #F1F1F1; border-radius: 32px;
       padding: 56px 48px; display: flex; flex-direction: column;
       gap: clamp(12px, 1.6vw, 28px); min-height: 640px; justify-content: space-between;
     }
     .feat-card-num { font-size: clamp(32px,4.8vw,72px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: rgba(0,0,0,0.08); }
     .feat-card-body { display: flex; flex-direction: column; gap: 16px; }
-    .feat-card-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #0e1825; }
+    .feat-card-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #161A1E; }
     .feat-card-sub { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.02em; }
     .feat-card-p { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
     .sec-3cards .feat-card {
+      background: #E7FF96;
       min-height: clamp(300px, 27vw, 430px);
       padding: clamp(28px, 2.2vw, 40px);
     }
@@ -1074,7 +1348,7 @@
     .ml-slot {
       position: absolute; top: 50%; left: 50%;
       font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4;
-      letter-spacing: -0.075em; color: #0e1825; white-space: nowrap;
+      letter-spacing: -0.075em; color: #161A1E; white-space: nowrap;
       transform: translate(-50%, -50%);
       transition:
         transform .82s cubic-bezier(.22, 1, .36, 1),
@@ -1089,7 +1363,7 @@
     }
     .ml-slot.is-center {
       transform: translate(-50%, -50%) translateX(0) scale(1.12);
-      opacity: 1; color: #0e1825; filter: none;
+      opacity: 1; color: #161A1E; filter: none;
     }
     .ml-slot.is-right {
       transform: translate(-50%, -50%) translateX(26vw) scale(.82);
@@ -1106,130 +1380,279 @@
     .ml-fade-l { position: absolute; left: 0; top: 0; bottom: 0; width: min(24vw, 360px); background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,.72) 32%, rgba(255,255,255,0) 100%); z-index: 2; pointer-events: none; }
     .ml-fade-r { position: absolute; right: 0; top: 0; bottom: 0; width: min(24vw, 360px); background: linear-gradient(270deg, #fff 0%, rgba(255,255,255,.72) 32%, rgba(255,255,255,0) 100%); z-index: 2; pointer-events: none; }
 
+    /* ── 10. MAPPING ASSEMBLY ── */
+    .sec-mapping-assembly {
+      width: 100%;
+      padding: clamp(68px, 8vw, 124px) var(--edge-padding) clamp(76px, 9vw, 140px);
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+    .mapping-assembly-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: clamp(32px, 4vw, 54px);
+    }
+    .mapping-assembly-title {
+      color: #161A1E;
+      font-family: var(--font-display, inherit);
+      font-size: clamp(44px, 6.4vw, 92px);
+      font-weight: 700;
+      line-height: .92;
+      letter-spacing: -.045em;
+    }
+    .mapping-assembly-state {
+      position: relative;
+      width: min(360px, 76vw);
+      height: 1.7em;
+      margin-top: 20px;
+      color: #68717A;
+      font-size: clamp(15px, 1.5vw, 22px);
+      font-weight: 600;
+      line-height: 1.7;
+      letter-spacing: -.03em;
+    }
+    .mapping-assembly-state span {
+      position: absolute;
+      inset: 0;
+      transition: opacity .46s ease, transform .58s cubic-bezier(.22, 1, .36, 1);
+    }
+    .mapping-state-triple { opacity: 1; transform: translateY(0); }
+    .mapping-state-block { opacity: 0; transform: translateY(10px); color: #161A1E; }
+    .sec-mapping-assembly.is-assembled .mapping-state-triple { opacity: 0; transform: translateY(-10px); }
+    .sec-mapping-assembly.is-assembled .mapping-state-block { opacity: 1; transform: translateY(0); }
+
+    .mapping-assembly-stage {
+      position: relative;
+      width: min(100%, 980px);
+      aspect-ratio: 880 / 540;
+      overflow: visible;
+      background: transparent;
+      isolation: isolate;
+    }
+    .mapping-assembly-frame {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: #161A1E;
+      opacity: 0;
+      transform: scale(.975);
+      transition: opacity .28s ease .18s, transform .5s cubic-bezier(.77, 0, .175, 1) .12s;
+    }
+    .mapping-assembly-block {
+      position: absolute;
+      z-index: 1;
+      border-radius: 6px;
+      transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r)) scale(.96);
+      transition:
+        transform 1.08s cubic-bezier(.77, 0, .175, 1) var(--delay),
+        border-radius .76s cubic-bezier(.77, 0, .175, 1) calc(var(--delay) + .12s);
+      will-change: transform;
+    }
+    .mapping-assembly-block span {
+      position: absolute;
+      top: clamp(12px, 1.8vw, 22px);
+      left: clamp(13px, 2vw, 24px);
+      color: #0D1720;
+      font-size: clamp(13px, 1.55vw, 20px);
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: -.035em;
+    }
+    .mapping-block-time {
+      left: 4.77%; top: 6.48%; width: 29.09%; height: 87.22%;
+      --scatter-x: -28%; --scatter-y: 7%; --scatter-r: -5deg;
+      background: #86CEF4;
+    }
+    .mapping-block-product {
+      left: 36.02%; top: 6.48%; width: 18.64%; height: 39.07%;
+      --scatter-x: -62%; --scatter-y: 92%; --scatter-r: 7deg;
+      background: #B8E0F7;
+    }
+    .mapping-block-resources {
+      left: 56.70%; top: 6.48%; width: 38.30%; height: 39.07%;
+      --scatter-x: 30%; --scatter-y: -13%; --scatter-r: 5deg;
+      background: #62BCEF;
+    }
+    .mapping-block-space {
+      left: 35%; top: 50.50%; width: 60%; height: 43.20%;
+      --scatter-x: -7%; --scatter-y: 38%; --scatter-r: -5deg;
+      background: #35A9EF;
+    }
+    .sec-mapping-assembly.is-assembled .mapping-assembly-frame {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .sec-mapping-assembly.is-assembled .mapping-assembly-block {
+      transform: translate(0, 0) rotate(0) scale(1);
+      border-radius: 0;
+    }
+
+    @media (max-width: 768px) {
+      .sec-mapping-assembly { padding-left: 22px; padding-right: 22px; }
+      .mapping-assembly-block { border-radius: 5px; }
+      .mapping-assembly-block span { top: 9px; left: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mapping-assembly-frame,
+      .mapping-assembly-block,
+      .mapping-assembly-state span { transition: none !important; }
+      .sec-mapping-assembly .mapping-assembly-frame { opacity: 1; transform: none; }
+      .sec-mapping-assembly .mapping-assembly-block { transform: none; border-radius: 0; }
+      .sec-mapping-assembly .mapping-state-triple { opacity: 0; }
+      .sec-mapping-assembly .mapping-state-block { opacity: 1; transform: none; }
+    }
+
     /* ── 12. 실행 블록 CARD ── */
     .sec-exec-card { background: #fff; width: 100%; padding: clamp(56px, 8vw, 84px) var(--edge-padding); }
     .exec-card {
-      width: 100%; min-height: 960px; background: #fff; border-radius: 0;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 80px 0; position: relative; overflow: hidden;
+      width: 100%; min-height: 760px; border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px clamp(24px, 6vw, 120px); position: relative; overflow: hidden;
     }
     .exec-overline,
     .exec-h,
-    .exec-p { position: relative; z-index: 1; }
+    .exec-p { position: relative; z-index: 1; color: #fff; }
     .exec-overline { font-size: clamp(12px,1.3vw,19px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 22px; }
     .exec-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; margin-bottom: 22px; }
-    .exec-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 707px; }
+    .exec-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 707px; opacity: .82; }
 
-    /* 8 tiles arranged in a ring that continuously orbits around the
-       center (matching the reference recording), while each tile's own
-       image stays upright via a counter-rotation of the same speed. */
-    .exec-ring {
-      position: absolute;
-      top: clamp(24px, 4vw, 64px);
-      right: clamp(12px, 1.5vw, 28px);
-      width: clamp(390px, 36vw, 600px);
-      height: clamp(390px, 36vw, 600px);
-      z-index: 0;
-      animation: execRingDrift 11s ease-in-out infinite;
-    }
-    .exec-ring-spin {
+    /* 세 사진의 프레이밍은 고정하고, 같은 자리에서 투명도만 디졸브한다. */
+    .exec-photo-stage {
       position: absolute;
       inset: 0;
-      animation: execRingSpin 26s linear infinite;
-    }
-    .exec-ring-tile {
-      position: absolute;
-      width: 31%;
-      height: 31%;
-      left: calc(50% + 36% * sin(calc(var(--i) * 45deg)));
-      top: calc(50% - 36% * cos(calc(var(--i) * 45deg)));
-      transform: translate(-50%, -50%);
-    }
-    .exec-ring-tile-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 12px;
+      z-index: 0;
       overflow: hidden;
-      box-shadow: 0 18px 40px rgba(14,24,37,.16);
-      animation: execRingSpinReverse 26s linear infinite;
     }
-    .exec-ring-tile-inner img {
-      position: absolute; inset: 0;
+    .exec-photo {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .exec-photo img {
       width: 100%; height: 100%;
       object-fit: cover;
+      display: block;
     }
-    @keyframes execRingSpin { to { transform: rotate(360deg); } }
-    @keyframes execRingSpinReverse { to { transform: rotate(-360deg); } }
-    @keyframes execRingDrift {
-      0%, 100% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.035) translateY(-10px); }
+    .exec-photo.is-active {
+      opacity: 1;
+      z-index: 2;
     }
-    @media (max-width: 900px) {
-      .exec-ring {
-        position: relative;
-        top: auto; right: auto;
-        width: min(72vw, 380px);
-        height: min(72vw, 380px);
-        margin: 0 auto clamp(24px, 5vw, 40px);
-      }
+    .exec-photo.is-leaving {
+      opacity: 0;
+      z-index: 1;
+    }
+    .exec-photo-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: linear-gradient(180deg, rgba(14,24,37,.4) 0%, rgba(14,24,37,.4) 100%), linear-gradient(180deg, rgba(14,24,37,.2) 0%, rgba(14,24,37,.5) 100%);
     }
 
     /* ── 13. MORPHING BRIDGE ── */
     .sec-morphing-bridge {
-      background: #fff; width: 100%; padding: clamp(56px, 8vw, 116px) var(--edge-padding);
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 40px;
-    }
-    .morphing-pill {
-      font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; flex-shrink: 0; margin-top: clamp(4px, 0.6vw, 14px);
-    }
-    .morphing-pill-word {
-      display: inline-flex;
-      align-items: baseline;
-      gap: .005em;
-    }
-    .morphing-pill-word span {
-      display: inline-block;
-    }
-    @keyframes morphingBlob {
-      0%, 100% {
-        transform: translateY(0) scaleX(1) scaleY(1) skewX(0deg);
-        font-variation-settings: 'wght' 560;
-      }
-      18% {
-        transform: translateY(.06em) scaleX(1.22) scaleY(.78) skewX(-7deg);
-        font-variation-settings: 'wght' 850;
-      }
-      38% {
-        transform: translateY(-.08em) scaleX(.78) scaleY(1.28) skewX(5deg);
-        font-variation-settings: 'wght' 760;
-      }
-      58% {
-        transform: translateY(.035em) scaleX(1.12) scaleY(.9) skewX(-3deg);
-        font-variation-settings: 'wght' 900;
-      }
-      76% {
-        transform: translateY(0) scaleX(.96) scaleY(1.06) skewX(2deg);
-        font-variation-settings: 'wght' 620;
-      }
+      background: #fff;
+      width: 100%;
+      padding: clamp(48px, 6vw, 88px) var(--edge-padding) clamp(28px, 4vw, 56px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .morphing-bridge-text {
-      font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4;
-      letter-spacing: -0.04em; text-align: right;
+      width: 100%;
+      margin: 0;
+      font-size: clamp(24px,4vw,54px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+      text-align: center;
+      white-space: nowrap;
     }
 
-    .morph-anim-band { width: min(560px, 80vw); aspect-ratio: 1 / 1; margin: clamp(28px, 4vw, 72px) auto; border-radius: clamp(28px, 3vw, 48px); background: #FF3385; overflow: hidden; }
+    /* 피그마 콜라주 그대로: 회전된 사진 조각 17개를 정확한 비율 좌표(%)로 배치
+       (베이스는 8400:13482 컨텐츠 그룹의 바운딩 박스: 766.93 x 599.04).
+       원래 MAPPING 섹션에 있던 걸 DISPATCH↔모프 애니메이션 사이 빈 공간으로 옮겼다. */
+    .mapping-collage {
+      position: relative;
+      width: min(100%, 900px);
+      aspect-ratio: 766.93 / 599.04;
+      margin: clamp(24px, 4vw, 56px) auto;
+      container-type: inline-size;
+    }
+    .mapping-collage-word {
+      position: absolute;
+      left: 34.16%;
+      top: 35.39%;
+      margin: 0;
+      font-family: 'T1 Glicky', 'Bebas Neue', 'Pretendard', sans-serif;
+      font-weight: 400;
+      font-size: clamp(26px, 9.33cqw, 72px);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: #a2a2a2;
+      text-transform: uppercase;
+      white-space: nowrap;
+      user-select: none;
+    }
+    /* 왼쪽 아래 제일 작은 조각부터 순서대로(--i) 통통 튀며 팝인 — "두두두두두" 연사 리듬 */
+    .mapping-piece {
+      position: absolute;
+      left: var(--l);
+      top: var(--t);
+      width: var(--w);
+      height: var(--h);
+      transform: translate(-50%, -50%) rotate(var(--r)) scale(.25);
+      overflow: hidden;
+      background: #d9d9d9;
+      opacity: 0;
+      transition:
+        opacity .38s ease-out,
+        transform .5s cubic-bezier(.22, 1.5, .36, 1);
+      transition-delay: calc(var(--i, 0) * 65ms);
+    }
+    .mapping-collage.vis .mapping-piece {
+      opacity: 1;
+      transform: translate(-50%, -50%) rotate(var(--r)) scale(1);
+    }
+    .mapping-piece img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 62%;
+      display: block;
+    }
+    .mapping-piece .mp-accent { object-position: 50% 50%; }
+    @media (prefers-reduced-motion: reduce) {
+      .mapping-piece {
+        transition: none;
+        transform: translate(-50%, -50%) rotate(var(--r));
+        opacity: 1;
+      }
+    }
+
+    /* 이 페이지 자체(비-임베드)에서는 숨긴다 — 오버뷰 페이지가 ?embed=morph로
+       이 요소만 뽑아 쓰므로, 위쪽 html.embed-morph 규칙(!important)이 그때는 다시 보이게 한다. */
+    .morph-anim-band { width: min(560px, 80vw); aspect-ratio: 1 / 1; margin: clamp(28px, 4vw, 72px) auto; border-radius: clamp(28px, 3vw, 48px); background: #FF3385; overflow: hidden; display: none; }
     .morph-anim-band canvas { display: block; width: 100%; height: 100%; }
 
     /* ── 14. 스킵하다 스며들다 BANNER ── */
     .sec-skip-banner {
-      background: #d8e8f5 url('assets/smeur-skip-banner-bg.png') center center / cover no-repeat;
-      width: 100%; padding: clamp(52px, 5.5vw, 96px) var(--edge-padding);
-      margin-top: clamp(80px, 10vw, 160px);
+      width: 100%; padding: clamp(36px, 4vw, 64px) var(--edge-padding);
+      margin-top: clamp(8px, 2vw, 28px);
       display: flex; align-items: center; justify-content: space-between; gap: 48px;
     }
-    .skip-banner-t { font-size: clamp(32px,4.8vw,72px); font-weight: 600; line-height: 1.4; letter-spacing: -0.04em; flex-shrink: 0; }
+    .skip-banner-t { font-size: clamp(28px,3.4vw,52px); font-weight: 600; line-height: 1.35; letter-spacing: -0.04em; flex-shrink: 0; }
     .skip-banner-t .dim { color: rgba(0, 0, 0, .5); }
-    .skip-banner-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; text-align: right; max-width: 757px; }
+    .skip-banner-desc { font-size: clamp(13px,1.25vw,19px); font-weight: 400; line-height: 1.55; letter-spacing: -0.025em; text-align: right; max-width: 680px; }
 
     /* ── 15. MORPHING DETAIL ── */
     .morphing-detail-left.fi { transition: opacity 1.5s ease, transform 1.5s ease; }
@@ -1240,21 +1663,18 @@
     .morphing-detail-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; }
     .morphing-detail-right { flex: 0 0 560px; display: flex; flex-direction: column; gap: 20px; }
     .morphing-img-card {
-      background: #F4F8FC; border-radius: 32px;
+      background: #F1F1F1; border-radius: 32px;
       padding: clamp(34px, 3.1vw, 48px); display: flex; flex-direction: column; gap: 16px;
       min-height: clamp(230px, 24vw, 320px); justify-content: center;
       position: relative; overflow: hidden;
     }
-    .morphing-img-card:nth-child(1) { background: #FF93DD; }
-    .morphing-img-card:nth-child(2) { background: #67D4E3; }
-    .morphing-img-card:nth-child(3) { background: #FFDA45; }
     .morphing-img-card::before {
       display: none;
     }
     .morphing-img-card > * { position: relative; z-index: 1; }
-    .mic-label { font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #ff0b6c; letter-spacing: -0.03em; text-transform: uppercase; }
-    .mic-title { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
-    .mic-body { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+    .mic-label { font-size: clamp(12px,1.3vw,19px); font-weight: 600; color: #6E6E6E; letter-spacing: -0.03em; text-transform: uppercase; }
+    .mic-title { font-size: clamp(15px,2vw,30px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; }
+    .mic-body { font-size: clamp(12px,1.25vw,19px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
 
     /* ── 16. PRINCIPLES VERTICAL ── */
     .sec-principles-v { background: #fff; width: 100%; padding: 0 var(--edge-padding) clamp(56px, 8vw, 116px); }
@@ -1263,7 +1683,7 @@
       display: flex; flex-direction: column; gap: 17px;
     }
     .principle-v-block:last-child { border-bottom: 1px solid rgba(0,0,0,0.08); }
-    .pv-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #ff0b6c; }
+    .pv-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #6E6E6E; }
     .pv-title { font-size: clamp(22px,3.6vw,48px); font-weight: 600; line-height: 1.4; letter-spacing: -0.03em; }
     .pv-desc { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 600px; }
 
@@ -1284,7 +1704,7 @@
     }
     .agc-num { font-size: clamp(32px,4.8vw,72px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: rgba(0,0,0,0.08); }
     .agc-body { display: flex; flex-direction: column; gap: 16px; }
-    .agc-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #0e1825; }
+    .agc-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #161A1E; }
     .agc-sub { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.02em;}
     .agc-p { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
 
@@ -1302,7 +1722,7 @@
     }
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
-      color: #000; font-family: "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
@@ -1311,7 +1731,7 @@
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
       min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #0e1825; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
@@ -1352,10 +1772,6 @@
         margin-left: 0;
       }
       .parsing-big { font-size: clamp(32px,4.8vw,72px); }
-      .mapping-editorial {
-        grid-template-columns: minmax(320px, .82fr) minmax(420px, 1.18fr);
-        column-gap: 44px;
-      }
       .sec-detail.mapping-photo .principle-grid {
         grid-template-columns: 1fr;
       }
@@ -1374,25 +1790,10 @@
       .hero-title { font-size: clamp(24px,4vw,54px); }
       .ml-center { font-size: clamp(32px,4.8vw,72px); }
       .ml-left, .ml-right { font-size: clamp(22px,3.6vw,48px); }
-      .mapping-editorial {
-        display: flex;
-        flex-direction: column;
-        gap: 44px;
-      }
-      .mapping-motion-frame {
-        width: 100%;
-        aspect-ratio: 4 / 5;
-      }
-      .mapping-copy {
-        padding-top: 0;
-      }
       .sec-detail.mapping-photo .principle-grid {
         width: 100%;
       }
-      .mapping-cube {
-        width: clamp(190px, 56vw, 320px);
-      }
-      .skip-banner-t { font-size: clamp(32px,4.8vw,72px); }
+      .skip-banner-t { font-size: clamp(28px,3.4vw,52px); }
       .sec-ai-banner {
         width: calc(100% - 48px);
         min-height: 180px;
@@ -1413,6 +1814,7 @@
       .feat-card { flex: 1 1 100%; }
       .ai-grad-card { flex: 1 1 100%; }
       .sec-morphing-bridge { flex-direction: column; }
+      .morphing-bridge-text { white-space: normal; }
     }
   </style>
 </head>
@@ -1439,27 +1841,27 @@
     <div class="keepon-panel-sticky">
       <div class="keepon-panel">
         <div class="keepon-chain">
-          <span class="chain-prefix"><span>That's How</span><strong>SKEEP AI™</strong></span>
+          <div class="chain-top-row">
+            <span class="chain-prefix"><span>That's How</span><strong>SKEEP AI™</strong></span>
+            <span class="chain-rotate" id="chainRotate" aria-label="Reads, Thinks, Works, Plans, Acts">
+              <span class="chain-rotate-track" id="chainRotateTrack"></span>
+            </span>
+          </div>
           <div class="swipe-stack-shell" id="keeponSwipeStack" aria-label="Skeep AI 이미지 카드 스택">
             <button class="swipe-card" type="button" aria-label="Reads 이미지 카드">
-              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-reading.png')"></span>
-              <span class="swipe-card-label">Reads</span>
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-reads.jpg')"></span>
             </button>
             <button class="swipe-card" type="button" aria-label="Thinks 이미지 카드">
-              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-blue-shirt.png')"></span>
-              <span class="swipe-card-label">Thinks</span>
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-acts.jpg')"></span>
             </button>
             <button class="swipe-card" type="button" aria-label="Works 이미지 카드">
-              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-workspace.png')"></span>
-              <span class="swipe-card-label">Works</span>
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-works.jpg')"></span>
             </button>
             <button class="swipe-card" type="button" aria-label="Plans 이미지 카드">
-              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-planning.png')"></span>
-              <span class="swipe-card-label">Plans</span>
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-plans.jpg')"></span>
             </button>
             <button class="swipe-card" type="button" aria-label="Acts 이미지 카드">
-              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-wellness.png')"></span>
-              <span class="swipe-card-label">Acts</span>
+              <span class="swipe-card-image" aria-hidden="true" style="background-image:url('assets/skeep-card-thinks.jpg')"></span>
             </button>
           </div>
         </div>
@@ -1494,25 +1896,15 @@
         </p>
       </div>
       <div class="morph-text morph-text-b" data-morph-text-b>
-        <!-- 경량화: 영상 대신 애니메이션 GIF (무빙스타일 호환 + 항상 재생) -->
-        <!-- 경량 CSS 3D: 입체 직육면체 도미노 코리도 (면마다 투명도) -->
-        <div class="two-left-3d" aria-hidden="true">
-          <div class="two-left-3d-persp">
-            <div class="two-left-3d-row">
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-              <div class="tl3d-box"><i class="tl3d-front"></i><i class="tl3d-back"></i><i class="tl3d-right"></i><i class="tl3d-left"></i><i class="tl3d-top"></i><i class="tl3d-bottom"></i></div>
-            </div>
+        <div class="two-left-3d skeep-ai-motion" data-skeep-ai-motion role="img" aria-label="SK와 P 사이의 막대가 늘어나며 SKIP을 완성하는 애니메이션">
+          <!-- Figma node 8635-14626 → 8635-14627. 순수 CSS(transform만, JS 없음) 반복 루프. -->
+          <div class="skip-morph" aria-hidden="true">
+            <span class="skip-morph-sk-group">
+              <span class="skip-morph-letter">S</span>
+              <span class="skip-morph-letter">K</span>
+            </span>
+            <span class="skip-morph-bar"></span>
+            <span class="skip-morph-letter">P</span>
           </div>
         </div>
         <p class="two-left-overline">Keep on Keepin' on</p>
@@ -1576,144 +1968,9 @@
 <!-- ══ 7. PARSING DETAIL ══ -->
 <section class="sec-detail parsing-detail-visual fi" id="parsing-detail-visual">
   <div class="detail-head-row">
-    <div class="parsing-detail-video-wrap">
-      <!-- 무스 호환 2D canvas 메타볼: 원 4개 → 클로버 → 사각 (액체 융합, 회전, 색 순환). SVG goo 필터 대체 -->
-      <canvas class="pd-morph" id="pdMorphCanvas" aria-hidden="true"></canvas>
-      <script>
-      (() => {
-        const cv = document.getElementById('pdMorphCanvas');
-        if (!cv) return;
-        const ctx = cv.getContext('2d');
-        const off = document.createElement('canvas');
-        const octx = off.getContext('2d');
-        const tint = document.createElement('canvas');
-        const tctx = tint.getContext('2d');
-        let W, H, DPR, cx, cy, MIN;
-        function resize() {
-          DPR = Math.min(2, window.devicePixelRatio || 1);
-          W = cv.clientWidth; H = cv.clientHeight;
-          if (!W || !H) return;
-          cv.width = off.width = tint.width = Math.round(W * DPR);
-          cv.height = off.height = tint.height = Math.round(H * DPR);
-          cx = W / 2; cy = H / 2; MIN = Math.min(W, H);
-        }
-        new ResizeObserver(resize).observe(cv); resize();
-
-        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const corners = [[-1,-1],[1,-1],[-1,1],[1,1]];
-        const COLOR_PAIRS = [
-          { background: [255,107,61], foreground: [165,224,240] },
-          { background: [9,66,26], foreground: [130,255,143] },
-          { background: [255,51,133], foreground: [255,202,223] }
-        ];
-        const lerpC = (a,b,k)=>`rgb(${Math.round(a[0]+(b[0]-a[0])*k)},${Math.round(a[1]+(b[1]-a[1])*k)},${Math.round(a[2]+(b[2]-a[2])*k)})`;
-
-        const STATES = {
-          circle: { off: 0.185,   half: 0.082,  rx: 0.082 },
-          clover: { off: 0.105,   half: 0.120,  rx: 0.120 },
-          square: { off: 0.07625, half: 0.13125, rx: 0 },
-        };
-        const lerp = (a,b,k)=>a+(b-a)*k;
-        const easeIO = t => t<0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
-
-        const SEQ = ['circle','clover','square','clover'];
-        const HOLD = 1.1, MORPH = 0.9, SEG = HOLD + MORPH;
-        const HOLD_DEG = 46, MORPH_DEG = 44;
-        function roundedRect(g, x, y, w, h, r) {
-          r = Math.min(r, w/2, h/2);
-          g.moveTo(x+r, y);
-          g.arcTo(x+w, y,   x+w, y+h, r);
-          g.arcTo(x+w, y+h, x,   y+h, r);
-          g.arcTo(x,   y+h, x,   y,   r);
-          g.arcTo(x,   y,   x+w, y,   r);
-          g.closePath();
-        }
-
-        function render(A, B, k, angleDeg, bg, fg) {
-          const p = {
-            off:  lerp(A.off,  B.off,  k) * MIN,
-            half: lerp(A.half, B.half, k) * MIN,
-            rx:   lerp(A.rx,   B.rx,   k) * MIN,
-          };
-          octx.setTransform(DPR, 0, 0, DPR, 0, 0);
-          octx.clearRect(0, 0, W, H);
-          octx.save();
-          octx.translate(cx, cy);
-          octx.rotate(angleDeg * Math.PI / 180);
-          octx.fillStyle = '#fff';
-          octx.beginPath();
-          for (const [sx, sy] of corners) {
-            const bx = sx * p.off, by = sy * p.off;
-            roundedRect(octx, bx - p.half, by - p.half, p.half*2, p.half*2, p.rx);
-          }
-          octx.fill();
-          octx.restore();
-          ctx.setTransform(1, 0, 0, 1, 0, 0);
-          ctx.filter = 'none';
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.fillStyle = bg;
-          ctx.fillRect(0, 0, cv.width, cv.height);
-
-          tctx.setTransform(1, 0, 0, 1, 0, 0);
-          tctx.clearRect(0, 0, tint.width, tint.height);
-          tctx.filter = 'none';
-          tctx.globalCompositeOperation = 'source-over';
-          tctx.drawImage(off, 0, 0);
-          tctx.filter = 'none';
-          tctx.globalCompositeOperation = 'source-in';
-          tctx.fillStyle = fg;
-          tctx.fillRect(0, 0, tint.width, tint.height);
-
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.drawImage(tint, 0, 0);
-        }
-
-        let raf = 0, visible = true, start = performance.now();
-        function frame(now) {
-          raf = requestAnimationFrame(frame);
-          if (!visible || !W || !H) return;
-          const t = (now - start) / 1000;
-          const absSeg = Math.floor(t / SEG);
-          const local = t - absSeg * SEG;
-          const i = ((absSeg % SEQ.length) + SEQ.length) % SEQ.length;
-          const k = local < HOLD ? 0 : easeIO((local - HOLD) / MORPH);
-          const A = STATES[SEQ[i]], B = STATES[SEQ[(i+1) % SEQ.length]];
-          const segAngle = local < HOLD
-            ? HOLD_DEG * (local / HOLD)
-            : HOLD_DEG + MORPH_DEG * ((local - HOLD) / MORPH);
-          const angle = absSeg * (HOLD_DEG + MORPH_DEG) + segAngle;
-          const pairA = COLOR_PAIRS[absSeg % 3], pairB = COLOR_PAIRS[(absSeg + 1) % 3];
-          render(
-            A,
-            B,
-            k,
-            angle,
-            lerpC(pairA.background, pairB.background, k),
-            lerpC(pairA.foreground, pairB.foreground, k)
-          );
-        }
-
-        if (reduce) {
-          (function once(){
-            if(!W){ resize(); requestAnimationFrame(once); return; }
-            render(
-              STATES.square,
-              STATES.square,
-              1,
-              0,
-              lerpC(COLOR_PAIRS[0].background, COLOR_PAIRS[0].background, 0),
-              lerpC(COLOR_PAIRS[0].foreground, COLOR_PAIRS[0].foreground, 0)
-            );
-          })();
-        } else {
-          if ('IntersectionObserver' in window) {
-            new IntersectionObserver(es => { visible = es[0].isIntersecting; }, { rootMargin: '200px' }).observe(cv);
-          }
-          document.addEventListener('visibilitychange', () => { if (document.hidden) visible = false; });
-          raf = requestAnimationFrame(frame);
-        }
-      })();
-      </script>
+    <div class="parsing-detail-video-wrap image-flipper-wrap" data-image-flipper>
+      <canvas class="image-flipper-canvas" data-image-flipper-canvas role="img" aria-label="헤드폰과 크로스백을 착용하고 거리를 걷는 사람"></canvas>
+      <noscript><img class="image-flipper-fallback" src="assets/parsing-image-flipper-front.jpg?v=20260806-2101" alt="헤드폰과 크로스백을 착용하고 거리를 걷는 사람"></noscript>
     </div>
     <div>
       <p class="detail-h">
@@ -1790,23 +2047,8 @@
     "습도 48%"
   ];
   var PER = 9;
-  // 태그 종류별 색 (배경, 글자) — 키워드로 분류
-  var RULES = [
-    [/사람|인원|혼자/, '#FF3385', '#ffffff'],   // 인원
-    [/㎡|공간|천장고/, '#A5E0F0', '#0E1825'],    // 공간/넓이
-    [/거리|창문까지/,  '#82FF8F', '#0E1825'],    // 거리
-    [/기기|TV|조명|스피커/, '#0A67DE', '#ffffff'], // 기기
-    [/°C|온도/,        '#FF6B3D', '#ffffff'],    // 온도
-    [/조도/,           '#DAFF61', '#0E1825'],    // 조도
-    [/dB|소음/,        '#A1D202', '#0E1825'],    // 소음
-    [/습도/,           '#FFCADF', '#0E1825'],    // 습도
-    [/오후|오전|\d{1,2}:\d/, '#280047', '#ffffff'], // 시간
-    [/정지|상태/,      '#09421A', '#ffffff']     // 상태
-  ];
-  function col(t) {
-    for (var k = 0; k < RULES.length; k++) if (RULES[k][0].test(t)) return RULES[k];
-    return [null, '#FF6B3D', '#ffffff'];
-  }
+  // 모든 제약 태그를 중립적인 회색 톤으로 통일
+  function col() { return [null, '#F1F1F1', '#6E6E6E']; }
   function makeRow(offset) {
     var row = document.createElement('div'); row.className = 'chip-row';
     var track = document.createElement('div'); track.className = 'chip-track ' + (offset % 2 ? 'r' : 'l');
@@ -1833,7 +2075,7 @@
   if (!cv) return;
   const ctx = cv.getContext('2d');
   let W = 0, H = 0, cx = 0, cy = 0, DPR = 1, SCALE = 60, FOCAL = 900, DOT = 8;
-  const R = 4.2, BG = '#0E1825';
+  const R = 4.2, BG = '#161A1E';
 
   const STOPS = [
     [0.00, [255, 86, 153]],   // pink #FF5699 (center)
@@ -1999,47 +2241,32 @@
   </div>
 </section>
 
-<!-- ══ 10. 매핑 Mapping マッピング ══ -->
-<div class="sec-multilang fi">
-  <div class="ml-fade-l"></div>
-  <div class="ml-track" data-ml-carousel aria-label="Mapping multilingual carousel">
-    <span class="ml-slot is-left" data-ml-slot="left">映射</span>
-    <span class="ml-slot is-center" data-ml-slot="center">매핑</span>
-    <span class="ml-slot is-right" data-ml-slot="right">マッピング</span>
+<!-- ══ 10. MAPPING: 데이터 트리플 → 실행 블록 ══ -->
+<section class="sec-mapping-assembly fi" id="mapping-assembly" data-mapping-assembly>
+  <header class="mapping-assembly-head">
+    <h2 class="mapping-assembly-title">MAPPING</h2>
+    <p class="mapping-assembly-state" aria-live="polite">
+      <span class="mapping-state-triple">데이터 트리플</span>
+      <span class="mapping-state-block">실행 블록</span>
+    </p>
+  </header>
+  <div class="mapping-assembly-stage" role="img" aria-label="흩어진 Time, Product, Resources, Space 데이터 트리플이 하나의 실행 블록으로 조립되는 과정">
+    <div class="mapping-assembly-frame" aria-hidden="true"></div>
+    <div class="mapping-assembly-block mapping-block-time" style="--delay: 0ms"><span>Time</span></div>
+    <div class="mapping-assembly-block mapping-block-product" style="--delay: 40ms"><span>Product</span></div>
+    <div class="mapping-assembly-block mapping-block-resources" style="--delay: 80ms"><span>Resources</span></div>
+    <div class="mapping-assembly-block mapping-block-space" style="--delay: 120ms"><span>Space</span></div>
   </div>
-  <div class="ml-fade-r"></div>
-</div>
+</section>
 
 <!-- ══ 12. 실행 블록 CARD ══ -->
-<section class="sec-exec-card fi">
+<section class="sec-exec-card fi" id="execution-block">
   <div class="exec-card">
-    <div class="exec-ring" aria-hidden="true">
-      <div class="exec-ring-spin">
-        <div class="exec-ring-tile" style="--i:0">
-          <div class="exec-ring-tile-inner"><img src="assets/domino-hand.jpg" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:1">
-          <div class="exec-ring-tile-inner"><img src="assets/morph-keep-action-bg.png" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:2">
-          <div class="exec-ring-tile-inner"><img src="assets/morph-keep-action-person.png" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:3">
-          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-1.png" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:4">
-          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-2.png" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:5">
-          <div class="exec-ring-tile-inner"><img src="assets/morphing-gem-3.png" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:6">
-          <div class="exec-ring-tile-inner"><img src="assets/sensing-hero-bg.jpg" alt=""></div>
-        </div>
-        <div class="exec-ring-tile" style="--i:7">
-          <div class="exec-ring-tile-inner"><img src="assets/smeur-morph-visual-1.png" alt=""></div>
-        </div>
-      </div>
+    <div class="exec-photo-stage" id="execPhotoStage" aria-hidden="true">
+      <div class="exec-photo is-active"><img src="assets/exec-photo-1.jpg?v=20260807-0051" alt=""></div>
+      <div class="exec-photo"><img src="assets/exec-photo-2.jpg?v=20260807-0051" alt=""></div>
+      <div class="exec-photo"><img src="assets/exec-photo-3.jpg?v=20260807-0051" alt=""></div>
+      <div class="exec-photo-scrim"></div>
     </div>
     <p class="exec-overline">실행 블록</p>
     <p class="exec-h">
@@ -2051,46 +2278,225 @@
   </div>
 </section>
 
+<script>
+(() => {
+  const stage = document.getElementById('execPhotoStage');
+  if (!stage) return;
+  const photos = [...stage.querySelectorAll('.exec-photo')];
+  if (photos.length < 2) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let active = 0;
+  window.setInterval(() => {
+    const previous = active;
+    const next = (active + 1) % photos.length;
+    photos[previous].classList.remove('is-active');
+    photos[previous].classList.add('is-leaving');
+    photos[next].classList.add('is-active');
+    window.setTimeout(() => photos[previous].classList.remove('is-leaving'), 900);
+    active = next;
+  }, 3000);
+})();
+</script>
+
+<!-- 현재의 17개 이미지 링은 복구된 실행 블록 섹션 아래에 그대로 유지한다. -->
 <!-- ══ 13. MAPPING DETAIL ══ -->
 <section class="sec-detail mapping-photo fi" id="mapping-section">
   <div class="mapping-editorial">
-    <div class="mapping-motion-frame fi" aria-hidden="true">
-      <div class="mapping-motion-stage">
-        <div class="mapping-cube">
-          <span class="mapping-sheet"></span><span class="mapping-sheet"></span><span class="mapping-sheet"></span>
-          <span class="mapping-sheet"></span><span class="mapping-sheet"></span><span class="mapping-sheet"></span>
-          <span class="mapping-sheet"></span><span class="mapping-sheet"></span><span class="mapping-sheet"></span>
-          <span class="mapping-sheet"></span><span class="mapping-sheet"></span>
+    <p class="detail-h">
+      수백만 개의 경로 중,<br>가장 완벽한 궤적을 찾아서
+    </p>
+
+    <div class="mapping-flip-row fi" id="mapping-flip-row">
+      <div class="mapping-flip-card" data-flip>
+        <div class="mapping-flip-inner">
+          <div class="mapping-flip-front">
+            <span class="mapping-flip-corner mapping-flip-corner--tl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--tr"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--bl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--br"></span>
+            <p class="mapping-flip-label">commute</p>
+          </div>
+          <div class="mapping-flip-back">
+            <p class="mapping-flip-back-title">commute</p>
+            <div class="mapping-flip-back-item" data-pick="a">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-car.png" alt="자동차" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Car</p>
+            </div>
+            <div class="mapping-flip-back-item" data-pick="b">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-bus.png" alt="버스" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Bus</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mapping-flip-card" data-flip>
+        <div class="mapping-flip-inner">
+          <div class="mapping-flip-front">
+            <span class="mapping-flip-corner mapping-flip-corner--tl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--tr"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--bl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--br"></span>
+            <p class="mapping-flip-label">drink</p>
+          </div>
+          <div class="mapping-flip-back">
+            <p class="mapping-flip-back-title">drink</p>
+            <div class="mapping-flip-back-item" data-pick="a">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-drivethru.png" alt="드라이브스루" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Drive-thru</p>
+            </div>
+            <div class="mapping-flip-back-item" data-pick="b">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-vending.png" alt="자판기" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Vending machine</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mapping-flip-card" data-flip>
+        <div class="mapping-flip-inner">
+          <div class="mapping-flip-front">
+            <span class="mapping-flip-corner mapping-flip-corner--tl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--tr"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--bl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--br"></span>
+            <p class="mapping-flip-label">pre-work</p>
+          </div>
+          <div class="mapping-flip-back">
+            <p class="mapping-flip-back-title">pre-work</p>
+            <div class="mapping-flip-back-item" data-pick="a">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-laptop.png" alt="노트북" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Laptop</p>
+            </div>
+            <div class="mapping-flip-back-item" data-pick="b">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-passenger-display.png" alt="차량 디스플레이" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Passenger display</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mapping-flip-card" data-flip>
+        <div class="mapping-flip-inner">
+          <div class="mapping-flip-front">
+            <span class="mapping-flip-corner mapping-flip-corner--tl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--tr"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--bl"></span>
+            <span class="mapping-flip-corner mapping-flip-corner--br"></span>
+            <p class="mapping-flip-label">briefing</p>
+          </div>
+          <div class="mapping-flip-back">
+            <p class="mapping-flip-back-title">briefing</p>
+            <div class="mapping-flip-back-item" data-pick="a">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-projector.png" alt="빔프로젝터" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Beam projector</p>
+            </div>
+            <div class="mapping-flip-back-item" data-pick="b">
+              <div class="mapping-flip-back-photo"><img src="assets/mapping/mapping-monitor.png" alt="모니터" loading="lazy"></div>
+              <p class="mapping-flip-back-label">Monitor</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+    <script>
+      (() => {
+        const row = document.getElementById('mapping-flip-row');
+        if (!row) return;
+        const cards = Array.from(row.querySelectorAll('.mapping-flip-card[data-flip]'));
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    <div class="mapping-copy">
-      <p class="detail-label">Mapping</p>
-      <p class="detail-h">
-        수백만 개의 경로 중,<br>가장 완벽한 궤적을 찾아서
-      </p>
-      <p class="detail-desc">
-        파싱을 통해 구조화된 개별 태스크 트리플을<br>
-        실제 환경과 소통 가능한 실행 블록으로 변환하는 단계
-      </p>
-    </div>
+        // 클릭해도 여전히 개별적으로 뒤집힌다.
+        cards.forEach((card) => {
+          card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+        });
+
+        // 카드가 차례로 뒤집혀 선택된 뒤, 같은 흐름으로 앞면에 복귀하고
+        // 다시 시작한다. 화면 밖에서는 타이머를 정리해 불필요한 재생을 막는다.
+        const timers = new Set();
+        let isVisible = false;
+
+        const schedule = (callback, delay) => {
+          const timer = window.setTimeout(() => {
+            timers.delete(timer);
+            callback();
+          }, delay);
+          timers.add(timer);
+        };
+
+        const clearTimers = () => {
+          timers.forEach((timer) => window.clearTimeout(timer));
+          timers.clear();
+        };
+
+        const resetCards = () => {
+          cards.forEach((card) => card.classList.remove('is-selected', 'is-flipped'));
+        };
+
+        const playSequence = () => {
+          if (!isVisible) return;
+
+          resetCards();
+
+          cards.forEach((card, i) => {
+            schedule(() => {
+              card.classList.add('is-flipped');
+              schedule(() => card.classList.add('is-selected'), 1600);
+            }, 3200 + i * 220);
+          });
+
+          const lastSelectionAt = 3200 + (cards.length - 1) * 220 + 1600;
+          const returnAt = lastSelectionAt + 2880;
+
+          cards.slice().reverse().forEach((card, i) => {
+            schedule(() => card.classList.remove('is-selected'), returnAt + i * 120);
+            schedule(() => card.classList.remove('is-flipped'), returnAt + 512 + i * 120);
+          });
+
+          const loopAt = returnAt + 512 + (cards.length - 1) * 120 + 3600;
+          schedule(playSequence, loopAt);
+        };
+
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (reduceMotion) {
+              cards.forEach((card) => card.classList.add('is-flipped', 'is-selected'));
+              io.disconnect();
+              return;
+            }
+
+            if (entry.isIntersecting && !isVisible) {
+              isVisible = true;
+              playSequence();
+            } else if (!entry.isIntersecting && isVisible) {
+              isVisible = false;
+              clearTimers();
+              resetCards();
+            }
+          });
+        }, { threshold: 0.4 });
+        io.observe(row);
+      })();
+    </script>
+
+    <p class="detail-desc">
+      파싱을 통해 구조화된 개별 태스크 트리플을<br>
+      실제 환경과 소통 가능한 실행 블록으로 변환하는 단계
+    </p>
 
     <div class="principle-grid">
       <div class="principle-card fi d1">
         <p class="pr-num">Principle 01</p>
-        <p class="pr-title">적절한 후보 매칭</p>
-        <p class="pr-body">현재 제어 가능한 스키퍼블 후보군을 근거로, 지금 이 목적에 적합한 리소스를 선별합니다.</p>
+        <p class="pr-title">도메인 컴포넌트 매칭</p>
+        <p class="pr-body">현재 제어 가능한 스키퍼블의 API 명세를 동적으로 스캔하여 매칭 가능한 리소스를 선별합니다.</p>
       </div>
       <div class="principle-card fi d2">
         <p class="pr-num">Principle 02</p>
-        <p class="pr-title">타당성 교차 확인</p>
-        <p class="pr-body">파싱이 이미 확인한 물리적 제약을 후보군에 다시 대조하여, 실행 가능한 기능 조합만 남깁니다.</p>
+        <p class="pr-title">물리 법칙 시뮬레이션</p>
+        <p class="pr-body">실제 물리 세계의 제약 조건을 반영하여 실행할 수 있는 경로만을 초고속으로 필터링합니다.</p>
       </div>
       <div class="principle-card fi d3">
         <p class="pr-num">Principle 03</p>
         <p class="pr-title">실행 블록 변환</p>
-        <p class="pr-body">필터링을 거쳐 살아남은 최적의 기능을 결합하여, 하나의 완벽한 '실행 블록' 구조로 정형화합니다.</p>
+        <p class="pr-body">필터링을 거쳐 살아남은 최적의 기능을 결합하여, 하나의 완벽한 '실행 블록' 구조로 정형화 합니다.</p>
       </div>
     </div>
   </div>
@@ -2098,17 +2504,41 @@
 
 <!-- ══ 14. MORPHING BRIDGE ══ -->
 <section class="sec-morphing-bridge fi">
-  <div class="morphing-pill" aria-label="Dispatch">
-    <span class="morphing-pill-word" aria-hidden="true">
-      <span style="--i:0">D</span><span style="--i:1">i</span><span style="--i:2">s</span><span style="--i:3">p</span><span style="--i:4">a</span><span style="--i:5">t</span><span style="--i:6">c</span><span style="--i:7">h</span>
-    </span>
-  </div>
   <p class="morphing-bridge-text">
-    선명해진 스킵의 청사진<br>이제 현실로 도약할 시간
+    선명해진 스킵의 청사진, 이제 현실로 도약할 시간
   </p>
 </section>
 
-<!-- ══ 14-1. MORPHING OBJECTS ANIMATION BAND ══ -->
+<!-- ══ 14-0. MAPPING 섹션에서 옮겨온 사진 콜라주 ══ -->
+<div class="mapping-collage fi" aria-hidden="true">
+  <p class="mapping-collage-word">Dispatch</p>
+  <div class="mapping-piece" style="--l:14.30%;--t:28.10%;--w:7.56%;--h:7.86%;--r:15.17deg;--i:4"><img src="assets/smeur-round-carousel/13.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:26.61%;--t:17.25%;--w:10.78%;--h:11.21%;--r:-6.94deg;--i:5"><img src="assets/smeur-round-carousel/12.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:37.32%;--t:12.48%;--w:13.24%;--h:13.77%;--r:34.52deg;--i:6"><img src="assets/smeur-round-carousel/11.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:48.65%;--t:10.68%;--w:16.00%;--h:16.65%;--r:-14.93deg;--i:7"><img src="assets/smeur-round-carousel/10.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:61.75%;--t:12.46%;--w:19.51%;--h:20.31%;--r:11.59deg;--i:8"><img src="assets/smeur-round-carousel/6.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:69.29%;--t:16.93%;--w:19.51%;--h:20.31%;--r:-7.19deg;--i:9"><img src="assets/smeur-round-carousel/7.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:78.09%;--t:19.77%;--w:19.51%;--h:20.31%;--r:-0.37deg;--i:10"><img src="assets/smeur-round-carousel/8.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:82.36%;--t:32.11%;--w:19.51%;--h:20.31%;--r:9.26deg;--i:11"><img src="assets/smeur-round-carousel/9.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:84.27%;--t:46.33%;--w:21.95%;--h:22.84%;--r:19.25deg;--i:12"><img src="assets/smeur-round-carousel/5.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:1.53%;--t:63.21%;--w:2.52%;--h:2.62%;--r:-20.12deg;--i:1"><img src="assets/smeur-round-carousel/16.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:2.98%;--t:72.14%;--w:1.68%;--h:1.75%;--r:-20.12deg;--i:0"><img src="assets/smeur-round-carousel/17.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:84.32%;--t:63.68%;--w:25.87%;--h:26.92%;--r:19.25deg;--i:13"><img src="assets/smeur-round-carousel/4.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:71.50%;--t:73.95%;--w:28.64%;--h:29.80%;--r:19.25deg;--i:14">
+    <img src="assets/smeur-round-carousel/1.png" alt="" loading="lazy">
+  </div>
+  <div class="mapping-piece" style="--l:3.57%;--t:52.63%;--w:4.27%;--h:4.44%;--r:15.72deg;--i:2"><img src="assets/smeur-round-carousel/15.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:6.69%;--t:40.39%;--w:6.24%;--h:6.49%;--r:1.14deg;--i:3"><img src="assets/smeur-round-carousel/14.png" alt="" loading="lazy"></div>
+  <div class="mapping-piece" style="--l:52.91%;--t:79.02%;--w:26.07%;--h:27.13%;--r:38.17deg;--i:15">
+    <img src="assets/smeur-round-carousel/2.png" alt="" loading="lazy">
+  </div>
+  <div class="mapping-piece" style="--l:38.28%;--t:77.75%;--w:26.07%;--h:27.13%;--r:27.31deg;--i:16"><img src="assets/smeur-round-carousel/3.png" alt="" loading="lazy"></div>
+</div>
+
+<!-- ══ 14-1. MORPHING OBJECTS ANIMATION BAND ══
+     이 페이지 자체에서는 안 보이지만(.morph-anim-band { display:none }),
+     오버뷰 페이지의 "특정 기기에 얽매이지 않고" 섹션이 이 페이지를
+     ?embed=morph 로 iframe 임베드해서 핑크 모션만 뽑아 쓴다 — 지우면 안 된다. -->
 <div class="morph-anim-band fi"><canvas id="morphCanvas"></canvas></div>
 
 <script>
@@ -2408,146 +2838,158 @@
     typeIo.observe(keeponTitle);
   }
 
+  // "That's How SKEEP AI" 뒤에 붙는 회전 텍스트 배지 + 오른쪽 사진 한 장을
+  // Acts→Plans→Works→Thinks→Reads 순서로 같이 돌린다. 사진은 쌓이지 않고,
+  // 해당 글자가 나오는 순간 그 사진 한 장만 바로 나타났다가(디졸브 없이 opacity
+  // 0→1 스냅) 다음 차례에 바로 사라진다.
+  // Originkit RotatingText(GSAP)를 글자 span + CSS transition으로 이식.
+  const chainRotate = document.getElementById('chainRotate');
+  const chainRotateTrack = document.getElementById('chainRotateTrack');
   const swipeStack = document.getElementById('keeponSwipeStack');
-  if (swipeStack) {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let autoTimer = 0;
-    let isVisible = false;
-    let isDragging = false;
-    let isAnimating = false;
-    let dragCard = null;
-    let startX = 0;
-    let startY = 0;
-    let dragX = 0;
-    let dragY = 0;
+  if (chainRotate && chainRotateTrack && swipeStack) {
+    const ROTATE_WORDS = ['Acts', 'Plans', 'Works', 'Thinks', 'Reads'];
+    // 카드 DOM 순서는 Reads,Thinks,Works,Plans,Acts(0~4) — 단어 순서와 반대라 매핑해준다.
+    const CARD_INDEX_FOR_WORD = [4, 3, 2, 1, 0];
+    // 단어가 바뀔 때마다 배지 배경도 이 순서로 같이 루프.
+    const BADGE_COLORS = ['#FF6B3D', '#09421A', '#FF3385', '#0A67DE', '#280047'];
+    const CHAR_STAGGER_MS = 30;
+    const CHAR_TRANS_MS = 420;
+    const FIRST_ACTS_HOLD_MS = 850;
+    const ROTATE_EVERY_MS = 2000;
+    const reduceRotate = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cards = [...swipeStack.children];
 
-    const positionCard = (card, index, immediate = false) => {
-      const cards = [...swipeStack.children];
-      const stackLayout = [
-        { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
-        { x: 0, y: -4, rotate: -14, scale: .98, opacity: .64 },
-        { x: 0, y: -7, rotate: 16, scale: .96, opacity: .42 },
-        { x: 0, y: -10, rotate: -28, scale: .94, opacity: .26 },
-        { x: 0, y: -12, rotate: 28, scale: .92, opacity: .14 }
-      ];
-      const layout = stackLayout[index] || stackLayout[stackLayout.length - 1];
+    let wordIndex = 0;
+    let rotating = false;
 
-      if (immediate) card.style.transition = 'none';
-      card.style.zIndex = String(cards.length - index);
-      card.style.opacity = String(layout.opacity);
-      card.style.transform = `translate3d(${layout.x}px, ${layout.y}px, ${-index * 10}px) rotate(${layout.rotate}deg) scale(${layout.scale})`;
-      if (immediate) {
-        void card.offsetHeight;
-        card.style.transition = '';
-      }
+    const measureWidth = (text) => {
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute; visibility:hidden; white-space:nowrap; left:-9999px;';
+      probe.style.font = getComputedStyle(chainRotateTrack).font;
+      probe.style.letterSpacing = getComputedStyle(chainRotate).letterSpacing;
+      probe.textContent = text;
+      document.body.appendChild(probe);
+      const w = probe.getBoundingClientRect().width;
+      probe.remove();
+      return w;
     };
 
-    const layoutCards = (immediate = false) => {
-      [...swipeStack.children].forEach((card, index) => {
-        positionCard(card, index, immediate);
+    const setBadgeWidthFor = (text) => {
+      const cs = getComputedStyle(chainRotate);
+      const paddingX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      chainRotate.style.width = Math.ceil(measureWidth(text) + paddingX) + 'px';
+    };
+
+    const buildChars = (text) => {
+      chainRotateTrack.innerHTML = '';
+      Array.from(text).forEach((ch, i) => {
+        const span = document.createElement('span');
+        span.className = 'chain-rotate-char';
+        span.textContent = ch === ' ' ? ' ' : ch;
+        span.style.transitionDelay = (i * CHAR_STAGGER_MS) + 'ms';
+        chainRotateTrack.appendChild(span);
       });
+      return chainRotateTrack.querySelectorAll('.chain-rotate-char');
     };
 
-    const recycleCardToBack = card => {
-      swipeStack.appendChild(card);
-      const lastIndex = swipeStack.children.length - 1;
-      const backOpacity = .14;
-
-      card.style.transition = 'none';
-      positionCard(card, lastIndex);
-      card.style.opacity = '0';
-      const fade = card.animate(
-        [{ opacity: 0 }, { opacity: backOpacity }],
-        { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'both' }
-      );
-      card.style.opacity = String(backOpacity);
-      card.style.transition = '';
-      fade.finished.then(() => fade.cancel()).catch(() => {});
-      isAnimating = false;
-    };
-
-    const scheduleAuto = () => {
-      clearInterval(autoTimer);
-      if (!isVisible || reducedMotion) return;
-      autoTimer = window.setInterval(() => cycleTopCard(1), 1800);
-    };
-
-    const cycleTopCard = (direction = 1) => {
-      if (isAnimating || isDragging) return;
-
-      const cards = [...swipeStack.children];
-      const topCard = cards[0];
-      if (!topCard) return;
-
-      isAnimating = true;
-      topCard.style.transform = `translate3d(${direction * 340}px, -28px, 80px) rotate(${direction * 16}deg) scale(1.03)`;
-      topCard.style.opacity = '0';
-      cards.slice(1).forEach((card, index) => positionCard(card, index));
-
-      window.setTimeout(() => {
-        recycleCardToBack(topCard);
-      }, 320);
-    };
-
-    const finishDrag = (event) => {
-      if (!isDragging || !dragCard) return;
-
-      isDragging = false;
-      dragCard.releasePointerCapture?.(event.pointerId);
-      dragCard.classList.remove('is-dragging');
-      const distance = Math.hypot(dragX, dragY);
-
-      if (distance > 50) {
-        const direction = dragX === 0 ? 1 : Math.sign(dragX);
-        const currentCard = dragCard;
-        isAnimating = true;
-        currentCard.style.transform = `translate3d(${direction * 340}px, ${dragY}px, 80px) rotate(${direction * 16}deg) scale(1.03)`;
-        currentCard.style.opacity = '0';
-        [...swipeStack.children].slice(1).forEach((card, index) => positionCard(card, index));
-        window.setTimeout(() => {
-          recycleCardToBack(currentCard);
-          scheduleAuto();
-        }, 320);
+    const showWord = (text, animateIn) => {
+      const chars = buildChars(text);
+      if (animateIn && !reduceRotate) {
+        chars.forEach((c) => { c.style.transform = 'translateY(100%)'; c.style.opacity = '0'; });
+        void chainRotateTrack.offsetWidth;
+        requestAnimationFrame(() => {
+          chars.forEach((c) => { c.style.transform = 'translateY(0)'; c.style.opacity = '1'; });
+        });
       } else {
-        positionCard(dragCard, 0);
-        scheduleAuto();
+        chars.forEach((c) => {
+          c.style.transitionDelay = '0ms';
+          c.style.transform = 'translateY(0)';
+          c.style.opacity = '1';
+        });
       }
-
-      dragCard = null;
     };
 
-    swipeStack.addEventListener('pointerdown', event => {
-      const topCard = swipeStack.firstElementChild;
-      if (event.target !== topCard || isAnimating) return;
-      clearInterval(autoTimer);
-      isDragging = true;
-      dragCard = topCard;
-      startX = event.clientX;
-      startY = event.clientY;
-      dragX = 0;
-      dragY = 0;
-      topCard.setPointerCapture?.(event.pointerId);
-      topCard.classList.add('is-dragging');
-    });
+    // 카드마다 서로 다른(하지만 과하지 않은) 고정 각도로 살짝 비뚤어진 채 나타난다.
+    const CARD_TILT_DEG = [0, 0, 0, 0, 0];   // 피그마(8588-14619)대로 각도 없이 똑바로
 
-    swipeStack.addEventListener('pointermove', event => {
-      if (!isDragging || !dragCard) return;
-      dragX = event.clientX - startX;
-      dragY = event.clientY - startY;
-      dragCard.style.transform = `translate3d(${dragX}px, ${dragY}px, 40px) rotate(${dragX / 18}deg) scale(1.04)`;
-    });
+    // 쌓이지 않는다 — 매칭되는 카드 한 장만 opacity 0→1로 즉시(트랜지션 없이) 켜고 나머지는 끈다.
+    const showCard = (cardIndex) => {
+      cards.forEach((card, i) => {
+        card.style.transition = 'none';
+        card.style.transform = `rotate(${CARD_TILT_DEG[i]}deg)`;
+        card.style.opacity = i === cardIndex ? '1' : '0';
+        card.style.zIndex = i === cardIndex ? '1' : '0';
+      });
+      void swipeStack.offsetHeight;
+      cards.forEach((card) => { card.style.transition = ''; });
+    };
 
-    swipeStack.addEventListener('pointerup', finishDrag);
-    swipeStack.addEventListener('pointercancel', finishDrag);
+    const applyWord = (index, animateText) => {
+      const word = ROTATE_WORDS[index];
+      setBadgeWidthFor(word);
+      showWord(word, animateText);
+      showCard(CARD_INDEX_FOR_WORD[index]);
+      chainRotate.style.backgroundColor = BADGE_COLORS[index];
+    };
 
-    const stackObserver = new IntersectionObserver(entries => {
-      isVisible = entries[0].isIntersecting;
-      if (isVisible) scheduleAuto();
-      else clearInterval(autoTimer);
-    }, { threshold: .35 });
+    const rotateOnce = () => {
+      if (rotating) return;
+      rotating = true;
+      const chars = chainRotateTrack.querySelectorAll('.chain-rotate-char');
+      const maxDelay = Math.max(0, chars.length - 1) * CHAR_STAGGER_MS;
+      chars.forEach((c, i) => {
+        c.style.transitionDelay = (i * CHAR_STAGGER_MS) + 'ms';
+        c.style.transform = 'translateY(-120%)';
+        c.style.opacity = '0';
+      });
+      window.setTimeout(() => {
+        wordIndex = (wordIndex + 1) % ROTATE_WORDS.length;
+        applyWord(wordIndex, true);
+        rotating = false;
+      }, maxDelay + CHAR_TRANS_MS);
+    };
 
-    layoutCards(true);
-    stackObserver.observe(swipeStack);
+    setBadgeWidthFor(ROTATE_WORDS[0]);
+    showWord(ROTATE_WORDS[0], false);
+    showCard(CARD_INDEX_FOR_WORD[0]);
+    chainRotate.style.backgroundColor = BADGE_COLORS[0];
+
+    if (!reduceRotate) {
+      let rotateInterval = null;
+      let firstRotateTimeout = null;
+      let hasLeftFirstAct = false;
+
+      const startRegularRotation = () => {
+        if (!rotateInterval) rotateInterval = window.setInterval(rotateOnce, ROTATE_EVERY_MS);
+      };
+
+      const rotateIo = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (!hasLeftFirstAct && !firstRotateTimeout) {
+              firstRotateTimeout = window.setTimeout(() => {
+                firstRotateTimeout = null;
+                rotateOnce();
+                hasLeftFirstAct = true;
+                startRegularRotation();
+              }, FIRST_ACTS_HOLD_MS);
+            } else if (hasLeftFirstAct) {
+              startRegularRotation();
+            }
+          } else {
+            if (firstRotateTimeout) {
+              window.clearTimeout(firstRotateTimeout);
+              firstRotateTimeout = null;
+            }
+            if (rotateInterval) {
+              window.clearInterval(rotateInterval);
+              rotateInterval = null;
+            }
+          }
+        });
+      }, { threshold: 0.3 });
+      rotateIo.observe(chainRotate);
+    }
   }
 
   const mlCarousel = document.querySelector('[data-ml-carousel]');
@@ -2815,7 +3257,8 @@
     const morphPink   = logicTransition.querySelector('[data-morph-pink]');
     const morphTextA  = logicTransition.querySelector('[data-morph-text-a]');
     const morphTextB  = logicTransition.querySelector('[data-morph-text-b]');
-    const leftVideoEl = logicTransition.querySelector('.two-left-video');
+    const leftVideoEl = logicTransition.querySelector('.two-left-3d');
+    const skeepAiMotion = logicTransition.querySelector('[data-skeep-ai-motion]');
     const leftParaEl  = logicTransition.querySelector('.two-left-p');
     const stickyEl    = logicTransition.querySelector('.logic-transition-sticky');
     const logicCards  = logicTransition.querySelector('[data-logic-cards]');
@@ -2840,8 +3283,8 @@
       const edgePad = clampNum(vw * 0.083, 24, 160);
 
       const smallW = clampNum(vw * 0.573, 420, 1100);
-      const smallH = clampNum(vh * 0.80, 380, 900);
-      const small = { top: (vh - smallH) / 2, left: (vw - smallW) / 2, width: smallW, height: smallH, radius: 70 };
+      const smallH = clampNum(vh * 0.38, 260, 460);
+      const small = { top: (vh - smallH) / 2, left: (vw - smallW) / 2, width: smallW, height: smallH, radius: 32 };
       const full  = { top: 0, left: 0, width: vw, height: vh, radius: 0 };
       const rightPanelW = clampNum(vw * 0.36, 480, 640);
       const finalPadX = clampNum(vw * 0.0415, 54, 80);
@@ -2882,17 +3325,16 @@
       const textBIn  = smoothstep(0.58, 0.72, p);
       const finalPhotoIn = smoothstep(0.50, 0.66, p);
       const stickyPink = smoothstep(0.38, 0.52, p);
-      const itemProgress = [
-        smoothstep(0.70, 0.78, p),
-        smoothstep(0.74, 0.82, p),
-        smoothstep(0.78, 0.86, p),
-      ];
+      // 카드 3장이 각자 다른 타이밍에 반응하지 않고 한 번에 같이 올라오도록 같은 구간을 쓴다.
+      const logicCardsIn = smoothstep(0.70, 0.80, p);
+      const itemProgress = [logicCardsIn, logicCardsIn, logicCardsIn];
 
       morphPhotoA.style.opacity = textAOut.toFixed(3);
       morphPink.style.opacity = pinkIn.toFixed(3);
       morphFinal.style.opacity = finalPhotoIn.toFixed(3);
       morphTextA.style.opacity = textAOut.toFixed(3);
       morphTextB.style.opacity = textBIn.toFixed(3);
+      if (skeepAiMotion) skeepAiMotion.classList.toggle('is-visible', textBIn > 0.08);
       morphCard.style.setProperty('--morph-overlay-opacity', (1 - smoothstep(0.50, 0.66, p)).toFixed(3));
 
       logicTransition.style.setProperty('--pink-opacity', stickyPink.toFixed(3));
@@ -2928,7 +3370,8 @@
           const stickyTop = stickyEl.getBoundingClientRect().top;
           const vTop = leftVideoEl.getBoundingClientRect().top - stickyTop;
           const pBot = leftParaEl.getBoundingClientRect().bottom - stickyTop;
-          if (pBot > vTop) { alignTop = vTop; alignHeight = (pBot - vTop) * 0.93; }
+          // 카드 3장을 조금 더 올려서 왼쪽(SKIP 카드)과 윗선이 맞도록.
+          if (pBot > vTop) { alignTop = vTop - 28; alignHeight = (pBot - vTop) * 0.93; }
         }
         logicCards.style.top = `${alignTop}px`;
         logicCards.style.bottom = 'auto';
@@ -2981,7 +3424,7 @@
   if (!wrap || !canvas || !ctx) return;
 
   const TEXT = 'Parsing';
-  const PALETTE = ['#0e1825', '#ff0b6c', '#0e1825'];   // 검정-핑크
+  const PALETTE = ['#161A1E', '#6E6E6E', '#161A1E'];   // 검정-그레이
   const DRAW = 4.5;          // 픽셀 한 변(px)
   const STRIDE = 5;          // 샘플 간격(작을수록 촘촘)
   const MOUSE_RADIUS = 100;
@@ -3232,6 +3675,250 @@
   };
   requestAnimationFrame(frame);
   window.addEventListener('resize', measure);
+})();
+</script>
+<script>
+/* MAPPING: 산발적인 데이터 트리플과 조립된 실행 블록을 반복해서 보여준다. */
+(() => {
+  const section = document.querySelector('[data-mapping-assembly]');
+  if (!section) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DATA_HOLD = 1000;
+  const ASSEMBLY_TIME = 1200;
+  const BLOCK_HOLD = 3000;
+  const SCATTER_TIME = 0;
+  let timer = 0;
+  let active = false;
+
+  const later = (callback, delay) => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(callback, delay);
+  };
+
+  const runLoop = () => {
+    if (!active) return;
+    section.classList.remove('is-assembled');
+    later(() => {
+      if (!active) return;
+      section.classList.add('is-assembled');
+      later(() => {
+        if (!active) return;
+        section.classList.remove('is-assembled');
+        later(runLoop, SCATTER_TIME);
+      }, ASSEMBLY_TIME + BLOCK_HOLD);
+    }, DATA_HOLD);
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    if (reduceMotion) section.classList.add('is-assembled');
+    else { active = true; runLoop(); }
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.some((entry) => entry.isIntersecting);
+    if (reduceMotion) {
+      if (visible) section.classList.add('is-assembled');
+      return;
+    }
+
+    active = visible;
+    window.clearTimeout(timer);
+    if (active) runLoop();
+    else section.classList.remove('is-assembled');
+  }, { threshold: 0.24 });
+
+  observer.observe(section);
+})();
+</script>
+<script>
+/* PARSING DETAIL: Originkit Image Flipper를 단일 이미지용 canvas로 포팅.
+   대각선 순서로 기존 사진 타일이 접히면 다음 사진이 곧바로 드러난다.
+   별도의 컬러 중간 화면 없이 앞면과 뒷면을 계속 교차한다. */
+(() => {
+  const wrap = document.querySelector('[data-image-flipper]');
+  const canvas = wrap?.querySelector('[data-image-flipper-canvas]');
+  if (!wrap || !canvas) return;
+
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const frontImage = new Image();
+  const backImage = new Image();
+  let image = frontImage;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const COLS = 40;
+  const DURATION = 1200;
+  const HOLD_DURATION = 1600;
+  const CYCLE_DURATION = HOLD_DURATION + DURATION;
+  const INITIAL_ADVANCE = 900;
+  const FLIP_SHARE = 0.26;
+  const ANGLE = 126 * Math.PI / 180;
+  const BACKGROUND = '#ffffff';
+
+  let cssWidth = 0;
+  let cssHeight = 0;
+  let rows = 0;
+  let cellWidth = 0;
+  let cellHeight = 0;
+  let cover = null;
+  let visible = false;
+  let ready = false;
+  let frameId = 0;
+  let startedAt = 0;
+
+  const smoothstep = (edge0, edge1, value) => {
+    const t = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
+    return t * t * (3 - 2 * t);
+  };
+
+  const computeCover = (sourceImage = image) => {
+    const sourceRatio = sourceImage.naturalWidth / sourceImage.naturalHeight;
+    const frameRatio = cssWidth / cssHeight;
+    if (sourceRatio > frameRatio) {
+      const sh = sourceImage.naturalHeight;
+      const sw = sh * frameRatio;
+      return { sx: (sourceImage.naturalWidth - sw) / 2, sy: 0, sw, sh };
+    } else {
+      const sw = sourceImage.naturalWidth;
+      const sh = sw / frameRatio;
+      return { sx: 0, sy: (sourceImage.naturalHeight - sh) / 2, sw, sh };
+    }
+  };
+
+  const resize = () => {
+    const rect = wrap.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    cssWidth = rect.width;
+    cssHeight = rect.height;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(cssWidth * dpr);
+    canvas.height = Math.round(cssHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cellWidth = cssWidth / COLS;
+    rows = Math.max(1, Math.round(cssHeight / cellWidth));
+    cellHeight = cssHeight / rows;
+    if (ready) cover = computeCover(image);
+    drawBackground();
+    if (ready && (reduceMotion || wrap.dataset.state === 'hold')) drawFinal();
+  };
+
+  const drawBackground = () => {
+    ctx.fillStyle = BACKGROUND;
+    ctx.fillRect(0, 0, cssWidth, cssHeight);
+  };
+
+  const drawFinal = (sourceImage = image, sourceCover = cover) => {
+    if (!ready || !sourceCover) return;
+    ctx.drawImage(sourceImage, sourceCover.sx, sourceCover.sy, sourceCover.sw, sourceCover.sh, 0, 0, cssWidth, cssHeight);
+  };
+
+  const drawTile = (sourceImage, sourceCover, col, row, scaleY) => {
+    const thickness = Math.abs(scaleY);
+    const edgeOpacity = smoothstep(0.04, 0.22, thickness);
+    if (edgeOpacity <= 0.001) return;
+    const dx = col * cellWidth;
+    const dy = row * cellHeight;
+    const sx = sourceCover.sx + col * sourceCover.sw / COLS;
+    const sy = sourceCover.sy + row * sourceCover.sh / rows;
+    const sw = sourceCover.sw / COLS;
+    const sh = sourceCover.sh / rows;
+    ctx.save();
+    ctx.globalAlpha = edgeOpacity;
+    ctx.translate(dx + cellWidth / 2, dy + cellHeight / 2);
+    ctx.scale(1, Math.max(0.16, thickness));
+    ctx.drawImage(sourceImage, sx, sy, sw + 0.5, sh + 0.5, -cellWidth / 2, -cellHeight / 2, cellWidth + 0.7, cellHeight + 0.7);
+    ctx.restore();
+  };
+
+  const render = (now) => {
+    if (!visible || !ready || !cover) return;
+    const cycleIndex = Math.floor((now - startedAt) / CYCLE_DURATION);
+    const fromImage = (cycleIndex % 2 === 0) ? frontImage : backImage;
+    const toImage = (cycleIndex % 2 === 0) ? backImage : frontImage;
+    const fromCover = computeCover(fromImage);
+    const toCover = computeCover(toImage);
+    image = fromImage;
+    cover = fromCover;
+    const elapsed = (now - startedAt) % CYCLE_DURATION;
+    const flipDuration = DURATION * FLIP_SHARE;
+    const spreadDuration = DURATION - flipDuration;
+    const vx = Math.cos(ANGLE);
+    const vy = Math.sin(ANGLE);
+    const projections = [
+      0,
+      (COLS - 1) * vx,
+      (rows - 1) * vy,
+      (COLS - 1) * vx + (rows - 1) * vy
+    ];
+    const minProjection = Math.min(...projections);
+    const projectionRange = Math.max(...projections) - minProjection || 1;
+
+    if (elapsed < HOLD_DURATION) {
+      wrap.dataset.state = 'hold';
+      drawFinal(fromImage, fromCover);
+    } else {
+      wrap.dataset.state = 'playing';
+      drawFinal(toImage, toCover);
+      const transitionElapsed = elapsed - HOLD_DURATION;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const offset = ((col * vx + row * vy) - minProjection) / projectionRange;
+          const local = (transitionElapsed - offset * spreadDuration) / flipDuration;
+          if (local >= 1) continue;
+          const scaleY = local <= 0 ? 1 : Math.cos(local * Math.PI / 2);
+          drawTile(fromImage, fromCover, col, row, scaleY);
+        }
+      }
+    }
+
+    frameId = requestAnimationFrame(render);
+  };
+
+  const play = () => {
+    cancelAnimationFrame(frameId);
+    drawBackground();
+    wrap.dataset.state = 'playing';
+    /* 첫 진입 때만 정지 구간을 미리 진행시켜 전환이 약 0.9초 빨리 시작된다.
+       이후 반복 사이클의 1.6초 정지 리듬은 그대로 유지한다. */
+    startedAt = performance.now() - INITIAL_ADVANCE;
+    frameId = requestAnimationFrame(render);
+  };
+
+  let loadedCount = 0;
+  const onLoaded = () => {
+    loadedCount++;
+    if (loadedCount < 2) return; // wait for both front and back before starting
+    ready = true;
+    image = frontImage;
+    cover = computeCover();
+    if (reduceMotion) drawFinal(); // static fallback shows the plain front photo
+    else if (visible) play();
+  };
+  frontImage.addEventListener('load', onLoaded);
+  backImage.addEventListener('load', onLoaded);
+  frontImage.src = 'assets/parsing-image-flipper-front.jpg?v=20260806-2101';
+  backImage.src = 'assets/parsing-image-flipper-back.jpg?v=20260806-2101';
+
+  new ResizeObserver(resize).observe(wrap);
+  resize();
+
+  if (!('IntersectionObserver' in window)) {
+    visible = true;
+    if (ready) reduceMotion ? drawFinal() : play();
+    return;
+  }
+
+  new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible) {
+      if (ready) reduceMotion ? drawFinal() : play();
+    } else {
+      cancelAnimationFrame(frameId);
+      frameId = 0;
+      wrap.dataset.state = 'idle';
+      drawBackground();
+    }
+  }, { threshold: 0.12 }).observe(wrap);
 })();
 </script>
 <script src="../site-index.js"></script>

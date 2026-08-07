@@ -28,7 +28,7 @@ type Slide = {
 // placeholders for pages that haven't been built yet.
 const SLIDES: Slide[] = [
   { tag: "Overview", href: `${BASE_PATH}/pages/index.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/principle.jpg?v=20260725-1222`, heading: ["내가 이 세상의", "주인공인 것처럼"] } },
-  { tag: "Principle 1", href: `${BASE_PATH}/pages/saegyeodeutda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/sensing.jpg`, heading: ["어떤 형태의 의도든 완벽하게", "항상 준비되어 있으니까"] } },
+  { tag: "Principle 1", href: `${BASE_PATH}/pages/saegyeodeutda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/sensing.jpg?v=20260806-1724`, heading: ["어떤 형태의 의도든 완벽하게", "항상 준비되어 있으니까"] } },
   { tag: "Principle 2", href: `${BASE_PATH}/pages/smeureulda.html`, external: true, thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/smeur.jpg`, heading: ["낯선 곳이더라도 자연스럽게", "경계를 건너뛰는 유려함"] } },
   { tag: "Principle 3", href: "/principles", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/focus.jpg`, heading: ["When you need", "Focus"] } },
   { tag: "Principle 4", href: "/service2", thumbnail: { kind: "image", src: `${BASE_PATH}/thumbs/service2.jpg`, heading: ["기기에는 흔적 없이", "내 맥락은 끊김 없이"] } },

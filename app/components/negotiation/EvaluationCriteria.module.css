@@ -46,7 +46,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 720 / 466;
-  border-radius: 32px;
+  border-radius: 24px;
   overflow: hidden;
   padding: clamp(20px, 2.4vw, 32px);
   display: flex;
@@ -56,68 +56,30 @@
   text-align: center;
 }
 
-.cardLight {
-  background: #ffabcc;
-}
-
-.cardLight .cardKo,
-.cardLight .cardEn,
-.cardLight .cardDesc {
-  color: #ff0b6c;
-}
-
-.cardLight .dotTopLeft,
-.cardLight .dotTopRight,
-.cardLight .dotBottomLeft,
-.cardLight .dotBottomRight {
-  background: #ff0b6c;
-}
-
-.cardDark {
+.card:nth-child(1) {
   background: #ff3385;
+  color: #ffcadf;
 }
 
-.cardDark .cardKo,
-.cardDark .cardEn,
-.cardDark .cardDesc {
-  color: #ffe7f1;
+.card:nth-child(2) {
+  background: #ff6b3d;
+  color: #fff;
 }
 
-.cardDark .dotTopLeft,
-.cardDark .dotTopRight,
-.cardDark .dotBottomLeft,
-.cardDark .dotBottomRight {
-  background: #ffe7f1;
+.card:nth-child(3) {
+  background: #a5e0f0;
+  color: #0a67de;
 }
 
-.dotTopLeft,
-.dotTopRight,
-.dotBottomLeft,
-.dotBottomRight {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
+.card:nth-child(4) {
+  background: #09421a;
+  color: #e7ff96;
 }
 
-.dotTopLeft {
-  top: clamp(16px, 2.4vw, 29px);
-  left: clamp(16px, 2.4vw, 29px);
-}
-
-.dotTopRight {
-  top: clamp(16px, 2.4vw, 29px);
-  right: clamp(16px, 2.4vw, 29px);
-}
-
-.dotBottomLeft {
-  bottom: clamp(16px, 2.4vw, 29px);
-  left: clamp(16px, 2.4vw, 29px);
-}
-
-.dotBottomRight {
-  bottom: clamp(16px, 2.4vw, 29px);
-  right: clamp(16px, 2.4vw, 29px);
+.cardKo,
+.cardEn,
+.cardDesc {
+  color: inherit;
 }
 
 .cardTitle {

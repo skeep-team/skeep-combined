@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { CursorProvider } from "./components/ui/Cursor";
+import { bebasNeue } from "./fonts/bebasNeue";
 import { elza } from "./fonts/elza";
 import { pretendard } from "./fonts/pretendard";
+import { t1glicky } from "./fonts/t1glicky";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,7 +20,10 @@ export default function RootLayout({
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
-    <html lang="ko" className={`${pretendard.variable} ${elza.variable}`}>
+    <html
+      lang="ko"
+      className={`${pretendard.variable} ${elza.variable} ${t1glicky.variable} ${bebasNeue.variable}`}
+    >
       <head>
         <link rel="stylesheet" href={`${basePath}/site-index.css`} />
       </head>

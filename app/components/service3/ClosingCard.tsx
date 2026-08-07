@@ -1,34 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { Reveal } from "../ui/Reveal";
 import styles from "./ClosingCard.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function ClosingCard() {
-  const [videoReady, setVideoReady] = useState(false);
-
   return (
     <section className={styles.section}>
       <Reveal className={styles.reveal}>
         <img
           className={styles.bgPoster}
-          src={`${BASE_PATH}/service3/closing-bg.poster.jpg`}
+          src={`${BASE_PATH}/service3/closing-wooden-blocks.png`}
           alt=""
           aria-hidden="true"
-        />
-        <video
-          className={`${styles.bgVideo} ${videoReady ? styles.bgVideoReady : ""}`}
-          src={`${BASE_PATH}/service3/closing-bg.mp4?v=20260723`}
-          poster={`${BASE_PATH}/service3/closing-bg.poster.jpg`}
-          preload="metadata"
-          autoPlay
-          muted
-          loop
-          playsInline
-          onCanPlay={() => setVideoReady(true)}
-          onError={() => setVideoReady(false)}
         />
         <div className={styles.mediaDim} aria-hidden="true" />
         <div className={styles.textBlock}>

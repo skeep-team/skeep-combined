@@ -34,27 +34,17 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1600 / 900;
-  border-radius: 32px;
+  border-radius: 12px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255, 7, 106, 0.14), transparent 27%),
-    radial-gradient(circle at 82% 30%, rgba(131, 144, 162, 0.18), transparent 30%),
-    linear-gradient(135deg, #f8fbfd 0%, #e9eef4 48%, #f6f9fb 100%);
+  background: #f1f1f1;
 }
 
 .artwork {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  color: #0e1825;
-}
-
-.artwork::before {
-  content: "";
-  position: absolute;
-  inset: clamp(18px, 2.5vw, 40px);
-  border: 1px solid rgba(131, 144, 162, 0.18);
-  border-radius: 24px;
+  color: #161A1E;
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif;
 }
 
 .environmentBefore,
@@ -63,10 +53,8 @@
   top: 50%;
   width: clamp(160px, 18vw, 270px);
   aspect-ratio: 4 / 5;
-  border: 1px solid rgba(131, 144, 162, 0.24);
-  border-radius: 28px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.58);
-  box-shadow: 0 24px 80px rgba(14, 24, 37, 0.08);
   transform: translateY(-50%);
 }
 
@@ -90,13 +78,12 @@
 .deviceTop {
   top: 16%;
   height: 28%;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(14, 24, 37, 0.1), rgba(255, 255, 255, 0.72));
+  border-radius: 6px;
+  background: rgba(22, 26, 30, 0.08);
 }
 
 .deviceLine {
   height: 8px;
-  border-radius: 999px;
   background: rgba(131, 144, 162, 0.28);
 }
 
@@ -114,7 +101,6 @@
   width: 18px;
   height: 18px;
   right: auto;
-  border-radius: 50%;
   background: #ff076a;
   box-shadow: 0 0 0 10px rgba(255, 7, 106, 0.1);
 }
@@ -130,8 +116,8 @@
 .flowBase,
 .flowActive,
 .flowSoft {
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
 }
 
 .flowBase {
@@ -147,7 +133,7 @@
 }
 
 .flowSoft {
-  stroke: rgba(14, 24, 37, 0.12);
+  stroke: rgba(22, 26, 30, 0.12);
   stroke-width: 3;
   stroke-dasharray: 10 18;
 }
@@ -159,10 +145,8 @@
   width: clamp(230px, 24vw, 380px);
   min-height: clamp(170px, 17vw, 250px);
   padding: clamp(24px, 3vw, 44px);
-  border: 1px solid rgba(131, 144, 162, 0.2);
-  border-radius: 36px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 30px 110px rgba(14, 24, 37, 0.12);
   transform: translate(-50%, -50%);
   backdrop-filter: blur(18px);
 }
@@ -170,19 +154,21 @@
 .archiveLabel {
   display: block;
   margin-bottom: 18px;
-  color: #ff076a;
+  color: #9fa1a2;
   font-size: clamp(11px, 1vw, 15px);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .archiveTitle {
   display: block;
-  color: #0e1825;
+  color: #161A1E;
   font-size: clamp(28px, 3.5vw, 56px);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: -0.05em;
+  text-transform: uppercase;
 }
 
 .archiveRows {
@@ -193,7 +179,6 @@
 
 .archiveRows span {
   height: 10px;
-  border-radius: 999px;
   background: rgba(131, 144, 162, 0.2);
 }
 
@@ -211,23 +196,24 @@
   gap: 4px;
   min-width: 150px;
   padding: 18px 20px;
-  border: 1px solid rgba(131, 144, 162, 0.18);
-  border-radius: 20px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.68);
-  box-shadow: 0 18px 50px rgba(14, 24, 37, 0.08);
 }
 
 .contextCard span {
   color: #8390a2;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .contextCard strong {
-  color: #0e1825;
+  color: #161A1E;
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.03em;
+  text-transform: uppercase;
 }
 
 .contextCardOne {
@@ -257,7 +243,6 @@
 .transferDots span {
   width: 10px;
   height: 10px;
-  border-radius: 50%;
   background: rgba(131, 144, 162, 0.38);
   animation: dotPulse 2.8s ease-in-out infinite;
 }
@@ -310,7 +295,6 @@
 
   .box {
     aspect-ratio: 4 / 5;
-    border-radius: 24px;
   }
 
   .environmentBefore,

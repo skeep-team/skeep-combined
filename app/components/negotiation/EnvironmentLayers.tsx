@@ -20,8 +20,8 @@ const CARDS = [
   { name: "Map", flipped: false },
 ].map((card, i) => ({
   ...card,
-  front: `${BASE_PATH}/negotiation/environment/card${i + 1}-front.jpg`,
-  back: `${BASE_PATH}/negotiation/environment/card${i + 1}-back.jpg`,
+  front: `${BASE_PATH}/negotiation/environment/${i + 1}-1.png`,
+  back: `${BASE_PATH}/negotiation/environment/${i + 1}-2.png`,
 }));
 
 export function EnvironmentLayers() {

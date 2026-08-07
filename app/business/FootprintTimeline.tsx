@@ -3,10 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./FootprintTimeline.module.css";
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export type TimelineEntry = {
   year: string;
   title: string[];
   body: string;
+  image: string;
+  alt: string;
 };
 
 /* 왼쪽 연표 레일. 지금 읽고 있는 해가 강조되고, 눌러서 그 해로 건너뛸 수 있다. */
@@ -106,7 +110,23 @@ export default function FootprintTimeline({
       <div className={styles.entries} ref={listRef}>
         {entries.map((entry) => (
           <article key={entry.year} className={styles.entry} data-entry="">
-            <div className={styles.visual} aria-hidden="true" />
+            <div className={styles.visual}>
+              <picture>
+                <source
+                  srcSet={`${BASE_PATH}/business/footprint/${entry.image}.webp`}
+                  type="image/webp"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${BASE_PATH}/business/footprint/${entry.image}.png`}
+                  width={1440}
+                  height={932}
+                  alt={entry.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            </div>
             <div className={styles.copy}>
               <p className={styles.year}>{entry.year}</p>
               <h3>

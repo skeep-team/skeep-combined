@@ -37,7 +37,9 @@ function IntentVisual() {
   return (
     <div className={styles.intentStage}>
       <p className={styles.intentLabel}>INTENT</p>
-      <span className={styles.intentCircle} aria-hidden="true" />
+      <div className={styles.intentInvertLayer} aria-hidden="true">
+        <p className={styles.intentInvertLabel}>INTENT</p>
+      </div>
     </div>
   );
 }

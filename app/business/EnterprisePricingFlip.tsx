@@ -106,6 +106,9 @@ export default function EnterprisePricingFlip() {
 
         section.style.setProperty("--expand", value);
         section.style.setProperty("--reveal", value);
+        // B2C 패널과 같은 방식: 사진 딤/확장은 뒤집히는 순간(data-open)이 아니라
+        // 패널이 펼쳐지는 순간부터 같이 켜져야 해서 reveal 상태를 노출한다.
+        section.setAttribute("data-revealed", String(revealed));
       }
 
       if (count === 0 && progress >= flipForward) {
@@ -152,6 +155,22 @@ export default function EnterprisePricingFlip() {
 
         <div className={styles.stage}>
           <div className={styles.panel} data-open={open}>
+          <div className={styles.panelBg} aria-hidden="true">
+            <picture>
+              <source
+                srcSet={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.webp`}
+                type="image/webp"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.png`}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+          </div>
+
           <div className={styles.control} aria-hidden="true">
             <span className={styles.pill}>솔루션 자세히 알아보기</span>
             <span className={styles.back}>

@@ -21,9 +21,9 @@ function SkipIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="12" fill="#FFE7F1" />
-      <polygon points="7.2,8.2 7.2,15.8 12.8,12" fill="#FF3385" />
-      <polygon points="12.4,8.2 12.4,15.8 18,12" fill="#FF3385" />
+      <circle cx="12" cy="12" r="12" fill="#F1F1F1" />
+      <polygon points="7.2,8.2 7.2,15.8 12.8,12" fill="#7A7D80" />
+      <polygon points="12.4,8.2 12.4,15.8 18,12" fill="#7A7D80" />
     </svg>
   );
 }

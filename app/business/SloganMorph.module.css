@@ -17,14 +17,45 @@
   overflow: hidden;
 }
 
+/* 처음엔 그냥 검정 배경. 문구가 "SKEEP TO THE FUTURE"로 다 바뀌는 3박자에만
+   사진이 나타나며, 검정 오버레이를 30%만 적용한다. */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+}
+
+.stage[data-step="3"] .bg {
+  opacity: 1;
+}
+
+.bg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 30%);
+}
+
 .line {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   align-items: baseline;
   max-width: 100%;
   margin: 0;
   padding-inline: 4vw;
-  font-size: clamp(35px, 4.2vw, 80px);
+  font-family: var(--font-t1glicky), "Pretendard", sans-serif;
+  font-size: clamp(38px, 4.6vw, 88px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.055em;
@@ -80,7 +111,7 @@
 
   .line {
     padding-inline: 6vw;
-    font-size: clamp(24px, 6.4vw, 44px);
+    font-size: clamp(26px, 6.8vw, 48px);
   }
 }
 
@@ -96,7 +127,8 @@
     padding-block: clamp(80px, 12vh, 160px);
   }
 
-  .chunk {
+  .chunk,
+  .bg {
     transition: none;
   }
 

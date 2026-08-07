@@ -4,7 +4,7 @@ import styles from "./StatementBlock.module.css";
 export function StatementBlock({
   heading,
   body,
-  background = "#e7eaf0",
+  background = "#F1F1F1",
   video,
   image,
 }: {

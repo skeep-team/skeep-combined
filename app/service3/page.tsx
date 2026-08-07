@@ -5,6 +5,7 @@ import { ClosingCard } from "../components/service3/ClosingCard";
 import { GrowthCycle } from "../components/service3/GrowthCycle";
 import { SkeepExperience } from "../components/service3/SkeepExperience";
 import { TodayStandard } from "../components/service3/TodayStandard";
+import styles from "./page.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function Service3Page() {
   return (
-    <main>
+    <main className={styles.page}>
       <StatementBlock
         heading={["당신다운 경험의 시작"]}
         image={`${BASE_PATH}/service3/statement-bg.poster.jpg`}

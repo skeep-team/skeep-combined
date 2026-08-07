@@ -39,7 +39,7 @@ export function ImageTextCard() {
           </svg>
           <div className={styles.archive}>
             <span className={styles.archiveLabel}>SKEEP CLOUD</span>
-            <span className={styles.archiveTitle}>Context saved</span>
+            <span className={styles.archiveTitle}>CONTEXT SAVED</span>
             <div className={styles.archiveRows}>
               <span />
               <span />
@@ -47,16 +47,16 @@ export function ImageTextCard() {
             </div>
           </div>
           <div className={`${styles.contextCard} ${styles.contextCardOne}`}>
-            <span>Intent</span>
-            <strong>protected</strong>
+            <span>INTENT</span>
+            <strong>PROTECTED</strong>
           </div>
           <div className={`${styles.contextCard} ${styles.contextCardTwo}`}>
-            <span>Trace</span>
-            <strong>cleared</strong>
+            <span>TRACE</span>
+            <strong>CLEARED</strong>
           </div>
           <div className={`${styles.contextCard} ${styles.contextCardThree}`}>
-            <span>Next</span>
-            <strong>ready</strong>
+            <span>NEXT</span>
+            <strong>READY</strong>
           </div>
           <div className={styles.transferDots} aria-hidden="true">
             <span />

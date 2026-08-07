@@ -1,6 +1,6 @@
 .section {
   position: relative;
-  background: #0e1825;
+  background: #161A1E;
   padding: clamp(90px, 13vw, 202px) var(--edge-padding) clamp(80px, 10vw, 185px);
   display: flex;
   flex-direction: column;
@@ -56,7 +56,7 @@
   flex-shrink: 0;
   aspect-ratio: 507 / 400;
   overflow: hidden;
-  background: #f2f4f7;
+  background: #F1F1F1;
 }
 
 .cardText {
@@ -69,8 +69,8 @@
 }
 
 .cardTitle {
-  font-size: clamp(22px, 2.9vw, 40px);
-  font-weight: 600;
+  font-size: clamp(18px, 2.3vw, 32px);
+  font-weight: 500;
   letter-spacing: -0.03em;
   text-transform: uppercase;
   color: #222222;
@@ -78,11 +78,12 @@
 }
 
 .cardBody {
-  font-size: clamp(14px, 1.8vw, 24px);
-  font-weight: 500;
+  font-size: clamp(11px, 1.45vw, 19px);
+  font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1.4;
   color: #4b5869;
+  opacity: 0.8;
 }
 
 .visualImage {

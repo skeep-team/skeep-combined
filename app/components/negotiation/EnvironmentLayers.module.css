@@ -13,7 +13,8 @@
   font-size: clamp(14px, 1.4vw, 20px);
   font-weight: 600;
   letter-spacing: -0.03em;
-  color: var(--color-accent);
+  /* 다른 페이지(빌려쓰다 등)와 같은 중립 회색 eyebrow — 핫핑크 포인트컬러 대신. */
+  color: #9fa1a2;
 }
 
 .textBlock {
