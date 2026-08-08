@@ -1,6 +1,6 @@
 .section {
   background: var(--color-bg);
-  padding: clamp(48px, 6vw, 84px) var(--edge-padding) clamp(64px, 10vw, 150px);
+  padding: clamp(48px, 6vw, 84px) var(--edge-padding) clamp(84px, 13vw, 220px);
   display: flex;
   flex-direction: column;
   gap: clamp(40px, 6vw, 86px);
@@ -67,7 +67,7 @@
 }
 
 .cardBody {
-  font-size: clamp(10px, 0.9vw, 19px);
+  font-size: clamp(11px, 1vw, 20px);
   font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1.5;

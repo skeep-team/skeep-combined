@@ -902,9 +902,27 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* 사진 군집을 카메라가 훑은 뒤, 각 카드가 피그마 최종 좌표로 퍼지는 오버뷰 시퀀스. */
     .agent-photo-bg {
       position: absolute; inset: 0; z-index: 0; pointer-events: none;
-      opacity: 1;
+      opacity: 0;
       transition: opacity .45s ease;
       will-change: opacity;
+    }
+    /* 화면이 다 찬 순간(.is-visible)에만 디졸브로 나타난다 — 그 전엔 숨겨 둔다. */
+    .agent-photo-bg.is-visible {
+      opacity: 1;
+    }
+    .agent-photo-bg::after {
+      content: '';
+      position: absolute;
+      inset: -2%;
+      z-index: 2;
+      pointer-events: none;
+      background: rgba(255,255,255,.001);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      -webkit-mask-image: radial-gradient(ellipse 72% 68% at 50% 50%,
+        transparent 0%, transparent 50%, rgba(0,0,0,.18) 64%, rgba(0,0,0,.72) 84%, #000 100%);
+      mask-image: radial-gradient(ellipse 72% 68% at 50% 50%,
+        transparent 0%, transparent 50%, rgba(0,0,0,.18) 64%, rgba(0,0,0,.72) 84%, #000 100%);
     }
     .agent-photo-stage {
       position: absolute;
@@ -914,22 +932,25 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       min-height: 54.7vw;
       aspect-ratio: 1925 / 1053;
       transform-origin: 50% 46%;
-      transform: translate(-50%, -50%) translate3d(7%, 5%, 0) scale(1.16);
+      transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28);
       will-change: transform;
     }
     .agent-photo-bg.camera-moving .agent-photo-stage {
-      animation: agentPhotoCamera 3.05s linear both;
+      /* 정지→이동→정지→이동→정지로 3번 멈추던 걸 하나의 연속된 드리프트로 —
+         구간마다 속도가 0으로 꺾이지 않도록 홀드 키프레임을 없애고, 애니메이션
+         전체에 단일 ease-in-out 커브만 적용한다. */
+      animation: agentPhotoCamera 2.8s cubic-bezier(.45,0,.55,1) both;
     }
     .agent-photo-bg.camera-moving.scattering .agent-photo-stage {
-      animation: agentPhotoSettle 1.45s cubic-bezier(.77,0,.175,1) both;
+      animation: agentPhotoSettle 1.65s cubic-bezier(.22,1,.36,1) both;
     }
     @keyframes agentPhotoCamera {
-      0%, 12%  { transform: translate(-50%, -50%) translate3d(7%, 5%, 0) scale(1.16); }
-      33%, 48% { transform: translate(-50%, -50%) translate3d(-4%, 6%, 0) scale(1.23); }
-      70%, 100% { transform: translate(-50%, -50%) translate3d(4%, -4%, 0) scale(1.15); }
+      0%   { transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28); }
+      50%  { transform: translate(-50%, -50%) translate3d(-5%, 6%, 0) scale(1.28); }
+      100% { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
     }
     @keyframes agentPhotoSettle {
-      from { transform: translate(-50%, -50%) translate3d(4%, -4%, 0) scale(1.15); }
+      from { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
       to   { transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(1); }
     }
     .agent-photo-piece {
@@ -944,7 +965,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         translate3d(var(--cluster-x), var(--cluster-y), 0)
         rotate(var(--cluster-r, 0deg));
       transition:
-        transform 1.45s cubic-bezier(.77,0,.175,1);
+        transform 1.65s cubic-bezier(.22,1,.36,1);
       will-change: opacity, transform;
     }
     .agent-photo-piece img {
@@ -1672,7 +1693,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── 10. SYSTEM LAYERS ───────────────────────── */
     .sec-layers {
-      background: linear-gradient(180deg, #F4F8FC 0%, rgba(244,248,252,0) 100%);
+      background: #161A1E;
       width: 100%;
       padding: clamp(40px, 6vh, 68px) 0;
       min-height: 0;
@@ -1721,12 +1742,24 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       padding: 2.4cqw;
       transition: background-color .28s ease;
       border-radius: 1cqw;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: .42cqw;
+      display: flex;
+      align-items: center;
+      gap: 0;
     }
+    .step-chevron {
+      flex: 0 0 auto;
+      width: 1.5cqw;
+      height: 2.1cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,.32);
+    }
+    .step-chevron svg { display: block; width: 100%; height: 100%; }
     .database-card {
-      aspect-ratio: 392 / 346;
+      aspect-ratio: 516 / 346;
+      flex: 1 1 0;
+      min-width: 0;
       position: relative;
       border-radius: 1cqw;
       background: transparent;
@@ -1757,9 +1790,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .database-cards.is-intro-animating .database-card-flipper {
       animation: database-card-intro-flip .78s cubic-bezier(.2,.75,.25,1) both;
     }
-    .database-cards.is-intro-animating .database-card:nth-child(2) .database-card-flipper { animation-delay: .12s; }
-    .database-cards.is-intro-animating .database-card:nth-child(3) .database-card-flipper { animation-delay: .24s; }
-    .database-cards.is-intro-animating .database-card:nth-child(4) .database-card-flipper { animation-delay: .36s; }
+    .database-cards.is-intro-animating .database-card:nth-child(3) .database-card-flipper { animation-delay: .12s; }
+    .database-cards.is-intro-animating .database-card:nth-child(5) .database-card-flipper { animation-delay: .24s; }
     @keyframes database-card-intro-flip {
       0%   { transform: rotateY(180deg); }
       82%  { transform: rotateY(-5deg); }
@@ -1774,137 +1806,104 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transition: background-color .28s ease, color .28s ease;
+      display: flex;
+      flex-direction: column;
+      padding: 1.15cqw 1.3cqw 1.05cqw;
     }
     .database-card-face--back {
       transform: rotateY(180deg);
     }
     .database-card-head {
-      height: 30.64%;
-      padding: .83cqw 1.25cqw;
+      align-self: flex-start;
+      padding: .5cqw 1cqw;
+      border-radius: .55cqw;
       background: #09421A;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
       color: #82FF8F;
       line-height: 1.5;
       letter-spacing: -.04em;
       transition: background-color .28s ease, color .28s ease;
     }
-    .database-card:nth-child(2) .database-card-head {
-      color: #82FF8F;
+    .database-card-back-head {
+      background: #2E2D32;
+      color: #fff;
     }
-    .database-card:nth-child(3) .database-card-head {
-      color: #82FF8F;
-    }
-    .database-card:nth-child(4) .database-card-head {
-      color: #82FF8F;
-    }
-    .database-card .database-card-back-head {
-      background: #073214;
-    }
-    .database-card:last-child .database-card-back-head { background: #073214; }
     .database-card-kicker {
-      font-family: 'Elza Cond', 'Skeep Helvetica Now Display', 'Helvetica Now Display', sans-serif;
-      font-size: 1.26cqw;
-      font-weight: 400;
-      line-height: 1;
-      text-transform: uppercase;
-    }
-    .database-card-title {
-      font-size: 1.12cqw;
-      font-weight: 800;
-      line-height: 1.5;
-    }
-    .database-card-body {
-      height: 69.36%;
-      padding: .83cqw 1.25cqw;
-      display: flex;
-      flex-direction: column;
-      gap: .83cqw;
-    }
-    .database-card-items {
-      display: flex;
-      flex-direction: column;
-      gap: .83cqw;
-    }
-    .database-card-item {
-      display: flex;
-      align-items: center;
-      gap: .625cqw;
-      min-width: 0;
-    }
-    .database-card-icon {
-      display: block;
-      width: 2.08cqw;
-      height: 2.08cqw;
-      flex: 0 0 auto;
-      object-fit: contain;
-    }
-    .database-card:nth-child(3) .database-card-item:nth-child(2) .database-card-icon {
-      padding: .416cqw .416cqw .016cqw;
-      border-radius: .416cqw;
-      background: rgba(196, 204, 215, .4);
-    }
-    .database-card-copy {
-      min-width: 0;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 1.16cqw;
       font-weight: 600;
       line-height: 1.5;
     }
-    .database-card-layer {
-      font-size: .65cqw;
-      letter-spacing: -.02em;
-    }
-    .database-card-label {
-      font-size: 1.12cqw;
+    .database-card-title {
+      margin: .95cqw 0 1cqw;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-size: 1.85cqw;
+      font-weight: 800;
+      line-height: 1.4;
       letter-spacing: -.04em;
-      white-space: nowrap;
+      color: #161A1E;
+    }
+    .database-card-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      background: #F1F1F1;
+      border-radius: .75cqw;
+      padding: 1.05cqw;
+      display: flex;
+      flex-direction: column;
+      gap: .8cqw;
     }
     .database-card-note {
       margin-top: auto;
-      color: #66717f;
-      font-size: .78cqw;
-      font-weight: 500;
+      color: rgba(34,34,34,.7);
+      font-size: .92cqw;
+      font-weight: 400;
       line-height: 1.5;
-      letter-spacing: -.04em;
+      letter-spacing: -.03em;
     }
+    .database-card-note-mark { opacity: .8; margin-right: .1em; }
     .database-card-heading {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.12cqw;
-      font-weight: 700;
+      font-size: 1.28cqw;
+      font-weight: 600;
       line-height: 1.5;
       letter-spacing: -.04em;
+      color: #222;
     }
     .database-card-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: .42cqw;
+      gap: .5cqw;
     }
     .database-card-tag {
-      background: #494949;
-      color: #fff;
+      background: #ddd;
+      color: #474747;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: .68cqw;
+      font-size: .82cqw;
       font-weight: 600;
       letter-spacing: -.02em;
-      padding: .33cqw .66cqw;
-      border-radius: 999px;
+      text-transform: uppercase;
+      padding: .38cqw .7cqw;
+      border-radius: .18cqw;
       white-space: nowrap;
     }
-    .database-card-desc {
+    .database-card-footer {
+      align-self: flex-end;
+      margin-top: .75cqw;
+      display: flex;
+      align-items: center;
+      gap: .3cqw;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: .94cqw;
-      font-weight: 400;
-      line-height: 1.5;
+      font-size: 1.16cqw;
+      font-weight: 600;
       letter-spacing: -.03em;
-      color: #66717f;
+      color: #222;
+      opacity: .6;
     }
-    .database-card-back-body {
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: .94cqw;
-      font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: -.03em;
+    .database-card-footer-arrow {
+      display: block;
+      width: .55cqw;
+      height: 1.3cqw;
+      color: #222;
     }
     .database-card-back-body p:last-child { color: #66717f; }
     @media (prefers-reduced-motion: reduce) {
@@ -1915,82 +1914,60 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         animation: none;
       }
     }
-    .layers-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.8vw, 28px);
+    /* 큰 제목: 헤더 위, 선택된 레이어에 따라 텍스트만 바뀐다 */
+    .layers-heading {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: clamp(12px, 1.8vw, 32px);
       padding: 0 var(--edge-padding);
+      margin-bottom: clamp(24px, 3vw, 44px);
+    }
+    .layers-heading-title {
+      font-size: clamp(26px, 2.7vw, 42px); font-weight: 600; letter-spacing: -0.03em; color: #fff;
+      white-space: nowrap;
+    }
+    .layers-heading-desc {
+      font-size: clamp(14px, 1.4vw, 22px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.5;
+      color: rgba(255,255,255,.72);
+    }
+    /* 작은 필 탭 3개 */
+    .layers-grid {
+      display: flex; gap: clamp(6px, .55vw, 10px);
+      padding: 0 var(--edge-padding);
+      margin-bottom: clamp(16px, 2vw, 28px);
     }
     .layer-card {
-      background: #F7F7F7; border-radius: 12px;
-      padding: clamp(24px, 2.6vw, 40px) clamp(20px, 2.2vw, 36px) clamp(20px, 2vw, 34px);
-      min-height: clamp(140px, 13vw, 224px);
-      display: flex; flex-direction: column; gap: clamp(16px, 2vw, 28px);
-      align-items: center; text-align: center;   /* 가운데정렬 */
-      border: 1px solid rgba(0,0,0,0.05);
-      transition: opacity .28s ease, transform .28s ease, border-color .28s ease;
+      background: rgba(241,241,241,.15); border-radius: 8px; border: none;
+      padding: clamp(8px, .9vw, 14px) clamp(16px, 1.7vw, 27px);
+      transition: background-color .28s ease, color .28s ease;
     }
     .layer-card[data-layer] { cursor: pointer; }
-    .layer-card[data-layer]:hover { transform: translateY(-3px); }
     .layer-card[data-layer]:focus-visible { outline: 2px solid #ff0b6c; outline-offset: 4px; }
-    .layer-card.faded { opacity: 0.4; }
-    .layer-name { font-size: clamp(18px,1.55vw,25px); font-weight: 750; line-height: 1.25; letter-spacing: -0.025em; color: #161A1E; }
-    .layer-en   { margin-top: 3px; font-size: clamp(11px,0.95vw,14px); font-weight: 500; line-height: 1.4; letter-spacing: -0.02em; color: rgba(0,0,0,.58); }
-    .layer-desc { font-size: clamp(12px,1.05vw,16px); font-weight: 400; line-height: 1.4; letter-spacing: -0.03em; color: rgba(0,0,0,.55); }
-    /* 선택된 카드: 위쪽 4카드 헤더(진한 색 배경 + 옅은 텍스트)의 리버스 —
-       옅은 색 배경 + 그 진한 색 텍스트. 레이어별로 위 카드 헤더와 짝을 맞춘다. */
-    .layer-card[data-layer]            { background: #82FF8F; border-color: transparent; }
+    .layer-name { font-size: clamp(14px,1.5vw,22px); font-weight: 600; line-height: 1.5; letter-spacing: -0.025em; color: #A2A2A2; white-space: nowrap; }
+    .layer-card[data-layer]:not(.faded) { background: #82FF8F; }
     .layer-card[data-layer]:not(.faded) .layer-name { color: #09421A; }
-    .layer-card[data-layer]:not(.faded) .layer-en   { color: rgba(9,66,26,.82); }
-    .layer-card[data-layer]:not(.faded) .layer-desc { color: rgba(9,66,26,.78); }
-    /* 비선택 카드 2개: 레이어별 색조 없이 똑같은 연한 회색 배경 + 연한 회색 텍스트 */
-    .layer-card.faded[data-layer] { background: #F1F1F1; opacity: 1; }
-    .layer-card.faded[data-layer] .layer-name,
-    .layer-card.faded[data-layer] .layer-en,
-    .layer-card.faded[data-layer] .layer-desc { color: #A3A3A3; }
 
-    /* 레이어별 선택 팔레트: 상단 데이터 카드와 하단 선택 카드는 서로 반전 */
+    /* 레이어별 선택 팔레트: 탭·STEP 배지 색이 함께 바뀐다 (뒷면 배지는 항상 무채색 유지) */
     .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-head {
       background: #FF3385;
-      color: #FFCADF;
-    }
-    .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-back-head {
-      background: #BF2664;
       color: #FFCADF;
     }
     .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) {
       background: #FFCADF;
     }
-    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-name,
-    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-en,
-    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-desc {
-      color: #FF3385;
+    .sec-layers[data-selected-layer="active"] .layer-card[data-layer="active"]:not(.faded) .layer-name {
+      color: #B70049;
     }
 
     .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-head {
       background: #0a67de;
       color: #89dff0;
     }
-    .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-back-head {
-      background: #084DA7;
-      color: #89dff0;
-    }
     .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) {
       background: #89DFF0;
     }
-    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-name,
-    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-en,
-    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-desc {
+    .sec-layers[data-selected-layer="database"] .layer-card[data-layer="database"]:not(.faded) .layer-name {
       color: #0A67DE;
     }
 
-    @media (min-width: 769px) and (max-width: 1100px) {
-      .system-flow-sequence .layers-grid { grid-template-columns: repeat(3, 1fr); }
-      .system-flow-sequence .layer-card {
-        min-height: 150px;
-        padding: 20px 18px;
-        gap: 14px;
-      }
-      .system-flow-sequence .layer-desc br { display: none; }
-    }
     @media (max-width: 768px) {
       .system-flow-sequence { height: auto; }
       .system-flow-sticky { position: relative; height: auto; overflow: visible; }
@@ -2020,41 +1997,30 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .layer-visual-image--database::-webkit-scrollbar { display: none; }
       .database-cards {
         width: max-content;
-        flex: 0 0 auto;
-        grid-template-columns: repeat(4, 220px);
         gap: 8px;
-        padding: 0 24px;
+        padding: 16px;
       }
-      .database-card { border-radius: 18px; }
+      .database-card { flex: 0 0 240px; border-radius: 18px; }
       .database-card:focus-visible {
         outline-width: 2px;
         outline-offset: 3px;
       }
-      .database-card-head { padding: 10px 13px; }
-      .database-card-kicker { font-size: 14px; }
-      .database-card-title { font-size: 13px; }
+      .step-chevron { width: 16px; height: 22px; }
+      .database-card-face { padding: 14px 15px 12px; }
+      .database-card-head { padding: 5px 10px; border-radius: 6px; }
+      .database-card-kicker { font-size: 11px; }
+      .database-card-title { font-size: 16px; margin: 10px 0 10px; }
       .database-card-body {
-        padding: 10px 13px;
+        padding: 11px;
+        border-radius: 10px;
         gap: 8px;
       }
-      .database-card-items { gap: 8px; }
-      .database-card-item { gap: 7px; }
-      .database-card-icon {
-        width: 24px;
-        height: 24px;
-      }
-      .database-card:nth-child(3) .database-card-item:nth-child(2) .database-card-icon {
-        padding: 4.8px 4.8px .19px;
-        border-radius: 4.8px;
-      }
-      .database-card-layer { font-size: 7px; }
-      .database-card-label { font-size: 13px; }
-      .database-card-note { font-size: 8px; }
+      .database-card-note { font-size: 10px; }
       .database-card-heading { font-size: 13px; }
       .database-card-tags { gap: 5px; }
       .database-card-tag { font-size: 8px; padding: 4px 8px; }
-      .database-card-desc { font-size: 11px; }
-      .database-card-back-body { font-size: 10px; }
+      .database-card-footer { font-size: 11px; margin-top: 8px; }
+      .database-card-footer-arrow { width: 6px; height: 14px; }
     }
 
     /* ── 11. PACKET INTRO ────────────────────────── */
@@ -2229,7 +2195,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-left-holder, .ux-right-holder {
       opacity: 0; transform: translateY(70px);
       transition: opacity .2s ease, transform .6s cubic-bezier(.22,1,.32,1); }
-    .ux-logic-wrap.detail-in .ux-left-holder,
+    .ux-logic-wrap.detail-in .ux-left-holder {
+      opacity: 1; transform: translateY(70px); transition-delay: .15s; }
     .ux-logic-wrap.detail-in .ux-right-holder {
       opacity: 1; transform: translateY(0); transition-delay: .15s; }
     /* 상세 패널(SENSING LOGIC 등)이 뜨는 시점엔 --p 값 타이밍과 무관하게
@@ -2265,8 +2232,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* compact overrides so the whole scene fits one screen */
     .ux-left-panel .stage-kr-label { margin-bottom: 10px; }
-    .ux-left-panel .stage-kr { font-size: clamp(26px, 2.6vw, 40px); margin-bottom: clamp(10px, 1vw, 16px); }
-    .ux-left-panel .stage-desc { font-size: clamp(14px, 1.25vw, 17px); margin-bottom: clamp(14px, 1.4vw, 22px); white-space: normal; }
+    .ux-left-panel .stage-kr { font-size: 66px; margin-bottom: clamp(9px, 0.9vw, 14px); }
+    .ux-left-panel .stage-desc { font-size: 26px; margin-bottom: clamp(12px, 1.2vw, 19px); white-space: normal; }
     .ux-left-panel .stage-en { font-size: clamp(14px, 1.3vw, 18px); padding: 6px 18px; }
     .ux-right-holder .stage-logic-card { padding: clamp(16px,1.6vw,24px) clamp(20px,1.9vw,30px); border-radius: clamp(18px,1.5vw,24px); gap: clamp(8px,0.9vw,12px); }
     .ux-right-holder .stage-logic-title { font-size: clamp(18px,1.7vw,24px); }
@@ -2300,8 +2267,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-logic-sticky .uxl-cards { position: absolute; pointer-events: none; z-index: 5; left: var(--edge-padding); right: var(--edge-padding);
       top: clamp(90px, 13vh, 170px); align-items: flex-start; justify-content: center;
       min-height: 0; perspective: 1500px; transition: transform .85s cubic-bezier(.22,1,.32,1);
-      transform: translate(calc(var(--mv,0) * -30vw), calc(38vh - var(--mv,0) * 36vh)) scale(calc(1 + var(--mv,0) * 0.12));
+      --cards-y-nudge: 0px; --cards-x-nudge: 0px;
+      transform: translate(calc(var(--mv,0) * -30vw + var(--cards-x-nudge)), calc(38vh - var(--mv,0) * 36vh + var(--cards-y-nudge))) scale(calc(1 + var(--mv,0) * 0.12));
       opacity: 1; }
+    .ux-logic-wrap.detail-in .uxl-cards { --cards-y-nudge: 75px; --cards-x-nudge: 80px; }
 
     /* ── 6색 카드 자체가 3D 레이어로 겹쳐짐 (--sp: 0→1) ── */
     .ux-logic-sticky .ux-tabbar { visibility: hidden; }
@@ -2315,12 +2284,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-logic-sticky .sq-morph.stacking .sq-card-txt { opacity: clamp(0, calc(1 - var(--sp,0) * 4), 1) !important; transition: opacity .12s ease !important; }
     .ux-logic-sticky .sq-morph.stacking .sq-morph-seg { pointer-events: auto; cursor: pointer; }
     .ux-logic-sticky .sq-morph.settled .sq-morph-seg { transition: transform .3s cubic-bezier(.22,1,.32,1), opacity .2s ease; }
-    .ux-logic-sticky .sq-morph.stacking .seg1 { transform: translateX(calc(2.5 * 100% * var(--sp,0))) translateZ(calc(85px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
-    .ux-logic-sticky .sq-morph.stacking .seg2 { transform: translateX(calc(1.5 * 100% * var(--sp,0))) translateZ(calc(51px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
-    .ux-logic-sticky .sq-morph.stacking .seg3 { transform: translateX(calc(0.5 * 100% * var(--sp,0))) translateZ(calc(17px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
-    .ux-logic-sticky .sq-morph.stacking .seg4 { transform: translateX(calc(-0.5 * 100% * var(--sp,0))) translateZ(calc(-17px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
-    .ux-logic-sticky .sq-morph.stacking .seg5 { transform: translateX(calc(-1.5 * 100% * var(--sp,0))) translateZ(calc(-51px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
-    .ux-logic-sticky .sq-morph.stacking .seg6 { transform: translateX(calc(-2.5 * 100% * var(--sp,0))) translateZ(calc(-85px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    /* 카드 3장짜리로 줄어들면서 Z축 깊이 폭도 같이 좁아져(±34px) 부채꼴이 너무 겹쳐 보였다 —
+       카드 수가 줄어든 만큼 장당 깊이를 더 크게 줘서 눈에 보이는 간격을 넓힌다. */
+    .ux-logic-sticky .sq-morph.stacking .seg1 { transform: translateX(calc(1.15 * 100% * var(--sp,0))) translateZ(calc(150px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg2 { transform: translateX(0) translateZ(0) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
+    .ux-logic-sticky .sq-morph.stacking .seg3 { transform: translateX(calc(-1.15 * 100% * var(--sp,0))) translateZ(calc(-150px * var(--sp,0))) translateY(calc(var(--pop,0) * var(--popk,0) * -46px)); }
     @media (prefers-reduced-motion: reduce) { .ux-logic-sticky .sq-morph.stacking { transform: rotateX(15deg) rotateY(-44deg); } }
 
     /* ── UX Logic — Figma design (node 4293-1653) ── */
@@ -2358,14 +2326,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       text-decoration: none; cursor: pointer; margin-bottom: clamp(16px,1.7vw,24px); }
     .ux-left-panel .stage-kr {
       margin: 0; line-height: 1.5; font-weight: 700; letter-spacing: -0.04em;
-      font-size: clamp(34px, 3.4vw, 66px);
+      font-size: 66px;
       color: #111; }
     .stage-arrow { flex: 0 0 auto; width: clamp(42px,3.2vw,62px); height: clamp(42px,3.2vw,62px);
       border-radius: 50%; background: var(--ux-accent, #FB6E9C); display: inline-flex; align-items: center; justify-content: center; }
     .stage-arrow svg { width: 44%; height: 44%; }
     .stage-arrow svg path { stroke: #000; }
     .ux-left-panel .stage-desc { color: #3a4655; opacity: 1; font-weight: 500;
-      font-size: clamp(18px, 1.78vw, 34px); margin: 0; line-height: 1.5; }
+      font-size: 26px; margin: 0; line-height: 1.5; }
     /* logic cards */
     .ux-right-holder .stage-logic-card {
       background: #F1F1F1;
@@ -2392,8 +2360,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         gap: 13px;
       }
       .ux-right-holder .stage-logic-title {
-        font-size: 30px;
+        font-size: 34px;
         line-height: 1.2;
+        letter-spacing: -0.01em;
       }
       .ux-right-holder .stage-logic-tags {
         gap: 9px;
@@ -2401,11 +2370,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .ux-right-holder .stage-logic-tag {
         border-radius: 18px;
         padding: 7px 13px;
-        font-size: 13px;
+        font-size: 15px;
         line-height: 1.2;
       }
       .ux-right-holder .stage-logic-desc {
-        font-size: 16.5px;
+        font-size: 16px;
         line-height: 1.5;
       }
     }
@@ -3923,7 +3892,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="hero-gnb" id="heroGnb">
     <div class="hero-gnb-shape gnb-away" id="heroGnbShape">
       <a class="hero-gnb-card" style="background:#F7F7F7" href="saegyeodeutda.html">새겨듣다</a>
-      <a class="hero-gnb-card" style="background:#F7F7F7" href="smeureulda.html">스며들다</a>
+      <a class="hero-gnb-card" style="background:#F7F7F7" href="saegyeodeutda.html">스며들다</a>
       <a class="hero-gnb-card" style="background:#E2E8EF" href="#negotiation">조율하다</a>
       <a class="hero-gnb-card" style="background:#D8DEE6" href="#borrowing">빌려쓰다</a>
       <a class="hero-gnb-card" style="background:#D0D7E0" href="#keep">지켜주다</a>
@@ -4289,7 +4258,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
     </div>
     <div class="phil-media-row">
-      <iframe class="phil-side-morph" src="smeureulda.html?embed=morph&v=11" title="Morphing objects interaction" loading="lazy"></iframe>
+      <iframe class="phil-side-morph" src="saegyeodeutda.html?embed=morph&v=12" title="Morphing objects interaction" loading="lazy"></iframe>
       <canvas class="phil-side-blob" id="philBlob" aria-hidden="true"></canvas>
       <canvas class="phil-side-ball" id="philBall" aria-hidden="true"></canvas>
     </div>
@@ -4529,116 +4498,92 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   11. SYSTEM LAYERS
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
+  <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
+    <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive"><span class="layer-name">상시 레이어</span></div>
+    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="active"><span class="layer-name">활성 레이어</span></div>
+    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="database"><span class="layer-name">데이터 베이스</span></div>
+  </div>
+  <div class="layers-heading">
+    <p class="layers-heading-title" data-layers-heading-title>상시 레이어</p>
+    <p class="layers-heading-desc" data-layers-heading-desc>항상 사용자의 주변 환경을 스캔하며 가능성을 파악하고 있습니다.<br>목적이 없는 순간에도 결코 쉬지 않죠.</p>
+  </div>
   <div class="layer-visual">
     <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false">
       <div class="database-cards is-intro-pending">
         <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="환경 리스트 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Environment List</p>
-                <p class="database-card-title">환경 리스트</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">환경 탐색하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">환경 탐색</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Local sensing (RIS)</span>
-                </div>
-                <p class="database-card-desc">사용자가 사용할 수 있는 주변 환경을 찾기</p>
+                <p class="database-card-heading">사용자의 주변 환경을 찾아 해당 목록을 리스트업하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>환경 리스트 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Environment List</p>
-                <p class="database-card-title">환경 리스트</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>스킵은 사용자가 이동하는 동안 근처에서 감지된 모든 환경을 리스트업 합니다.</p>
-                <p>새로운 환경에 들어서는 순간 가장 먼저 참조되어, 지금 무엇을 빌려 쓸 수 있는지를 알려줍니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">환경 리스트</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">사용자가 이동하는 동안 근처에서 감지된 모든 환경을 리스트업한 정보입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>새로운 환경에 들어서는 순간 가장 먼저 참조되어, 지금 무엇을 빌려 쓸 수 있는지를 알아봅니다.</p>
               </div>
             </div>
           </div>
         </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="기능 카드 뒤집기">
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="기능 리스트 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Capabilities</p>
-                <p class="database-card-title">기능</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">기능 탐색하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">기능 탐색</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Local sensing</span>
-                  <span class="database-card-tag">Cloud DB match</span>
-                </div>
-                <p class="database-card-desc">사용자 주변의 환경이 할 수 있는 일을 알아보기</p>
+                <p class="database-card-heading">사용자 주변의 환경이 할 수 있는 일을 기능 리스트업하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span><span class="database-card-tag">Cloud DB match</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>기능 리스트 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Capabilities</p>
-                <p class="database-card-title">기능</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>주변에 있는 기기나 공간이 실제로 무엇을 해 줄 수 있는지를 정리한 정보입니다.</p>
-                <p>'무엇이 있는가'를 넘어 '그것으로 무엇을 할 수 있는가'까지 미리 파악해 둡니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">기능 리스트</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">주변에 있는 환경이 실제로 무엇을 해줄 수 있는지를 정리한 정보입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>'무엇이 있는가'를 넘어 '그것으로 무엇을 할 수 있는가'까지 미리 파악해 둡니다.</p>
               </div>
             </div>
           </div>
         </article>
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
         <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="사용 가능 여부 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Availability</p>
-                <p class="database-card-title">사용 가능 여부</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">상태 탐색하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">상태 탐색</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Local sensing</span>
-                  <span class="database-card-tag">standby tracking</span>
-                </div>
-                <p class="database-card-desc">환경이 지금 빌릴 수 있는 상태인지 알아보기</p>
+                <p class="database-card-heading">해당 환경이 지금 빌릴 수 있는 상태인지 알아보며, 환경의 사용 가능 여부를 파악하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span><span class="database-card-tag">standby tracking</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>사용 가능 여부 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Availability</p>
-                <p class="database-card-title">사용 가능 여부</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>근처에 감지된 환경이라도, 지금 이 순간 실제로 쓸 수 있는 상태인지는 별개로 확인됩니다.</p>
-                <p>다른 사용자가 이미 사용 중이거나 접근할 수 없다면, 협상이 필요할 수 있음을 미리 알려줍니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="다운로드 탐색 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Expandability</p>
-                <p class="database-card-title">다운로드 탐색</p>
-              </header>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">사용 가능 여부</p>
               <div class="database-card-body">
-                <p class="database-card-heading">확장 탐색</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Cloud inference</span>
-                  <span class="database-card-tag">Predicted in advance</span>
-                </div>
-                <p class="database-card-desc">환경이 가지고 있지 않은 기능은 보충 할 준비 하기</p>
-              </div>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Expandability</p>
-                <p class="database-card-title">다운로드 탐색</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>지금 있는 기기만으로는 부족한 기능이 있을 때, 어떤 기능을 추가로 받아올 수 있는지 미리 가늠해 두는 정보입니다.</p>
-                <p>실제 다운로드는 목적이 생겼을 때 이루어지지만, 그 가능성은 항상 준비되어 있습니다.</p>
+                <p class="database-card-heading">근처에 감지된 환경이라도, 지금 이 순간 실제로 쓸 수 있는 상태인지는 별개로 확인됩니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>다른 사용자가 이미 사용 중이거나 접근할 수 없다면, 협상이 필요할 수 있음을 미리 알려줍니다.</p>
               </div>
             </div>
           </div>
@@ -4650,109 +4595,77 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="인풋 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Input</p>
-                <p class="database-card-title">인풋</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">목적 포착하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">목적 포착</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">User speech</span>
-                  <span class="database-card-tag">Behavior based</span>
-                </div>
-                <p class="database-card-desc">사용자의 목적이 시작되는 신호</p>
+                <p class="database-card-heading">사용자의 목적을 인풋을 통해 감지하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">User speech</span><span class="database-card-tag">Behavior based</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>인풋 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Input</p>
-                <p class="database-card-title">인풋</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>사용자가 자신의 목표를 말이나 텍스트로 직접 전달하거나, 행동과 상황만으로 은근히 드러내는 신호입니다.</p>
-                <p>이 신호가 감지되는 순간부터 SKEEP은 목적을 읽어내는 과정을 시작합니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">인풋</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">사용자가 자신의 목표를 말이나 텍스트로 직접 전달하거나, 행동과 상황만으로 은근히 드러내는 신호입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>이 신호가 감지되는 순간부터 SKEEP은 목적을 읽어내는 과정을 시작합니다.</p>
               </div>
             </div>
           </div>
         </article>
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
         <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="파싱 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Parsing</p>
-                <p class="database-card-title">파싱</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">목적 분석하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">목적 분석</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Cloud computation</span>
-                </div>
-                <p class="database-card-desc">목적을 구현하기 위해 해야 할 일</p>
+                <p class="database-card-heading">사용자의 목적 구현을 위해 해야 할 일을 추리며 파싱하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Cloud computation</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>파싱 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Parsing</p>
-                <p class="database-card-title">파싱</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>감지된 인풋을 바탕으로, 추상적인 목적을 실제로 처리 가능한 단위들로 나눈 것입니다.</p>
-                <p>하나의 목적이 여러 개의 세부 행동으로, 다시 더 구체적인 동작으로 갈라지며 정리됩니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">파싱</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">감지된 인풋을 바탕으로, 추상적인 목적을 실제로 처리 가능한 단위들로 나누는 과정입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>하나의 목적이 여러 개의 세부 행동으로, 다시 더 구체적인 동작으로 갈라지며 정리됩니다.</p>
               </div>
             </div>
           </div>
         </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="매핑 카드 뒤집기">
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="실행 블록 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Mapping</p>
-                <p class="database-card-title">매핑</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">실행 계획하기</p>
               <div class="database-card-body">
-                <p class="database-card-heading">구체화하기</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Cloud</span>
-                  <span class="database-card-tag">Passive cache</span>
-                </div>
-                <p class="database-card-desc">할 일이 구현 가능한 환경을 짝지어 주기</p>
+                <p class="database-card-heading">사용자의 명령을 환경이 받아들일 수 있는 형태로 바꾸기 위해 실행 블록 구축하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Edge execution</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>실행 블록 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Mapping</p>
-                <p class="database-card-title">매핑</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>잘게 쪼갠 목적을 주변에 있는 기기와 서로 이어 붙이는 과정입니다.</p>
-                <p>어떤 기기가 어떤 일을 맡을지 짝을 지어, 실제로 목표를 수행할 수 있는 테스크로 만들어 줍니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="실행블록 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Execution Block</p>
-                <p class="database-card-title">실행블록</p>
-              </header>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">실행 블록</p>
               <div class="database-card-body">
-                <p class="database-card-heading">확정하기</p>
-                <div class="database-card-tags">
-                  <span class="database-card-tag">Edge execution</span>
-                </div>
-                <p class="database-card-desc">환경이 알아듣는 명령으로 전환하기</p>
-              </div>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Execution Block</p>
-                <p class="database-card-title">실행블록</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>매핑을 거쳐 완성된, 기기가 바로 실행할 수 있는 최소 단위의 명령입니다.</p>
-                <p>같은 목적이라도 어떤 기기를 만나느냐에 따라 실행 블록의 형태는 조금씩 달라집니다.</p>
+                <p class="database-card-heading">목표·행동·기능이 하나로 묶여, 환경이 곧바로 실행할 수 있는 명령의 최소 단위입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>같은 목적이라도 어떤 기기를 만나느냐에 따라 실행 블록의 형태는 조금씩 달라집니다.</p>
               </div>
             </div>
           </div>
@@ -4761,175 +4674,85 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     </div>
     <div class="layer-visual-image layer-visual-image--database" data-layer-image="database" aria-hidden="true" inert>
       <div class="database-cards is-intro-pending">
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="성향 카드 뒤집기">
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="신원 정보 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Propensity</p>
-                <p class="database-card-title">성향</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">신원 정보 알려주기</p>
               <div class="database-card-body">
-                <div class="database-card-items">
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-talk.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">소통 선호 방식</p></div>
-                  </div>
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-danger.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">위험 감수 성향</p></div>
-                  </div>
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-workflow.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">작업 스타일</p></div>
-                  </div>
-                </div>
+                <p class="database-card-heading">목적 달성에 필요한 사용자의 신원 정보를 선별하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">User speech</span><span class="database-card-tag">Behavior based</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>신원 정보 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Propensity</p>
-                <p class="database-card-title">성향</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>성향은 사용자가 평소 편하게 느끼는 소통 방식과 작업 방식을 가리킵니다.</p>
-                <p>이를 통해 각 환경은 여러 사용자가 편하게 느끼는 방식과 속도로 소통할 수 있게 됩니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
+              <p class="database-card-title">신원 정보</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">환경이 사용자가 누구인지 알아보는 데 필요한 정보입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>스킵은 사용자가 매번 결제수단이나 로그인을 반복하지 않도록 데이터 베이스에서 사용자의 신원 정보를 관리하고 저장합니다.</p>
               </div>
             </div>
           </div>
         </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="위임 카드 뒤집기">
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="배경 정보 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Delegate</p>
-                <p class="database-card-title">위임</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">내역 정보 알려주기</p>
               <div class="database-card-body">
-                <div class="database-card-items">
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-trust.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">자동화 신뢰 수준</p></div>
-                  </div>
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-delegate.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">행동 위임 범위</p></div>
-                  </div>
-                </div>
+                <p class="database-card-heading">목적에 관련된 사용자의 태스크 내역을 선별하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Cloud computation</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>내역 정보 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Delegate</p>
-                <p class="database-card-title">위임</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>위임은 사용자가 에이전트에게 얼마나 맡기고, 어디까지 확인하고 싶어하는지를 가리킵니다.</p>
-                <p>이를 통해 각 환경은 조용히 대신 처리할 영역과 사용자에게 알릴 영역을 구분합니다.</p>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
+              <p class="database-card-title">배경 정보</p>
+              <div class="database-card-body">
+                <p class="database-card-heading">사용자가 무엇을 해왔는지 지나온 테스크 내역이 자연스럽게 쌓여가는 정보입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>스킵은 사용자가 드라마를 어디까지 봤는지, 어떤 작업을 했었는지, 다음에도 이어갈 수 있도록 매 순간의 테스크를 기록하고, 환경에게 관련 내용을 선별해 전달합니다.</p>
               </div>
             </div>
           </div>
         </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="상태 카드 뒤집기">
+        <span class="step-chevron" aria-hidden="true">
+          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="선호 정보 카드 뒤집기">
           <div class="database-card-flipper">
             <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">State</p>
-                <p class="database-card-title">상태</p>
-              </header>
+              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">선호 정보 알려주기</p>
               <div class="database-card-body">
-                <div class="database-card-items">
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-energy.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">감정 에너지 상태</p></div>
-                  </div>
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-time.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">시간적 압박</p></div>
-                  </div>
-                </div>
+                <p class="database-card-heading">목적을 수행할 때 사용자의 선호와 비선호 행동을 선별해 환경에 전달하기</p>
+                <div class="database-card-tags"><span class="database-card-tag">Personalization</span><span class="database-card-tag">Accrued</span><span class="database-card-tag">Hard limit</span></div>
               </div>
+              <p class="database-card-footer">
+                <span>선호 정보 설명</span>
+                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </p>
             </div>
             <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">State</p>
-                <p class="database-card-title">상태</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>상태는 지금 이 순간 사용자의 신체-감정적 컨디션과 시간적 여유를 가리킵니다.</p>
-                <p>이를 통해 각 환경은 같은 사람이라도 순간에 맞춰 개입의 강도와 속도를 조절합니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="명시적 제한 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <header class="database-card-head">
-                <p class="database-card-kicker">Explicit Limit</p>
-                <p class="database-card-title">명시적 제한</p>
-              </header>
+              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
+              <p class="database-card-title">선호 정보</p>
               <div class="database-card-body">
-                <div class="database-card-items">
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-money.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">금전적 제한</p></div>
-                  </div>
-                  <div class="database-card-item">
-                    <img class="database-card-icon" src="assets/db-icon-lock.svg" alt="">
-                    <div class="database-card-copy"><p class="database-card-layer">Passive Layer</p><p class="database-card-label">정보 공유 제한</p></div>
-                  </div>
-                </div>
-                <p class="database-card-note">* 사용자가 직접 발화하여 외부 환경에 지시하기를<br>&nbsp;&nbsp;&nbsp;금지한 사항</p>
-              </div>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <header class="database-card-head database-card-back-head">
-                <p class="database-card-kicker">Explicit Limit</p>
-                <p class="database-card-title">명시적 제한</p>
-              </header>
-              <div class="database-card-body database-card-back-body">
-                <p>명시적 제한은 사용자가 직접 설정한, 바뀌지 않는 절대 규칙을 가리킵니다.</p>
-                <p>필요시에 이를 패킷으로 전달 해 사용자가 그은 선을 넘지 않도록 하며, 이 규칙은 상황에 따라 최우선으로 고려됩니다.</p>
+                <p class="database-card-heading">환경이 목적을 수행하는 과정에서, 사용자가 바라는 행동의 방향성을 담은 정보입니다.</p>
+                <p class="database-card-note"><span class="database-card-note-mark">*</span>사용자가 어떤 방식으로 소통하고 작업하고 싶은지, 자동화는 어디까지 맡기고 싶은지 개인의 성향을 파악해 이 정보를 환경에 전달합니다.</p>
               </div>
             </div>
           </div>
         </article>
       </div>
-    </div>
-  </div>
-  <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
-    <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive">
-      <div>
-        <p class="layer-name">상시 레이어</p>
-        <p class="layer-en">Passive Layer</p>
-      </div>
-      <p class="layer-desc">
-        항상 사용자의 주변 환경을 스캔하며<br>
-        가능성을 파악하고 있습니다.<br>
-        목적이 없는 순간에도 결코 쉬지 않죠.
-      </p>
-    </div>
-    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="active">
-      <div>
-        <p class="layer-name">활성 레이어</p>
-        <p class="layer-en">Active Layer</p>
-      </div>
-      <p class="layer-desc">
-        사용자의 목적이 발생하는 순간 활성화되어,<br>
-        그 목적을 구조화하고 실행 블록으로 만들어<br>
-        환경에 전달하는 역할을 합니다.
-      </p>
-    </div>
-    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="database">
-      <div>
-        <p class="layer-name">데이터 베이스</p>
-        <p class="layer-en">Database Structure</p>
-      </div>
-      <p class="layer-desc">
-        사용자의 목적이 발생하는 순간 활성화되어,<br>
-        그 목적을 구조화하고 실행 블록으로 만들어<br>
-        환경에 전달하는 역할을 합니다.
-      </p>
     </div>
   </div>
 </section>
@@ -4964,6 +4787,30 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         selectLayer(tab.dataset.layer);
       }
     });
+  });
+
+  // 큰 제목/설명은 선택된 레이어에 따라 텍스트만 바뀐다.
+  const LAYER_HEADING = {
+    passive: {
+      title: '상시 레이어',
+      desc: '항상 사용자의 주변 환경을 스캔하며 가능성을 파악하고 있습니다.<br>목적이 없는 순간에도 결코 쉬지 않죠.',
+    },
+    active: {
+      title: '활성 레이어',
+      desc: '사용자의 목적이 발생하는 순간 활성화되어,<br>그 목적을 구조화하고 환경이 받아들일 수 있는 명령으로 만들어 전달하는 역할을 합니다.',
+    },
+    database: {
+      title: '데이터 베이스',
+      desc: '사용자의 맥락을 참조해, 목적 수행에 필요한 설정값과<br>사용자의 선호가 반영된 설정값을 골라 환경에 전달합니다.',
+    },
+  };
+  const headingTitle = section.querySelector('[data-layers-heading-title]');
+  const headingDesc = section.querySelector('[data-layers-heading-desc]');
+  section.addEventListener('skeep:layerchange', (event) => {
+    const info = LAYER_HEADING[event.detail.layer];
+    if (!info) return;
+    if (headingTitle) headingTitle.textContent = info.title;
+    if (headingDesc) headingDesc.innerHTML = info.desc;
   });
 })();
 </script>
@@ -5418,7 +5265,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .uxl-cards { display: flex; align-items: flex-end; justify-content: center; min-height: 0; }
   .sq-morph { --sq-size: min(350px, 40vw, 40vh); --bar-w: min(760px, 64vw);
     --bar-h: clamp(26px, 3.6vh, 42px);
-    --big-w: min(1680px, 94vw); --big-h: calc((min(1680px, 94vw) - 90px) / 6); --big: 0;
+    --big-w: min(940px, 90vw); --big-h: calc((var(--big-w) - 36px) / 4); --big: 0;
     display: flex; gap: 0; overflow: hidden;
     width: var(--sq-size); height: var(--sq-size); border-radius: 0;
     transition: width .9s cubic-bezier(.77,0,.175,1), height .7s cubic-bezier(.22,1,.36,1),
@@ -5447,10 +5294,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .sq-morph.is-in.split .sq-morph-seg { border-radius: 0; }
   .sq-morph.is-in.split .seg1 { background: #FF6B3D; --card-txt: #703817; }
   .sq-morph.is-in.split .seg2 { background: #D9FF60; --card-txt: #65762A; }
-  .sq-morph.is-in.split .seg3 { background: #F1F1F1; --card-txt: #666666; }
-  .sq-morph.is-in.split .seg4 { background: #8BDFEF; --card-txt: #2E616A; }
-  .sq-morph.is-in.split .seg5 { background: #FECADF; --card-txt: #895D6E; }
-  .sq-morph.is-in.split .seg6 { background: #9FA1A2; --card-txt: #34383E; }
+  .sq-morph.is-in.split .seg3 { background: #8BDFEF; --card-txt: #2E616A; }
   @media (prefers-reduced-motion: reduce) {
     .sq-morph, .sq-morph-seg { transition: none; }
   }
@@ -5480,23 +5324,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <div class="uxl-cards">
       <div class="sq-morph" aria-hidden="true">
         <span class="sq-morph-seg seg1"><span class="sq-card-txt"><b>새겨듣다</b><i>Sensing<br>Input<br>Pause</i></span></span>
-        <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>스며들다</b><i>Morphing<br>Parsing<br>Mapping</i></span></span>
-        <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>조율하다</b><i>Negotiation</i></span></span>
-        <span class="sq-morph-seg seg4"><span class="sq-card-txt"><b>빌려쓰다</b><i>Borrowing<br>Download</i></span></span>
-        <span class="sq-morph-seg seg5"><span class="sq-card-txt"><b>지켜주다</b><i>Keep</i></span></span>
-        <span class="sq-morph-seg seg6"><span class="sq-card-txt"><b>기억하다</b><i>Seeyou</i></span></span>
+        <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>조율하다</b><i>Negotiation</i></span></span>
+        <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>지켜주다</b><i>Keep</i></span></span>
       </div>
     </div>
 
     <div class="ux-scene">
       <div class="ux-left-col">
       <div class="ux-tabbar" role="tablist" aria-label="UX Logic 단계">
-        <button class="ux-tab" type="button" data-i="0" data-accent="#FF6B3D" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
-        <button class="ux-tab" type="button" data-i="1" data-accent="#D9FF60" data-card-bg="../인트로/네모2.png" data-state-bg="../인트로/네모배경2.png">스며들다</button>
-        <button class="ux-tab" type="button" data-i="2" data-accent="#F1F1F1" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
-        <button class="ux-tab" type="button" data-i="3" data-accent="#8BDFEF" data-card-bg="../인트로/네모4.png" data-state-bg="../인트로/네모배경4.png">빌려쓰다</button>
-        <button class="ux-tab" type="button" data-i="4" data-accent="#FECADF" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
-        <button class="ux-tab" type="button" data-i="5" data-accent="#22AFD6" data-card-bg="../인트로/네모6.png" data-state-bg="../인트로/네모배경6.png">기억하다</button>
+        <button class="ux-tab" type="button" data-i="0" data-accent="#FF6B3D" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
+        <button class="ux-tab" type="button" data-i="1" data-accent="#D9FF60" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
+        <button class="ux-tab" type="button" data-i="2" data-accent="#8BDFEF" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
@@ -5504,24 +5342,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <p class="stage-desc">말하기 전, 스킵은 이미 귀 기울이고 있어요.<br>언제든 주변을 살피며 다음을 준비합니다.</p>
       </div>
       <div class="ux-left-panel" data-i="1">
-        <a class="stage-title-row" href="smeureulda.html"><p class="stage-kr">스며들다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-        <p class="stage-desc">발길이 닿는 곳으로 가장 먼저 다가갑니다.<br>낯선 곳이더라도 자연스럽게, 자신있게.</p>
-      </div>
-      <div class="ux-left-panel" data-i="2">
         <a class="stage-title-row" href="/negotiation"><p class="stage-kr">조율하다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         <p class="stage-desc">여럿이 함께 있어도 불편할 일은 없습니다.<br>모두의 시간이 지켜지도록, 똑부러지는 스킵.</p>
       </div>
-      <div class="ux-left-panel" data-i="3">
-        <a class="stage-title-row" href="/principles"><p class="stage-kr">빌려쓰다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-        <p class="stage-desc">곁에 있는 스키퍼블의 능력을 내 것처럼.<br>지금 딱 필요한 기능을 찾아줍니다.</p>
-      </div>
-      <div class="ux-left-panel" data-i="4">
+      <div class="ux-left-panel" data-i="2">
         <a class="stage-title-row" href="/service2"><p class="stage-kr">지켜주다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         <p class="stage-desc">스키퍼블을 떠나는 순간, 나의 모든<br>흔적은 지워집니다. 철통보안 스킵.</p>
-      </div>
-      <div class="ux-left-panel" data-i="5">
-        <a class="stage-title-row" href="/service3"><p class="stage-kr">기억하다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-        <p class="stage-desc">오늘의 경험은 다음을 위한 배려가 됩니다.<br>내일을 만드는 오늘, 또 만나요 우리.</p>
       </div>
       </div>
       </div>
@@ -5554,32 +5380,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
       <div class="ux-right-panel" data-i="1">
         <div class="stage-logic-card">
-        <p class="stage-logic-title">Parsing Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">사용자 의도 구조화</span>
-          <span class="stage-logic-tag">실행 블록의 범위 지정</span>
-        </div>
-        <p class="stage-logic-desc">툭 던진 생각, 일상적인 순간 너머<br>내 안의 진짜 목적을 파악하는 스킵</p>
-      </div>
-        <div class="stage-logic-card">
-        <p class="stage-logic-title">Mapping Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">필요 기능 정렬</span>
-          <span class="stage-logic-tag">실행 블록 생성</span>
-        </div>
-        <p class="stage-logic-desc">수백만 개의 경로 중,<br>가장 완벽한 궤적을 찾는 알고리즘</p>
-      </div>
-        <div class="stage-logic-card">
-        <p class="stage-logic-title">Morphing Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">스키퍼블 활성화</span>
-          <span class="stage-logic-tag">거리재기</span>
-        </div>
-        <p class="stage-logic-desc">선명해진 스킵의 청사진<br>이제 현실로 도약할 시간, 모핑</p>
-      </div>
-      </div>
-      <div class="ux-right-panel" data-i="2">
-        <div class="stage-logic-card">
         <p class="stage-logic-title">Negotiation Logic</p>
         <div class="stage-logic-tags">
           <span class="stage-logic-tag">목적간 충돌 조율</span>
@@ -5588,25 +5388,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <p class="stage-logic-desc">경험이 끊이지 않도록 도와주는 협상<br>당신이 원하는 그대로 가장 자연스럽게</p>
       </div>
       </div>
-      <div class="ux-right-panel" data-i="3">
-        <div class="stage-logic-card">
-        <p class="stage-logic-title">Borrowing Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">아이스브레이킹</span>
-          <span class="stage-logic-tag">실행 블록 처리</span>
-        </div>
-        <p class="stage-logic-desc">각자의 역할을 모아<br>하나의 흐름으로, 환경의 능력을 내 것으로</p>
-      </div>
-        <div class="stage-logic-card">
-        <p class="stage-logic-title">Download Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">기능 및 경험 확장</span>
-          <span class="stage-logic-tag">AI 스킬 다운로드</span>
-        </div>
-        <p class="stage-logic-desc">사용자가 익숙한 제품으로<br>새로운 가능성의 지평을 여는 기능 다운로드</p>
-      </div>
-      </div>
-      <div class="ux-right-panel" data-i="4">
+      <div class="ux-right-panel" data-i="2">
         <div class="stage-logic-card">
         <p class="stage-logic-title">Keep Logic</p>
         <div class="stage-logic-tags">
@@ -5614,16 +5396,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
           <span class="stage-logic-tag">보안 시스템</span>
         </div>
         <p class="stage-logic-desc">아무 일도 없었던 것처럼<br>완벽한 리셋</p>
-      </div>
-      </div>
-      <div class="ux-right-panel" data-i="5">
-        <div class="stage-logic-card">
-        <p class="stage-logic-title">See You Logic</p>
-        <div class="stage-logic-tags">
-          <span class="stage-logic-tag">상호작용 경험 피드백</span>
-          <span class="stage-logic-tag">개인화 학습</span>
-        </div>
-        <p class="stage-logic-desc">오늘의 경험이 내일의 기준으로<br>설명하지 않아도 알아서 척척</p>
       </div>
       </div>
       </div>
@@ -6157,7 +5929,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <p class="footer-title">Experience</p>
         <div class="footer-links">
           <a class="footer-link" href="saegyeodeutda.html">새겨듣다</a>
-          <a class="footer-link" href="smeureulda.html">스며들다</a>
+          <a class="footer-link" href="saegyeodeutda.html">스며들다</a>
           <a class="footer-link" href="/negotiation">조율하다</a>
           <a class="footer-link" href="/principles">빌려쓰다</a>
           <a class="footer-link" href="/service2">지켜주다</a>
@@ -6212,6 +5984,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let lastScrollY = window.scrollY;
     let animationTimer = 0;
     let stageWasActive = false;
+    // SKEEP/INTO THE/NEW ERA 텍스트 터널부터 뒤집힌 뒤 사진(도어 컷)이 다 자라나
+    // 잠깐 머무는 순간까지 — 이 시퀀스가 끝나기 전에는 스크롤로 아예 이탈할 수
+    // 없어야 한다. sequenceDone이 true가 되기 전까지는 정방향 스크롤도 막는다.
+    let sequenceDone = false;
+    let sequenceDoneTimer = 0;
 
     const isFlipStageActive = () => {
       const rect = skipTransition.getBoundingClientRect();
@@ -6225,6 +6002,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       skipTransitionSticky.classList.toggle('is-flipped', flipped);
       window.clearTimeout(animationTimer);
       animationTimer = window.setTimeout(() => { animating = false; }, 860);
+      if (next) {
+        // 카드 플립(.78s) + 사진이 화면 전체로 자라나는 트랜지션(.78s 지연 + 1.4s)이
+        // 끝난 뒤, 잠깐 더 보여주는 여유(1.5s)까지 지나야 정방향 스크롤을 풀어준다.
+        window.clearTimeout(sequenceDoneTimer);
+        sequenceDoneTimer = window.setTimeout(() => { sequenceDone = true; }, 3700);
+      }
       return true;
     };
     // ZoomTextTunnel(SKEEP/INTO THE/NEW ERA)이 한 바퀴 다 돌면 이걸 호출해서
@@ -6235,9 +6018,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       if (!isFlipStageActive()) return false;
       /* 회전 중 반복 입력은 소비해 카드와 페이지가 동시에 움직이지 않게 한다. */
       if (animating) return true;
-      /* SKEEP/INTO THE/NEW ERA 인트로(ZoomTextTunnel)는 사용자 스크롤에 영향받지 않아야 한다 —
-         정방향 뒤집기는 window.__skeeeepAutoFlip()(텍스트가 한 바퀴 다 돈 뒤)만 트리거한다. */
+      /* SKEEP/INTO THE/NEW ERA 인트로(ZoomTextTunnel)부터 도어 사진이 다 나타날 때까지는
+         사용자 스크롤에 영향받지 않아야 한다 — 정방향 뒤집기는
+         window.__skeeeepAutoFlip()(텍스트가 한 바퀴 다 돈 뒤)만 트리거한다.
+         시퀀스가 끝나기 전(!sequenceDone) 정방향 입력은 그냥 삼켜서 이 구간을
+         벗어나지 못하게 막는다 — 뒤집힌 뒤 위로 스크롤해 앞면으로 되돌아가는
+         것만 예외로 허용한다. */
       if (direction < 0 && flipped) return setFlipped(false);
+      if (direction > 0 && !sequenceDone) return true;
       return false;
     };
 
@@ -6255,12 +6043,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     window.addEventListener('touchstart', event => {
       touchStartY = event.touches[0]?.clientY ?? null;
     }, { passive: true });
+    // 터치는 move 단계에서 막아야 실제로 스크롤이 소비되지 않는다 — end에서만
+    // 처리하면 이미 브라우저가 스크롤을 끝낸 뒤라 이탈을 막을 수 없다.
+    window.addEventListener('touchmove', event => {
+      if (touchStartY == null || !isFlipStageActive()) return;
+      const delta = touchStartY - (event.touches[0]?.clientY ?? touchStartY);
+      if (Math.abs(delta) < 8) return;
+      if (handleDirection(delta)) {
+        event.preventDefault();
+        touchStartY = event.touches[0]?.clientY ?? touchStartY;
+      }
+    }, { passive: false });
     window.addEventListener('touchend', event => {
-      if (touchStartY == null) return;
-      const endY = event.changedTouches[0]?.clientY ?? touchStartY;
-      const delta = touchStartY - endY;
       touchStartY = null;
-      if (Math.abs(delta) > 18) handleDirection(delta);
     }, { passive: true });
 
     /* 일부 TV 브라우저는 wheel 대신 scroll만 보내므로 방향 변화도 보조 입력으로 사용한다. */
@@ -6873,12 +6668,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       { src: 'agent-photo-126.jpg', l: 25.56, t: 3.61,  w: 12.26, h: 30.01, r: 6.4, bg: '#f1f1f1', op: 1, cx: 0,   cy: 0,   cr: 0 },
       { src: 'agent-photo-132b.jpg', l: 83.58, t: 58.02, w: 13.43, h: 24.55, r: 7,   bg: '#f1f1f1', op: 1, cx: .2,  cy: -20, cr: 0 },
       { src: 'agent-photo-119.jpg', l: 67.95, t: 4.94,  w: 11.84, h: 29.06, r: 7,   bg: '#ffcadf', op: 1, cx: 3,   cy: -4,  cr: 0 },
-      { src: 'agent-photo-120.jpg', l: 13.92, t: 58.88, w: 13.25, h: 24.23, r: 8,   bg: '#f1f1f1', op: 1, cx: 20,  cy: -3,  cr: 0 },
+      { src: 'agent-photo-120.jpg', l: 13.92, t: 58.88, w: 13.25, h: 24.23, r: 8,   bg: '#f1f1f1', op: 1, cx: 23.4, cy: 10.5, cr: 0 },
       { src: 'agent-photo-122.jpg', l: 58.46, t: 72.29, w: 13.58, h: 24.82, r: 8,   bg: '#09421a', op: 1, cx: 14,  cy: -7,  cr: 0 },
       { src: 'agent-photo-132.jpg', l: 4.21,  t: 36.56, w: 17.51, h: 25.55, r: 8,   bg: 'transparent', op: 1, cx: 11, cy: 0,   cr: 0 },
       { src: 'agent-photo-123.jpg', l: 35.22, t: 6.55,  w: 17.09, h: 24.03, r: 8,   bg: '#e7ff96', op: 1, cx: 11, cy: 10, cr: 0 },
       { src: 'agent-photo-121.jpg', l: 70.86, t: 20.42, w: 17.82, h: 28.20, r: 7,   bg: '#f1f1f1', op: 1, cx: -22, cy: 8,  cr: 0 },
-      { src: 'agent-photo-124.jpg', l: 42.03, t: 64.86, w: 20.62, h: 24.50, r: 6.65, bg: '#ff6b3d', op: 1, cx: -3, cy: -9, cr: 0 },
+      { src: 'agent-photo-124.jpg', l: 42.03, t: 64.86, w: 20.62, h: 24.50, r: 6.65, bg: '#ff6b3d', op: 1, cx: -3, cy: -4.5, cr: 0 },
       { src: 'agent-photo-133.jpg', l: 11.79, t: 12.25, w: 6.75,  h: 12.35, r: 4,   bg: '#f1f1f1', op: 1, cx: -7, cy: 2, cr: 0 },
     ];
     const agentPhotoBg = document.createElement('div');
@@ -6886,9 +6681,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     agentPhotoBg.setAttribute('aria-hidden', 'true');
     const agentPhotoStage = document.createElement('div');
     agentPhotoStage.className = 'agent-photo-stage';
-    AGENT_PHOTO_PIECES.forEach((p) => {
+    AGENT_PHOTO_PIECES.forEach((p, pieceIndex) => {
       const piece = document.createElement('div');
       piece.className = 'agent-photo-piece';
+      // 10장이 정확히 같은 타이밍에 동시에 흩어지면 기계적으로 보인다 — 살짝 스태거를 준다.
+      piece.style.transitionDelay = (pieceIndex * 45) + 'ms';
       piece.style.setProperty('--l', p.l + '%');
       piece.style.setProperty('--t', p.t + '%');
       piece.style.setProperty('--w', p.w + '%');
@@ -6979,16 +6776,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const relativeTop = agentMetrics.sectionTop - scrollY;
       const progress = clamp01(-relativeTop / agentMetrics.scrollable);
       const now = performance.now();
-      const isEntering =
-        relativeTop < window.innerHeight * 0.88 &&
+      /* 예전엔 섹션이 화면 아래쪽에 88%만 걸쳐도(거의 안 보이는 상태) 인트로가 시작돼서
+         카메라 패닝·사진 콜라주가 화면이 다 차기도 전에 시작돼 버렸다 — relativeTop<=0
+         (스티키가 실제로 고정되어 화면을 꽉 채운 순간)까지 기다렸다가 시작한다. */
+      const isFilled =
+        relativeTop <= 0 &&
         relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
       const reduceAgentMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const CAMERA_DURATION_MS = reduceAgentMotion ? 0 : 3050;
-      const TITLE_DELAY_AFTER_SCATTER_MS = reduceAgentMotion ? 80 : 820;
+      const CAMERA_DURATION_MS = reduceAgentMotion ? 0 : 2800;
+      const TITLE_DELAY_AFTER_SCATTER_MS = reduceAgentMotion ? 80 : 1050;
       const TITLE_DURATION_MS = reduceAgentMotion ? 240 : 720;
-      if (agentIntroStartedAt === null && isEntering) {
+      if (agentIntroStartedAt === null && isFilled) {
         agentIntroStartedAt = now;
         agentPhotoBg.classList.add('camera-moving');
+        agentPhotoBg.classList.add('is-visible');   // 화면이 다 찬 순간 디졸브(opacity 0→1)로 시작
         titleScrambleEnter();
       }
       const sequenceElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
@@ -7000,8 +6801,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const pillsIn = smooth((progress - 0.68) / 0.20);
       const questionsIn = clamp01((progress - 0.74) / 0.20);
       const bgDrift = smooth((progress - 0.36) / 0.42);
-      // intro video dissolves out as the section reveals its content
-      if (agentBgVideo) agentBgVideo.style.opacity = (1 - smooth((progress - 0.35) / 0.35)).toFixed(3);
+      // progress는 섹션이 실제로 화면을 꽉 채우고 고정(sticky)되기 전까지는 0에 머문다 —
+      // 그 값을 그대로 페이드인에 써서, 화면이 다 차기 전에는 영상이 보이지 않다가
+      // 꽉 찬 순간부터 디졸브(0→1)로 시작하고, 이후 콘텐츠가 드러나며 다시 사라진다.
+      if (agentBgVideo) {
+        const videoFadeIn = smooth(progress / 0.12);
+        const videoFadeOut = 1 - smooth((progress - 0.35) / 0.35);
+        agentBgVideo.style.opacity = Math.min(videoFadeIn, videoFadeOut).toFixed(3);
+      }
       const titleScale = 1.06 - move * 0.18;
       const leftViewportX =
         agentMetrics.stickyPaddingLeft +
@@ -7218,7 +7025,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     });
   });
 </script>
-<script src="../site-index.js"></script>
 <script>
   /* Migratable Agent — six-face square cube carousel above the title. */
   (function () {
@@ -7296,5 +7102,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     });
   })();
 </script>
+<script src="../site-index.js"></script>
 </body>
 </html>

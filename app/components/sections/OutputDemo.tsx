@@ -76,15 +76,8 @@ export function OutputDemo() {
     <div ref={wrapperRef} className={styles.outputSequence}>
       <div className={styles.outputSticky}>
         <div className={styles.outputDemo}>
-          <div className={styles.outputTitleStack}>
-            {OUTPUT_STATES.map((state, index) => (
-              <div className={styles.outputTitle} data-active={index === step} key={state.key}>
-                <span>{state.eyebrow}</span>
-                <h3>{state.title}</h3>
-              </div>
-            ))}
-          </div>
-          {/* 소리/양방향/시각 단계마다 겹치는 범위가 다른 벤 다이어그램으로 바뀐다. */}
+          {/* 소리/양방향/시각 단계마다 겹치는 범위가 다른 벤 다이어그램으로 바뀐다.
+              피그마 배치: 사진은 좌상단, 텍스트 묶음은 우하단. */}
           <div className={styles.outputDevicesStack}>
             {OUTPUT_STATES.map((state, index) => (
               // eslint-disable-next-line @next/next/no-img-element
@@ -101,19 +94,27 @@ export function OutputDemo() {
               />
             ))}
           </div>
-          <div className={styles.panelStack}>
-            {OUTPUT_STATES.map((state, index) => (
-              <div className={styles.soundPanel} data-active={index === step} key={state.key}>
-                <div className={styles.chips}>
-                  {state.chips.map((chip) => (
-                    <b key={chip.en}>
-                      {chip.ko} <small>{chip.en}</small>
-                    </b>
-                  ))}
+          <div className={styles.outputTextColumn}>
+            <div className={styles.outputTitleStack}>
+              {OUTPUT_STATES.map((state, index) => (
+                <div className={styles.outputTitle} data-active={index === step} key={state.key}>
+                  <span>{state.eyebrow}</span>
+                  <h3>{state.title}</h3>
                 </div>
-                <p>{state.body}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div className={styles.panelStack}>
+              {OUTPUT_STATES.map((state, index) => (
+                <div className={styles.soundPanel} data-active={index === step} key={state.key}>
+                  <div className={styles.chips}>
+                    {state.chips.map((chip) => (
+                      <b key={chip.en}>{chip.en}</b>
+                    ))}
+                  </div>
+                  <p>{state.body}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { Hub } from "./components/hub/Hub";
-
-export const metadata: Metadata = {
-  title: "SKEEP",
-  description: "환경이 바뀌어도, 사용자의 의도는 끊기지 않습니다.",
-};
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <Hub />;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  redirect(`${basePath}/pages/index.html`);
 }

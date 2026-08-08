@@ -6,13 +6,13 @@ const PRINCIPLES = [
     title: ["필요한 순간,", "가장 적합하게"],
     body: ["환경의 제약 없이, 지금 당신에게 필요한", "AI 피쳐를 즉시 불러옵니다."],
     background: "#02a3fe",
-    color: "#fff5c1",
+    color: "#E4FBFF",
   },
   {
     title: ["새로운 도구를", "찾을 필요 없이"],
     body: ["물리적인 하드웨어를 더하지 않아도,", "현재의 환경 안에서 최적화된 능력을 실행합니다."],
-    background: "#3fb875",
-    color: "#ffe74d",
+    background: "#EDFFA8",
+    color: "#5C3A21",
   },
   {
     title: ["사용이 끝나면,", "흔적 없이"],

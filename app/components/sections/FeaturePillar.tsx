@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
 import styles from "./FeaturePillar.module.css";
 
@@ -9,6 +10,9 @@ export type FeaturePillarProps = {
   eyebrow: string;
   heading: string;
   body: string;
+  image?: string;
+  imageAlt?: string;
+  imagePosition?: "left" | "right";
   questions: { label: string; text: string; answer?: string }[];
   invertBg?: boolean;
 };
@@ -72,21 +76,44 @@ export function FeaturePillar({
   eyebrow,
   heading,
   body,
+  image,
+  imageAlt = "",
+  imagePosition = "left",
   questions,
   invertBg,
 }: FeaturePillarProps) {
   return (
     <section className={invertBg ? `${styles.section} ${styles.sectionInvert}` : styles.section}>
-      <Reveal>
-        <p className={styles.eyebrow}>{eyebrow}</p>
-      </Reveal>
-      <div className={styles.headerRow}>
-        <Reveal delay={0.05}>
-          <h2 className={styles.heading}>{heading}</h2>
-        </Reveal>
-        <Reveal delay={0.1}>
-          <p className={styles.body}>{body}</p>
-        </Reveal>
+      <div
+        className={
+          imagePosition === "right"
+            ? `${styles.headerRow} ${styles.headerRowImageRight}`
+            : styles.headerRow
+        }
+      >
+        {image && (
+          <Reveal className={styles.media} delay={0.05}>
+            <Image
+              className={styles.image}
+              src={image}
+              alt={imageAlt}
+              width={1935}
+              height={1444}
+              sizes="(max-width: 720px) 100vw, 44vw"
+            />
+          </Reveal>
+        )}
+        <div className={styles.headerCopy}>
+          <Reveal>
+            <p className={styles.eyebrow}>{eyebrow}</p>
+          </Reveal>
+          <Reveal delay={0.05}>
+            <h2 className={styles.heading}>{heading}</h2>
+          </Reveal>
+          <Reveal className={styles.bodyReveal} delay={0.1}>
+            <p className={styles.body}>{body}</p>
+          </Reveal>
+        </div>
       </div>
       <div className={styles.questions}>
         {questions.map((q, i) => (

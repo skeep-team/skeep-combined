@@ -377,13 +377,14 @@ export default function UsageSequence({
               {/* 첫 덩이만 시안에 실제 화면이 그려져 있다. 나머지 둘은 빈 판이다. */}
               {index === 0 && (
                 <div className={styles.usageStage} aria-hidden="true">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <video
                     className={`${styles.usageArtwork} ${styles.usageArtworkCard}`}
-                    src={`${BASE_PATH}/blueprint/usage/luggage-arrival.png`}
-                    alt=""
-                    width={1271}
-                    height={1271}
+                    src={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch.mp4`}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    aria-hidden="true"
                   />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

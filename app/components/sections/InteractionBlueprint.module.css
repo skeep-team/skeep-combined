@@ -140,6 +140,12 @@
   padding-bottom: clamp(72px, 6vw, 116px);
 }
 
+/* 상단 3개 컬러 카드와 바로 이어지는 원칙 리스트는 한 덩어리로 읽히도록
+   두 섹션 사이의 중복 여백을 줄인다. */
+.featureSection {
+  padding-bottom: clamp(36px, 3.4vw, 64px);
+}
+
 .sectionHeader {
   width: min(100%, 1600px);
   margin-inline: auto;
@@ -216,7 +222,7 @@
   padding: clamp(26px, 2vw, 38px) clamp(24px, 1.6vw, 30px);
   border-radius: clamp(18px, 1.3vw, 25px);
   background: #FF6B3D;
-  color: #161A1E;
+  color: #6B4436;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -226,19 +232,21 @@
 
 .featureCard:nth-child(2) {
   background: #DAFF61;
+  color: #63880F;
 }
 
 .featureCard:nth-child(3) {
-  background: #A5E0F0;
+  background: #89FFA0;
+  color: #347A49;
 }
 
 .featureCardTitle {
   /* 카드 3열 나열용으로 공용 --type-card-title보다 살짝 축소한 전용 크기 */
-  font-size: clamp(16px, 1.8vw, 34px);
+  font-size: clamp(18px, 2vw, 38px);
   line-height: 1.2;
   letter-spacing: -0.03em;
   font-weight: 700;
-  color: #161A1E;
+  color: inherit;
 }
 
 .featureCardBody {
@@ -248,11 +256,11 @@
   line-height: 1.5;
   letter-spacing: -0.03em;
   font-weight: 400;
-  color: rgba(22, 26, 30, 0.72);
+  color: inherit;
 }
 
 .principleGridSection {
-  padding-top: clamp(48px, 4vw, 80px);
+  padding-top: clamp(8px, 0.8vw, 14px);
   padding-bottom: clamp(72px, 6vw, 112px);
 }
 
@@ -354,17 +362,19 @@
   overflow: hidden;
 }
 
-/* 사진(카드)과 아래 텍스트 패널이 한 화면(100vh 스티키) 안에 항상 같이 보이도록,
-   전체 높이를 뷰포트 높이에 묶어 둔다 — 짧은 화면에서는 사진이 자동으로 줄어든다. */
+/* 사진(카드)과 텍스트 패널이 한 화면(100vh 스티키) 안에 항상 같이 보이도록,
+   전체 높이를 뷰포트 높이에 묶어 둔다 — 짧은 화면에서는 사진이 자동으로 줄어든다.
+   피그마 배치: 사진은 좌상단(row 상단), 텍스트 묶음은 우하단(row 하단) —
+   가로 flex row에 image는 기본(상단) 정렬, 텍스트 컬럼만 align-self로 하단에 붙인다. */
 .outputDemo {
   width: min(100%, 1760px);
   margin-inline: auto;
   max-height: calc(100vh - clamp(24px, 3vw, 56px));
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(12px, 1.4vw, 22px);
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 64px);
   transform: translateY(clamp(-30px, -2.5vh, -16px));
 }
 
@@ -372,11 +382,11 @@
    회색 박스로 감싸지 않고 사진 그대로 둔다 — 높이를 뷰포트 기준(vh)으로 잡아, 짧은 화면에서만 비례해 줄어든다. */
 .outputDevicesStack {
   position: relative;
-  flex: 0 1 auto;
-  height: min(78vh, 900px);
+  flex: 1 1 57%;
+  height: min(72vh, 820px);
   aspect-ratio: 1600 / 1160;
-  max-width: 100%;
-  margin-top: clamp(-12px, -1vw, -2px);
+  max-width: 57%;
+  margin-top: clamp(-140px, -10vw, -64px);
 }
 
 .outputDevices {
@@ -395,14 +405,28 @@
   opacity: 1;
 }
 
-/* 원 다이어그램 위, 단계별로 바뀌는 eyebrow + 제목 — Figma 배치에 맞춰 다이어그램 아래 카드가 아니라 위쪽에 둔다. */
+/* 우측 텍스트 컬럼(eyebrow+제목+칩+본문 묶음) 전체 — row의 아래쪽에 붙는다. */
+.outputTextColumn {
+  flex: 1 1 40%;
+  max-width: 40%;
+  min-width: 0;
+  align-self: flex-end;
+  margin-left: clamp(24px, 3vw, 72px);
+  /* align-self:flex-end는 아래쪽 가장자리를 기준으로 정렬하므로 margin-top은
+     보이는 위치를 못 움직인다 — translateY로 실제 화면 위치를 내린다. */
+  transform: translateY(clamp(16px, 1.6vw, 40px));
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.4vw, 22px);
+}
+
+/* 단계별로 바뀌는 eyebrow + 제목. */
 .outputTitleStack {
   position: relative;
   width: 100%;
   flex: 0 0 auto;
   min-height: clamp(58px, 5.2vw, 88px);
-  margin-top: clamp(30px, 3.6vw, 62px);
-  text-align: center;
+  text-align: left;
 }
 
 .outputTitle {
@@ -410,7 +434,7 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: clamp(4px, 0.6vw, 10px);
   opacity: 0;
   transform: translate3d(0, 16px, 0);
@@ -447,9 +471,9 @@
   min-height: clamp(118px, 9.2vw, 172px);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: clamp(18px, 1.8vw, 28px);
-  text-align: center;
+  text-align: left;
 }
 
 .panelStack .soundPanel {
@@ -471,16 +495,16 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
 }
 
 .chips b {
-  padding: 7px 16px;
+  padding: 8px 18px;
   background: #494949;
   color: #ffffff;
   border-radius: 999px;
-  font-size: clamp(12px, 1.02vw, 16px);
+  font-size: clamp(13px, 1.15vw, 18px);
   line-height: 1.1;
 }
 
@@ -490,11 +514,11 @@
 }
 
 .soundPanel > p {
-  /* align-items:center라 그냥 두면 글자 폭만큼만 줄어들어 문장 중간에서
+  /* align-items:flex-start라 그냥 두면 글자 폭만큼만 줄어들어 문장 중간에서
      또 줄바꿈된다 — 패널 폭 전체로 늘려야 \n이 실제 문장 경계에서만 끊는다. */
   align-self: stretch;
   white-space: pre-line;
-  text-align: center;
+  text-align: left;
   font-size: clamp(14px, 1.48vw, 19px);
   line-height: 1.5;
   letter-spacing: -0.03em;
@@ -844,8 +868,8 @@
 .usageStatusMorphDot {
   position: absolute;
   left: 50%;
-  top: 68%;
-  width: 23%;
+  top: 66%;
+  width: 19%;
   aspect-ratio: 156 / 144;
   transform: translate(-50%, -50%);
   object-fit: contain;
@@ -1079,33 +1103,71 @@
   position: absolute;
   display: block;
   opacity: 0;
-  will-change: opacity;
-  animation: usageArtworkCrossfade 6s ease-in-out infinite;
+  will-change: opacity, transform;
 }
 
 .usageArtworkCard {
   width: 44%;
-  height: auto;
+  aspect-ratio: 1 / 1;
   object-fit: contain;
-  animation-delay: 0s;
+  animation: usageCardDrop 6s ease-in-out infinite;
 }
 
 .usageArtworkBubble {
   width: 76%;
   height: auto;
   object-fit: contain;
-  animation-delay: -3s;
+  animation: usageBubbleRise 6s ease-in-out infinite;
 }
 
-@keyframes usageArtworkCrossfade {
-  0%, 42% {
-    opacity: 1;
-  }
-  50%, 92% {
+/* 매 바퀴 맨 처음엔 검정 배경만 잠깐 비어 있다가(0-6%), 말풍선이 아래
+   더 먼 자리에서부터 떠오르며 페이드인하고(6-12%) 잠시 머문 뒤(12-38%)
+   제자리에서 디졸브되어 사라진다(38-44%). 그 뒤(44%~)엔 화면 밖 낮은 자리에
+   대기하며 카드 차례를 기다린다. */
+@keyframes usageBubbleRise {
+  0%, 6% {
     opacity: 0;
+    transform: translateY(64px);
   }
-  100% {
+  12%, 38% {
     opacity: 1;
+    transform: translateY(0);
+  }
+  44% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  50%, 100% {
+    opacity: 0;
+    transform: translateY(64px);
+  }
+}
+
+/* 말풍선이 다 사라진 뒤(48%)에만 카드가 한참 위에서 나타나(50%), 등속(linear)으로
+   내려와 안착한다(50→72%, 가속/감속 없이 일정한 속도). 잠시 머물다 제자리에서
+   그대로 디졸브되어 사라진 뒤(90-96%) 다시 화면 밖 높은 자리로 조용히 돌아가
+   다음 바퀴 맨 앞의 검정 공백을 기다린다. */
+@keyframes usageCardDrop {
+  0%, 48% {
+    opacity: 0;
+    transform: translateY(-420px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-420px);
+    animation-timing-function: linear;
+  }
+  72%, 90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  96% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  98%, 100% {
+    opacity: 0;
+    transform: translateY(-420px);
   }
 }
 
@@ -1158,6 +1220,19 @@
 
   .outputDemo {
     transform: none;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(12px, 1.4vw, 22px);
+  }
+
+  .outputDevicesStack {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+
+  .outputTextColumn {
+    max-width: 100%;
+    align-self: center;
   }
 
   .outputDevices {
@@ -1205,16 +1280,16 @@
     transition: none;
   }
 
-  .usageArtwork {
-    animation: none;
-  }
-
   .usageArtworkCard {
+    animation: none;
     opacity: 1;
+    transform: translateY(0);
   }
 
   .usageArtworkBubble {
+    animation: none;
     opacity: 0;
+    transform: translateY(0);
   }
 
   .outputSequence {

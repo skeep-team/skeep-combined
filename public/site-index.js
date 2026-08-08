@@ -15,14 +15,10 @@
   var isFile = window.location.protocol === 'file:';
   var liveBase = 'http://localhost:4180/skeep-combined';
   var items = [
-    { label: '인덱스', href: isFile ? liveBase + '/' : basePath + '/', match: ['/'], external: isFile },
     { label: '오버뷰', href: isFile ? 'index.html' : basePath + '/pages/index.html', match: ['/pages/index.html'] },
     { label: '새겨듣다', href: isFile ? 'saegyeodeutda.html' : basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
-    { label: '스며들다', href: isFile ? 'smeureulda.html' : basePath + '/pages/smeureulda.html', match: ['/pages/smeureulda.html'] },
     { label: '조율하다', href: isFile ? liveBase + '/negotiation' : basePath + '/negotiation', match: ['/negotiation'], external: isFile },
-    { label: '빌려쓰다', href: isFile ? liveBase + '/principles' : basePath + '/principles', match: ['/principles'], external: isFile },
     { label: '지켜주다', href: isFile ? liveBase + '/service2' : basePath + '/service2', match: ['/service2'], external: isFile },
-    { label: '기억하다', href: isFile ? liveBase + '/service3' : basePath + '/service3', match: ['/service3'], external: isFile },
     { label: '비즈니스', href: isFile ? liveBase + '/business' : basePath + '/business', match: ['/business'], external: isFile }
   ];
 

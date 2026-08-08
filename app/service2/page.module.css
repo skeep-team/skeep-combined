@@ -1,0 +1,8 @@
+/* 기억하다(service3) 병합 섹션 전용 스타일 — 원래 /service3 page.module.css의
+   .page 규칙을 그대로 가져왔다. 이 라우트의 앞쪽 지켜주다 섹션에는 적용하지 않고
+   병합된 뒤쪽 섹션에만 scoped로 건다. */
+.mergedFromService3,
+.mergedFromService3 * {
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif !important;
+  text-transform: uppercase !important;
+}

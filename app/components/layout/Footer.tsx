@@ -16,19 +16,16 @@ const groups = [
     title: "Experience",
     links: [
       { label: "새겨듣다", href: `${BASE_PATH}/pages/saegyeodeutda.html` },
-      { label: "스며들다", href: `${BASE_PATH}/pages/smeureulda.html` },
       { label: "조율하다", href: `${BASE_PATH}/negotiation` },
-      { label: "빌려쓰다", href: `${BASE_PATH}/principles` },
       { label: "지켜주다", href: `${BASE_PATH}/service2` },
-      { label: "기억하다", href: `${BASE_PATH}/service3` },
     ],
   },
   {
     title: "Skeepable",
     links: [
-      { label: "장소 찾기", href: `${BASE_PATH}/principles` },
-      { label: "제품 찾기", href: `${BASE_PATH}/principles` },
-      { label: "서비스 찾기", href: `${BASE_PATH}/principles` },
+      { label: "장소 찾기", href: `${BASE_PATH}/negotiation` },
+      { label: "제품 찾기", href: `${BASE_PATH}/negotiation` },
+      { label: "서비스 찾기", href: `${BASE_PATH}/negotiation` },
       { label: "비즈니스", href: `${BASE_PATH}/business` },
     ],
   },
