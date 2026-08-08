@@ -3045,12 +3045,16 @@
     // Auto-play: once the scene is pinned, step through the walkers on its own
     // instead of making the user scroll through each one — same gated
     // advanceStep()/startFinalMove() the manual gestures use, just timer-driven.
-    // Any real wheel/touch/key input hands control back to the user immediately.
+    // Manual wheel/touch/key input no longer cancels the auto-play loop — it used
+    // to hand control to the user permanently on the very first incidental input,
+    // which froze the scene (pinned, but no longer auto-advancing, waiting on a
+    // manual gesture per person). Now manual input just nudges the same
+    // advanceStep()/gateForward() the loop already drives, so it speeds things up
+    // instead of stalling them; the `stepping` guard keeps the two from double-firing.
     let autoStarted = false;
-    let userTookControl = false;
 
     function autoAdvanceLoop() {
-      if (userTookControl || walkComplete) return;
+      if (walkComplete) return;
       if (current > 0) {
         advanceStep();
         window.setTimeout(autoAdvanceLoop, stepDuration + 80);
@@ -3060,7 +3064,7 @@
     }
 
     function maybeStartAuto() {
-      if (autoStarted || userTookControl || walkComplete) return;
+      if (autoStarted || walkComplete) return;
       if (isPinned()) {
         autoStarted = true;
         window.setTimeout(autoAdvanceLoop, 200);
@@ -3070,13 +3074,8 @@
     window.addEventListener('scroll', maybeStartAuto, { passive: true });
     maybeStartAuto();
 
-    // 이 세 리스너는 window 전역에 걸려있어서, 이 씬에 도달하기 전 다른 섹션을
-    // 지나며 하는 스크롤/터치/키 입력에도 반응해버렸다 — isPinned()이 아직 false인
-    // 그 순간에 userTookControl이 먼저 true가 되면서, 정작 씬이 고정된 뒤에는
-    // 자동재생이 "이미 사용자가 조작함" 취급을 받아 절대 시작되지 않는 버그였다.
-    // 씬이 실제로 고정돼 있을 때의 입력만 "사용자가 넘겼다"로 인정한다.
     window.addEventListener('wheel', e => {
-      if (e.deltaY > 0 && isPinned()) { userTookControl = true; gateForward(e); }
+      if (e.deltaY > 0 && isPinned()) gateForward(e);
     }, { passive: false });
 
     let touchStartY = null;
@@ -3087,7 +3086,6 @@
       if (touchStartY === null || !isPinned()) return;
       const dy = touchStartY - e.touches[0].clientY;
       if (dy > 8) {
-        userTookControl = true;
         gateForward(e);
         touchStartY = e.touches[0].clientY;
       }
@@ -3095,7 +3093,6 @@
 
     window.addEventListener('keydown', e => {
       if ((e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ') && isPinned()) {
-        userTookControl = true;
         gateForward(e);
       }
     });

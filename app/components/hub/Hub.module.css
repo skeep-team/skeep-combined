@@ -25,7 +25,10 @@
   max-height: none;
   object-fit: cover;
   object-position: center;
-  filter: blur(18px) brightness(0.58) saturate(0.76) contrast(0.96);
+  /* blur()는 매 슬라이드 전환마다 전체 화면을 다시 샘플링해야 하는 가장 비싼 필터라
+     저사양 기기(무빙스타일)에서 버벅임의 주범이었다 — 제거하고, 아래 짙은 그라디언트
+     베일(.ambientVeil)만으로 배경을 충분히 죽인다. */
+  filter: brightness(0.52) saturate(0.7) contrast(0.94);
   transform: scale(1.06);
 }
 
@@ -126,9 +129,8 @@
   z-index: 3;
   padding: 6px 13px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  /* backdrop-filter blur 대신 배경을 더 진하게 — 라이브 블러 없이 같은 가독성 확보 */
+  background: rgba(0, 0, 0, 0.64);
   color: #ffffff;
   font-size: clamp(11px, 1vw, 15px);
   font-weight: 600;
@@ -192,9 +194,9 @@
   z-index: 1;
   opacity: 0.46;
   transform: scale(0.93);
-  filter: brightness(0.56) saturate(0.62);
-  backdrop-filter: blur(18px) saturate(0.8);
-  -webkit-backdrop-filter: blur(18px) saturate(0.8);
+  /* backdrop-filter blur는 뒤 레이어를 매 프레임 다시 샘플링해야 해서 비용이 크다 —
+     제거하고, 같은 "옆으로 흐려진" 느낌을 brightness/saturate만으로 낸다. */
+  filter: brightness(0.4) saturate(0.5);
 }
 
 .cardSide:first-child {
