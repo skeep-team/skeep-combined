@@ -114,6 +114,10 @@ export default function ExperiencePricingFlip() {
       return;
     }
 
+    section.dataset.movingStyle = String(
+      /Tizen|SMART-TV|SmartTV|Maple/i.test(window.navigator.userAgent),
+    );
+
     let count = 0;
     let bridged = false;
     let revealed = false;

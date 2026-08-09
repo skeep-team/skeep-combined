@@ -7,7 +7,9 @@
   --stage-top: 3vh;
   /* 세 상태를 쓴다. --bridge가 먼저 켜져 짝 카드→문구로 바뀌고,
      스크롤을 더 내려야 --expand/--reveal이 켜져 패널이 실제로 펼쳐진다. */
-  --bridge: 0;
+  /* 첫 페인트부터 Experience 카드 + 오른쪽 브릿지 문구 상태로 시작한다.
+     JS가 실행되기 전 잠깐 Enterprise 카드가 비치는 현상도 방지한다. */
+  --bridge: 1;
   --expand: 0;
   --reveal: 0;
 
@@ -650,6 +652,42 @@
   font-size: calc(20 * var(--px));
   font-weight: 400;
   line-height: 1.45;
+}
+
+/* Samsung Moving Style/Tizen은 preserve-3d + backface-visibility 조합에서
+   카드의 앞·뒷면을 모두 누락해 검정 패널만 남기는 경우가 있다. 이 기기에서는
+   같은 두 면을 제자리에 겹친 채 opacity로 교대하고, 패널 확장과 동시에 카드를
+   표시해 중간 검정 프레임이 보이지 않게 한다. */
+.sequence[data-moving-style="true"] .cards {
+  transition:
+    opacity 0.18s linear,
+    transform 0.18s linear;
+}
+
+.sequence[data-moving-style="true"] .faces,
+.sequence[data-moving-style="true"] .card[data-flipped="true"] .faces {
+  transform: none;
+  transform-style: flat;
+  transition: none;
+}
+
+.sequence[data-moving-style="true"] .face {
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  transition: opacity 0.18s linear, background-color 0.18s ease;
+}
+
+.sequence[data-moving-style="true"] .rear {
+  transform: none;
+  opacity: 0;
+}
+
+.sequence[data-moving-style="true"] .card[data-flipped="true"] .front {
+  opacity: 0;
+}
+
+.sequence[data-moving-style="true"] .card[data-flipped="true"] .rear {
+  opacity: 1;
 }
 
 /* 펼치기도 뒤집기도 없이, 처음부터 다 펼쳐진 패널만 보여준다. */

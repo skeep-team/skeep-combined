@@ -1,20 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./ResetSequence.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 // How long "패킷 회수 중..." holds, fully typed-in, before switching over
 // to "다시, 처음처럼". (예전엔 1400ms — 너무 빨리 넘어간다는 피드백으로 늘림.)
-const HOLD_MS = 2600;
+const HOLD_MS = 3600;
 
 // 사진이 나타난 뒤 회수(dissolve)를 시작하기까지의 대기 시간. 문구가 다
 // 타이핑될 시간을 준다.
 const DISSOLVE_DELAY_MS = 1200;
 
 // "다시, 처음처럼"이 다 뜬 뒤 처음(패킷 회수)으로 되돌아가기까지 대기 시간.
-const LOOP_HOLD_MS = 3000;
+const LOOP_HOLD_MS = 5000;
 
 // Figma(node 8400:22615, "지켜주다" 패킷 회수 배치)의 좌표를 그대로 옮겼다.
 // 원본 프레임은 3085x1494px — 그 프레임 대비 %로 환산해 반응형으로도 같은
@@ -85,7 +85,7 @@ function TypeOnText({
   className,
   active,
   onComplete,
-  durationMs = 650,
+  durationMs = 1200,
 }: {
   text: string;
   color?: string;
@@ -94,13 +94,22 @@ function TypeOnText({
   onComplete?: () => void;
   durationMs?: number;
 }) {
-  const [play, setPlay] = useState(active);
+  const [play, setPlay] = useState(false);
   const firedRef = useRef(false);
   const spanRef = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
-    if (active) setPlay(true);
-  }, [active]);
+  useLayoutEffect(() => {
+    if (!active) return;
+    const el = spanRef.current;
+    if (!el) return;
+
+    // clip-path 애니메이션이 생략되는 임베디드 브라우저에서도 확실히 보이도록
+    // 실제 글자 너비를 한 번 재고 width 0→실측값 애니메이션으로 재생한다.
+    el.style.setProperty("--type-on-width", `${el.scrollWidth}px`);
+    void el.offsetWidth;
+    const frame = window.requestAnimationFrame(() => setPlay(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [active, text]);
 
   useEffect(() => {
     if (!play) return;
@@ -122,12 +131,14 @@ function TypeOnText({
 
   return (
     <div className={className} style={{ width: "100%" }}>
-      <span
-        ref={spanRef}
-        className={`${styles.typeOn} ${play ? styles.typeOnPlay : ""}`}
-        style={{ color, ["--type-on-duration" as string]: `${durationMs}ms` } as React.CSSProperties}
-      >
-        {text}
+      <span className={styles.typeOnFrame} style={{ color }}>
+        <span
+          ref={spanRef}
+          className={`${styles.typeOn} ${play ? styles.typeOnPlay : ""}`}
+          style={{ ["--type-on-duration" as string]: `${durationMs}ms` } as React.CSSProperties}
+        >
+          {text}
+        </span>
       </span>
     </div>
   );

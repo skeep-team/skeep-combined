@@ -18,6 +18,7 @@ type UsageArtworkPhase = "bubble" | "bubbleExit" | "watch" | "watchExit";
    빈 원으로 보이거나 반복이 멈추는 문제가 반복돼서 정지 이미지로 바꿨다.
    영상 길이와 비슷하게, 이 이미지를 보여주는 시간만 타이머로 잡아준다. */
 const WATCH_HOLD_MS = 2600;
+const BUBBLE_HOLD_MS = 2600;
 
 const MORE_SLIDES = [
   {
@@ -332,7 +333,7 @@ export default function UsageSequence({
     if (usageArtworkPhase === "bubble") {
       const timer = window.setTimeout(() => {
         setUsageArtworkPhase("bubbleExit");
-      }, 550);
+      }, BUBBLE_HOLD_MS);
 
       return () => window.clearTimeout(timer);
     }

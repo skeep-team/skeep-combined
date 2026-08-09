@@ -355,7 +355,7 @@
   margin: auto;
   opacity: var(--hero-reveal);
   pointer-events: none;
-  transition: opacity 120ms linear;
+  transition: none;
 }
 
 .sequence[data-expanded="true"] .morphSlot .heroPanel {

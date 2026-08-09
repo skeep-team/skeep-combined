@@ -89,6 +89,12 @@
   height: 100%;
 }
 
+.intentCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .intentSvgLabel {
   font-family: var(--font-elza), var(--font-pretendard), sans-serif;
   font-size: 108px;

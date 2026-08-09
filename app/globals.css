@@ -34,6 +34,13 @@ html {
   scroll-snap-type: y proximity;
 }
 
+/* 무빙스타일 계열 브라우저는 아코디언 높이가 바뀔 때 가장 가까운 이전 snap
+   target으로 페이지를 되감는 경우가 있다. 질문 카드의 열림/닫힘 애니메이션
+   동안에만 snap을 중지하고, 레이아웃이 안정된 뒤 원래 설정으로 돌아간다. */
+html.is-question-interacting {
+  scroll-snap-type: none;
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-text);

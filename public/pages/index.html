@@ -701,22 +701,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       justify-content: center;
       white-space: pre;
     }
-    /* scale/rotate를 각각 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
-       중첩된 두 엘리먼트에 각자 transform으로 나눠 건다 — 무빙스타일 등 일부
-       렌더링 엔진이 최신 개별 scale/rotate 속성은 컴포지터 레이어로 잘 못 올려서
-       매 프레임 다시 그리며 끊겨 보이는 반면, transform은 어디서나 안정적으로
-       GPU 합성된다(saegyeodeutda.html의 sd-pill을 transform 기반으로 바꾼 것과
-       같은 이유). 두 엘리먼트로 나눈 건 scale과 rotate가 서로 다른 이징 커브를
-       써야 해서(하나의 transform엔 이징을 하나만 걸 수 있다).*/
-    .zt-scale {
+    /* scale/rotate는 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
+       하나의 transform으로 합쳐서 건다 — 무빙스타일 등 일부 렌더링 엔진이
+       최신 개별 scale/rotate 속성은 컴포지터 레이어로 잘 못 올려서 매 프레임
+       다시 그리며 끊겨 보이는 반면, transform은 어디서나 안정적으로 GPU
+       합성된다(saegyeodeutda.html의 sd-pill을 transform 기반으로 바꾼 것과
+       같은 이유). scale·rotate를 각자 다른 엘리먼트에 나눠 걸어 서로 다른
+       이징 커브를 쓰게 했더니, 레이어가 두 배로 늘어나 무빙스타일에서 오히려
+       더 끊기고 층이 지는 것으로 보여 — 엘리먼트 하나에 transform 하나,
+       이징도 하나로 합쳤다(회전은 확대와 같은 커브를 탄다). */
+    .zt-transform {
       display: inline-block;
       transform-origin: center center;
       will-change: transform, opacity;
-    }
-    .zt-rotate {
-      display: inline-block;
-      transform-origin: center center;
-      will-change: transform;
     }
     .skeeeep-t2 {
       position: absolute;
@@ -1386,6 +1383,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       will-change: opacity, transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+    }
+    /* 일반 PC에서는 기존 700px을 유지한다. 가로 2000px 이상의 넓은 화면에서만
+       오른쪽 카드 컬럼을 조금 넓혀 두 컬럼 사이의 과도한 빈 공간을 줄인다.
+       카드 내부 타이포그래피 크기는 그대로 둔다. */
+    @media (min-width: 2000px) {
+      .agent-q-col,
+      .agent-principles-col {
+        width: 800px;
+      }
     }
     .agent-view-hidden { display: none !important; }
     .agent-principles-col {
@@ -4102,8 +4108,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
          바뀌어도 박스 크기(가운데 정렬 기준)가 흔들리지 않게 한다. -->
     <p class="skeeeep-t1 zt-outer" id="skeeeepT1" aria-label="SKEEP, INTO THE, NEW ERA">
       <span class="zt-sizer" aria-hidden="true">INTO THE</span>
-      <span class="zt-slot" id="ztSlot0" aria-hidden="true"><span class="zt-scale"><span class="zt-rotate"></span></span></span>
-      <span class="zt-slot" id="ztSlot1" aria-hidden="true"><span class="zt-scale"><span class="zt-rotate"></span></span></span>
+      <span class="zt-slot" id="ztSlot0" aria-hidden="true"><span class="zt-transform"></span></span>
+      <span class="zt-slot" id="ztSlot1" aria-hidden="true"><span class="zt-transform"></span></span>
     </p>
     <p class="skeeeep-t2">Skip the intro, Keep the flow</p>
     <p class="skip-sub" aria-hidden="true"></p>
@@ -4125,10 +4131,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const ZT_DURATION_MS = 650;   // 1200 → 650: 확대 전환이 느리다는 피드백으로 단축
   const ZT_FADE_MS = 280;       // 사라지는 문구는 확대(650ms)가 다 끝나기 전에 더 일찍 투명도 0에 도달
   const ZT_EASE = 'cubic-bezier(0.7, 0, 0.25, 1)';
-  // scale/opacity는 기존의 힘있는 커브를 쓰지만, 회전은 훨씬 완만한 커브로 별도
-  // 애니메이션해 "0도에서 시작해 커지는 동안 서서히 틀어지는" 것이 눈에 보이게 한다
-  // (scale과 같은 커브를 쓰면 회전이 초반에 거의 다 끝나버려 튀어 보였음).
-  const ZT_ROTATE_EASE = 'cubic-bezier(0.33, 0, 0.2, 1)';
   const ZT_ROTATIONS = [0, 9, -8];   // 첫 SKEEP만 0도(안 기울임), 나머지는 더 크게 틀어지게
 
   const slot0 = document.getElementById('ztSlot0');
@@ -4136,62 +4138,53 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const section = document.querySelector('.sec-skeeeep');
   if (!slot0 || !slot1 || !section) return;
   const slots = [slot0, slot1];
-  const scaleEls = slots.map((s) => s.querySelector('.zt-scale'));
-  const rotateEls = slots.map((s) => s.querySelector('.zt-rotate'));
-  if (!scaleEls[0] || !scaleEls[1] || !rotateEls[0] || !rotateEls[1]) return;
+  const els = slots.map((s) => s.querySelector('.zt-transform'));
+  if (!els[0] || !els[1]) return;
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) {
-    rotateEls[0].textContent = ZT_TEXTS[0];
-    scaleEls[0].style.transform = 'scale(1)';
-    scaleEls[0].style.opacity = '1';
-    scaleEls[1].style.opacity = '0';
+    els[0].textContent = ZT_TEXTS[0];
+    els[0].style.transform = 'scale(1)';
+    els[0].style.opacity = '1';
+    els[1].style.opacity = '0';
     return;
   }
 
-  // scale과 rotate를 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
-  // 중첩된 두 엘리먼트(.zt-scale 안에 .zt-rotate)에 각자 transform으로 나눠
-  // 건다 — 회전만 다른 이징 커브로 독립 애니메이션하면서도, 무빙스타일 등에서
-  // 컴포지팅이 더 안정적인 transform 속성만 쓰기 위해서다.
-  const setInstant = (scaleEl, rotateEl, scale, opacity, rotateDeg) => {
-    scaleEl.style.transition = 'none';
-    rotateEl.style.transition = 'none';
-    scaleEl.style.transform = `scale(${scale})`;
-    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
-    scaleEl.style.opacity = String(opacity);
-    void scaleEl.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
+  // scale·rotate를 개별 CSS 속성(el.style.scale / el.style.rotate)이나 두 엘리먼트로
+  // 나눠 걸지 않고, 엘리먼트 하나에 transform 하나·이징 하나로 합쳐서 건다 —
+  // 무빙스타일 등에서 transform이 가장 안정적으로 GPU 합성되고(saegyeodeutda.html의
+  // sd-pill과 같은 이유), 레이어 수도 최소로 유지된다.
+  const setInstant = (el, scale, opacity, rotateDeg) => {
+    el.style.transition = 'none';
+    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.opacity = String(opacity);
+    void el.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
   };
-  const setAnimated = (scaleEl, rotateEl, scale, opacity, rotateDeg) => {
-    scaleEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
-    rotateEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}`;
-    scaleEl.style.transform = `scale(${scale})`;
-    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
-    scaleEl.style.opacity = String(opacity);
+  const setAnimated = (el, scale, opacity, rotateDeg) => {
+    el.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
+    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.opacity = String(opacity);
   };
   // 사라지는 쪽 전용: 확대(scale)는 그대로 ZT_DURATION_MS만큼 이어지되, 투명도만
   // 훨씬 짧은 ZT_FADE_MS 안에 0으로 당겨서 "다 확대되기 전에 이미 안 보이게" 만든다.
-  // 회전은 등장할 때가 아니라 이 사라지는 단계에서 일어난다 — 0도로 떠 있다가
-  // 투명해지며 커지는 동안 자기 각도로 비틀린다.
-  const setExitAnimated = (scaleEl, rotateEl, scale, rotateDeg) => {
-    scaleEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
-    rotateEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}`;
-    scaleEl.style.transform = `scale(${scale})`;
-    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
-    scaleEl.style.opacity = '0';
+  const setExitAnimated = (el, scale, rotateDeg) => {
+    el.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
+    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.opacity = '0';
   };
 
   let active = 0, idx = 0, shownCount = 1;   // SKEEP은 이미 떠 있는 상태로 시작
 
-  rotateEls[0].textContent = ZT_TEXTS[0];
-  setInstant(scaleEls[0], rotateEls[0], 1, 1, ZT_ROTATIONS[0]);
-  setInstant(scaleEls[1], rotateEls[1], ZT_START_SCALE, 0, 0);
+  els[0].textContent = ZT_TEXTS[0];
+  setInstant(els[0], 1, 1, ZT_ROTATIONS[0]);
+  setInstant(els[1], ZT_START_SCALE, 0, 0);
 
   // SKEEP → INTO THE → NEW ERA 딱 한 바퀴만 돌고, NEW ERA가 확대되며 사라지면
   // 무한반복하지 않고 곧바로 카드 플립을 트리거한다.
   function step() {
     window.setTimeout(() => {
       if (shownCount >= ZT_TEXTS.length) {
-        setExitAnimated(scaleEls[active], rotateEls[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]);
+        setExitAnimated(els[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]);
         window.setTimeout(() => {
           // 문구 모션이 다 끝난 뒤에야 배경 사진을 디졸브로 띄우고, 그게 다
           // 나타난 뒤에 뒤집는다 — 문구 진행 중엔 배경 없이 검정만 유지.
@@ -4209,13 +4202,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
       const inc = 1 - active;
       const nextIdx = idx + 1;
-      rotateEls[inc].textContent = ZT_TEXTS[nextIdx];
-      setInstant(scaleEls[inc], rotateEls[inc], ZT_START_SCALE, 0, 0);
+      els[inc].textContent = ZT_TEXTS[nextIdx];
+      setInstant(els[inc], ZT_START_SCALE, 0, 0);
       requestAnimationFrame(() => {
-        setAnimated(scaleEls[inc], rotateEls[inc], 1, 1, 0);                                // 다음 문구: 작게 시작해 0도인 채로 제자리 크기까지만 확대(회전 없음)
-        setExitAnimated(scaleEls[active], rotateEls[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]); // 지금 문구: 0도에서 자기 각도로 비틀리며 확대되어 사라짐
+        setAnimated(els[inc], 1, 1, 0);                                // 다음 문구: 작게 시작해 0도인 채로 제자리 크기까지만 확대(회전 없음)
+        setExitAnimated(els[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]); // 지금 문구: 0도에서 자기 각도로 비틀리며 확대되어 사라짐
         window.setTimeout(() => {
-          setInstant(scaleEls[active], rotateEls[active], ZT_START_SCALE, 0, 0);
+          setInstant(els[active], ZT_START_SCALE, 0, 0);
           active = inc;
           idx = nextIdx;
           shownCount++;
@@ -4638,9 +4631,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="diagram-card">
     <div class="diagram-pair diagram-pair--journey">
       <div class="diagram-left-wrap">
-        <img class="diagram-left" src="assets/journey-left-v4-display.jpg?v=20260809-3" alt="정면을 바라보고 서 있는 사용자">
+        <img class="diagram-left" src="assets/journey-left-v4-display.jpg?v=20260810-3" alt="정면을 바라보고 서 있는 사용자">
       </div>
-      <img class="diagram-right" src="assets/journey-right-v4-display.jpg?v=20260810-2" alt="사용자 경험 플로우: 오전 세탁부터 오후 스피커 사용까지 이어지는 하루의 흐름">
+      <img class="diagram-right" src="assets/journey-right-v4-display.jpg?v=20260810-3" alt="사용자 경험 플로우: 오전 세탁부터 오후 정리, 오후 업무, 저녁 휴식까지 이어지는 하루의 흐름">
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
       <img class="diagram-left" src="assets/context-left-v3-display.jpg?v=20260809-3" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Packet No., Cloud/Cache Memory)">

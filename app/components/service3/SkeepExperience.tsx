@@ -34,21 +34,99 @@ function clampedProgress(start: number, end: number, value: number) {
 }
 
 function IntentVisual() {
-  const [supportsIntentClip, setSupportsIntentClip] = useState(false);
+  const [useCanvasFallback, setUseCanvasFallback] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // Samsung Moving Style/Tizen renders the clipped dark label without
-    // applying the SVG clipPath, which covers the cyan base label entirely.
-    // Keep the sweep circle there, but only add the inverse label on browsers
-    // where the clip is rendered reliably.
+    // Samsung Moving Style/Tizen은 SVG clipPath와 SMIL을 함께 쓸 때 반전
+    // 레이어 또는 원 이동을 누락한다. 이 환경만 Canvas 2D로 같은 장면을 그린다.
     const isMovingStyle = /Tizen|SMART-TV|SmartTV|Maple/i.test(
       window.navigator.userAgent
     );
-    setSupportsIntentClip(!isMovingStyle);
+    const frame = window.requestAnimationFrame(() => {
+      setUseCanvasFallback(isMovingStyle);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    if (!useCanvasFallback) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    let frame = 0;
+    let lastDraw = 0;
+    let cssWidth = 720;
+    let cssHeight = 466;
+    const startedAt = performance.now();
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      cssWidth = Math.max(1, rect.width);
+      cssHeight = Math.max(1, rect.height);
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.round(cssWidth * pixelRatio);
+      canvas.height = Math.round(cssHeight * pixelRatio);
+    };
+
+    const draw = (now: number) => {
+      // 30fps면 이 단순 도형은 충분히 부드럽고 TV GPU 부담도 작다.
+      if (now - lastDraw >= 1000 / 30) {
+        lastDraw = now;
+        const pixelRatio = canvas.width / cssWidth;
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        context.clearRect(0, 0, cssWidth, cssHeight);
+        context.save();
+        context.scale(cssWidth / 720, cssHeight / 466);
+
+        const cycle = ((now - startedAt) % 7200) / 7200;
+        const leg = cycle < 0.5 ? cycle * 2 : (cycle - 0.5) * 2;
+        const eased = 0.5 - Math.cos(Math.PI * leg) / 2;
+        const forwardX = -150 + 1020 * eased;
+        const circleX = cycle < 0.5 ? forwardX : 870 - 1020 * eased;
+
+        context.fillStyle = "#2E2D32";
+        context.fillRect(0, 0, 720, 466);
+        context.font = '500 108px "Helvetica Now Display", "Pretendard", sans-serif';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = "#89DFF0";
+        context.fillText("INTENT", 360, 233);
+
+        context.beginPath();
+        context.arc(circleX, 233, 150, 0, Math.PI * 2);
+        context.fill();
+        context.save();
+        context.clip();
+        context.fillStyle = "#2E2D32";
+        context.fillText("INTENT", 360, 233);
+        context.restore();
+        context.restore();
+      }
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    frame = window.requestAnimationFrame(draw);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+    };
+  }, [useCanvasFallback]);
 
   return (
     <div className={styles.intentStage}>
+      {useCanvasFallback ? (
+        <canvas
+          ref={canvasRef}
+          className={styles.intentCanvas}
+          role="img"
+          aria-label="원이 INTENT 문구를 지나며 색상을 반전시키는 그래픽"
+        />
+      ) : (
       <svg
         className={styles.intentArtwork}
         viewBox="0 0 720 466"
@@ -88,19 +166,18 @@ function IntentVisual() {
             repeatCount="indefinite"
           />
         </circle>
-        {supportsIntentClip && (
-          <text
-            className={styles.intentSvgLabel}
-            x="360"
-            y="233"
-            fill="#2E2D32"
-            clipPath="url(#intent-sweep-clip)"
-            aria-hidden="true"
-          >
-            INTENT
-          </text>
-        )}
+        <text
+          className={styles.intentSvgLabel}
+          x="360"
+          y="233"
+          fill="#2E2D32"
+          clipPath="url(#intent-sweep-clip)"
+          aria-hidden="true"
+        >
+          INTENT
+        </text>
       </svg>
+      )}
     </div>
   );
 }

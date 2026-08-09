@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
 import styles from "./FeaturePillar.module.css";
@@ -15,6 +15,8 @@ export type FeaturePillarProps = {
   questions: { label: string; text: string; answer?: string }[];
   invertBg?: boolean;
 };
+
+let pageSnapRestoreTimer: number | null = null;
 
 function AnswerText({ text }: { text: string }) {
   const parts = text.split(/<b>|<\/b>/);
@@ -42,6 +44,30 @@ function QuestionCard({
   const [clicked, setClicked] = useState(false);
   const expanded = Boolean(answer) && (hovered || clicked);
 
+  function suspendPageSnap() {
+    document.documentElement.classList.add("is-question-interacting");
+    if (pageSnapRestoreTimer !== null) {
+      window.clearTimeout(pageSnapRestoreTimer);
+    }
+    // 답변 높이 애니메이션(.45s)이 끝난 뒤에만 페이지 스냅을 복구한다.
+    pageSnapRestoreTimer = window.setTimeout(() => {
+      document.documentElement.classList.remove("is-question-interacting");
+      pageSnapRestoreTimer = null;
+    }, 650);
+  }
+
+  function handlePointerDown(event: PointerEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    suspendPageSnap();
+  }
+
+  function handleClick(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+    suspendPageSnap();
+    setClicked((current) => !current);
+  }
+
   return (
     <Reveal delay={delay}>
       {/* 그냥 div+onClick이었더니, 프로토타입 미리보기(무빙스타일) 쪽에서
@@ -53,7 +79,8 @@ function QuestionCard({
         className={invertBg ? `${styles.question} ${styles.questionInvert}` : styles.question}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={() => setClicked((c) => !c)}
+        onPointerDown={handlePointerDown}
+        onClick={handleClick}
         aria-expanded={answer ? expanded : undefined}
       >
         <span className={styles.qLabel}>{label}</span>

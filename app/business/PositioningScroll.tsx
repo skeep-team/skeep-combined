@@ -137,8 +137,9 @@ export default function PositioningScroll() {
          가운데 카드만 덩그러니 남는 별도 장면을 만들지 않는다. */
       const sideFade = ramp(currentMorph, [0.08, 0.34]);
       const centerFade = ramp(currentMorph, [0.14, 0.4]);
-      /* 확대가 시작된 직후부터 새 콘텐츠가 이어서 나타나 한 번의 모핑처럼 보인다. */
-      const heroReveal = ramp(currentMorph, [0.34, 0.84]);
+      /* 무빙스타일에서는 스크롤 보간 중 60~80% 투명 상태가 오래 남는다.
+         패널이 히어로 단계로 전환되는 순간부터 콘텐츠는 바로 100%로 표시한다. */
+      const heroReveal = currentMorph >= 0.3 ? 1 : 0;
 
       section.style.setProperty("--side-fade", sideFade.toFixed(4));
       section.style.setProperty("--center-fade", centerFade.toFixed(4));
