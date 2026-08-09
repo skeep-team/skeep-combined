@@ -104,30 +104,40 @@
 }
 
 /* 카드(790)에서 패널(1600)로 자라는 건 폭을 바꾸는 게 아니라 오른쪽을 잘라 두었다가
-   푸는 것이다. 레이아웃이 다시 계산되지 않아 안쪽 글줄이 흐르지 않는다. */
-.panel {
+   푸는 것이다. 레이아웃이 다시 계산되지 않아 안쪽 글줄이 흐르지 않는다.
+   예전엔 이 자르기를 .panel 자체의 clip-path로 걸었는데, 이 패널 안에 3D
+   rotateX로 뒤집히는 요금제 카드(.faces)가 같이 있다 보니 무빙스타일에서
+   clip-path가 아예 적용되지 않고 패널이 처음부터 1600 전체 폭으로 펼쳐진
+   채(오른쪽은 아직 아무 내용도 없어 그냥 새까맣게) 보이는 문제가 있었다.
+   그래서 자르기는 별도의 overflow:hidden 래퍼(.panelClip)로 옮기고,
+   .panel 자신은 항상 1600 전체 폭을 유지해 안쪽 절대좌표 자식들이 그대로
+   맞게 둔다. */
+.panelClip {
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(1600 * var(--px));
+  width: calc((790 + 810 * var(--expand)) * var(--px));
   height: calc(700 * var(--px));
   border-radius: var(--radius-xl);
+  overflow: hidden;
+  contain: layout paint;
+  will-change: width;
+  /* 사진(.panelBg)이 opacity로 완전히 사라지는 데 0.5s가 걸린다 — 실제로
+     펼쳐지는 움직임은 그게 다 끝난 뒤에야 시작하도록 같은 0.5s만큼 지연을
+     둔다. 사진이 사라지는 도중에 패널이 같이 벌어지면 사진이 걷히는
+     모습이 옆으로 새는 것처럼 겹쳐 보인다. */
+  transition: width 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+
+.panel {
+  position: relative;
+  width: calc(1600 * var(--px));
+  height: calc(700 * var(--px));
   /* 사진이 덮여 있는 동안(카드 상태)에도 이 색이 그대로 사진 밑에 깔려 있다.
      사진이 사라지는 순간에만 색을 바꾸면(예전엔 밝은 회색 #e7eaf0였다) 사진이
      옅어지는 동안 그 회색이 비쳐 보였다 — 처음부터 펼쳐진 뒤와 같은 색으로
      둬서 사진이 사라져도 색이 안 바뀌고 그대로 이어진다. */
   background-color: #161A1E;
-  clip-path: inset(
-    0 calc((1 - var(--expand)) * 810 * var(--px)) 0 0 round
-      var(--radius-xl)
-  );
-  contain: layout paint;
-  will-change: clip-path;
-  /* 사진(.panelBg)이 opacity로 완전히 사라지는 데 0.5s가 걸린다 — 실제로
-     펼쳐지는(clip-path) 움직임은 그게 다 끝난 뒤에야 시작하도록 같은 0.5s만큼
-     지연을 둔다. 사진이 사라지는 도중에 패널이 같이 벌어지면 사진이 걷히는
-     모습이 옆으로 새는 것처럼 겹쳐 보인다. */
-  transition: clip-path 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
 }
 
 /* 카드/패널 사진 배경 + 아래에서 올라오는 검정 딤(글자 가독성용) */
@@ -455,7 +465,7 @@
     0
   );
   will-change: opacity, transform;
-  /* 검정 영역(.panel)이 다 펼쳐지는 데 사진 페이드(0.5s) + clip-path(0.62s) =
+  /* 검정 영역(.panelClip)이 다 펼쳐지는 데 사진 페이드(0.5s) + width 전환(0.62s) =
      1.12s가 걸린다 — 카드는 그게 다 끝난 뒤에야 나타나도록 같은 만큼 지연을
      둔다. 먼저 나타나면 아직 좁은 패널 밖으로 카드가 삐져나온 것처럼 보인다. */
   transition:
@@ -706,10 +716,12 @@
     transform: none;
   }
 
+  .panelClip {
+    width: calc(1600 * var(--px));
+  }
+
   .panel {
     --reveal: 1;
-
-    clip-path: none;
   }
 
   .peer,

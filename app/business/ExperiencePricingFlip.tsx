@@ -192,7 +192,8 @@ export default function ExperiencePricingFlip() {
           <p>
             소비자는 이제 특정 브랜드의 에이전트 생태계에<br />
             얽매이지 않고 모든 에이전트와 내 성향을 공유 할 수 있죠.<br />
-            내 맥락을 안전하게 들고 다니는 SKEEP이, 어떤 에이전트를 만나든 나를 대신 소개해주니까요.
+            내 맥락을 안전하게 들고 다니는 SKEEP이,<br />
+            어떤 에이전트를 만나든 나를 대신 소개해주니까요.
           </p>
         </div>
 
@@ -230,6 +231,7 @@ export default function ExperiencePricingFlip() {
             </div>
           </div>
 
+          <div className={styles.panelClip}>
           <div className={styles.panel} data-open={open}>
             <div className={styles.panelBg} aria-hidden="true">
               {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
@@ -345,6 +347,7 @@ export default function ExperiencePricingFlip() {
                 </div>
               ))}
             </div>
+          </div>
           </div>
         </div>
 

@@ -160,6 +160,7 @@ export default function EnterprisePricingFlip() {
         </div>
 
         <div className={styles.stage}>
+          <div className={styles.panelClip}>
           <div className={styles.panel} data-open={open}>
           <div className={styles.panelBg} aria-hidden="true">
             {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
@@ -258,6 +259,7 @@ export default function EnterprisePricingFlip() {
                 </div>
               </div>
             ))}
+          </div>
           </div>
           </div>
         </div>
