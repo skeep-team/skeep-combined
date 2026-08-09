@@ -701,19 +701,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       justify-content: center;
       white-space: pre;
     }
-    /* scale/rotate는 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
-       하나의 transform으로 합쳐서 건다 — 무빙스타일 등 일부 렌더링 엔진이
-       최신 개별 scale/rotate 속성은 컴포지터 레이어로 잘 못 올려서 매 프레임
-       다시 그리며 끊겨 보이는 반면, transform은 어디서나 안정적으로 GPU
-       합성된다(saegyeodeutda.html의 sd-pill을 transform 기반으로 바꾼 것과
-       같은 이유). scale·rotate를 각자 다른 엘리먼트에 나눠 걸어 서로 다른
-       이징 커브를 쓰게 했더니, 레이어가 두 배로 늘어나 무빙스타일에서 오히려
-       더 끊기고 층이 지는 것으로 보여 — 엘리먼트 하나에 transform 하나,
-       이징도 하나로 합쳤다(회전은 확대와 같은 커브를 탄다). */
+    /* 확대는 transform: scale()이 아니라 font-size로 건다 — scale()은 원래
+       크기로 래스터화된 텍스처를 GPU가 그대로 늘리기만 해서, 18배까지 늘리면
+       텍스처 해상도를 넘어서 글자 가장자리가 계단현상으로 깨진다(무빙스타일처럼
+       텍스처 확대 필터링이 약한 기기에서 특히 심하다). font-size는 그 크기의
+       폰트 윤곽선을 매번 다시 그려서 항상 선명하다. 회전만 계속 transform으로
+       남겨 뒀다(GPU 합성이 안정적이라 — saegyeodeutda.html의 sd-pill과 같은 이유). */
     .zt-transform {
       display: inline-block;
       transform-origin: center center;
-      will-change: transform, opacity;
+      will-change: font-size, transform, opacity;
     }
     .skeeeep-t2 {
       position: absolute;
@@ -967,6 +964,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       mask-image: radial-gradient(ellipse 72% 68% at 50% 50%,
         transparent 0%, transparent 50%, rgba(0,0,0,.18) 64%, rgba(0,0,0,.72) 84%, #000 100%);
     }
+    /* Samsung Moving Style/Tizen은 10장의 사진 레이어가 동시에 transform 되는 동안
+       화면 전체 backdrop-filter까지 매 프레임 다시 샘플링해 정착 구간이 끊겨 보인다.
+       이동 중에만 동일한 가장자리 영역을 가벼운 정적 오버레이로 대체하고, 모든 카드가
+       멈춘 뒤 원래 블러를 복원한다. 카드 위치·크기·이징·최종 화면은 그대로 유지된다. */
+    .agent-photo-bg.is-moving-style.camera-moving:not(.motion-complete)::after {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      -webkit-mask-image: none;
+      mask-image: none;
+      background: radial-gradient(ellipse 72% 68% at 50% 50%,
+        transparent 0%, transparent 58%, rgba(255,255,255,.025) 72%, rgba(255,255,255,.09) 100%);
+    }
     .agent-photo-stage {
       position: absolute;
       top: 50%; left: 50%;
@@ -977,6 +986,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform-origin: 50% 46%;
       transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28);
       will-change: transform;
+    }
+    .agent-photo-bg.is-moving-style .agent-photo-stage,
+    .agent-photo-bg.is-moving-style .agent-photo-piece {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      contain: layout paint;
     }
     .agent-photo-bg.camera-moving .agent-photo-stage {
       /* 정지→이동→정지→이동→정지로 3번 멈추던 걸 하나의 연속된 드리프트로 —
@@ -1392,6 +1407,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .agent-principles-col {
         width: 800px;
       }
+    }
+    /* 무빙스타일(TV) 전용: 좌측 텍스트-우측 카드 사이 가운데 여백이 PC보다 훨씬
+       크게 벌어져 보인다 (JS로 감지해 .agent-sticky에 is-moving-style을 붙임).
+       PC는 위 media query 기반 폭(700/800px)을 그대로 유지하고, 무스에서만
+       카드 컬럼 폭을 넓혀 가운데 공백을 줄인다. */
+    .agent-sticky.is-moving-style .agent-q-col,
+    .agent-sticky.is-moving-style .agent-principles-col {
+      width: min(1040px, 56vw);
     }
     .agent-view-hidden { display: none !important; }
     .agent-principles-col {
@@ -4124,8 +4147,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 (() => {
   const ZT_TEXTS = ['SKEEP', 'INTO THE', 'NEW ERA'];
   const ZT_HOLD_MS = 300;
-  /* 35배 확대는 브라우저 합성 텍스처 한계를 넘어 글자 가장자리가 깨졌다.
-     커진 기본 글자와 함께 18배면 화면을 충분히 덮으면서도 윤곽이 선명하다. */
+  /* transform: scale()는 원래 폰트 크기로 딱 한 번 래스터화된 텍스처를 GPU가
+     기하학적으로 늘리기만 한다 — 18배까지 늘리면 그 텍스처 해상도를 훌쩍
+     넘어서서 글자 가장자리가 계단현상으로 깨지고, 무빙스타일처럼 텍스처
+     확대 필터링이 약한 기기에서는 훨씬 심하게 보인다. font-size를 직접
+     키우면 그 크기에 맞는 폰트 윤곽선을 매번 다시 그려서, 아무리 커져도
+     가장자리가 선명하다(회전만 계속 transform으로 남겨 둔다). */
   const ZT_MAX_SCALE = 18;
   const ZT_START_SCALE = 0.28;
   const ZT_DURATION_MS = 650;   // 1200 → 650: 확대 전환이 느리다는 피드백으로 단축
@@ -4144,32 +4171,37 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) {
     els[0].textContent = ZT_TEXTS[0];
-    els[0].style.transform = 'scale(1)';
     els[0].style.opacity = '1';
     els[1].style.opacity = '0';
     return;
   }
 
-  // scale·rotate를 개별 CSS 속성(el.style.scale / el.style.rotate)이나 두 엘리먼트로
-  // 나눠 걸지 않고, 엘리먼트 하나에 transform 하나·이징 하나로 합쳐서 건다 —
-  // 무빙스타일 등에서 transform이 가장 안정적으로 GPU 합성되고(saegyeodeutda.html의
-  // sd-pill과 같은 이유), 레이어 수도 최소로 유지된다.
+  // 문구가 걸린 .skeeeep-t1의 반응형 clamp() font-size를 실측해 기준값으로 쓴다
+  // — 화면 폭에 따라 달라지는 값이라 하드코딩하지 않는다.
+  const ztBaseFontPx = parseFloat(getComputedStyle(slot0.closest('.skeeeep-t1')).fontSize) || 90;
+  const fontPx = (scale) => `${(ztBaseFontPx * scale).toFixed(1)}px`;
+
+  // 회전은 계속 transform(GPU 합성)으로 두고, 확대는 font-size(벡터 윤곽 재래스터화)로
+  // 건다 — 두 속성 모두 같은 duration·이징을 쓰므로 하나의 transition 문자열로 묶는다.
   const setInstant = (el, scale, opacity, rotateDeg) => {
     el.style.transition = 'none';
-    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.fontSize = fontPx(scale);
+    el.style.transform = `rotate(${rotateDeg || 0}deg)`;
     el.style.opacity = String(opacity);
     void el.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
   };
   const setAnimated = (el, scale, opacity, rotateDeg) => {
-    el.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
-    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.transition = `font-size ${ZT_DURATION_MS}ms ${ZT_EASE}, transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
+    el.style.fontSize = fontPx(scale);
+    el.style.transform = `rotate(${rotateDeg || 0}deg)`;
     el.style.opacity = String(opacity);
   };
-  // 사라지는 쪽 전용: 확대(scale)는 그대로 ZT_DURATION_MS만큼 이어지되, 투명도만
+  // 사라지는 쪽 전용: 확대(font-size)는 그대로 ZT_DURATION_MS만큼 이어지되, 투명도만
   // 훨씬 짧은 ZT_FADE_MS 안에 0으로 당겨서 "다 확대되기 전에 이미 안 보이게" 만든다.
   const setExitAnimated = (el, scale, rotateDeg) => {
-    el.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
-    el.style.transform = `scale(${scale}) rotate(${rotateDeg || 0}deg)`;
+    el.style.transition = `font-size ${ZT_DURATION_MS}ms ${ZT_EASE}, transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
+    el.style.fontSize = fontPx(scale);
+    el.style.transform = `rotate(${rotateDeg || 0}deg)`;
     el.style.opacity = '0';
   };
 
@@ -6828,6 +6860,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     ];
     const agentPhotoBg = document.createElement('div');
     agentPhotoBg.className = 'agent-photo-bg';
+    const agentIsMovingStyle =
+      /Tizen|SMART-TV|SmartTV|Maple/i.test(window.navigator.userAgent) ||
+      window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    if (agentIsMovingStyle) agentPhotoBg.classList.add('is-moving-style');
+    // 무빙스타일(TV)에서는 좌측 텍스트와 우측 9카드 그리드 사이 공백이 PC보다
+    // 훨씬 크게 벌어진다 — .agent-sticky에도 같은 플래그를 달아 카드 컬럼 폭만
+    // 무스에서 넓히고 PC 레이아웃(미디어쿼리 기반)은 그대로 둔다.
+    if (agentIsMovingStyle && agentSticky) agentSticky.classList.add('is-moving-style');
     agentPhotoBg.setAttribute('aria-hidden', 'true');
     const agentPhotoStage = document.createElement('div');
     agentPhotoStage.className = 'agent-photo-stage';
@@ -6944,6 +6984,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
       const sequenceElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
       if (sequenceElapsed >= CAMERA_DURATION_MS) agentPhotoBg.classList.add('scattering');
+      /* 마지막 카드의 405ms 스태거까지 끝난 다음 고비용 가장자리 블러를 되돌린다.
+         복원은 움직임이 완전히 멈춘 뒤라 정착 애니메이션 프레임을 방해하지 않는다. */
+      if (sequenceElapsed >= CAMERA_DURATION_MS + 2150) {
+        agentPhotoBg.classList.add('motion-complete');
+      }
       const introElapsed = sequenceElapsed - CAMERA_DURATION_MS - TITLE_DELAY_AFTER_SCATTER_MS;
       const titleIn = smooth(introElapsed / TITLE_DURATION_MS);
       const subIn = smooth((introElapsed - 160) / TITLE_DURATION_MS);

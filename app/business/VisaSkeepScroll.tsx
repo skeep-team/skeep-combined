@@ -59,10 +59,9 @@ const items = [
   },
 ];
 
-/* 처음에는 여섯 장이 나란히 접힌 채로 보이고(cardStepStart 전), 거기서부터
-   한 구간씩 넘길 때마다 한 장씩 펼쳐진다. */
-const cardStepStart = 0.14;
-const cardStepEnd = 0.56;
+/* 처음에는 여섯 장이 접힌 채로 보이고, 이 지점에 도달하면 첫 카드만 자동으로
+   펼친다. 이후 카드는 스크롤 진행률과 분리하고 사용자가 직접 눌러 선택한다. */
+const firstCardOpenAt = 0.14;
 
 /* 여섯 장을 다 본 뒤 접고, 그다음 Skeep 장면으로 넘어간다. */
 const foldForward = 0.64;
@@ -71,15 +70,7 @@ const skeepForward = 0.84;
 const skeepReverse = 0.76;
 
 function cardIndexAt(progress: number) {
-  /* 아직 첫 구간에 닿지 않았으면 아무것도 열지 않는다 — 여섯 장이 그대로 접혀 있다. */
-  if (progress < cardStepStart) {
-    return null;
-  }
-
-  const span = (cardStepEnd - cardStepStart) / items.length;
-  const step = Math.floor((progress - cardStepStart) / span);
-
-  return Math.min(items.length - 1, Math.max(0, step));
+  return progress < firstCardOpenAt ? null : 0;
 }
 
 export default function VisaSkeepScroll() {
@@ -147,6 +138,34 @@ export default function VisaSkeepScroll() {
       );
 
       cardAnimationsRef.current.push(animation);
+
+      /* FLIP을 카드 전체에 걸면 내부의 큰 P·E·S·T·E·L도 scaleX를 그대로
+         받아 무빙스타일의 낮은 프레임에서 글자가 가로로 늘어나는 순간이 눈에
+         띈다. 같은 프레임에 역스케일을 적용해 카드 폭/사진 크롭 애니메이션은
+         유지하면서 글자 자체의 가로세로 비율만 항상 정상으로 보정한다. */
+      const letter = card.querySelector<HTMLElement>(`.${styles.letter}`);
+
+      if (letter && Math.abs(scaleX) > 0.001) {
+        const letterAnimation = letter.animate(
+          [
+            {
+              transformOrigin: "left center",
+              transform: `scaleX(${1 / scaleX})`,
+            },
+            {
+              transformOrigin: "left center",
+              transform: "scaleX(1)",
+            },
+          ],
+          {
+            duration: 420,
+            easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+            fill: "none",
+          },
+        );
+
+        cardAnimationsRef.current.push(letterAnimation);
+      }
     });
   }, [activeIndex]);
 
@@ -180,7 +199,8 @@ export default function VisaSkeepScroll() {
       const distance = Math.max(1, section.offsetHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, -rect.top / distance));
 
-      /* 사용자가 카드를 직접 누른 뒤에는 스크롤이 선택을 뺏지 않는다. */
+      /* 진입 시 첫 카드만 자동으로 연다. 사용자가 한 번이라도 카드를 직접
+         선택하거나 닫은 뒤에는 스크롤이 그 선택을 다시 덮어쓰지 않는다. */
       if (!hasUserInteractedRef.current) {
         const next = cardIndexAt(progress);
 

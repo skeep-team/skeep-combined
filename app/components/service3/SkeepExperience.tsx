@@ -57,10 +57,20 @@ function IntentVisual() {
     if (!context) return;
 
     let frame = 0;
+    let cancelled = false;
     let lastDraw = 0;
     let cssWidth = 720;
     let cssHeight = 466;
     const startedAt = performance.now();
+
+    // SVG 버전은 CSS(--font-elza)로 콘덴스드 폰트를 쓰는데, Canvas API는 CSS
+    // 커스텀 프로퍼티를 직접 못 읽는다 — 실제 font-family 값을 런타임에 읽어와야
+    // 하고, 하드코딩했던 "Helvetica Now Display"는 애초에 이 사이트에 없는
+    // 폰트라 무빙스타일에서 기본 sans-serif로 넓적하게 그려졌었다.
+    const elzaFamily =
+      getComputedStyle(document.documentElement).getPropertyValue("--font-elza").trim() ||
+      "inherit";
+    const fontString = `500 108px ${elzaFamily}, "Pretendard", sans-serif`;
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -89,7 +99,7 @@ function IntentVisual() {
 
         context.fillStyle = "#2E2D32";
         context.fillRect(0, 0, 720, 466);
-        context.font = '500 108px "Helvetica Now Display", "Pretendard", sans-serif';
+        context.font = fontString;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillStyle = "#89DFF0";
@@ -110,8 +120,18 @@ function IntentVisual() {
 
     resize();
     window.addEventListener("resize", resize);
-    frame = window.requestAnimationFrame(draw);
+    // 폰트가 로드되기 전에 그리면 캔버스가 그 순간의 폴백 sans-serif로 확정해
+    // 그려버린다 — Elza가 실제로 준비된 뒤에 첫 프레임을 그리도록 기다린다.
+    const start = () => {
+      if (!cancelled) frame = window.requestAnimationFrame(draw);
+    };
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(start).catch(start);
+    } else {
+      start();
+    }
     return () => {
+      cancelled = true;
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
     };

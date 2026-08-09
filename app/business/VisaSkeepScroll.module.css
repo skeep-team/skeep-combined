@@ -169,6 +169,9 @@
   font-size: clamp(112px, 12vw, 240px);
   font-weight: 700;
   line-height: 1;
+  transform: scaleX(1);
+  transform-origin: left center;
+  backface-visibility: hidden;
   transition:
     font-size 480ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 220ms ease;
