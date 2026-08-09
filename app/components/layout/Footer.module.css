@@ -30,11 +30,12 @@
 
 .headline {
   color: #000;
-  font-family: "Helvetica Now Display", var(--font-pretendard), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-elza), "Helvetica Now Display", var(--font-pretendard), -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 52px;
   font-weight: 500;
   line-height: normal;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -45,10 +46,14 @@
 }
 
 .group {
-  width: 170px;
+  width: 190px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.group:first-child {
+  width: 220px;
 }
 
 .title {
@@ -70,12 +75,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 22px;
   color: #0e1825;
   font-size: 20px;
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: 0;
+  white-space: nowrap;
 }
 
 .link::after {
@@ -84,6 +90,7 @@
   font-size: 18px;
   font-weight: 500;
   line-height: 1;
+  flex: 0 0 auto;
 }
 
 /* 페이지는 있지만 지금은 연결하지 않는 항목 — 다른 링크와 시각적으로 완전히 같고,
@@ -147,6 +154,10 @@
   }
 
   .group {
+    width: 100%;
+  }
+
+  .group:first-child {
     width: 100%;
   }
 

@@ -700,8 +700,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       align-items: center;
       justify-content: center;
       white-space: pre;
+    }
+    /* scale/rotate를 각각 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
+       중첩된 두 엘리먼트에 각자 transform으로 나눠 건다 — 무빙스타일 등 일부
+       렌더링 엔진이 최신 개별 scale/rotate 속성은 컴포지터 레이어로 잘 못 올려서
+       매 프레임 다시 그리며 끊겨 보이는 반면, transform은 어디서나 안정적으로
+       GPU 합성된다(saegyeodeutda.html의 sd-pill을 transform 기반으로 바꾼 것과
+       같은 이유). 두 엘리먼트로 나눈 건 scale과 rotate가 서로 다른 이징 커브를
+       써야 해서(하나의 transform엔 이징을 하나만 걸 수 있다).*/
+    .zt-scale {
+      display: inline-block;
       transform-origin: center center;
-      /* 작은 글자 텍스처를 GPU가 계속 확대하며 흐리게 만드는 현상을 막는다. */
+      will-change: transform, opacity;
+    }
+    .zt-rotate {
+      display: inline-block;
+      transform-origin: center center;
+      will-change: transform;
     }
     .skeeeep-t2 {
       position: absolute;
@@ -1378,40 +1393,51 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       overflow: hidden;
     }
     /* Principles: static grid in the right column, matching the Questions layout */
+    /* 피그마 시안: 3장씩 옅은 회색 프레임(#E7EAF0) 안에 담기고, 카드 자체는
+       정사각이 아니라 내용 높이대로, 텍스트는 가운데가 아니라 왼쪽 정렬이다.
+       기존엔 카드 9장을 낱장으로 grid에 바로 깔아서 이 프레임/정렬이 빠져 있었다.
+       .principle-row가 그 회색 프레임 하나(=3장 묶음)이고, .principles-scroll은
+       그 프레임 3개를 세로로 쌓는다. */
     .principles-scroll {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      align-items: stretch;
+      display: flex;
+      flex-direction: column;
       gap: 16px;
       width: 100%;
     }
+    .principle-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(6px, 0.6vw, 9px);
+      padding: clamp(6px, 0.6vw, 9px);
+      border-radius: var(--card-radius-lg);
+      background: #F1F1F1;
+    }
     .principle-mini-card {
-      --card-bg: #F1F1F1;
+      --card-bg: #fff;
       --card-ink: #161A1E;
       width: auto;
       min-width: 0;
-      aspect-ratio: 1 / 1;
       border-radius: var(--card-radius-md);
-      padding: clamp(20px, 2vw, 28px);
+      padding: clamp(18px, 1.7vw, 26px);
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: flex-start;
+      justify-content: flex-start;
       gap: clamp(12px, 1.1vw, 18px);
-      text-align: center;
+      text-align: left;
       /* 네 모서리의 원형 핀은 뺐다. 바탕색만 남긴다. */
       background: var(--card-bg);
     }
     .principle-mini-title {
       margin: 0;
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: clamp(14px,1.4vw,26px);
+      font-size: clamp(13px,1.25vw,23px);
       font-weight: 600;
       line-height: 1.35;
       letter-spacing: -0.03em;
-      white-space: nowrap;
+      white-space: normal;
       color: var(--card-ink);
       background: none;
       -webkit-background-clip: border-box;
@@ -1463,7 +1489,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform: none;
     }
     .q-card .q-num {
-      font-size: clamp(10px,.98vw,14px); font-weight: 600; line-height: 1.2;
+      font-size: clamp(20px,2.2vw,32px); font-weight: 600; line-height: 1.2;
       letter-spacing: -0.02em; margin-bottom: 0;
       color: #161A1E;
       opacity: .78;
@@ -1477,7 +1503,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .q-chevron { display: none; }
     .q-card .q-text {
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: clamp(14px,1.4vw,26px); font-weight: 600; line-height: 1.35;
+      font-size: clamp(13px,1.25vw,23px); font-weight: 600; line-height: 1.35;
       letter-spacing: -0.02em; color: #161A1E;
       transition: opacity .24s ease;
     }
@@ -1524,58 +1550,37 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     /* ── 9. SYSTEM DIAGRAM ───────────────────────── */
+    /* 예전엔 이 구간(system-flow-sequence)이 240vh 높이로 스크롤을 붙잡아 두고
+       (position: sticky) 스크롤 진행도에 따라 diagram 씬 → layers 씬을 크로스페이드,
+       01→02 탭 자동전환, 버튼 지연 등장까지 매 프레임 JS로 계산했다 — 무빙스타일
+       같은 약한 기기에서 스크롤마다 재계산이 버벅임의 원인이었다. 이제는 두 섹션을
+       그냥 순서대로 쌓아 두고(스크롤 잠금 없음), 화면에 들어오면 한 번만 페이드인되는
+       공용 .fi/.vis 패턴만 쓴다. */
     .system-flow-sequence {
       position: relative;
       width: 100%;
-      height: 240vh;
       background: #fff;
     }
     .system-flow-sticky {
-      position: sticky;
-      top: 0;
+      position: relative;
       width: 100%;
-      height: 100vh;
-      overflow: hidden;
       background: #fff;
     }
     .system-flow-scene {
-      position: absolute;
-      inset: 0;
-      height: 100%;
+      position: relative;
       backface-visibility: hidden;
     }
     .system-flow-scene--diagram {
       z-index: 1;
-      opacity: 1;
     }
     .system-flow-scene--layers {
-      z-index: 2;
-      opacity: 1;
-      pointer-events: none;
+      z-index: 1;
       background: transparent;
     }
-    .system-flow-sequence.show-layers .system-flow-scene--diagram {
-      /* opacity는 그대로 1 유지 — 밑에 항상 불투명하게 깔려 있는 배경 역할.
-         이전엔 여기서도 0으로 같이 페이드아웃시켰는데, 두 흰 배경 씬이 동시에
-         반투명해지면서 겹쳐 보여 전환 중간에 화면이 하얗게 번쩍이는 문제가 있었다.
-         이제는 layers 씬만 0→1로 그 위에 얹히듯 페이드인되고, diagram 씬은
-         끝까지 불투명하게 유지되다가 layers가 완전히 덮으면서 자연히 가려진다. */
-      pointer-events: none;
-    }
-    .system-flow-sequence.show-layers .system-flow-scene--layers {
-      pointer-events: auto;
-    }
     .sec-system-diagram {
-      background: #fff; width: 100%; height: 100%;
-      /* diagram-card는 제목/탭 유무와 무관하게 뷰포트 정중앙에 놓인다(flex 중앙정렬).
-         레이어 씬(wf-diagram)도 동일한 방식으로 정중앙 정렬되므로,
-         두 씬이 크로스페이드될 때 사진 위치가 절대 어긋나지 않는다.
-         transform 기반 중앙정렬 대신 flex를 쓰는 이유: opacity 트랜지션 중인 부모
-         아래에서 top:50%+transform 조합이 크롬 레이어 승격 타이밍과 부딪혀
-         전환마다 화면이 깜빡이는 문제가 있었다.
-         (position은 .system-flow-scene의 absolute를 그대로 사용 — 여기서 다시
-         선언하면 캐스케이드 순서상 relative로 덮어써져 전체 핀 레이아웃이 깨진다.) */
-      display: flex; align-items: center; justify-content: center;
+      background: #fff; width: 100%;
+      padding: clamp(64px, 8vw, 120px) 0;
+      display: flex; flex-direction: column; align-items: center;
     }
     .diagram-card {
       width: 100%;
@@ -1585,11 +1590,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden;
       container-type: inline-size;
-      transform: translate3d(0, 0, 0);
-      transition: transform .7s cubic-bezier(.22,1,.36,1);
-    }
-    .system-flow-sequence.wf-expanded .diagram-card {
-      transform: translate3d(0, clamp(-70px, -8vh, -30px), 0);
     }
     .diagram-card.show-context { background: #fff; }   /* 02 배경 흰색 */
     .diagram-journey-panel {
@@ -1600,22 +1600,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: #fff;
       z-index: 1;
     }
-    /* 그래픽 안에 있던 USER JOURNEY 문구를 독립된 섹션 헤더로 올린다. */
+    /* 그래픽 안에 있던 USER JOURNEY 문구를 독립된 섹션 헤더로 올린다.
+       예전엔 (스크롤로 붙잡아 둔 100vh 안에서) diagram-card 위에 절대좌표로
+       얹혀 있었는데, 스크롤 잠금을 없앤 뒤로는 그냥 카드 바로 위, 일반 문서
+       흐름상의 한 블록으로 둔다. */
     .diagram-journey-copy {
-      position: absolute; top: clamp(72px, 9.5vh, 128px); left: 0;
+      position: relative;
       width: 100%;
       padding: 0 var(--edge-padding);
+      margin-bottom: clamp(28px, 3.6vw, 56px);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: clamp(8px, 1vh, 14px);
-      opacity: 1;
-      /* opacity는 CSS 트랜지션이 아니라 JS(render())에서 스크롤 진행도에 맞춰
-         매 프레임 직접 계산해 넣는다 — 클래스 토글 + 고정 시간 트랜지션 방식은
-         스크롤 속도에 따라 트랜지션이 화면 밖(주의 밖)에서 다 끝나버려 "띡" 하고
-         사라지는 것처럼 보였다. 스크롤 위치에 1:1로 붙여야 어떤 속도로 스크롤해도
-         항상 눈에 보이는 만큼만 자연스럽게 옅어진다. */
     }
     .diagram-journey-title {
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
@@ -1728,13 +1726,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 컨테이너를 레이어 카드 회색(#F1F1F1)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
     .diagram-tabs {
-      position: absolute; bottom: clamp(64px, 8.8vh, 100px); left: 50%;
-      transform: translateX(-50%);
+      position: relative;
+      margin-top: clamp(24px, 3vw, 48px);
       background: #F1F1F1; border-radius: var(--card-radius-lg);
       display: flex; gap: clamp(6px, 0.7vw, 12px);
       padding: clamp(9px, 1.1vw, 16px);
       border: none;
-      opacity: 1;    /* JS(render())가 스크롤 진행도에 맞춰 매 프레임 opacity를 직접 갱신한다 */
     }
     .diagram-tab {
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
@@ -1749,71 +1746,44 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* ── 10. SYSTEM LAYERS ───────────────────────── */
     .sec-layers {
       background: transparent;
-      width: 100%; height: 100%;
-      /* wf-diagram은 diagram-card와 똑같이(flex row + align-items:center) 뷰포트
-         정중앙에 놓인다 — gap/가변 패딩에 기대지 않으므로 버튼 유무와 무관하게
-         항상 정확히 같은 위치다. wf-buttons-wrap은 absolute 오버레이라 얘 크기가
-         바뀌어도 wf-diagram의 flex 레이아웃을 전혀 건드리지 않는다.
-         예전엔 gap을 0→값으로 애니메이션해서 wf-diagram을 "밀어 올리는" 효과를
-         냈는데, 그러면 매 프레임 flex 컨테이너 전체가 리레이아웃되면서 그 안의
-         큰 이미지(wf-diagram)까지 다시 그려야 해서 버튼이 올라올 때 버벅였다.
-         이제는 레이아웃에 영향 없는 transform(아래 .wf-in .wf-diagram)만으로
-         같은 "위로 밀려 올라가는" 느낌을 내서 GPU 합성으로 부드럽게 처리한다. */
-      display: flex; align-items: center; justify-content: center;
+      width: 100%;
+      padding: clamp(64px, 8vw, 120px) 0;
+      display: flex; flex-direction: column; align-items: center;
     }
     /* ── WHO/WHAT/WHERE 버튼 + 패킷 다이어그램 ── */
-    /* 처음엔 다이어그램만 뜨고, 1초 뒤(JS) 버튼이 아래에서 올라오며 다이어그램이 위로 밀려 올라간다. */
     .wf-buttons-wrap {
-      position: absolute; left: 0; width: 100%; bottom: clamp(40px, 6vh, 68px);
-      pointer-events: none;
+      position: relative; width: 100%;
+      margin-top: clamp(24px, 3vw, 48px);
     }
-    .sec-layers.wf-in .wf-buttons-wrap { pointer-events: auto; }
-    .wf-buttons { display: flex; gap: clamp(14px, 1.6vw, 28px); width: 100%; padding: 0 var(--edge-padding);
-      opacity: 0; visibility: hidden; transform: translate3d(0, 28px, 0);
-      transition: opacity .45s ease, transform .55s cubic-bezier(.22,1,.36,1), visibility 0s .55s; }
-    .sec-layers.wf-in .wf-buttons {
-      opacity: 1; visibility: visible; transform: translate3d(0, 0, 0);
-      transition-delay: .18s, .18s, 0s;
-    }
+    .wf-buttons { display: flex; gap: clamp(14px, 1.6vw, 28px); width: 100%; padding: 0 var(--edge-padding); }
     .wf-btn {
       flex: 1 1 0; min-width: 0; text-align: left; cursor: pointer;
-      background: #D3D3D3; border: none; border-radius: clamp(16px, 1.8vw, 32px);
+      background: #F1F1F1; border: none; border-radius: var(--card-radius-lg);
       padding: clamp(18px, 2vw, 32px); display: flex; flex-direction: column;
       gap: clamp(14px, 1.6vw, 24px);
       transition: background .2s ease, transform .2s ease;
     }
     .wf-btn:hover { transform: translateY(-2px); }
-    .wf-btn.active { background: #FF0B6C; }
+    .wf-btn.active { background: #161A1E; }
     .wf-btn-title {
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-weight: 600; font-size: clamp(22px, 2vw, 36px); letter-spacing: -0.04em;
+      font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 500; font-size: clamp(22px, 2vw, 36px); letter-spacing: -0.04em;
       color: #222; line-height: 1.5;
     }
     .wf-btn.active .wf-btn-title, .wf-btn.active .wf-btn-desc p { color: #fff; }
     .wf-btn-desc p {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-weight: 700; font-size: clamp(12px, 0.95vw, 16px); letter-spacing: -0.02em;
+      font-weight: 500; font-size: clamp(12px, 0.95vw, 16px); letter-spacing: -0.02em;
       color: #222; opacity: 0.85; line-height: 1.5; margin: 0;
     }
     .wf-diagram { width: 100%;
-      display: flex; align-items: center;
-      aspect-ratio: 7908 / 2250; border-radius: 0; overflow: hidden; background: transparent;
-      /* 버튼이 뜰 때 위로 밀려 올라가는 효과: 리레이아웃을 부르는 gap/margin 대신
-         transform만 써서 GPU 합성으로 처리 — 큰 이미지를 매 프레임 다시 그리지 않는다. */
-      transform: translateY(0);
-      transition: transform .7s cubic-bezier(.22,1,.36,1);
+      display: flex; flex-direction: column;
+      aspect-ratio: 2200 / 626; border-radius: 0; overflow: hidden; background: transparent;
     }
-    .sec-layers.wf-in .wf-diagram {
-      transform: translateY(clamp(-70px, -8vh, -30px));
-    }
-    .wf-diagram-left-wrap { flex: 0 0 13.8088%; height: 100%; display: flex; }
-    .wf-diagram-left { display: block; width: 100%; height: 100%; object-fit: cover; }
-    /* 오른쪽은 두 장을 겹쳐 둔다: 스크롤로 들어온 직후엔 방금 본 컨텍스트 플로우 사진(base)이
-       그대로 이어져 보이다가, 버튼 3개가 다 올라온 뒤에야 WHO 강조본(overlay)으로 디졸브된다. */
-    .wf-diagram-right-wrap { position: relative; flex: 1 1 0; min-width: 0; height: 100%; }
+    /* WHO/WHAT/WHERE 버튼에 따라 강조본이 디졸브로 바뀌는 패킷 데이터 한 장만 보여준다. */
+    .wf-diagram-right-wrap { position: relative; width: 100%; flex: 1 1 auto; min-height: 0; }
     .wf-diagram-right { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
-    .wf-diagram-right--overlay { opacity: 0; transition: opacity .8s ease; }
-    .sec-layers.wf-in .wf-diagram-right--overlay { opacity: 1; transition-delay: .55s; }
+    .wf-diagram-right--overlay { opacity: 1; transition: opacity .8s ease; }
     .layer-visual {
       position: relative;
       width: 100%;
@@ -3744,17 +3714,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
       color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
+      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
-    .footer-group { width: 170px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group { width: 190px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group:first-child { width: 220px; }
     .footer-title { color: #8390a2; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
-      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none; white-space: nowrap;
     }
-    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; flex: 0 0 auto; }
     /* 페이지는 있지만 지금은 연결하지 않는 항목 — 다른 링크와 시각적으로 완전히 같고,
        눌렀을 때 이동만 안 된다. */
     .footer-link--disabled { cursor: default; pointer-events: none; }
@@ -3803,7 +3774,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .phil-card { width: 100%; }
       .agent-row { flex-direction: column; }
       .agent-q-col, .agent-principles-col { width: 100%; }
-      .principles-scroll { grid-template-columns: 1fr 1fr; }
+      .principle-row { grid-template-columns: 1fr; }
       .sec-system-intro, .sec-ux-intro { flex-direction: column; }
       .sys-right, .ux-right { max-width: 100%; }
       .layers-grid { grid-template-columns: 1fr; }
@@ -3867,7 +3838,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .site-footer::before { top: 28px; }
       .footer-headline { font-size: 36px; }
       .footer-nav { flex-direction: column; gap: 36px; }
-      .footer-group { width: 100%; }
+      .footer-group, .footer-group:first-child { width: 100%; }
       .footer-link, .footer-title, .footer-copy { font-size: 16px; }
       .phil-card .card-name { font-size: clamp(18px,2.8vw,42px); }
       .phil-card .card-sub { font-size: 16px; }
@@ -4131,8 +4102,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
          바뀌어도 박스 크기(가운데 정렬 기준)가 흔들리지 않게 한다. -->
     <p class="skeeeep-t1 zt-outer" id="skeeeepT1" aria-label="SKEEP, INTO THE, NEW ERA">
       <span class="zt-sizer" aria-hidden="true">INTO THE</span>
-      <span class="zt-slot" id="ztSlot0" aria-hidden="true"></span>
-      <span class="zt-slot" id="ztSlot1" aria-hidden="true"></span>
+      <span class="zt-slot" id="ztSlot0" aria-hidden="true"><span class="zt-scale"><span class="zt-rotate"></span></span></span>
+      <span class="zt-slot" id="ztSlot1" aria-hidden="true"><span class="zt-scale"><span class="zt-rotate"></span></span></span>
     </p>
     <p class="skeeeep-t2">Skip the intro, Keep the flow</p>
     <p class="skip-sub" aria-hidden="true"></p>
@@ -4165,54 +4136,62 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const section = document.querySelector('.sec-skeeeep');
   if (!slot0 || !slot1 || !section) return;
   const slots = [slot0, slot1];
+  const scaleEls = slots.map((s) => s.querySelector('.zt-scale'));
+  const rotateEls = slots.map((s) => s.querySelector('.zt-rotate'));
+  if (!scaleEls[0] || !scaleEls[1] || !rotateEls[0] || !rotateEls[1]) return;
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) {
-    slot0.textContent = ZT_TEXTS[0];
-    slot0.style.transform = 'scale(1)';
-    slot0.style.opacity = '1';
-    slot1.style.opacity = '0';
+    rotateEls[0].textContent = ZT_TEXTS[0];
+    scaleEls[0].style.transform = 'scale(1)';
+    scaleEls[0].style.opacity = '1';
+    scaleEls[1].style.opacity = '0';
     return;
   }
 
-  // scale/rotate를 하나의 transform 대신 별개의 CSS 속성으로 다뤄서, 회전만 다른
-  // 이징/커브로 독립 애니메이션할 수 있게 한다.
-  const setInstant = (el, scale, opacity, rotateDeg) => {
-    el.style.transition = 'none';
-    el.style.scale = String(scale);
-    el.style.rotate = `${rotateDeg || 0}deg`;
-    el.style.opacity = String(opacity);
-    void el.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
+  // scale과 rotate를 개별 CSS 속성(el.style.scale / el.style.rotate)이 아니라
+  // 중첩된 두 엘리먼트(.zt-scale 안에 .zt-rotate)에 각자 transform으로 나눠
+  // 건다 — 회전만 다른 이징 커브로 독립 애니메이션하면서도, 무빙스타일 등에서
+  // 컴포지팅이 더 안정적인 transform 속성만 쓰기 위해서다.
+  const setInstant = (scaleEl, rotateEl, scale, opacity, rotateDeg) => {
+    scaleEl.style.transition = 'none';
+    rotateEl.style.transition = 'none';
+    scaleEl.style.transform = `scale(${scale})`;
+    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
+    scaleEl.style.opacity = String(opacity);
+    void scaleEl.offsetWidth;   // reflow: 다음 transition-enabled 변경과 배치되지 않게 끊는다
   };
-  const setAnimated = (el, scale, opacity, rotateDeg) => {
-    el.style.transition = `scale ${ZT_DURATION_MS}ms ${ZT_EASE}, rotate ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
-    el.style.scale = String(scale);
-    el.style.rotate = `${rotateDeg || 0}deg`;
-    el.style.opacity = String(opacity);
+  const setAnimated = (scaleEl, rotateEl, scale, opacity, rotateDeg) => {
+    scaleEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_DURATION_MS}ms ${ZT_EASE}`;
+    rotateEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}`;
+    scaleEl.style.transform = `scale(${scale})`;
+    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
+    scaleEl.style.opacity = String(opacity);
   };
   // 사라지는 쪽 전용: 확대(scale)는 그대로 ZT_DURATION_MS만큼 이어지되, 투명도만
   // 훨씬 짧은 ZT_FADE_MS 안에 0으로 당겨서 "다 확대되기 전에 이미 안 보이게" 만든다.
   // 회전은 등장할 때가 아니라 이 사라지는 단계에서 일어난다 — 0도로 떠 있다가
   // 투명해지며 커지는 동안 자기 각도로 비틀린다.
-  const setExitAnimated = (el, scale, rotateDeg) => {
-    el.style.transition = `scale ${ZT_DURATION_MS}ms ${ZT_EASE}, rotate ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
-    el.style.scale = String(scale);
-    el.style.rotate = `${rotateDeg || 0}deg`;
-    el.style.opacity = '0';
+  const setExitAnimated = (scaleEl, rotateEl, scale, rotateDeg) => {
+    scaleEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_EASE}, opacity ${ZT_FADE_MS}ms ${ZT_EASE}`;
+    rotateEl.style.transition = `transform ${ZT_DURATION_MS}ms ${ZT_ROTATE_EASE}`;
+    scaleEl.style.transform = `scale(${scale})`;
+    rotateEl.style.transform = `rotate(${rotateDeg || 0}deg)`;
+    scaleEl.style.opacity = '0';
   };
 
   let active = 0, idx = 0, shownCount = 1;   // SKEEP은 이미 떠 있는 상태로 시작
 
-  slot0.textContent = ZT_TEXTS[0];
-  setInstant(slot0, 1, 1, ZT_ROTATIONS[0]);
-  setInstant(slot1, ZT_START_SCALE, 0, 0);
+  rotateEls[0].textContent = ZT_TEXTS[0];
+  setInstant(scaleEls[0], rotateEls[0], 1, 1, ZT_ROTATIONS[0]);
+  setInstant(scaleEls[1], rotateEls[1], ZT_START_SCALE, 0, 0);
 
   // SKEEP → INTO THE → NEW ERA 딱 한 바퀴만 돌고, NEW ERA가 확대되며 사라지면
   // 무한반복하지 않고 곧바로 카드 플립을 트리거한다.
   function step() {
     window.setTimeout(() => {
       if (shownCount >= ZT_TEXTS.length) {
-        setExitAnimated(slots[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]);
+        setExitAnimated(scaleEls[active], rotateEls[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]);
         window.setTimeout(() => {
           // 문구 모션이 다 끝난 뒤에야 배경 사진을 디졸브로 띄우고, 그게 다
           // 나타난 뒤에 뒤집는다 — 문구 진행 중엔 배경 없이 검정만 유지.
@@ -4230,13 +4209,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }
       const inc = 1 - active;
       const nextIdx = idx + 1;
-      slots[inc].textContent = ZT_TEXTS[nextIdx];
-    setInstant(slots[inc], ZT_START_SCALE, 0, 0);
+      rotateEls[inc].textContent = ZT_TEXTS[nextIdx];
+      setInstant(scaleEls[inc], rotateEls[inc], ZT_START_SCALE, 0, 0);
       requestAnimationFrame(() => {
-        setAnimated(slots[inc], 1, 1, 0);                                // 다음 문구: 작게 시작해 0도인 채로 제자리 크기까지만 확대(회전 없음)
-        setExitAnimated(slots[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]); // 지금 문구: 0도에서 자기 각도로 비틀리며 확대되어 사라짐
+        setAnimated(scaleEls[inc], rotateEls[inc], 1, 1, 0);                                // 다음 문구: 작게 시작해 0도인 채로 제자리 크기까지만 확대(회전 없음)
+        setExitAnimated(scaleEls[active], rotateEls[active], ZT_MAX_SCALE, ZT_ROTATIONS[idx]); // 지금 문구: 0도에서 자기 각도로 비틀리며 확대되어 사라짐
         window.setTimeout(() => {
-          setInstant(slots[active], ZT_START_SCALE, 0, 0);
+          setInstant(scaleEls[active], rotateEls[active], ZT_START_SCALE, 0, 0);
           active = inc;
           idx = nextIdx;
           shownCount++;
@@ -4539,73 +4518,80 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
       <div class="agent-principles-col" data-agent-principles>
         <div class="principles-scroll" aria-label="Migratable Agent principles">
+          <div class="principle-row">
           <article class="principle-mini-card type-a">
             <div class="principle-mini-title">
-              <p>스킵 인증을</p>
-              <p>받은 환경<span class="thin">*</span>에서</p>
-              <p>경험가능함</p>
+              <p>스킵은 특정</p>
+              <p>제조사 생태계<span class="thin">*</span>에</p>
+              <p>종속되지 않는다.</p>
             </div>
             <p class="principle-mini-note">*서비스, 제품, 공간</p>
           </article>
           <article class="principle-mini-card type-a">
             <div class="principle-mini-title">
-              <p>상호작용 하는</p>
-              <p>환경의 소유 </p>
-              <p>여부와 무관함</p>
+              <p>스킵인증을</p>
+              <p>받은 환경에서</p>
+              <p>경험 가능하다.</p>
             </div>
           </article>
           <article class="principle-mini-card type-a">
             <div class="principle-mini-title">
-              <p>특정 제조사 </p>
-              <p>생태계에 </p>
-              <p>종속되지 않음</p>
+              <p>상호작용 하는</p>
+              <p>환경의 소유</p>
+              <p>여부와 무관하다.</p>
+            </div>
+          </article>
+          </div>
+          <div class="principle-row">
+          <article class="principle-mini-card type-b">
+            <div class="principle-mini-title">
+              <p>스킵은 사용자의</p>
+              <p>곁에서 맥락과</p>
+              <p>목적<span class="thin">*</span>을 수집한다.</p>
+            </div>
+            <p class="principle-mini-note">*명시적, 암묵적 목적</p>
+          </article>
+          <article class="principle-mini-card type-b">
+            <div class="principle-mini-title">
+              <p>스킵은 사용자의</p>
+              <p>목적 달성을 위해</p>
+              <p>환경을 빌린다.</p>
             </div>
           </article>
           <article class="principle-mini-card type-b">
             <div class="principle-mini-title">
-              <p>사용자의 곁에서</p>
-              <p>맥락과 목적<span class="thin">*</span>을</p>
-              <p>수집함</p>
-            </div>
-            <p class="principle-mini-note">*명시적·암묵적 목적</p>
-          </article>
-          <article class="principle-mini-card type-b">
-            <div class="principle-mini-title">
-              <p>사용자의 목적 </p>
-              <p>달성을 위해</p>
-              <p>환경을 빌림</p>
+              <p>스킵이 전달한 맥락은</p>
+              <p>보안과 학습을 위해</p>
+              <p>회수된다.</p>
             </div>
           </article>
-          <article class="principle-mini-card type-b">
-            <div class="principle-mini-title">
-              <p>전달된 맥락은 </p>
-              <p>보안과 학습을</p>
-              <p>위해 회수됨</p>
-            </div>
-          </article>
+          </div>
+          <div class="principle-row">
           <article class="principle-mini-card type-c">
             <div class="principle-mini-title">
               <p>스킵 경험은</p>
               <p>단절되지 않는</p>
-              <p>것을 전제로 함</p>
+              <p>것을 전제로 한다.</p>
             </div>
-            <p class="principle-mini-note">*대신 목적단위 PAUSE가 가능함</p>
+            <p class="principle-mini-note">*대신 목적단위 PAUSE가 가능함.</p>
           </article>
           <article class="principle-mini-card type-c">
             <div class="principle-mini-title">
-              <p>스킵이 모핑된</p>
-              <p>환경은 곧</p>
-              <p>주력 디바이스임</p>
+              <p>스킵은 사용자가</p>
+              <p>직접 상호작용<span class="thin">*</span> 중인</p>
+              <p>환경에서 소통한다.</p>
             </div>
-            <p class="principle-mini-note">*주력 디바이스는 곧 인터페이스임</p>
+            <p class="principle-mini-note">*상호작용 중인 환경에서 인터렉션 함.</p>
           </article>
           <article class="principle-mini-card type-c">
             <div class="principle-mini-title">
               <p>스킵은 패킷을</p>
               <p>통해 자신을</p>
-              <p>환경에 모핑함</p>
+              <p>환경에 모핑하고</p>
+              <p>정보를 전달한다.</p>
             </div>
           </article>
+          </div>
         </div>
       </div>
     </div>
@@ -4644,7 +4630,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="system-flow-sequence" data-system-flow-sequence>
 <div class="system-flow-sticky">
-<section class="sec-system-diagram system-flow-scene system-flow-scene--diagram" data-system-flow-diagram>
+<section class="sec-system-diagram system-flow-scene system-flow-scene--diagram fi" data-system-flow-diagram>
   <div class="diagram-journey-copy">
     <p class="diagram-journey-title">User Journey</p>
     <p class="diagram-journey-desc">사용자가 경험하는 이동의 흐름</p>
@@ -4743,11 +4729,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <!-- ═══════════════════════
   11. SYSTEM LAYERS
 ═══════════════════════ -->
-<section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
+<section class="sec-layers system-flow-scene system-flow-scene--layers fi" data-system-flow-layers data-selected-layer="passive">
   <div class="wf-diagram">
-    <div class="wf-diagram-left-wrap" aria-hidden="true"></div>
     <div class="wf-diagram-right-wrap">
-      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who-display.jpg?v=20260809-3" alt="WHO 데이터가 하이라이트된 패킷 흐름">
+      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who-display.jpg?v=20260810-1" alt="WHO 데이터가 하이라이트된 패킷 흐름">
     </div>
   </div>
   <div class="wf-buttons-wrap">
@@ -4755,21 +4740,21 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       <button class="wf-btn active" type="button" role="tab" aria-selected="true" data-wf="who">
         <p class="wf-btn-title">WHO</p>
         <div class="wf-btn-desc">
-          <p>사용자가 어떤 사람인지 나타내는 맥락 카테고리 3가지로, 스킵의 장기 기억입니다.</p>
+          <p>사용자가 어떤 사람인지 나타내는 맥락 카테고리 3가지로,<br>스킵의 장기 기억입니다.</p>
           <p>패킷에 이 데이터가 담길때에는 각 환경이 요구하는 설정값에 맞춰 선별됩니다.</p>
         </div>
       </button>
       <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="what">
         <p class="wf-btn-title">WHAT</p>
         <div class="wf-btn-desc">
-          <p>사용자가 스킵을 통해 무엇을 달성하고 싶은지를 담고있는 데이터입니다.</p>
+          <p>사용자가 스킵을 통해 무엇을 달성하고 싶은지를<br>담고있는 데이터입니다.</p>
           <p>목적이 발생하면 활성화되어, 환경이 알아들을 수 있는 언어로 만들어 전달하죠.</p>
         </div>
       </button>
       <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="where">
         <p class="wf-btn-title">WHERE</p>
         <div class="wf-btn-desc">
-          <p>사용자의 주변 환경을 상시 스캔하며 사용 가능성을 파악한 데이터입니다.</p>
+          <p>사용자의 주변 환경을 상시 스캔하며 사용 가능성을<br>파악한 데이터입니다.</p>
           <p>스킵은 사용자의 목적이 없는 순간에도 쉬지 않고 탐색합니다.</p>
         </div>
       </button>
@@ -4785,9 +4770,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const btns = [...section.querySelectorAll('.wf-btn[data-wf]')];
   const rightImg = section.querySelector('#wfDiagramRight');
   const WF_IMAGE = {
-    who: 'assets/whoflow-who-display.jpg?v=20260809-3',
-    what: 'assets/whoflow-what-display.jpg?v=20260809-3',
-    where: 'assets/whoflow-where-display.jpg?v=20260809-3',
+    who: 'assets/whoflow-who-display.jpg?v=20260810-1',
+    what: 'assets/whoflow-what-display.jpg?v=20260810-1',
+    where: 'assets/whoflow-where-display.jpg?v=20260810-1',
   };
   const preloadWfImages = () => {
     Object.values(WF_IMAGE).forEach((src) => {
@@ -4913,79 +4898,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 })();
 </script>
 
-<script>
-(() => {
-  const sequence = document.querySelector('[data-system-flow-sequence]');
-  if (!sequence) return;
-
-  let ticking = false;
-  let showingLayers = false;
-  let journeyTab = 0;
-  const layersSection = document.querySelector('.sec-layers');
-  const journeyCopyEl = document.querySelector('.diagram-journey-copy');
-  const diagramTabsEl = document.querySelector('.diagram-tabs');
-  let wfInTimer = null;
-
-  const render = () => {
-    ticking = false;
-    const rect = sequence.getBoundingClientRect();
-    const scrollRange = Math.max(1, sequence.offsetHeight - window.innerHeight);
-    const progress = Math.min(1, Math.max(0, -rect.top / scrollRange));
-
-    // 레이어 씬으로 넘어가기 직전 구간에서 제목/토글을 스크롤 위치에 정확히 맞춰
-    // (트랜지션 없이) 매 프레임 직접 옅어지게 한다 — 클래스 토글 + 고정시간
-    // 트랜지션 방식은 빠르게 스크롤하면 화면 밖에서 끝나버려 "띡" 사라지는
-    // 것처럼 보였다. 스크롤을 얼마나 빠르게 하든 항상 보이는 만큼만 옅어진다.
-    const chromeFadeStart = 0.40, chromeFadeEnd = 0.50;
-    const chromeT = Math.min(1, Math.max(0, (progress - chromeFadeStart) / (chromeFadeEnd - chromeFadeStart)));
-    const chromeOpacity = 1 - chromeT;
-    if (journeyCopyEl) {
-      journeyCopyEl.style.opacity = String(chromeOpacity);
-      journeyCopyEl.style.pointerEvents = chromeOpacity < 0.05 ? 'none' : 'auto';
-    }
-    if (diagramTabsEl) {
-      diagramTabsEl.style.opacity = String(chromeOpacity);
-      diagramTabsEl.style.pointerEvents = chromeOpacity < 0.05 ? 'none' : 'auto';
-    }
-
-    // 01(사용자 경험 플로우) → 02(맥락 플로우): 레이어 전환 문턱(0.50) 이전, 다이어그램이 보이는 동안 스크롤만으로 전환.
-    const nextJourneyTab = journeyTab === 0 ? (progress > 0.22 ? 1 : 0) : (progress > 0.12 ? 1 : 0);
-    if (nextJourneyTab !== journeyTab) {
-      journeyTab = nextJourneyTab;
-      if (window.__skeepSelectJourneyTab) window.__skeepSelectJourneyTab(journeyTab);
-    }
-
-    const nextState = showingLayers ? progress > 0.38 : progress > 0.50;
-
-    if (nextState !== showingLayers) {
-      showingLayers = nextState;
-      sequence.classList.toggle('show-layers', showingLayers);
-      if (layersSection) {
-        if (wfInTimer) { clearTimeout(wfInTimer); wfInTimer = null; }
-        layersSection.classList.remove('wf-in');
-        sequence.classList.remove('wf-expanded');
-        if (showingLayers) {
-          wfInTimer = setTimeout(() => {
-            layersSection.classList.add('wf-in');
-            sequence.classList.add('wf-expanded');
-            wfInTimer = null;
-          }, 1000);
-        }
-      }
-    }
-  };
-
-  const requestRender = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(render);
-  };
-
-  window.addEventListener('scroll', requestRender, { passive: true });
-  window.addEventListener('resize', requestRender);
-  render();
-})();
-</script>
+<!-- 예전엔 여기서 스크롤 진행도를 매 프레임(rAF) 다시 계산해 제목 페이드,
+     01→02 탭 자동전환, diagram→layers 크로스페이드, 버튼 지연 등장까지
+     전부 처리했다 — 무빙스타일에서 스크롤마다 버벅이던 원인이라 걷어냈다.
+     이제 두 섹션은 그냥 순서대로 쌓여 있고, 화면에 들어오면 공용 .fi/.vis
+     패턴(맨 아래 스크립트)으로 한 번만 페이드인된다. 탭은 클릭으로만 바뀐다. -->
 
 <!-- ═══════════════════════
   13. PACKET INTRO
@@ -5392,11 +5309,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     transition: width .9s cubic-bezier(.77,0,.175,1), height .7s cubic-bezier(.22,1,.36,1),
                 gap .6s ease, border-radius .6s ease,
                 transform .8s cubic-bezier(.22,1,.32,1); }
-  .sq-morph-seg { flex: 1 1 0; height: 100%; position: relative; overflow: hidden;
+  .sq-morph-seg { flex: 1 1 0; min-width: 0; height: 100%; position: relative; overflow: hidden;
     background: #262629; border-radius: 0;
     contain: layout paint;
     transition: background .85s ease, border-radius .6s ease,
                 transform .8s cubic-bezier(.22,1,.32,1), opacity .45s ease; }
+  /* 소수 픽셀로 3등분될 때 브라우저가 각 조각의 경계를 따로 안티앨리어싱하며
+     만드는 1px 이음선을 없앤다. transform 보정 대신 실제 레이아웃을 겹친다. */
+  .sq-morph-seg + .sq-morph-seg { margin-left: -1px; }
   .sq-card-txt { position: absolute; inset: 0; padding: clamp(14px, 1.5vw, 30px);
     display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
     opacity: 0; pointer-events: none; transition: opacity .5s ease .25s;
@@ -5410,16 +5330,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   .sq-morph.is-in.split {
     width: calc(var(--bar-w) + (var(--big-w) - var(--bar-w)) * var(--big));
     height: calc(var(--bar-h) + (var(--big-h) - var(--bar-h)) * var(--big));
-    gap: calc(3px + 15px * var(--big));
+    /* 위의 1px 겹침을 보상해 최종 카드 간격은 기존과 동일하게 유지 */
+    gap: calc(4px + 15px * var(--big));
     border-radius: 0; }
   .sq-morph.grown { --big: 1; }
   .sq-morph.is-in.split .sq-morph-seg { border-radius: 0; }
-  /* flex 분할 폭이 소수 픽셀로 떨어지는 화면에서 마지막 조각 오른쪽에
-     1px짜리 흰 틈이 생기지 않도록 끝 조각만 가장자리까지 살짝 덮는다. */
-  .sq-morph.is-in.split:not(.stacking) .seg3 {
-    transform-origin: left center;
-    transform: scaleX(1.006);
-  }
   .sq-morph.is-in.split .seg1 { background: #FF6B3D; --card-txt: #703817; }
   .sq-morph.is-in.split .seg2 { background: #D9FF60; --card-txt: #65762A; }
   .sq-morph.is-in.split .seg3 { background: #8BDFEF; --card-txt: #2E616A; }
@@ -5466,15 +5381,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
-        <div class="stage-title-row" data-open-detail="sensing" role="button" tabindex="0"><p class="stage-kr">한 발 먼저</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <div class="stage-title-row" data-open-detail="sensing" role="button" tabindex="0"><p class="stage-kr">인식과 준비</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
         <p class="stage-desc">언제든 주변을 살피며 다음을 준비합니다.<br>낯선 곳이더라도 자연스럽게, 자신있게.</p>
       </div>
       <div class="ux-left-panel" data-i="1">
-        <a class="stage-title-row" href="/negotiation"><p class="stage-kr">자리 빌리기</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="stage-title-row" href="/negotiation"><p class="stage-kr">경험 및 상호작용</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         <p class="stage-desc">환경의 기능은 내 것처럼, 그 안의 사람들과는 부딪히지 않게.<br>어디든 자연스럽게 맞춰 들어갑니다.</p>
       </div>
       <div class="ux-left-panel" data-i="2">
-        <a class="stage-title-row" href="/service2"><p class="stage-kr">다음을 기약하며</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="stage-title-row" href="/service2"><p class="stage-kr">종료와 개인화</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         <p class="stage-desc">이곳엔 아무것도 남기지 않지만, 완전히 잊는 것도 아닙니다.<br>다음에 더 나은 모습으로 만나요.</p>
       </div>
       </div>
@@ -5546,6 +5461,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
           <span class="stage-logic-tag">실행 블록 처리</span>
         </div>
         <p class="stage-logic-desc">각자의 역할을 모아<br>하나의 흐름으로, 환경의 능력을 내 것으로</p>
+      </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Interaction Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">상호작용 할 환경 선별</span>
+          <span class="stage-logic-tag">소통과 설정</span>
+        </div>
+        <p class="stage-logic-desc">언제나 당신의 곁에서,<br>부를 때 나타나고 원할 때 제어하는 방법</p>
       </div>
         <div class="stage-logic-card">
         <p class="stage-logic-title">Download Logic</p>
@@ -6092,7 +6015,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <footer class="site-footer fi">
   <div class="footer-inner">
-    <p class="footer-headline">Skip the Intro<br>Keep the Flow</p>
+    <p class="footer-headline">SKIP THE INTRO<br>KEEP THE FLOW</p>
     <nav class="footer-nav" aria-label="Footer">
       <div class="footer-group">
         <p class="footer-title">About</p>
@@ -6106,9 +6029,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       <div class="footer-group">
         <p class="footer-title">Experience</p>
         <div class="footer-links">
-          <a class="footer-link" href="saegyeodeutda.html">한 발 먼저</a>
-          <a class="footer-link" href="/negotiation">자리 빌리기</a>
-          <a class="footer-link" href="/service2">다음을 기약하며</a>
+          <a class="footer-link" href="saegyeodeutda.html">인식과 준비</a>
+          <a class="footer-link" href="/negotiation">경험 및 상호작용</a>
+          <a class="footer-link" href="/service2">종료와 개인화</a>
         </div>
       </div>
       <div class="footer-group">
@@ -6179,9 +6102,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       animationTimer = window.setTimeout(() => { animating = false; }, 860);
       if (next) {
         // 카드 플립(.78s) + 사진이 화면 전체로 자라나는 트랜지션(.78s 지연 + 1.4s)이
-        // 끝난 뒤, 잠깐 더 보여주는 여유(1.5s)까지 지나야 정방향 스크롤을 풀어준다.
+        // 끝나자마자(=화면이 다 완성되자마자) 정방향 스크롤을 풀어준다 — 예전엔
+        // 여기에 1.5초 감상 시간을 더 얹어(총 3.7초) 화면이 다 뜨고도 한참 스크롤이
+        // 안 먹힌다는 피드백을 받았다.
         window.clearTimeout(sequenceDoneTimer);
-        sequenceDoneTimer = window.setTimeout(() => { sequenceDone = true; }, 3700);
+        sequenceDoneTimer = window.setTimeout(() => { sequenceDone = true; }, 2200);
       }
       return true;
     };
@@ -7102,6 +7027,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       measureAgent();
       requestAgentUpdate();
     });
+    // 안전장치: 카메라 패닝 → 제목 → "좌측 상단 문구 다발"(agent-sub-line) →
+    // 토글이 순서대로 나타나는 이 인트로는 스크롤 이벤트가 아니라
+    // requestAnimationFrame이 자기 자신을 계속 호출하는 체인으로 굴러간다
+    // (스크롤을 멈춰도 끝까지 재생돼야 하니까). 무빙스타일 등 일부 환경에서
+    // 프레임이 한 번이라도 씹히면 이 체인이 영영 끊겨서, 딱 그 순간의 opacity
+    // (0에 가까운 값)에서 문구가 멈춘 채 다시는 안 이어진다 — 스크롤을 더
+    // 안 하면 재트리거될 계기도 없다. rAF 체인과 별개로 300ms마다 한 번씩 더
+    // 깨워서, 체인이 끊겨도 다음 tick에서 이어받아 인트로가 반드시 끝까지
+    // 진행되게 한다(경과 시간 기반 계산이라 몇 프레임을 건너뛰어도 다음 호출이
+    // 바로 올바른 상태로 따라잡는다).
+    window.setInterval(requestAgentUpdate, 300);
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         agentMetrics = null;

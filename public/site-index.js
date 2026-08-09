@@ -16,9 +16,9 @@
   var liveBase = 'http://localhost:4180/skeep-combined';
   var items = [
     { label: '오버뷰', href: isFile ? 'index.html' : basePath + '/pages/index.html', match: ['/pages/index.html'] },
-    { label: '한 발 먼저', href: isFile ? 'saegyeodeutda.html' : basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
-    { label: '자리 빌리기', href: isFile ? liveBase + '/negotiation' : basePath + '/negotiation', match: ['/negotiation'], external: isFile },
-    { label: '다음을 기약하며', href: isFile ? liveBase + '/service2' : basePath + '/service2', match: ['/service2'], external: isFile },
+    { label: '인식과 준비', href: isFile ? 'saegyeodeutda.html' : basePath + '/pages/saegyeodeutda.html', match: ['/pages/saegyeodeutda.html'] },
+    { label: '경험 및 상호작용', href: isFile ? liveBase + '/negotiation' : basePath + '/negotiation', match: ['/negotiation'], external: isFile },
+    { label: '종료와 개인화', href: isFile ? liveBase + '/service2' : basePath + '/service2', match: ['/service2'], external: isFile },
     { label: '비즈니스', href: isFile ? liveBase + '/business' : basePath + '/business', match: ['/business'], external: isFile }
   ];
 

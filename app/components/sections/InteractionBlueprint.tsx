@@ -113,7 +113,7 @@ export function InteractionBlueprint() {
 
       <div className={styles.featureSection}>
         <header className={styles.sectionHeader}>
-          <span>SKEEP Interaction Features</span>
+          <span>SKEEP Interaction</span>
           <h2>사용자의 곁에 머무는 스킵의 인터랙션</h2>
           <p>
             여러 기기를 활성화할 때도, 스킵은 나와 상호작용 중인 환경에서부터
@@ -161,7 +161,6 @@ export function InteractionBlueprint() {
         <header className={styles.sectionHeader}>
           <span>SKEEP Following</span>
           <h2>나를 중심으로하는 상호작용</h2>
-          <h3>SKEEP Interaction Features</h3>
           <p>
             SKEEP은 어느 한 곳에 머무르지 않습니다.
             <br />
@@ -176,7 +175,7 @@ export function InteractionBlueprint() {
       <div className={styles.outputSection}>
         <header className={`${styles.sectionHeader} ${styles.sectionHeaderSplit}`}>
           <div className={styles.sectionHeaderMain}>
-            <span>SKEEP Interaction Features</span>
+            <span>SKEEP Output</span>
             <h2>스킵이 말하는 방법</h2>
           </div>
           <p>

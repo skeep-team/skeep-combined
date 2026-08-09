@@ -23,9 +23,9 @@ const groups = [
   {
     title: "Experience",
     links: [
-      { label: "한 발 먼저", href: `${BASE_PATH}/pages/saegyeodeutda.html` },
-      { label: "자리 빌리기", href: `${BASE_PATH}/negotiation` },
-      { label: "다음을 기약하며", href: `${BASE_PATH}/service2` },
+      { label: "인식과 준비", href: `${BASE_PATH}/pages/saegyeodeutda.html` },
+      { label: "경험 및 상호작용", href: `${BASE_PATH}/negotiation` },
+      { label: "종료와 개인화", href: `${BASE_PATH}/service2` },
     ],
   },
   {
@@ -44,9 +44,9 @@ export function Footer() {
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <p className={styles.headline}>
-          Skip the Intro
+          SKIP THE INTRO
           <br />
-          Keep the Flow
+          KEEP THE FLOW
         </p>
         <nav className={styles.nav} aria-label="Footer">
           {groups.map((group) => (

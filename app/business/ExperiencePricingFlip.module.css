@@ -110,14 +110,22 @@
   width: calc(1600 * var(--px));
   height: calc(700 * var(--px));
   border-radius: var(--radius-xl);
-  background: #e7eaf0;
+  /* 사진이 덮여 있는 동안(카드 상태)에도 이 색이 그대로 사진 밑에 깔려 있다.
+     사진이 사라지는 순간에만 색을 바꾸면(예전엔 밝은 회색 #e7eaf0였다) 사진이
+     옅어지는 동안 그 회색이 비쳐 보였다 — 처음부터 펼쳐진 뒤와 같은 색으로
+     둬서 사진이 사라져도 색이 안 바뀌고 그대로 이어진다. */
+  background-color: #161A1E;
   clip-path: inset(
     0 calc((1 - var(--expand)) * 810 * var(--px)) 0 0 round
       var(--radius-xl)
   );
   contain: layout paint;
   will-change: clip-path;
-  transition: clip-path 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  /* 사진(.panelBg)이 opacity로 완전히 사라지는 데 0.5s가 걸린다 — 실제로
+     펼쳐지는(clip-path) 움직임은 그게 다 끝난 뒤에야 시작하도록 같은 0.5s만큼
+     지연을 둔다. 사진이 사라지는 도중에 패널이 같이 벌어지면 사진이 걷히는
+     모습이 옆으로 새는 것처럼 겹쳐 보인다. */
+  transition: clip-path 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
 }
 
 /* 카드/패널 사진 배경 + 아래에서 올라오는 검정 딤(글자 가독성용) */
@@ -139,12 +147,21 @@
   left: 0;
   top: 0;
   bottom: 0;
-  width: calc((790 + 810 * var(--expand)) * var(--px));
+  width: calc(790 * var(--px));
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
-  will-change: width;
-  transition: width 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  /* 예전엔 폭을 790→1600으로 늘려 사진이 같이 넓어지는 것처럼 보이게 했는데,
+     width는 레이아웃(리플로우) 속성이라 무빙스타일에서 펼쳐지는 내내 매 프레임
+     다시 계산되어 찌글거렸다 — 어차피 펼쳐지면 위 딤(::before)이 진하게
+     깔리고 요금제 카드가 대부분 덮어서 사진이 넓어지는 게 잘 보이지도 않는다.
+     그래서 폭은 처음 크기로 고정해 두고, 펼쳐지면 그냥 opacity로 지운다. */
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.sequence[data-revealed="true"] .panelBg {
+  opacity: 0;
 }
 
 .panelBg picture,
@@ -436,9 +453,12 @@
     0
   );
   will-change: opacity, transform;
+  /* 검정 영역(.panel)이 다 펼쳐지는 데 사진 페이드(0.5s) + clip-path(0.62s) =
+     1.12s가 걸린다 — 카드는 그게 다 끝난 뒤에야 나타나도록 같은 만큼 지연을
+     둔다. 먼저 나타나면 아직 좁은 패널 밖으로 카드가 삐져나온 것처럼 보인다. */
   transition:
-    opacity 0.48s ease,
-    transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.48s ease 1.12s,
+    transform 0.62s cubic-bezier(0.22, 1, 0.36, 1) 1.12s;
 }
 
 .card {

@@ -11,7 +11,7 @@ export function ClosingCard() {
       <Reveal className={styles.reveal}>
         <img
           className={styles.bgPoster}
-          src={`${BASE_PATH}/service3/closing-wooden-blocks.png`}
+          src={`${BASE_PATH}/service3/closing-wooden-blocks-v2.jpg`}
           alt=""
           aria-hidden="true"
         />

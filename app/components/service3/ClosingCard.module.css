@@ -1,18 +1,22 @@
 .section {
   position: relative;
-  min-height: 100vh;
-  margin-top: clamp(160px, 18vw, 300px);
-  overflow: hidden;
-  background: #000000;
+  margin-top: clamp(200px, 22vw, 340px);
+  margin-bottom: clamp(180px, 20vw, 320px);
+  padding-inline: var(--edge-padding);
 }
 
+/* "한발 먼저"의 실행 블록 카드와 같은 처리 — 화면 끝까지 꽉 채우는 대신
+   좌우 여백을 두고 둥근 모서리 사각형 카드로 보여준다. */
 .reveal {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: clamp(24px, 5vw, 83px);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: #000000;
 }
 
 .bgPoster,
@@ -42,7 +46,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.66);
   pointer-events: none;
 }
 

@@ -261,23 +261,28 @@
     .sd-pill-pause .sd-pill-label { animation-name: sdPillLabelPause; }
     /* 3개의 레이아웃 칸은 고정하고 합성 전용 transform으로 7:3:3 폭을 만든다.
        21/13·9/13은 기존 flex-grow 7·3의 실제 폭을 동일하게 환산한 값이다. */
+    /* 접힌(narrow) 상태의 border-radius는 clamp(...,110px) 상한이 있어서,
+       화면이 넓어 실제 원 지름이 220px(반지름 110px×2)를 넘어서면 모서리만
+       둥근 알약 모양으로 보이고 완전한 원이 안 됐다 — "최대로 접힌 게 애매함".
+       scaleX(9/13)가 13:9 박스를 정확히 정사각형으로 만들어주므로(가로세로
+       같아짐), 50%로 두면 어떤 화면 크기에서도 항상 완전한 원이 된다. */
     @keyframes sdPillSensing {
       0%, 14%   { transform: translate3d(0,0,0) scaleX(1.615385); border-radius: 4px; }
-      28%, 47%  { transform: translate3d(0,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
-      61%, 80%  { transform: translate3d(0,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
+      28%, 47%  { transform: translate3d(0,0,0) scaleX(.692308); border-radius: 50%; }
+      61%, 80%  { transform: translate3d(0,0,0) scaleX(.692308); border-radius: 50%; }
       100%      { transform: translate3d(0,0,0) scaleX(1.615385); border-radius: 4px; }
     }
     @keyframes sdPillInput {
-      0%, 14%   { transform: translate3d(61.5385%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
-      28%, 47%  { transform: translate3d(-30.7692%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
+      0%, 14%   { transform: translate3d(61.5385%,0,0) scaleX(.692308); border-radius: 50%; }
+      28%, 47%  { transform: translate3d(-30.7692%,0,0) scaleX(.692308); border-radius: 50%; }
       61%, 80%  { transform: translate3d(-30.7692%,0,0) scaleX(1.615385); border-radius: 4px; }
-      100%      { transform: translate3d(61.5385%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
+      100%      { transform: translate3d(61.5385%,0,0) scaleX(.692308); border-radius: 50%; }
     }
     @keyframes sdPillPause {
-      0%, 14%   { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
+      0%, 14%   { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: 50%; }
       28%, 47%  { transform: translate3d(-61.5385%,0,0) scaleX(1.615385); border-radius: 4px; }
-      61%, 80%  { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
-      100%      { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: clamp(60px,8.5vw,110px); }
+      61%, 80%  { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: 50%; }
+      100%      { transform: translate3d(30.7692%,0,0) scaleX(.692308); border-radius: 50%; }
     }
     @keyframes sdPillLabelSensing {
       0%, 14%, 100% { transform: translate3d(30.7692%,0,0); }
@@ -2141,17 +2146,18 @@
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
       color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
+      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
-    .footer-group { width: 170px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group { width: 190px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group:first-child { width: 220px; }
     .footer-title { color: #8390a2; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
-      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none; white-space: nowrap;
     }
-    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; flex: 0 0 auto; }
     .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
@@ -2167,7 +2173,7 @@
       .site-footer::before { top: 28px; }
       .footer-headline { font-size: 36px; }
       .footer-nav { flex-direction: column; gap: 36px; }
-      .footer-group { width: 100%; }
+      .footer-group, .footer-group:first-child { width: 100%; }
       .footer-link, .footer-title, .footer-copy { font-size: 16px; }
     }
 
@@ -3889,17 +3895,18 @@
     .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(64px, 10vw, 160px); width: 100%; }
     .footer-headline {
       color: #000; font-family: 'Elza Cond', "Helvetica Now Display", "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; white-space: nowrap;
+      font-size: 52px; font-weight: 500; line-height: normal; letter-spacing: -0.01em; text-transform: uppercase; white-space: nowrap;
     }
     .footer-nav { display: flex; align-items: flex-start; gap: clamp(56px, 5.2vw, 100px); }
-    .footer-group { width: 170px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group { width: 190px; display: flex; flex-direction: column; gap: 24px; }
+    .footer-group:first-child { width: 220px; }
     .footer-title { color: #8390a2; font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: 0; }
     .footer-links { display: flex; flex-direction: column; gap: 12px; }
     .footer-link {
-      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
+      min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none; white-space: nowrap;
     }
-    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; flex: 0 0 auto; }
     .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
@@ -3976,7 +3983,7 @@
       .site-footer::before { top: 28px; }
       .footer-headline { font-size: 36px; }
       .footer-nav { flex-direction: column; gap: 36px; }
-      .footer-group { width: 100%; }
+      .footer-group, .footer-group:first-child { width: 100%; }
       .footer-link, .footer-title, .footer-copy { font-size: 16px; }
       .feat-card { flex: 1 1 100%; }
       .ai-grad-card { flex: 1 1 100%; }
@@ -4129,7 +4136,7 @@
   </div>
   -->
   <div class="sd-hero-photo fi d1" aria-hidden="true">
-    <div class="sd-pixel-dissolve" id="sdPixelDissolve" data-src="assets/input-hero-door.png"></div>
+    <div class="sd-pixel-dissolve" id="sdPixelDissolve" data-src="assets/input-hero-walk-v2.jpg"></div>
   </div>
   <p class="sd-summary-hero-label fi d1">Input Logic</p>
   <div class="sd-summary-hero-body">
@@ -7242,7 +7249,7 @@
 <!-- ══ FOOTER ══ -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-headline">Skip the Intro<br>Keep the Flow</p>
+    <p class="footer-headline">SKIP THE INTRO<br>KEEP THE FLOW</p>
     <nav class="footer-nav" aria-label="Footer">
       <div class="footer-group">
         <p class="footer-title">About</p>
@@ -7256,9 +7263,9 @@
       <div class="footer-group">
         <p class="footer-title">Experience</p>
         <div class="footer-links">
-          <a class="footer-link" href="saegyeodeutda.html">한 발 먼저</a>
-          <a class="footer-link" href="/negotiation">자리 빌리기</a>
-          <a class="footer-link" href="/service2">다음을 기약하며</a>
+          <a class="footer-link" href="saegyeodeutda.html">인식과 준비</a>
+          <a class="footer-link" href="/negotiation">경험 및 상호작용</a>
+          <a class="footer-link" href="/service2">종료와 개인화</a>
         </div>
       </div>
       <div class="footer-group">

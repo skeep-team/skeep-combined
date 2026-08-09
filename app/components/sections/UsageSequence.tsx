@@ -12,27 +12,39 @@ export type UsageSection = {
   note?: string;
 };
 
-/* 넘어가는 지점. 되돌아오는 지점을 조금 앞에 둬서 경계에서 떨리지 않게 한다. */
-const forwardThresholds = [0.34, 0.67];
-const reverseThresholds = [0.28, 0.61];
-
 type UsageArtworkPhase = "bubble" | "bubbleExit" | "watch" | "watchExit";
+
+/* "watch" 단계는 예전엔 3초짜리 mp4였다 — 무빙스타일에서 버퍼링이 밀려
+   빈 원으로 보이거나 반복이 멈추는 문제가 반복돼서 정지 이미지로 바꿨다.
+   영상 길이와 비슷하게, 이 이미지를 보여주는 시간만 타이머로 잡아준다. */
+const WATCH_HOLD_MS = 2600;
 
 const MORE_SLIDES = [
   {
-    frames: ["more-long-click.png"],
+    frames: [
+      "more-carousel-1-1.png",
+      "more-carousel-1-2.png",
+      "more-carousel-1-3.png",
+      "more-carousel-1-4.png",
+    ],
     alt: "Long click interaction",
+    badge: "long click",
   },
   {
     frames: [
-      "more-long-touch.png",
-      "more-long-touch-1.png",
-      "more-long-touch-2.png",
-      "more-long-touch-3.png",
+      "more-carousel-2-1.png",
+      "more-carousel-2-2.png",
+      "more-carousel-2-3.png",
+      "more-carousel-2-4.png",
     ],
     alt: "Long touch interaction",
+    badge: "long touch",
   },
-  { frames: ["more-voice.png"], alt: "Voice interaction" },
+  {
+    frames: ["more-voice.png"],
+    alt: "Voice interaction",
+    badge: "voice",
+  },
 ];
 
 function MoreCarousel() {
@@ -40,48 +52,6 @@ function MoreCarousel() {
   const [activeFrame, setActiveFrame] = useState(0);
   const [voicePhase, setVoicePhase] = useState(0);
   const pointerStartX = useRef<number | null>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const moreVideoRef = useRef<HTMLVideoElement>(null);
-
-  /* 이 영상은 예전에 autoPlay+preload="auto"로 화면 밖에 있어도(스크롤로 아직
-     안 온 상태여도) 바로 다운로드/재생됐다 — 같은 컴포넌트 안의 다른 영상들과
-     동시에 대역폭·디코딩 자원을 다퉈서 정작 필요할 때(스크롤로 들어온 순간)
-     영상들이 버벅이거나 재생을 놓치는 원인이 됐다. IntersectionObserver로
-     실제로 화면에 보일 때만, 그리고 이 슬라이드가 활성 상태일 때만 재생한다. */
-  useEffect(() => {
-    const root = rootRef.current;
-    const video = moreVideoRef.current;
-
-    if (!root || !video) {
-      return;
-    }
-
-    let visible = false;
-
-    const sync = () => {
-      if (visible && activeIndex === 0) {
-        if (video.paused) {
-          video.muted = true;
-          video.play().catch(() => {});
-        }
-      } else if (!video.paused) {
-        video.pause();
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        visible = entries[0]?.isIntersecting ?? false;
-        sync();
-      },
-      { threshold: 0.2 },
-    );
-
-    observer.observe(root);
-    sync();
-
-    return () => observer.disconnect();
-  }, [activeIndex]);
 
   useEffect(() => {
     const frameCount = MORE_SLIDES[activeIndex].frames.length;
@@ -120,7 +90,6 @@ function MoreCarousel() {
 
   return (
     <div
-      ref={rootRef}
       className={styles.moreCarousel}
       role="region"
       aria-roledescription="carousel"
@@ -169,57 +138,29 @@ function MoreCarousel() {
               aria-hidden={index !== activeIndex}
               data-voice-phase={index === 2 ? voicePhase : undefined}
             >
-              {index === 0 ? (
-                /* PAIRING/ANCHOR/PASSPORT 탭이 크로스페이드로 순환하는 실제 화면
-                   녹화 그대로. 정적 프레임으로는 흉내낼 수 없는 전환이라
-                   기기 프레임까지 통째로 영상으로 얹는다. */
-                <video
-                  ref={moreVideoRef}
-                  className={styles.moreCarouselFrame}
-                  data-active
-                  src={`${BASE_PATH}/blueprint/usage/more-long-click-card.webm`}
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-hidden="true"
-                />
-              ) : (
-                slide.frames.map((frame, frameIndex) => {
-                  const isActiveFrame =
-                    frameIndex === (index === activeIndex ? activeFrame : 0);
+              {slide.frames.map((frame, frameIndex) => {
+                const isActiveFrame =
+                  frameIndex === (index === activeIndex ? activeFrame : 0);
 
-                  return (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      className={styles.moreCarouselFrame}
-                      data-active={isActiveFrame}
-                      src={`${BASE_PATH}/blueprint/usage/${frame}`}
-                      alt={isActiveFrame ? slide.alt : ""}
-                      width={index === 1 ? 1924 : 2886}
-                      height={index === 1 ? 1266 : 1899}
-                      draggable={false}
-                      key={frame}
-                    />
-                  );
-                })
-              )}
-              {index === 0 && (
-                <div className={styles.moreVoiceHud} aria-hidden="true">
-                  <span className={styles.moreVoicePill}>long click</span>
-                </div>
-              )}
-              {index === 1 && (
-                <div className={styles.moreVoiceHud} aria-hidden="true">
-                  <span className={styles.moreVoicePill}>long touch</span>
-                </div>
-              )}
+                return (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    className={styles.moreCarouselFrame}
+                    data-active={isActiveFrame}
+                    src={`${BASE_PATH}/blueprint/usage/${frame}`}
+                    alt={isActiveFrame ? slide.alt : ""}
+                    width={index < 2 ? 1924 : 2886}
+                    height={index < 2 ? 1266 : 1899}
+                    draggable={false}
+                    key={frame}
+                  />
+                );
+              })}
               {index === 2 && (
                 <>
-                  {/* 시안(Figma 8262-28287): voice 배지 + SKEEP 웨이브/로고는
-                      말풍선과 달리 처음부터 계속 떠 있는 고정 장식이다. */}
+                  {/* SKEEP 웨이브/로고는 말풍선과 달리 처음부터 계속 떠 있는
+                      고정 장식이다. 캐러셀 상태 배지는 프레임 바깥에서 공통 렌더링한다. */}
                   <div className={styles.moreVoiceHud} aria-hidden="true">
-                    <span className={styles.moreVoicePill}>voice</span>
                     <div className={styles.moreSkeepBadge}>
                       <div className={styles.moreSkeepIcon}>
                         <span />
@@ -259,6 +200,10 @@ function MoreCarousel() {
         </div>
       </div>
 
+      <span className={styles.moreInteractionBadge} aria-hidden="true">
+        {MORE_SLIDES[activeIndex].badge}
+      </span>
+
       <div className={styles.moreCarouselDots} aria-label="캐러셀 페이지">
         {MORE_SLIDES.map((slide, index) => (
           <button
@@ -276,110 +221,108 @@ function MoreCarousel() {
   );
 }
 
-/* 세 덩이를 같은 자리에 겹쳐 두고, 스크롤에 따라 한 번에 하나씩만 띄운다. */
+/* 예전엔 세 덩이를 같은 자리에 겹쳐 두고(300vh sticky 핀) 스크롤 진행도로
+   한 번에 하나씩만 띄웠다 — 무빙스타일에서 스크롤마다 재계산이 버벅이는
+   원인이라 걷어냈다. 이제는 그냥 세로로 순서대로 쌓아 두고, 각 덩이는 자기가
+   화면에 보이는 동안에만(IntersectionObserver) 애니메이션·영상이 돈다. */
 export default function UsageSequence({
   sections,
 }: {
   sections: UsageSection[];
 }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const watchVideoRef = useRef<HTMLVideoElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [activeUsageIndex, setActiveUsageIndex] = useState(0);
+  const blockRefs = useRef<(HTMLElement | null)[]>([]);
   const [usageArtworkPhase, setUsageArtworkPhase] =
     useState<UsageArtworkPhase>("bubble");
-  const conversationIndex = sections.findIndex(
-    (section) => section.eyebrow === "Conversation",
+
+  /* revealed: 한 번 보이면 계속 true(등장 모션은 한 번만). visible: 지금
+     실제로 화면에 보이는지(연속 추적 — 영상·타이머 애니메이션은 이걸로 켜고 끈다). */
+  const [revealed, setRevealed] = useState<boolean[]>(() =>
+    sections.map(() => false),
+  );
+  const [visible, setVisible] = useState<boolean[]>(() =>
+    sections.map(() => false),
   );
 
-  /* "환경 사용 알람"(index 0) 판/카피가 아래에서 위로 떠오르며 한 번만 나타난다.
-     이 셋은 usagePin 안에서 같은 칸에 겹쳐 있어(grid-area: 1/1) 화면에 보이는
-     시점 = usageTrack이 스크롤로 뷰포트에 들어오는 시점과 같다. Reveal(프레임
-     모션)의 1.2초 안전장치용 fallback 타이머를 썼더니, 페이지 로드 후 스크롤로
-     여기 도착하기까지 항상 1.2초가 더 걸려서 도착했을 땐 이미 타이머가 먼저
-     끝나 애니메이션 없이 다 켜져 있었다 — 그래서 순수 IntersectionObserver로
-     실제로 뷰포트에 들어오는 순간에만 켠다. */
-  const [environmentUsageShown, setEnvironmentUsageShown] = useState(false);
-  const [environmentArtworkReady, setEnvironmentArtworkReady] = useState(false);
-  const environmentUsageRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const el = environmentUsageRef.current;
-
-    if (!el) {
-      return;
-    }
-
     if (typeof IntersectionObserver === "undefined") {
-      const fallbackTimer = window.setTimeout(() => {
-        setEnvironmentUsageShown(true);
-      }, 0);
-      return () => window.clearTimeout(fallbackTimer);
+      setRevealed(sections.map(() => true));
+      setVisible(sections.map(() => true));
+      return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setEnvironmentUsageShown(true);
-            observer.disconnect();
+        setVisible((previous) => {
+          const next = [...previous];
+          let changed = false;
+
+          for (const entry of entries) {
+            const index = Number((entry.target as HTMLElement).dataset.index);
+            const isVisible = entry.isIntersecting;
+
+            if (next[index] !== isVisible) {
+              next[index] = isVisible;
+              changed = true;
+            }
           }
-        }
+
+          return changed ? next : previous;
+        });
+
+        setRevealed((previous) => {
+          const next = [...previous];
+          let changed = false;
+
+          for (const entry of entries) {
+            if (!entry.isIntersecting) {
+              continue;
+            }
+
+            const index = Number((entry.target as HTMLElement).dataset.index);
+
+            if (!next[index]) {
+              next[index] = true;
+              changed = true;
+            }
+          }
+
+          return changed ? next : previous;
+        });
       },
-      { threshold: 0.45 },
+      { threshold: 0.4 },
     );
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  /* preload="auto"를 줘도 화면 밖에 있는 동안은 브라우저가 실제 네트워크
-     요청을 뒤로 미루는 경우가 많다(특히 느린 환경). 워치 영상은 이 판이 뷰포트에
-     들어오고도 말풍선(0.55s)+퇴장(0.3s) 뒤에야 재생을 시작하는데, 그때까지
-     버퍼링이 못 따라오면 opacity는 이미 다 올라왔는데 첫 프레임이 아직 없어
-     "테두리만 남은" 빈 원으로 보인다. 뷰포트에 들어오는 즉시 load()를 걸어
-     버퍼링에 최대한 여유를 준다. */
-  useEffect(() => {
-    if (environmentUsageShown) {
-      watchVideoRef.current?.load();
+    for (const el of blockRefs.current) {
+      if (el) {
+        observer.observe(el);
+      }
     }
-  }, [environmentUsageShown]);
+
+    return () => observer.disconnect();
+  }, [sections]);
 
   /* 검은 패널이 먼저 자리를 잡은 뒤 내부 말풍선을 별도로 켠다. 패널과 내부
      그래픽이 같은 프레임에 visible이 되면 내부 상승 모션이 패널 페이드에
      가려지므로 짧은 시차를 둔다. */
+  const [environmentArtworkReady, setEnvironmentArtworkReady] = useState(false);
+
   useEffect(() => {
-    const shouldShow = environmentUsageShown && activeUsageIndex === 0;
+    const shouldShow = visible[0];
     const timer = window.setTimeout(
       () => setEnvironmentArtworkReady(shouldShow),
       shouldShow ? 320 : 0,
     );
 
     return () => window.clearTimeout(timer);
-  }, [activeUsageIndex, environmentUsageShown]);
+  }, [visible]);
 
-  /* React의 muted 속성만으로는 DOM 프로퍼티가 제때 안 걸려서 브라우저가
-     자동재생을 막는다. 직접 세워 둔다. */
+  /* 말풍선과 워치 장면(정지 이미지)을 번갈아 보여준다. 워치 차례가 오면
+     WATCH_HOLD_MS만큼 머문 뒤 다음 말풍선 차례로 넘어간다. 두 상태
+     사이에는 짧은 퇴장 여백을 둔다. */
   useEffect(() => {
-    const video = videoRef.current;
-
-    if (video) {
-      video.muted = true;
-    }
-  }, []);
-
-  /* 말풍선과 워치 영상을 실제 상태로 교대한다. 워치 차례가 올 때마다 재생
-     위치를 0초로 되돌리고, 3초 영상의 ended 이벤트가 온 뒤에만 다음
-     말풍선 차례로 넘어간다. 두 상태 사이에는 짧은 퇴장 여백을 둔다. */
-  useEffect(() => {
-    const video = watchVideoRef.current;
-    const isActive = environmentArtworkReady && activeUsageIndex === 0;
+    const isActive = environmentArtworkReady && visible[0];
 
     if (!isActive) {
-      if (video) {
-        video.pause();
-        video.currentTime = 0;
-      }
       const resetTimer = window.setTimeout(() => {
         setUsageArtworkPhase("bubble");
       }, 0);
@@ -387,12 +330,6 @@ export default function UsageSequence({
     }
 
     if (usageArtworkPhase === "bubble") {
-      // 말풍선(1.4s) + 퇴장(0.82s) = 2.22초를 다 기다려야 영상이 시작됐는데,
-      // 이 스텝(step 0)이 실제로 활성 상태로 남아있는 스크롤 구간(usageTrack
-      // 300vh 중 0~34%, 약 68vh)은 보통 스크롤 속도로 1~2초 안에 지나가 버린다.
-      // 그래서 영상이 시작도 못 해보고 사용자가 다음 스텝으로 넘어가 버려서
-      // "영상이 안 뜬다"는 문제가 생겼다 — 인트로를 훨씬 짧게 줄여 영상이
-      // 최대한 빨리 시작되게 한다.
       const timer = window.setTimeout(() => {
         setUsageArtworkPhase("bubbleExit");
       }, 550);
@@ -416,120 +353,34 @@ export default function UsageSequence({
       return () => window.clearTimeout(timer);
     }
 
-    let fallbackTimer = 0;
+    // "watch"는 이제 영상이 아니라 정지 이미지라 ended 이벤트가 없다 —
+    // 영상이 재생되던 시간만큼(WATCH_HOLD_MS) 보여준 뒤 그냥 다음 단계로
+    // 넘어간다. 무빙스타일의 영상 버퍼링/재생 실패 문제 자체가 없어졌다.
+    const holdTimer = window.setTimeout(() => {
+      setUsageArtworkPhase("watchExit");
+    }, WATCH_HOLD_MS);
 
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-      video.muted = true;
-      video.play().catch(() => {
-        window.setTimeout(() => {
-          if (video.paused) {
-            video.play().catch(() => {});
-          }
-        }, 160);
-      });
-
-      // onEnded 하나에만 기대면, 무빙스타일처럼 느린 환경에서 영상이 버퍼링에
-      // 밀려 끝까지 재생을 못 하고 멈춰버릴 때 ended가 영영 안 와서 말풍선↔영상
-      // 사이클 전체가 멈춰버린다("반복이 안 된다"). 영상 길이(~3초)보다 넉넉히
-      // 잡은 타이머로 무조건 다음 단계로 넘어가게 안전장치를 둔다.
-      fallbackTimer = window.setTimeout(() => {
-        setUsageArtworkPhase("watchExit");
-      }, 4200);
-    }
-
-    return () => window.clearTimeout(fallbackTimer);
-  }, [activeUsageIndex, environmentArtworkReady, usageArtworkPhase]);
-
-  useEffect(() => {
-    const track = trackRef.current;
-
-    if (!track) {
-      return;
-    }
-
-    let frame = 0;
-    let step = 0;
-
-    const render = () => {
-      frame = 0;
-
-      const rect = track.getBoundingClientRect();
-      const distance = Math.max(1, track.offsetHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / distance));
-
-      while (
-        step < forwardThresholds.length &&
-        progress >= forwardThresholds[step]
-      ) {
-        step += 1;
-      }
-
-      while (step > 0 && progress <= reverseThresholds[step - 1]) {
-        step -= 1;
-      }
-
-      const next = String(step);
-
-      if (track.dataset.step !== next) {
-        track.dataset.step = next;
-        setActiveUsageIndex(step);
-      }
-
-      /* 안 보이는 동안 브라우저가 재생을 멈춰 버리므로, 해당 덩이가 떠 있을 때만
-         돌린다. 보이지 않을 때 굳이 디코딩하지 않아 기기 부담도 준다. */
-      const video = videoRef.current;
-
-      if (video) {
-        if (step === conversationIndex) {
-          if (video.paused) {
-            video.muted = true;
-            /* 빠르게 스크롤하면 이 play()가 직전 pause()와 겹쳐 실패할 때가 있다.
-               그대로 두면 다음 스크롤 이벤트 전까지 영영 정지 화면에 머문다 —
-               같은 장면에 여전히 머물러 있을 때만 한 번 더 시도한다. */
-            video.play().catch(() => {
-              window.setTimeout(() => {
-                if (step === conversationIndex && video.paused) {
-                  video.play().catch(() => {});
-                }
-              }, 200);
-            });
-          }
-        } else if (!video.paused) {
-          video.pause();
-        }
-      }
-    };
-
-    const requestRender = () => {
-      if (!frame) {
-        frame = window.requestAnimationFrame(render);
-      }
-    };
-
-    window.addEventListener("scroll", requestRender, { passive: true });
-    window.addEventListener("resize", requestRender);
-    render();
-
-    return () => {
-      window.removeEventListener("scroll", requestRender);
-      window.removeEventListener("resize", requestRender);
-
-      if (frame) {
-        window.cancelAnimationFrame(frame);
-      }
-    };
-  }, [conversationIndex]);
+    return () => window.clearTimeout(holdTimer);
+  }, [environmentArtworkReady, visible, usageArtworkPhase]);
 
   return (
-    <div ref={trackRef} className={styles.usageTrack} data-step="0">
+    <div className={styles.usageTrack}>
       <div className={styles.usagePin}>
         {sections.map((section, index) => (
           <article
-            className={styles.usageBlock}
+            className={`${styles.usageBlock} ${
+              section.eyebrow === "Conversation"
+                ? styles.usageBlockConversation
+                : section.eyebrow === "More" ||
+                    section.eyebrow === "Environmental Usage"
+                  ? styles.usageBlockMore
+                  : ""
+            }`}
             key={section.eyebrow}
             data-index={index}
+            ref={(el) => {
+              blockRefs.current[index] = el;
+            }}
           >
             <div
               className={
@@ -537,27 +388,32 @@ export default function UsageSequence({
                   ? `${styles.usagePanel} ${styles.usagePanelMore}`
                   : styles.usagePanel
               }
-              ref={index === 0 ? environmentUsageRef : undefined}
-              data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
+              data-reveal={revealed[index] ? "shown" : "hidden"}
             >
               {/* 첫 덩이만 시안에 실제 화면이 그려져 있다. 나머지 둘은 빈 판이다. */}
               {index === 0 && (
                 <div className={styles.usageStage} aria-hidden="true">
-                  <video
-                    ref={watchVideoRef}
+                  {/* 예전엔 3초짜리 mp4였다 — 무빙스타일에서 버퍼링이 밀려 빈
+                      원으로 보이거나 반복이 멈추는 문제가 있어 정지 이미지로
+                      바꿨다. 말풍선↔이 장면이 번갈아 뜨는 인터랙션(단계 전환)
+                      자체는 그대로 유지된다, WATCH_HOLD_MS 타이머로 대체됐을 뿐. */}
+                  {/* width:%(+ aspect-ratio)를 img(대체 요소)에 직접 걸면 브라우저에
+                      따라 세로로 길쭉해지는 경우가 있어, 정사각형 강제는 일반
+                      div(비대체 요소)로 옮기고 img는 그 안을 100% 채우기만 한다 —
+                      이 조합은 aspect-ratio 관련 예외 케이스가 없다. */}
+                  <div
                     className={`${styles.usageArtwork} ${styles.usageArtworkCard}`}
-                    src={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch.mp4`}
-                    /* 재생이 늦어져도(느린 환경) 첫 프레임을 미리 정지 이미지로
-                       깔아 둬서, 실제 영상 프레임이 뜨기 전까지 빈 원 대신 이
-                       장면이 보이게 한다. */
-                    poster={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch-poster.webp`}
                     data-visible={environmentArtworkReady && usageArtworkPhase === "watch"}
-                    muted
-                    playsInline
-                    preload="auto"
-                    onEnded={() => setUsageArtworkPhase("watchExit")}
-                    aria-hidden="true"
-                  />
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className={styles.usageArtworkCardImg}
+                      src={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch-poster.webp`}
+                      alt=""
+                      width={640}
+                      height={640}
+                    />
+                  </div>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className={`${styles.usageArtwork} ${styles.usageArtworkBubble}`}
@@ -570,7 +426,12 @@ export default function UsageSequence({
                 </div>
               )}
               {/* 대화 덩이는 제공된 완성 프레임을 배경으로 쓰고, 흰색 상태 모션만
-                  투명 WebM 레이어로 분리해 얹는다. */}
+                  투명 배경 애니메이션 WebP로 분리해 얹는다. 예전엔 영상(mp4)
+                  이었는데, 영상 코덱의 색공간/레인지 처리 때문에 배경(#181818)이
+                  SVG 배경과 미묘하게 다른 값으로 렌더링돼 사각형 테두리가 층져
+                  보이는 문제가 있었다 — 아예 배경을 투명하게 키잉해서(알파
+                  채널) 색을 맞출 필요 자체를 없앴다. 정적 이미지라 재생 상태
+                  관리(뷰포트 진입 시 play/pause)도 필요 없다. */}
               {section.eyebrow === "Conversation" && (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -582,18 +443,26 @@ export default function UsageSequence({
                     height={1266}
                     aria-hidden="true"
                   />
-                  {/* 새 프레임의 화면 중앙 하단에 작은 상태 모션을 재생한다. */}
+                  {/* 새 프레임의 화면 중앙 하단에 작은 상태 모션을 재생한다.
+                      애니메이션 WebP를 못 읽는(오래된 TV/임베디드 브라우저 등)
+                      환경을 위해 같은 배경-투명 PNG 정지 프레임을 폴백으로 둔다
+                      — 애니메이션은 없어도 최소한 안 보이거나 깨져 보이진 않는다. */}
                   <div className={styles.usageStatusMorph}>
-                    <video
-                      ref={videoRef}
-                      className={styles.usageStatusMorphDot}
-                      src={`${BASE_PATH}/blueprint/usage/conversation-icon-dark.mp4`}
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      aria-hidden="true"
-                    />
+                    <picture>
+                      <source
+                        srcSet={`${BASE_PATH}/blueprint/usage/conversation-icon-dark.webp`}
+                        type="image/webp"
+                      />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className={styles.usageStatusMorphDot}
+                        src={`${BASE_PATH}/blueprint/usage/conversation-icon-dark-fallback.png`}
+                        alt=""
+                        width={780}
+                        height={780}
+                        aria-hidden="true"
+                      />
+                    </picture>
                   </div>
                 </>
               )}
@@ -602,7 +471,7 @@ export default function UsageSequence({
 
             <div
               className={styles.usageCopy}
-              data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
+              data-reveal={revealed[index] ? "shown" : "hidden"}
             >
               <span>{section.eyebrow}</span>
               <h2>{section.title}</h2>

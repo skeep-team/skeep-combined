@@ -1,14 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ScrambleText } from "../ui/ScrambleText";
 import styles from "./ResetSequence.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-// How long "패킷 회수 중..." holds, fully scrambled-in, before scrambling
-// out into "다시, 처음처럼".
-const HOLD_MS = 1400;
+// How long "패킷 회수 중..." holds, fully typed-in, before switching over
+// to "다시, 처음처럼". (예전엔 1400ms — 너무 빨리 넘어간다는 피드백으로 늘림.)
+const HOLD_MS = 2600;
+
+// 사진이 나타난 뒤 회수(dissolve)를 시작하기까지의 대기 시간. 문구가 다
+// 타이핑될 시간을 준다.
+const DISSOLVE_DELAY_MS = 1200;
+
+// "다시, 처음처럼"이 다 뜬 뒤 처음(패킷 회수)으로 되돌아가기까지 대기 시간.
+const LOOP_HOLD_MS = 3000;
 
 // Figma(node 8400:22615, "지켜주다" 패킷 회수 배치)의 좌표를 그대로 옮겼다.
 // 원본 프레임은 3085x1494px — 그 프레임 대비 %로 환산해 반응형으로도 같은
@@ -65,6 +71,68 @@ function PacketPhotoField({ dissolve }: { dissolve: boolean }) {
   );
 }
 
+// setInterval로 한 글자씩 세는 방식은 "실행되면" 정확하지만, 무빙스타일에서
+// 아예 tick이 한 번도 안 걸리는(=완전히 멈추는) 경우가 실제로 관찰됐다 —
+// 커서(CSS 애니메이션, 컴포지터가 그려서 JS와 무관하게 계속 깜빡임)는 뜨는데
+// 글자는 하나도 안 나타난 게 그 증거. 그래서 진행을 매 tick 세는 JS 루프가
+// 아니라, CSS clip-path 애니메이션 "한 번 트리거"로 바꿨다 — active가 true가
+// 되는 순간 클래스 하나만 켜주면(반복 타이머 없이 단발성 상태 변경 한 번)
+// 나머지 재생은 전부 브라우저 애니메이션 엔진이 담당해서 JS 타이머 신뢰성과
+// 무관해진다.
+function TypeOnText({
+  text,
+  color,
+  className,
+  active,
+  onComplete,
+  durationMs = 650,
+}: {
+  text: string;
+  color?: string;
+  className?: string;
+  active: boolean;
+  onComplete?: () => void;
+  durationMs?: number;
+}) {
+  const [play, setPlay] = useState(active);
+  const firedRef = useRef(false);
+  const spanRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (active) setPlay(true);
+  }, [active]);
+
+  useEffect(() => {
+    if (!play) return;
+    const fire = () => {
+      if (firedRef.current) return;
+      firedRef.current = true;
+      onComplete?.();
+    };
+    const el = spanRef.current;
+    el?.addEventListener("animationend", fire);
+    // 안전망: animationend 자체가 안 걸리는 경우를 대비해, 애니메이션
+    // 길이만큼 지나면 콜백과 무관하게 강제로 다음 단계로 넘긴다.
+    const fallback = window.setTimeout(fire, durationMs + 400);
+    return () => {
+      el?.removeEventListener("animationend", fire);
+      window.clearTimeout(fallback);
+    };
+  }, [play, durationMs, onComplete]);
+
+  return (
+    <div className={className} style={{ width: "100%" }}>
+      <span
+        ref={spanRef}
+        className={`${styles.typeOn} ${play ? styles.typeOnPlay : ""}`}
+        style={{ color, ["--type-on-duration" as string]: `${durationMs}ms` } as React.CSSProperties}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
 function PacketRecallSequence({
   phase,
   setPhase,
@@ -76,6 +144,7 @@ function PacketRecallSequence({
 }) {
   const [dissolve, setDissolve] = useState(false);
   const advancedRef = useRef(false);
+  const loopedRef = useRef(false);
 
   const advance = useCallback(() => {
     if (advancedRef.current) {
@@ -85,55 +154,72 @@ function PacketRecallSequence({
     setTimeout(() => setPhase(1), HOLD_MS);
   }, [setPhase]);
 
-  // ScrambleText는 자기가 화면에 들어와야 재생을 시작하는데, 사진은 전에
+  // "다시, 처음처럼"이 다 뜨고 LOOP_HOLD_MS만큼 지나면 처음(패킷 회수) 상태로
+  // 되돌린다 — dissolve/advancedRef를 리셋해야 다음 바퀴에서도 사진이 다시
+  // 나타났다가 회수되고, advance()도 다시 걸린다.
+  const loopBack = useCallback(() => {
+    if (loopedRef.current) {
+      return;
+    }
+    loopedRef.current = true;
+    setTimeout(() => {
+      setDissolve(false);
+      advancedRef.current = false;
+      loopedRef.current = false;
+      setPhase(0);
+    }, LOOP_HOLD_MS);
+  }, [setPhase]);
+
+  // TypeOnText는 active(=visible)가 true여야 재생을 시작하는데, 사진은 전엔
   // 컴포넌트가 마운트되자마자(=페이지 로드 즉시, 스크롤로 도착하기 한참
   // 전) 사라지기 시작해서 실제로 스크롤해 왔을 땐 이미 다 사라진 뒤였다.
-  // 섹션이 실제로 보일 때부터 같은 300ms 뒤에 회수가 시작되게 맞춘다.
+  // 문구가 다 나타날 시간을 준 뒤에야 회수(dissolve)가 시작되게 해서,
+  // "패킷 회수 중..." 문구가 뜨는 동안 사진들이 이미 절반쯤 사라져 검정
+  // 여백만 남아 있는 것처럼 보이지 않게 한다.
   useEffect(() => {
     if (phase !== 0 || !visible) {
       return;
     }
 
-    const timer = setTimeout(() => setDissolve(true), 300);
+    const timer = setTimeout(() => setDissolve(true), DISSOLVE_DELAY_MS);
     return () => clearTimeout(timer);
   }, [phase, visible]);
 
-  // 안전장치: ScrambleText의 onEnterComplete는 ResizeObserver/폰트 로딩
-  // 타이밍에 기대는 복잡한 애니메이션이라, 무빙스타일처럼 약한/오래된
-  // 브라우저 엔진에서 드물게 콜백이 아예 안 걸려 "패킷 회수 중..." 검정
-  // 화면에서 다음 단계로 영영 못 넘어가는 문제가 있었다 — 스크램블 애니메이션이
-  // 정상적으로 끝나는 데 걸리는 시간보다 넉넉히 긴 시간이 지나도 넘어가지
-  // 않았다면, 애니메이션 콜백과 무관하게 강제로 다음 단계로 넘긴다.
-  // (예전엔 6000ms였다 — ScrambleText 트리거 자체가 내부 옵저버에 기대던
-  // 시절엔 그 옵저버까지 실패할 여지를 감안해 넉넉히 잡았지만, 이제 위에서
-  // active={visible}로 트리거를 직접 넘겨주면서 그 경로의 실패 가능성이
-  // 없어졌다. 실제 애니메이션(~1.6~2초)보다만 여유 있으면 되므로 줄여서,
-  // 폴백이 걸리더라도 "흰 화면 나오기까지 공백이 너무 길다"는 느낌을 없앤다.)
+  // 안전장치: TypeOnText의 onComplete는 CSS 애니메이션 종료(또는 그마저
+  // 안 걸릴 때의 내부 타이머 폴백)로 반드시 걸리지만, 혹시라도 예외적인
+  // 경우를 대비해 콜백과 무관하게 강제로 다음 단계로 넘기는 폴백을 하나
+  // 더 둔다. phase 0/1 모두 같은 이유로 필요하다.
   useEffect(() => {
     if (phase !== 0 || !visible) {
       return;
     }
 
-    const fallback = setTimeout(advance, 3200);
+    const fallback = setTimeout(advance, 4200);
     return () => clearTimeout(fallback);
   }, [phase, visible, advance]);
+
+  useEffect(() => {
+    if (phase !== 1 || !visible) {
+      return;
+    }
+
+    const fallback = setTimeout(loopBack, 2200);
+    return () => clearTimeout(fallback);
+  }, [phase, visible, loopBack]);
 
   return (
     <>
       {phase === 0 && <PacketPhotoField dissolve={dissolve} />}
-      {/* ScrambleText는 기본적으로 자기 안에서 또 하나의 IntersectionObserver로
-         "화면에 들어왔는지"를 따로 판단하는데, phase 1로 넘어갈 때는 이미
-         화면에 떠 있는 섹션 안에서 key만 바뀌며 재마운트되는 거라 그 내부
-         옵저버가 안 걸리면(무빙스타일에서 실제로 보고된 증상) 글자가 전부
-         투명한 채로 영영 안 나타난다("흰 배경만 보이고 문구가 안 나옴").
-         위에서 이미 폴백까지 갖춰 훨씬 안정적으로 판정해 둔 visible을
-         그대로 넘겨써서 내부 옵저버 자체를 안 쓰게 한다. */}
-      <ScrambleText
+      {/* phase 1로 넘어갈 때는 이미 화면에 떠 있는 섹션 안에서 key만 바뀌며
+         재마운트되는데, 내부에 따로 옵저버를 두지 않고 위에서 이미 폴백까지
+         갖춰 훨씬 안정적으로 판정해 둔 visible을 active로 그대로 넘겨써서
+         "화면에 들어왔는지" 판정 자체를 다시 하지 않는다. */}
+      <TypeOnText
         key={phase}
         text={phase === 0 ? "패킷 회수 중..." : "다시, 처음처럼"}
         color={phase === 0 ? "#ffffff" : "#000000"}
         className={`${styles.scramble} ${phase === 1 ? styles.scrambleBold : ""}`}
-        onEnterComplete={phase === 0 ? advance : undefined}
+        onComplete={phase === 0 ? advance : loopBack}
         active={visible}
       />
     </>
@@ -196,8 +282,14 @@ export function ResetSequence() {
   }, [visible]);
 
   return (
-    <section ref={sectionRef} className={styles.section} data-phase={phase}>
-      <PacketRecallSequence phase={phase} setPhase={setPhase} visible={visible} />
+    <section ref={sectionRef} className={styles.sequence}>
+      {/* 스크롤 중에 이 섹션의 검정/흰 배경과 다음 섹션이 화면에 반씩 걸쳐
+         보이던 문제(검정 화면 상태에서 흰 여백이 비치는 것) 때문에, 실제
+         내용은 position:sticky로 화면에 고정해두고 바깥 .sequence를 100vh
+         보다 조금 더 크게 잡아 그만큼 더 오래 붙어 있게 한다. */}
+      <div className={styles.sticky} data-phase={phase}>
+        <PacketRecallSequence phase={phase} setPhase={setPhase} visible={visible} />
+      </div>
     </section>
   );
 }

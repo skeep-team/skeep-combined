@@ -326,15 +326,37 @@ export function ScrambleText({
       }
     };
 
+    // 무빙스타일에서는 setTimeout/performance.now() 기반의 정밀한 타이밍이 밀리거나
+    // 완전히 멈춰서, 글자가 절대 locked 상태로 안착하지 못하고 계속 글리치만
+    // 반복되는 경우가 있다. run()이 실제로 끝나는지와 무관하게, 예정된 duration을
+    // 넉넉히 넘기면 전체 글자를 강제로 최종 상태로 고정하는 안전장치를 둔다.
+    let finished = false;
+    const finishOnce = () => {
+      if (finished) return;
+      finished = true;
+      setEnterAnimComplete(true);
+      onEnterComplete?.();
+    };
+    const forceLockAll = () => {
+      if (finished) return;
+      const locked: Record<string, CharDisplay> = {};
+      allWords.forEach((w) => {
+        w.text.split("").forEach((char, ci) => {
+          locked[`${w.globalWi}-${ci}`] = { char, locked: true, flickering: false };
+        });
+      });
+      setDisplays(locked);
+      finishOnce();
+    };
+    const watchdog = window.setTimeout(forceLockAll, durationMs + 1200);
+
     (async () => {
       await run();
-      if (!cancelled) {
-        setEnterAnimComplete(true);
-        onEnterComplete?.();
-      }
+      if (!cancelled) finishOnce();
     })();
     return () => {
       cancelled = true;
+      window.clearTimeout(watchdog);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lineGroups, shouldAnimate]);
