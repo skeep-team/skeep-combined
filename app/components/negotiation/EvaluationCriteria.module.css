@@ -46,7 +46,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 720 / 466;
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   padding: clamp(20px, 2.4vw, 32px);
   display: flex;

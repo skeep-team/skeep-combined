@@ -45,7 +45,7 @@
   overflow: hidden;
   width: calc(720 * var(--px));
   height: calc(458 * var(--px));
-  border-radius: calc(32 * var(--px));
+  border-radius: var(--radius-xl);
   /* 이미지가 늦게 뜨는 동안에도 시안의 회색 판이 그대로 보이게 둔다. */
   background: linear-gradient(180deg, #e7eaf0 0%, #fff 100%);
 }
@@ -233,7 +233,7 @@
     width: 100%;
     height: auto;
     aspect-ratio: 720 / 458;
-    border-radius: clamp(16px, 3vw, 28px);
+    border-radius: var(--radius-xl);
   }
 
   .mobileList .visual picture,

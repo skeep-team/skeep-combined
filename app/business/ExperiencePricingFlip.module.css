@@ -94,7 +94,7 @@
   top: 0;
   width: calc(790 * var(--px));
   height: calc(700 * var(--px));
-  border-radius: calc(32 * var(--px));
+  border-radius: var(--radius-xl);
   background: #e7eaf0;
   opacity: calc(1 - var(--bridge));
   will-change: opacity;
@@ -109,11 +109,11 @@
   top: 0;
   width: calc(1600 * var(--px));
   height: calc(700 * var(--px));
-  border-radius: calc(32 * var(--px));
+  border-radius: var(--radius-xl);
   background: #e7eaf0;
   clip-path: inset(
     0 calc((1 - var(--expand)) * 810 * var(--px)) 0 0 round
-      calc(32 * var(--px))
+      var(--radius-xl)
   );
   contain: layout paint;
   will-change: clip-path;
@@ -395,7 +395,7 @@
   height: calc(54 * var(--px));
   padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
     calc(20 * var(--px));
-  border-radius: calc(12 * var(--px));
+  border-radius: var(--radius-md);
   background: #f1f1f1;
   font-size: calc(20 * var(--px));
   font-weight: 600;
@@ -464,7 +464,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: calc(24 * var(--px));
+  border-radius: var(--radius-lg);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transition: background-color 0.42s ease;
@@ -599,7 +599,7 @@
   overflow: hidden;
   padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
     calc(20 * var(--px));
-  border-radius: calc(12 * var(--px));
+  border-radius: var(--radius-md);
   background: #f1f1f1;
   font-size: calc(20 * var(--px));
   font-weight: 500;

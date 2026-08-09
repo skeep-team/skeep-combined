@@ -50,6 +50,10 @@
     html { scroll-behavior: smooth; }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
+      --card-radius-xs: clamp(3px, 0.25vw, 5px);
+      --card-radius-sm: clamp(6px, 0.45vw, 8px);
+      --card-radius-md: clamp(8px, 0.7vw, 14px);
+      --card-radius-lg: clamp(12px, 0.95vw, 18px);
       background: #fff; color: #161A1E;
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
@@ -384,7 +388,7 @@
       width: clamp(280px, 32vw, 380px);
       height: clamp(280px, 32vw, 380px);
       overflow: hidden;
-      border-radius: 4px;
+      border-radius: var(--card-radius-xs);
       transform: scale(1.35);
       opacity: .3;
       transition: transform .72s cubic-bezier(.34,1.56,.64,1), opacity .6s ease;
@@ -471,7 +475,7 @@
       flex: 0 1 296px;
       min-width: 0;
       height: clamp(96px, 10.4vw, 142px);
-      border-radius: clamp(14px, 1.5vw, 22.4px);
+      border-radius: var(--card-radius-md);
       padding: clamp(14px, 1.8vw, 24px);
       background: #F1F1F1;
     }
@@ -911,7 +915,7 @@
       align-items: start;
     }
     .sd-info-card {
-      border-radius: 28px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       position: relative;
       background: #161A1E;
@@ -920,7 +924,7 @@
       aspect-ratio: 508 / 603;
       isolation: isolate;
       transform: translateZ(0);
-      clip-path: inset(0 round 28px);
+      clip-path: inset(0 round var(--card-radius-lg));
     }
     .sd-card-img {
       position: absolute;
@@ -1109,7 +1113,7 @@
       width: min(calc(100% - 80px), 1480px);
       height: calc(336px * var(--sd-flow-scale));
       margin: 0 auto;
-      border-radius: 20px;
+      border-radius: var(--card-radius-lg);
       background: #161A1E;
       transition: background .8s ease;
       position: sticky;
@@ -1183,7 +1187,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 20px;
+      border-radius: var(--card-radius-lg);
       background: #161A1E;
       opacity: var(--flow-pause);
       filter: blur(var(--flow-pause-in-blur));
@@ -1201,7 +1205,7 @@
     .sd-flow-pause-mark::after {
       content: "";
       width: 36px;
-      border-radius: 4px;
+      border-radius: var(--card-radius-xs);
       background: #ff076a;
     }
     .sd-flow-time-state {
@@ -1248,7 +1252,7 @@
     .sd-flow-time-card {
       width: 1180px;
       height: 240px;
-      border-radius: 24px;
+      border-radius: var(--card-radius-lg);
       background: #F1F1F1;
       display: flex;
       align-items: center;
@@ -1333,7 +1337,7 @@
     }
     .sd-summary-section {
       padding-top: clamp(24px, 3.5vw, 52px);
-      padding-bottom: clamp(120px, 12vw, 220px);
+      padding-bottom: clamp(180px, 15vw, 280px);
     }
     .sd-pause-logic-ko {
       font-size: clamp(36px, 4.2vw, 48pt);
@@ -1426,7 +1430,7 @@
       flex: 0 0 250px;
       width: 250px;
       height: 249.916px;
-      border-radius: 16px;
+      border-radius: var(--card-radius-md);
       padding: 35.825px 28.66px;
       display: flex;
       flex-direction: column;
@@ -1493,7 +1497,7 @@
       width: 760.308px;
       height: 265.756px;
       border: 3.583px dashed #6e6e6e;
-      border-radius: 35.199px;
+      border-radius: var(--card-radius-lg);
       background: rgba(0,0,0,.05);
       opacity: .5;
       z-index: 0;
@@ -1532,7 +1536,7 @@
       height: auto;
       aspect-ratio: 1 / 1;
       background: #66717f;
-      border-radius: clamp(24px, 2.4vw, 40px);
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -1934,7 +1938,7 @@
       min-width: 0;
       height: auto;
       min-height: clamp(250px, 16vw, 300px);
-      border-radius: 24px;
+      border-radius: var(--card-radius-lg);
       background: #F1F1F1;
       padding: 48px 40px;
       display: flex;
@@ -2097,6 +2101,7 @@
       color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
     @media (max-width: 1100px) {
@@ -2145,6 +2150,10 @@
     html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
+      --card-radius-xs: clamp(3px, 0.25vw, 5px);
+      --card-radius-sm: clamp(6px, 0.45vw, 8px);
+      --card-radius-md: clamp(8px, 0.7vw, 14px);
+      --card-radius-lg: clamp(12px, 0.95vw, 18px);
       background: #fff; color: #161A1E;
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       -webkit-font-smoothing: antialiased; overflow-x: hidden;
@@ -2466,7 +2475,7 @@
        two-col layout, with its background layers crossfading as it moves. */
     .morph-card {
       position: absolute;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       color: #fff;
       will-change: top, left, width, height, border-radius;
@@ -2562,7 +2571,7 @@
       width: clamp(560px, 52vw, 980px);
       aspect-ratio: 16 / 9;
       object-fit: cover;
-      border-radius: clamp(20px, 1.8vw, 32px);
+      border-radius: var(--card-radius-lg);
       margin-bottom: clamp(24px, 2.4vw, 44px);
     }
     /* SKEEP AI: 두 단어 사이를 데이터 블록이 왼쪽에서 오른쪽으로 통과한 뒤
@@ -2573,7 +2582,7 @@
       flex-shrink: 0;
       width: clamp(560px, 52vw, 980px);
       aspect-ratio: 16 / 9;
-      border-radius: clamp(20px, 1.8vw, 32px);
+      border-radius: var(--card-radius-lg);
       margin-bottom: clamp(24px, 2.4vw, 44px);
       background: #A5E0F0;
       overflow: hidden;
@@ -2639,7 +2648,7 @@
       z-index: 2;
     }
     .logic-card {
-      flex: 1; background: #fff; border-radius: clamp(20px,1.8vw,28px);
+      flex: 1; background: #fff; border-radius: var(--card-radius-lg);
       padding: clamp(28px,2.35vw,48px); display: flex; flex-direction: column;
       justify-content: flex-start;
       box-shadow: none;
@@ -2668,7 +2677,7 @@
     }
     .logic-card-desc { font-size: clamp(12px,1.35vw,22px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
     .logic-card-num { font-size: clamp(14px,1.2vw,20px); font-weight: 600; line-height: 1; letter-spacing: -0.02em; color: #9CA3AF; margin-bottom: clamp(8px,.7vw,14px); }
-    .logic-card-name { font-size: clamp(20px,1.85vw,32px); font-weight: 700; line-height: 1.15; letter-spacing: -0.04em; color: #6B7280; margin-bottom: clamp(30px,3.2vw,56px); }
+    .logic-card-name { font-size: clamp(20px,1.85vw,32px); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; color: #000; margin-bottom: clamp(30px,3.2vw,56px); }
     .logic-card-sub { font-size: clamp(14px,1.2vw,21px); font-weight: 500; line-height: 1.48; letter-spacing: -0.03em; color: #7C8593; }
 
 
@@ -2849,7 +2858,7 @@
       width: 100%;
       max-width: min(820px, 64vw);
       aspect-ratio: 1654 / 1080;
-      border-radius: 36px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       margin-left: 0;
       margin-right: 0;
@@ -2871,7 +2880,7 @@
     .pdsm-wrap { background: #161A1E; }
     .image-flipper-wrap {
       background: #E7FF96;
-      border-radius: clamp(10px, 1vw, 16px);
+      border-radius: var(--card-radius-md);
     }
     .image-flipper-canvas {
       width: 100%;
@@ -3058,7 +3067,7 @@
     }
     .principle-grid { display: flex; gap: clamp(12px, 1.6vw, 28px); align-items: stretch; }
     .principle-card {
-      flex: 1; background: #F1F1F1; border-radius: 24px;
+      flex: 1; background: #F1F1F1; border-radius: var(--card-radius-lg);
       padding: 48px 40px; display: flex; flex-direction: column; gap: 17px;
     }
     .pr-num { font-size: clamp(11px,1.15vw,19px); font-weight: 400; line-height: 1.3; letter-spacing: -0.02em; opacity: 0.5; }
@@ -3115,7 +3124,7 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
-      border-radius: clamp(8px, 1vw, 14px);
+      border-radius: var(--card-radius-md);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
     }
@@ -3258,7 +3267,7 @@
       padding: clamp(24px, 2.15vw, 38px);
       background: #F1F1F1;
       border: 0;
-      border-radius: 28px;
+      border-radius: var(--card-radius-lg);
       color: #161A1E;
       box-shadow: none;
       backdrop-filter: none;
@@ -3297,7 +3306,7 @@
       align-items: flex-end;
       justify-content: space-between;
       gap: 32px;
-      border-radius: clamp(14px, 1.7vw, 28px);
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       background: #000;
     }
@@ -3363,12 +3372,12 @@
     .chip {
       flex: 0 0 auto; white-space: nowrap;
       display: inline-flex; align-items: center; line-height: 1;
-      padding: clamp(4px,0.4vw,7px) clamp(8px,0.75vw,13px);
+      padding: clamp(5px,0.45vw,8px) clamp(9px,0.85vw,15px);
       border-radius: 0;
       background: #F1F1F1;
       color: #6E6E6E;
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
-      font-size: clamp(13px,1.35vw,20px); font-weight: 800; letter-spacing: -0.01em;
+      font-size: clamp(15px,1.55vw,23px); font-weight: 800; letter-spacing: -0.01em;
       text-transform: uppercase;
       /* 트랙이 transform으로 움직이는 동안 인접한 칩끼리 서브픽셀 반올림이 어긋나면
          배경 사이로 1px짜리 흰 실선이 비친다 — margin-right를 살짝 음수로 줘서
@@ -3401,41 +3410,29 @@
     .ai-figma-h { font-size: clamp(28px,4.4vw,60px); font-weight: 700; line-height: 1.3; letter-spacing: -0.03em; margin: 0; }
     .ai-figma-p { font-size: clamp(14px,1.7vw,22px); font-weight: 400; line-height: 1.55; letter-spacing: -0.03em; color: rgba(255,255,255,0.8); margin: 0; }
 
-    /* ── 9. FEATURE CARDS (text-only) ── */
+    /* ── 9. PHYSICAL FEASIBILITY PRINCIPLES ── */
     .sec-3cards {
       background: #fff;
       width: 100%;
       margin-top: 0;
       padding: clamp(86px, 8.5vw, 148px) var(--edge-padding) clamp(132px, 12vw, 216px);
     }
-    .cards-row { display: flex; gap: clamp(16px, 1.8vw, 32px); min-height: 0; }
+    .cards-row { display: flex; gap: clamp(12px, 1.6vw, 28px); min-height: 0; align-items: stretch; }
     .feat-card {
-      flex: 1; background: #F1F1F1; border-radius: 32px;
-      padding: 56px 48px; display: flex; flex-direction: column;
-      gap: clamp(12px, 1.6vw, 28px); min-height: 640px; justify-content: space-between;
+      flex: 1; background: #F1F1F1; border-radius: var(--card-radius-lg);
+      padding: 48px 40px; display: flex; flex-direction: column;
+      gap: 17px; min-width: 0;
     }
-    .feat-card-num { font-size: clamp(32px,4.8vw,72px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: rgba(0,0,0,0.08); }
-    .feat-card-body { display: flex; flex-direction: column; gap: 16px; }
-    .feat-card-h { font-size: clamp(18px,2.8vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #161A1E; }
+    .feat-card-num { font-size: clamp(11px,1.15vw,19px); font-weight: 400; line-height: 1.3; letter-spacing: -0.02em; color: rgba(22,26,30,.5); }
+    .feat-card-body { display: flex; flex: 1; flex-direction: column; gap: 12px; }
+    .feat-card-h { font-size: clamp(14px,1.9vw,29px); font-weight: 600; line-height: 1.3; letter-spacing: -0.04em; color: #161A1E; word-break: keep-all; }
     .feat-card-sub { font-size: clamp(13px,1.4vw,24px); font-weight: 400; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.02em; }
-    .feat-card-p { font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5; color: rgba(0,0,0,.55); letter-spacing: -0.03em;}
+    .feat-card-en { font-size: clamp(10px,1vw,16px); font-weight: 500; line-height: 1.4; color: rgba(22,26,30,.52); letter-spacing: -0.015em; word-break: keep-all; }
+    .feat-card-p { margin-top: auto; padding-top: clamp(28px, 3vw, 48px); font-size: clamp(10px,1.1vw,18px); font-weight: 400; line-height: 1.55; color: rgba(22,26,30,.8); letter-spacing: -0.03em; word-break: keep-all; }
     .sec-3cards .feat-card {
       background: #F1F1F1;
-      min-height: clamp(300px, 27vw, 430px);
-      padding: clamp(28px, 2.2vw, 40px);
-    }
-    .sec-3cards .feat-card-num {
-      font-size: clamp(22px, 2.7vw, 44px);
-    }
-    .sec-3cards .feat-card-body {
-      gap: 0;
-    }
-    .sec-3cards .feat-card-h {
-      font-size: clamp(15px, 1.18vw, 22px);
-      font-weight: 600;
-      line-height: 1.55;
-      letter-spacing: -0.04em;
-      word-break: keep-all;
+      min-height: clamp(340px, 27vw, 430px);
+      padding: clamp(32px, 2.5vw, 48px) clamp(28px, 2.1vw, 40px);
     }
 
     /* ── 10. MULTILINGUAL ── */
@@ -3542,7 +3539,7 @@
       inset: 0;
       z-index: 0;
       background: #161A1E;
-      border-radius: 6px;
+      border-radius: var(--card-radius-sm);
       opacity: 0;
       transform: scale(.975);
       transition: opacity .28s ease .18s, transform .5s cubic-bezier(.77, 0, .175, 1) .12s;
@@ -3550,7 +3547,7 @@
     .mapping-assembly-block {
       position: absolute;
       z-index: 1;
-      border-radius: 6px;
+      border-radius: var(--card-radius-sm);
       transform: translate(var(--scatter-x), var(--scatter-y)) rotate(var(--scatter-r)) scale(.96);
       transition:
         transform 1.08s cubic-bezier(.77, 0, .175, 1) var(--delay),
@@ -3597,7 +3594,7 @@
 
     @media (max-width: 768px) {
       .sec-mapping-assembly { padding-left: 22px; padding-right: 22px; }
-      .mapping-assembly-block { border-radius: 5px; }
+      .mapping-assembly-block { border-radius: var(--card-radius-sm); }
       .mapping-assembly-block span { top: 9px; left: 10px; }
     }
 
@@ -3614,7 +3611,7 @@
     /* ── 12. 실행 블록 CARD ── */
     .sec-exec-card { background: #fff; width: 100%; padding: clamp(56px, 8vw, 84px) var(--edge-padding); }
     .exec-card {
-      width: 100%; min-height: 760px; border-radius: 24px;
+      width: 100%; min-height: 760px; border-radius: var(--card-radius-lg);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       text-align: center;
       padding: 80px clamp(24px, 6vw, 120px); position: relative; overflow: hidden;
@@ -3744,7 +3741,7 @@
 
     /* 이 페이지 자체(비-임베드)에서는 숨긴다 — 오버뷰 페이지가 ?embed=morph로
        이 요소만 뽑아 쓰므로, 위쪽 html.embed-morph 규칙(!important)이 그때는 다시 보이게 한다. */
-    .morph-anim-band { width: min(560px, 80vw); aspect-ratio: 1 / 1; margin: clamp(28px, 4vw, 72px) auto; border-radius: clamp(28px, 3vw, 48px); background: #FF3385; overflow: hidden; display: none; }
+    .morph-anim-band { width: min(560px, 80vw); aspect-ratio: 1 / 1; margin: clamp(28px, 4vw, 72px) auto; border-radius: var(--card-radius-lg); background: #FF3385; overflow: hidden; display: none; }
     .morph-anim-band canvas { display: block; width: 100%; height: 100%; }
 
     /* ── 14. 스킵하다 스며들다 BANNER ── */
@@ -3766,7 +3763,7 @@
     .morphing-detail-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; }
     .morphing-detail-right { flex: 0 0 560px; display: flex; flex-direction: column; gap: 20px; }
     .morphing-img-card {
-      background: #F1F1F1; border-radius: 32px;
+      background: #F1F1F1; border-radius: var(--card-radius-lg);
       padding: clamp(34px, 3.1vw, 48px); display: flex; flex-direction: column; gap: 16px;
       min-height: clamp(230px, 24vw, 320px); justify-content: center;
       position: relative; overflow: hidden;
@@ -3801,7 +3798,7 @@
     .ai-grad-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 839px; }
     .ai-grad-cards { display: flex; gap: 40px; padding-bottom: 116px; }
     .ai-grad-card {
-      flex: 1; background: rgba(255,255,255,0.7); border-radius: 32px;
+      flex: 1; background: rgba(255,255,255,0.7); border-radius: var(--card-radius-lg);
       padding: 56px 48px; display: flex; flex-direction: column;
       gap: clamp(12px, 1.6vw, 28px); min-height: 460px; justify-content: space-between;
     }
@@ -3837,6 +3834,7 @@
       color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
     /* ── RESPONSIVE ── */
@@ -5412,31 +5410,31 @@
 })();
 </script>
 
-<!-- ══ 9. 4 FEATURE CARDS ══ -->
+<!-- ══ 9. PHYSICAL FEASIBILITY PRINCIPLES ══ -->
 <section class="sec-3cards fi">
   <div class="cards-row">
     <div class="feat-card fi d1">
-      <p class="feat-card-num">01</p>
+      <p class="feat-card-num">Principle 01</p>
       <div class="feat-card-body">
-        <p class="feat-card-h">파싱은 거시적인 목적과 목표를 작고 관리하기 쉬운 하위 단위(미시적 목적 및 실행 블록)로 쪼개기 위해 입력된 발화·행동·맥락을 분석하는 과정이다.</p>
+        <p class="feat-card-h">물리적 제약과 적합성</p>
+        <p class="feat-card-en">Physical Constraints &amp; Appropriateness</p>
+        <p class="feat-card-p">스킵은 사용자가 머무는 공간의 구조와 사물 간의 거리를 본능적으로 계산합니다. 좁은 공간에서의 무리한 동선이나, 물리적으로 불가능한 인터랙션을 걸러냅니다. 3차원 공간이 가진 한계를 명확히 이해함으로써, 현실에 가장 적합하고 유연한 움직임만을 제안합니다.</p>
       </div>
     </div>
     <div class="feat-card fi d2">
-      <p class="feat-card-num">02</p>
+      <p class="feat-card-num">Principle 02</p>
       <div class="feat-card-body">
-        <p class="feat-card-h">인식된 Goal은 복수의 Action으로, 각 Action은 하나의 Function으로 재귀적으로 분해된다.</p>
+        <p class="feat-card-h">시스템 가용성과 실현 가능성</p>
+        <p class="feat-card-en">System Availability &amp; Feasibility</p>
+        <p class="feat-card-p">주변 하드웨어의 스펙과 네트워크 상태를 실시간으로 파악합니다. 수많은 연결 가능성 속에서 무리한 연산을 강요하지 않으며, 현재의 시스템 환경이 지연 없이 가장 안정적으로 소화할 수 있는 방식만을 채택합니다. 보이지 않는 곳에서 가장 매끄럽고 실현 가능한 뼈대를 구축합니다.</p>
       </div>
     </div>
     <div class="feat-card fi d3">
-      <p class="feat-card-num">03</p>
+      <p class="feat-card-num">Principle 03</p>
       <div class="feat-card-body">
-        <p class="feat-card-h">파싱 후 최소 1개 이상의 [G→A→F] 데이터 트리플이 생성되며, 데이터 트리플 하나가 하나의 실행 블록에 대응된다.</p>
-      </div>
-    </div>
-    <div class="feat-card fi d4">
-      <p class="feat-card-num">04</p>
-      <div class="feat-card-body">
-        <p class="feat-card-h">SKEEP은 물리적 실체가 없어도 공간·기기·거리·사람 수 같은 물리적 제약을 이해하는 것을 전제로 파싱을 진행한다.</p>
+        <p class="feat-card-h">사회적 수용성</p>
+        <p class="feat-card-en">Social Acceptability</p>
+        <p class="feat-card-p">스킵은 타인과 함께하는 맥락을 읽어냅니다. 공공장소인지, 프라이빗한 환경인지 구분하여 사용자가 심리적 저항감 없이 행동할 수 있는 방식을 선택합니다. 기술의 개입이 주변을 불편하게 만들거나 사용자를 민망하게 하지 않도록, 가장 매너 있고 자연스러운 선을 지킵니다.</p>
       </div>
     </div>
   </div>
@@ -5686,13 +5684,13 @@
     <div class="principle-grid">
       <div class="principle-card fi d1">
         <p class="pr-num">Principle 01</p>
-        <p class="pr-title">도메인 컴포넌트 매칭</p>
-        <p class="pr-body">현재 제어 가능한 스키퍼블의 API 명세를 동적으로 스캔하여 매칭 가능한 리소스를 선별합니다.</p>
+        <p class="pr-title">적절한 후보 매칭</p>
+        <p class="pr-body">현재 제어 가능한 스키퍼블 후보군을 근거로, 지금 이 목적에 적합한 리소스를 선별합니다.</p>
       </div>
       <div class="principle-card fi d2">
         <p class="pr-num">Principle 02</p>
-        <p class="pr-title">물리 법칙 시뮬레이션</p>
-        <p class="pr-body">실제 물리 세계의 제약 조건을 반영하여 실행할 수 있는 경로만을 초고속으로 필터링합니다.</p>
+        <p class="pr-title">타당성 교차 확인</p>
+        <p class="pr-body">파싱이 이미 확인한 물리적 제약을 후보군에 다시 대조하여, 실행 가능한 기능 조합만 남깁니다.</p>
       </div>
       <div class="principle-card fi d3">
         <p class="pr-num">Principle 03</p>
@@ -6443,10 +6441,20 @@
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const edgePad = clampNum(vw * 0.083, 24, 160);
+      /* CSS의 --card-radius-lg: clamp(12px, .95vw, 18px)와 같은 공식.
+         커스텀 속성 문자열을 parseFloat하면 clamp()가 해석되지 않아 18px
+         fallback으로 고정되므로, 동적 카드도 viewport 기준으로 직접 계산한다. */
+      const sharedLargeRadius = clampNum(vw * 0.0095, 12, 18);
 
       const smallW = clampNum(vw * 0.573, 420, 1100);
       const smallH = clampNum(vh * 0.38, 260, 460);
-      const small = { top: (vh - smallH) / 2, left: (vw - smallW) / 2, width: smallW, height: smallH, radius: 32 };
+      const small = {
+        top: (vh - smallH) / 2,
+        left: (vw - smallW) / 2,
+        width: smallW,
+        height: smallH,
+        radius: sharedLargeRadius
+      };
       const full  = { top: 0, left: 0, width: vw, height: vh, radius: 0 };
       const rightPanelW = clampNum(vw * 0.36, 480, 640);
       const finalPadX = clampNum(vw * 0.0415, 54, 80);
@@ -7085,36 +7093,34 @@
 </script>
 
 <!-- ══ FOOTER ══ -->
-<footer class="site-footer fi">
+<footer class="site-footer">
   <div class="footer-inner">
     <p class="footer-headline">Skip the Intro<br>Keep the Flow</p>
     <nav class="footer-nav" aria-label="Footer">
       <div class="footer-group">
         <p class="footer-title">About</p>
         <div class="footer-links">
-          <a class="footer-link" href="index.html">SKEEP 소개</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">SKEEP 소개</span>
           <a class="footer-link" href="index.html">전시 웹사이트</a>
-          <a class="footer-link" href="index.html">자주 묻는 질문</a>
-          <a class="footer-link" href="index.html">팀 소개</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">자주 묻는 질문</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">팀 소개</span>
         </div>
       </div>
       <div class="footer-group">
         <p class="footer-title">Experience</p>
         <div class="footer-links">
-          <a class="footer-link" href="saegyeodeutda.html">새겨듣다</a>
-          <a class="footer-link" href="/negotiation">조율하다</a>
-          <a class="footer-link" href="/principles">빌려쓰다</a>
-          <a class="footer-link" href="/service2">지켜주다</a>
-          <a class="footer-link" href="/service3">기억하다</a>
+          <a class="footer-link" href="saegyeodeutda.html">한 발 먼저</a>
+          <a class="footer-link" href="/negotiation">자리 빌리기</a>
+          <a class="footer-link" href="/service2">다음을 기약하며</a>
         </div>
       </div>
       <div class="footer-group">
         <p class="footer-title">Skeepable</p>
         <div class="footer-links">
-          <a class="footer-link" href="/principles">장소 찾기</a>
-          <a class="footer-link" href="/principles">제품 찾기</a>
-          <a class="footer-link" href="/principles">서비스 찾기</a>
-          <a class="footer-link" href="/principles">비즈니스</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">장소 찾기</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">제품 찾기</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">서비스 찾기</span>
+          <a class="footer-link" href="/business">비즈니스</a>
         </div>
       </div>
     </nav>

@@ -36,7 +36,7 @@
   position: relative;
   width: min(720px, 100%);
   aspect-ratio: 720 / 466;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%),

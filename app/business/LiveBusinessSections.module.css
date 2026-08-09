@@ -94,7 +94,7 @@
   gap: clamp(20px, 1.65vw, 32px);
   overflow: hidden;
   padding: clamp(18px, 1.45vw, 28px);
-  border-radius: clamp(16px, 1.65vw, 32px);
+  border-radius: var(--radius-xl);
   color: #000;
   background: #F1F1F1;
 }
@@ -258,7 +258,7 @@
   bottom: 0;
   left: 8.33vw;
   height: 19%;
-  border-radius: 0 0 clamp(22px, 2.1vw, 40px) clamp(22px, 2.1vw, 40px);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   background: #e7eaf0;
 }
 

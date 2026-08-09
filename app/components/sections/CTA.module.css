@@ -37,10 +37,11 @@
   position: relative;
   flex: 1 1 360px;
   max-width: 720px;
-  aspect-ratio: 720 / 466;
-  border-radius: 32px;
+  /* 새 사진(1691x1049) 비율에 맞춰서 레터박스(빈 여백) 없이 꽉 채운다. */
+  aspect-ratio: 1691 / 1049;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  background: linear-gradient(160deg, #ffecf4 0%, #ffffff 62%);
+  background: #ffe6f0;
 }
 
 @media (max-width: 860px) {
@@ -55,27 +56,24 @@
   }
 }
 
-/* 표지판(원+RESTART+기둥) 세로 이미지: 카드 중앙에 높이 기준으로 배치 */
+/* 표지판(회색 배경 + 원+RESTART+기둥) 이미지: 카드 비율을 사진과 맞춰뒀으므로
+   레터박스 없이 카드 전체를 꽉 채운다. */
 .signWrap {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 90%;
-  aspect-ratio: 1137 / 1532;
+  inset: 0;
 }
 .signBase {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
-/* 흰 화살표: 실측한 원 중심(48.3%, 29.4%)에 얹어 그 자리에서 회전(스핀) */
+/* 흰 화살표: 새 에셋 기준 실측한 원 중심(48.6%, 33.5%)에 얹어 그 자리에서 회전(스핀) */
 .arrow {
   position: absolute;
-  left: 48.3%;
-  top: 29.4%;
-  width: 30%;
+  left: 48.6%;
+  top: 33.5%;
+  width: 17%;
   height: auto;
   transform-origin: center;
   animation: ctaArrowNudge 5s ease-in-out infinite;

@@ -5,6 +5,13 @@
   --color-text-muted: rgba(0, 0, 0, 0.55);
   --color-accent: #9fa1a2;
   --edge-padding: clamp(24px, 8.3vw, 160px);
+  /* 조율하다의 가로형 원칙 카드를 기준으로 한 얕은 곡률 눈금.
+     큰 화면에서도 카드가 과하게 둥글어지지 않도록 상한을 작게 유지한다. */
+  --radius-xs: clamp(3px, 0.25vw, 5px);
+  --radius-sm: clamp(6px, 0.45vw, 8px);
+  --radius-md: clamp(8px, 0.65vw, 12px);
+  --radius-lg: clamp(10px, 0.8vw, 14px);
+  --radius-xl: clamp(12px, 1vw, 18px);
   color-scheme: light;
 }
 

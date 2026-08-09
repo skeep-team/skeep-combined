@@ -34,7 +34,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1600 / 900;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: #f1f1f1;
 }
@@ -53,7 +53,7 @@
   top: 50%;
   width: clamp(160px, 18vw, 270px);
   aspect-ratio: 4 / 5;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.58);
   transform: translateY(-50%);
 }
@@ -78,7 +78,7 @@
 .deviceTop {
   top: 16%;
   height: 28%;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   background: rgba(22, 26, 30, 0.08);
 }
 
@@ -145,7 +145,7 @@
   width: clamp(230px, 24vw, 380px);
   min-height: clamp(170px, 17vw, 250px);
   padding: clamp(24px, 3vw, 44px);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.76);
   transform: translate(-50%, -50%);
   backdrop-filter: blur(18px);
@@ -196,7 +196,7 @@
   gap: 4px;
   min-width: 150px;
   padding: 18px 20px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.68);
 }
 

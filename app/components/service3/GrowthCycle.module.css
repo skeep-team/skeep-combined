@@ -44,7 +44,7 @@
 .card {
   height: 591px;
   background: var(--color-bg);
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;

@@ -6,8 +6,8 @@ import styles from "./RoleFlow.module.css";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const SLIDES = [
-  `${BASE_PATH}/negotiation/role-flow-1.jpg`,
-  `${BASE_PATH}/negotiation/role-flow-2.jpg`,
+  `${BASE_PATH}/negotiation/role-flow-airport.png`,
+  `${BASE_PATH}/negotiation/role-flow-airport.png`,
 ];
 
 const SLIDE_INTERVAL_MS = 3200;
@@ -27,7 +27,7 @@ export function RoleFlow() {
       <div className={styles.box}>
         {SLIDES.map((src, i) => (
           <img
-            key={src}
+            key={`${src}-${i}`}
             src={src}
             alt=""
             className={styles.photo}

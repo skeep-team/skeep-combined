@@ -9,6 +9,7 @@ import HeroIntro from "./HeroIntro";
 import VisaSkeepScroll from "./VisaSkeepScroll";
 import PositioningScroll from "./PositioningScroll";
 import ScrollFadeIn from "./ScrollFadeIn";
+import { Footer } from "../components/layout/Footer";
 import {
   BusinessClosing,
   FootprintSection,
@@ -73,6 +74,7 @@ export default function BusinessPage() {
         <FootprintSection />
         <BusinessClosing />
       </div>
+      <Footer />
     </main>
   );
 }

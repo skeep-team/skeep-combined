@@ -44,7 +44,7 @@
   position: relative;
   width: min(720px, 100%);
   aspect-ratio: 720 / 430;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: #161A1E;
   flex-shrink: 0;
@@ -56,7 +56,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
 }
 
 /* ── 영상(noise.mp4) 재현: 볼드 하이라이트는 실측 위치에 고정, 흐린 노이즈가

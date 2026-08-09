@@ -94,7 +94,7 @@
   height: auto;
   aspect-ratio: 720 / 466;
   object-fit: cover;
-  border-radius: clamp(18px, 2vw, 32px);
+  border-radius: var(--radius-xl);
   background: #F1F1F1;
 }
 
@@ -220,7 +220,7 @@
 .featureCard {
   min-height: clamp(190px, 13vw, 250px);
   padding: clamp(26px, 2vw, 38px) clamp(24px, 1.6vw, 30px);
-  border-radius: clamp(18px, 1.3vw, 25px);
+  border-radius: var(--radius-lg);
   background: #FF6B3D;
   color: #6B4436;
   display: flex;
@@ -281,7 +281,7 @@
   gap: 0;
   height: clamp(112px, 9vw, 154px);
   overflow: hidden;
-  border-radius: clamp(8px, 0.7vw, 12px);
+  border-radius: var(--radius-sm);
   background: #f5f5f5;
 }
 
@@ -535,7 +535,7 @@
   /* 카드 4개 + 아래 상세 텍스트를 하나의 회색 판으로 묶는다. */
   box-sizing: border-box;
   background: #f1f1f1;
-  border-radius: clamp(24px, 2vw, 40px);
+  border-radius: var(--radius-xl);
   padding: clamp(26px, 2.4vw, 45px);
 }
 
@@ -550,7 +550,7 @@
   min-height: clamp(120px, 9.3vw, 178px);
   padding: clamp(20px, 1.5vw, 29px) clamp(18px, 2vw, 38px);
   border: none;
-  border-radius: clamp(18px, 1.7vw, 32px);
+  border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -733,7 +733,7 @@
   align-items: center;
   gap: clamp(10px, 0.9vw, 16px);
   padding: clamp(10px, 0.9vw, 16px) clamp(14px, 1.2vw, 20px);
-  border-radius: clamp(12px, 1vw, 18px);
+  border-radius: var(--radius-sm);
   /* 감싸는 판(F1F1F1) 위에서 구분되도록 흰색으로 올린다. */
   background: #ffffff;
 }
@@ -754,7 +754,7 @@
   flex-direction: column;
   gap: 2px;
   padding: clamp(8px, 0.7vw, 12px) clamp(12px, 1vw, 16px);
-  border-radius: clamp(8px, 0.7vw, 12px);
+  border-radius: var(--radius-xs);
   background: #f1f1f1;
   font-size: var(--type-fine);
   line-height: 1.3;
@@ -823,7 +823,7 @@
   width: min(100%, 962px, 83vh);
   aspect-ratio: 962 / 633;
   overflow: hidden;
-  border-radius: clamp(18px, 1.7vw, 28px);
+  border-radius: var(--radius-xl);
   background: #000000;
 }
 
@@ -928,6 +928,7 @@
   height: 100%;
   object-fit: contain;
   opacity: 0;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -1091,7 +1092,8 @@
   outline-offset: 4px;
 }
 
-/* 제공된 두 상태 이미지를 같은 검은 판 중앙에 겹쳐 두고 교차 페이드한다. */
+/* 말풍선과 워치 영상을 같은 검은 판 중앙에 겹친다. 재생 순서는 React 상태와
+   영상 ended 이벤트가 관리하고, CSS는 자리 이동 없이 등장/퇴장만 담당한다. */
 .usageStage {
   position: absolute;
   inset: 0;
@@ -1104,71 +1106,35 @@
   display: block;
   opacity: 0;
   will-change: opacity, transform;
+  transition: opacity 760ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 820ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .usageArtworkCard {
   width: 44%;
   aspect-ratio: 1 / 1;
   object-fit: contain;
-  animation: usageCardDrop 6s ease-in-out infinite;
+  overflow: hidden;
+  border: clamp(2px, 0.18vw, 3px) solid rgba(174, 178, 184, 0.9);
+  border-radius: 50%;
+  transform: translateY(36px);
 }
 
 .usageArtworkBubble {
   width: 76%;
   height: auto;
   object-fit: contain;
-  animation: usageBubbleRise 6s ease-in-out infinite;
+  transform: translateY(34px);
 }
 
-/* 매 바퀴 맨 처음엔 검정 배경만 잠깐 비어 있다가(0-6%), 말풍선이 아래
-   더 먼 자리에서부터 떠오르며 페이드인하고(6-12%) 잠시 머문 뒤(12-38%)
-   제자리에서 디졸브되어 사라진다(38-44%). 그 뒤(44%~)엔 화면 밖 낮은 자리에
-   대기하며 카드 차례를 기다린다. */
-@keyframes usageBubbleRise {
-  0%, 6% {
-    opacity: 0;
-    transform: translateY(64px);
-  }
-  12%, 38% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  44% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  50%, 100% {
-    opacity: 0;
-    transform: translateY(64px);
-  }
+.usageArtworkCard[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* 말풍선이 다 사라진 뒤(48%)에만 카드가 한참 위에서 나타나(50%), 등속(linear)으로
-   내려와 안착한다(50→72%, 가속/감속 없이 일정한 속도). 잠시 머물다 제자리에서
-   그대로 디졸브되어 사라진 뒤(90-96%) 다시 화면 밖 높은 자리로 조용히 돌아가
-   다음 바퀴 맨 앞의 검정 공백을 기다린다. */
-@keyframes usageCardDrop {
-  0%, 48% {
-    opacity: 0;
-    transform: translateY(-420px);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-420px);
-    animation-timing-function: linear;
-  }
-  72%, 90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  96% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  98%, 100% {
-    opacity: 0;
-    transform: translateY(-420px);
-  }
+.usageArtworkBubble[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .usageCopy {
@@ -1280,16 +1246,8 @@
     transition: none;
   }
 
-  .usageArtworkCard {
-    animation: none;
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .usageArtworkBubble {
-    animation: none;
-    opacity: 0;
-    transform: translateY(0);
+  .usageArtwork {
+    transition: none;
   }
 
   .outputSequence {

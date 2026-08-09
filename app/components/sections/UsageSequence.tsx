@@ -16,6 +16,8 @@ export type UsageSection = {
 const forwardThresholds = [0.34, 0.67];
 const reverseThresholds = [0.28, 0.61];
 
+type UsageArtworkPhase = "bubble" | "bubbleExit" | "watch" | "watchExit";
+
 const MORE_SLIDES = [
   {
     frames: [
@@ -228,7 +230,11 @@ export default function UsageSequence({
   sections: UsageSection[];
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const watchVideoRef = useRef<HTMLVideoElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [activeUsageIndex, setActiveUsageIndex] = useState(0);
+  const [usageArtworkPhase, setUsageArtworkPhase] =
+    useState<UsageArtworkPhase>("bubble");
   const conversationIndex = sections.findIndex(
     (section) => section.eyebrow === "Conversation",
   );
@@ -241,7 +247,8 @@ export default function UsageSequence({
      끝나 애니메이션 없이 다 켜져 있었다 — 그래서 순수 IntersectionObserver로
      실제로 뷰포트에 들어오는 순간에만 켠다. */
   const [environmentUsageShown, setEnvironmentUsageShown] = useState(false);
-  const environmentUsageRef = useRef<HTMLElement>(null);
+  const [environmentArtworkReady, setEnvironmentArtworkReady] = useState(false);
+  const environmentUsageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = environmentUsageRef.current;
@@ -251,8 +258,10 @@ export default function UsageSequence({
     }
 
     if (typeof IntersectionObserver === "undefined") {
-      setEnvironmentUsageShown(true);
-      return;
+      const fallbackTimer = window.setTimeout(() => {
+        setEnvironmentUsageShown(true);
+      }, 0);
+      return () => window.clearTimeout(fallbackTimer);
     }
 
     const observer = new IntersectionObserver(
@@ -264,12 +273,25 @@ export default function UsageSequence({
           }
         }
       },
-      { threshold: 0.2 },
+      { threshold: 0.45 },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  /* 검은 패널이 먼저 자리를 잡은 뒤 내부 말풍선을 별도로 켠다. 패널과 내부
+     그래픽이 같은 프레임에 visible이 되면 내부 상승 모션이 패널 페이드에
+     가려지므로 짧은 시차를 둔다. */
+  useEffect(() => {
+    const shouldShow = environmentUsageShown && activeUsageIndex === 0;
+    const timer = window.setTimeout(
+      () => setEnvironmentArtworkReady(shouldShow),
+      shouldShow ? 320 : 0,
+    );
+
+    return () => window.clearTimeout(timer);
+  }, [activeUsageIndex, environmentUsageShown]);
 
   /* React의 muted 속성만으로는 DOM 프로퍼티가 제때 안 걸려서 브라우저가
      자동재생을 막는다. 직접 세워 둔다. */
@@ -280,6 +302,62 @@ export default function UsageSequence({
       video.muted = true;
     }
   }, []);
+
+  /* 말풍선과 워치 영상을 실제 상태로 교대한다. 워치 차례가 올 때마다 재생
+     위치를 0초로 되돌리고, 3초 영상의 ended 이벤트가 온 뒤에만 다음
+     말풍선 차례로 넘어간다. 두 상태 사이에는 짧은 퇴장 여백을 둔다. */
+  useEffect(() => {
+    const video = watchVideoRef.current;
+    const isActive = environmentArtworkReady && activeUsageIndex === 0;
+
+    if (!isActive) {
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+      const resetTimer = window.setTimeout(() => {
+        setUsageArtworkPhase("bubble");
+      }, 0);
+      return () => window.clearTimeout(resetTimer);
+    }
+
+    if (usageArtworkPhase === "bubble") {
+      const timer = window.setTimeout(() => {
+        setUsageArtworkPhase("bubbleExit");
+      }, 1400);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    if (usageArtworkPhase === "bubbleExit") {
+      const timer = window.setTimeout(() => {
+        setUsageArtworkPhase("watch");
+      }, 820);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    if (usageArtworkPhase === "watchExit") {
+      const timer = window.setTimeout(() => {
+        setUsageArtworkPhase("bubble");
+      }, 820);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    if (video) {
+      video.pause();
+      video.currentTime = 0;
+      video.muted = true;
+      video.play().catch(() => {
+        window.setTimeout(() => {
+          if (video.paused) {
+            video.play().catch(() => {});
+          }
+        }, 160);
+      });
+    }
+  }, [activeUsageIndex, environmentArtworkReady, usageArtworkPhase]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -313,6 +391,7 @@ export default function UsageSequence({
 
       if (track.dataset.step !== next) {
         track.dataset.step = next;
+        setActiveUsageIndex(step);
       }
 
       /* 안 보이는 동안 브라우저가 재생을 멈춰 버리므로, 해당 덩이가 떠 있을 때만
@@ -368,22 +447,24 @@ export default function UsageSequence({
             className={styles.usageBlock}
             key={section.eyebrow}
             data-index={index}
-            ref={index === 0 ? environmentUsageRef : undefined}
           >
             <div
               className={styles.usagePanel}
+              ref={index === 0 ? environmentUsageRef : undefined}
               data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
             >
               {/* 첫 덩이만 시안에 실제 화면이 그려져 있다. 나머지 둘은 빈 판이다. */}
               {index === 0 && (
                 <div className={styles.usageStage} aria-hidden="true">
                   <video
+                    ref={watchVideoRef}
                     className={`${styles.usageArtwork} ${styles.usageArtworkCard}`}
                     src={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch.mp4`}
-                    autoPlay
+                    data-visible={environmentArtworkReady && usageArtworkPhase === "watch"}
                     muted
-                    loop
                     playsInline
+                    preload="auto"
+                    onEnded={() => setUsageArtworkPhase("watchExit")}
                     aria-hidden="true"
                   />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -393,6 +474,7 @@ export default function UsageSequence({
                     alt=""
                     width={1274}
                     height={267}
+                    data-visible={environmentArtworkReady && usageArtworkPhase === "bubble"}
                   />
                 </div>
               )}

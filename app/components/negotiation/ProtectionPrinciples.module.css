@@ -36,7 +36,7 @@
 
 .card {
   background: #F1F1F1;
-  border-radius: 32px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;

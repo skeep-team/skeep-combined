@@ -53,7 +53,7 @@
   height: 591px;
   /* 섹션 배경이 흰색이라 카드가 흰색이면 경계가 안 보인다. */
   background: #f1f1f1;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;

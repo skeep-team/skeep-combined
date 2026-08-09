@@ -95,7 +95,7 @@
   align-items: center;
   min-height: clamp(210px, 28vh, 300px);
   padding: clamp(38px, 4vw, 78px);
-  border-radius: clamp(28px, 2.4vw, 48px);
+  border-radius: var(--radius-xl);
   background: #e9ebf1;
 }
 
@@ -376,7 +376,7 @@
   height: clamp(180px, 18.8vw, 320px);
   min-height: 0;
   padding: clamp(34px, 3.6vw, 68px) clamp(24px, 3vw, 56px);
-  border-radius: clamp(28px, 2.4vw, 48px);
+  border-radius: var(--radius-xl);
   text-align: center;
   transition: height var(--card-expand-duration) var(--card-expand-ease);
 }
@@ -481,7 +481,7 @@
      그만큼 남는 자리를 가운데 콜라주가 가져간다. */
   padding: 2.9vh 0 4.1vh;
   padding: 2.55cqw 0 3.6cqw;
-  border-radius: clamp(30px, 2.6vw, 52px);
+  border-radius: var(--radius-xl);
   background: #070707;
   color: #fff;
   text-align: center;

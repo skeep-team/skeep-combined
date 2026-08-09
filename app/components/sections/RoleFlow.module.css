@@ -14,7 +14,7 @@
   /* 2358x938 사진 원본 비율 = 피그마 시안 프레임(1179x469) 비율과 정확히 같다. */
   aspect-ratio: 1179 / 469;
   overflow: hidden;
-  border-radius: 21px;
+  border-radius: var(--radius-xl);
   background: var(--color-bg-soft);
   /* 아래 딤/라벨 좌표를 cqw로 두면 박스 실제 렌더 너비에 정비례해 스케일된다. */
   container-type: inline-size;

@@ -42,7 +42,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1600 / 660;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: #161A1E;
   /* The box always keeps a locked 1600:660 ratio, so the stat overlay's
@@ -71,7 +71,7 @@
   left: 66.19cqw;
   width: 26.37cqw;
   height: 8.47cqw;
-  border-radius: 0.875cqw;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -106,7 +106,7 @@
   align-items: center;
   justify-content: center;
   background: #161A1E;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   padding: clamp(11px, 1.44vw, 18px);
   width: min(422px, 100%);
   overflow: hidden;
@@ -131,7 +131,7 @@
   align-items: flex-start;
   gap: 4px;
   padding: clamp(7px, 0.9vw, 14px);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   text-align: left;
   transition: background 0.25s ease;
 }

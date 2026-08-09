@@ -86,6 +86,13 @@
   line-height: 1;
 }
 
+/* 페이지는 있지만 지금은 연결하지 않는 항목 — 다른 링크와 시각적으로 완전히 같고,
+   눌렀을 때 이동만 안 된다. */
+.linkDisabled {
+  cursor: default;
+  pointer-events: none;
+}
+
 .copyright {
   color: #8390a2;
   font-size: 18px;

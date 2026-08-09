@@ -33,7 +33,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1600 / 900;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: #ffffff;
 }
@@ -43,7 +43,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
 }
 
 /* 경량화: collage.mp4 대신 CSS 애니메이션 (무빙스타일 호환 + 항상 재생).

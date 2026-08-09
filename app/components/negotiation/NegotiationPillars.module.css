@@ -27,7 +27,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1600 / 900;
-  border-radius: 32px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--color-bg-soft);
   /* Locked aspect-ratio lets every offset below be expressed in cqw (a % of
@@ -226,13 +226,13 @@
   .pillarRipple {
     position: absolute;
     aspect-ratio: 1600 / 900;
-    border-radius: 32px;
+    border-radius: var(--radius-xl);
   }
 
   .content {
     position: relative;
     aspect-ratio: 1600 / 900;
-    border-radius: 32px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
     background: var(--color-bg-soft);
     display: flex;

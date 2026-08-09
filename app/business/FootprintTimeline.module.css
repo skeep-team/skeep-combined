@@ -115,7 +115,7 @@
   width: 100%;
   aspect-ratio: 1.1;
   overflow: hidden;
-  border-radius: clamp(16px, 1.7vw, 32px);
+  border-radius: var(--radius-xl);
   background: linear-gradient(180deg, #e7eaf0 0%, #fff 100%);
 }
 

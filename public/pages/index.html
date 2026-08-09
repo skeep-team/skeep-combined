@@ -60,6 +60,11 @@
     }
     body {
       --edge-padding: clamp(24px, 8.3vw, 160px);
+      /* 카드 크기에 따라 한 단계씩 커지는 공통 곡률. */
+      --card-radius-xs: clamp(3px, 0.25vw, 5px);
+      --card-radius-sm: clamp(6px, 0.45vw, 8px);
+      --card-radius-md: clamp(8px, 0.7vw, 14px);
+      --card-radius-lg: clamp(12px, 0.95vw, 18px);
       background: #fff;
       color: #161A1E;
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
@@ -175,7 +180,7 @@
     .hero-gnb.hero-gnb-expanded .hero-gnb-shape {
       width: 524px;
       height: 94px;
-      border-radius: 22px;
+      border-radius: var(--card-radius-lg);
       background-color: #ffffff;
       box-shadow: 0 20px 50px rgba(14,24,37,.10);
     }
@@ -183,7 +188,7 @@
       display: block;
       width: 78px;
       height: 78px;
-      border-radius: 12px;
+      border-radius: var(--card-radius-md);
       padding: 11px 0 0 10px;
       font-size: 14px;
       font-weight: 700;
@@ -315,7 +320,7 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: contain; display: block; user-select: none;   /* 원본 그대로, 자르지 않는다 */
-      border-radius: clamp(4px, 0.5vw, 9px);
+      border-radius: var(--card-radius-sm);
     }
     .sec-hero > .hero-eyebrow,
     .sec-hero > .hero-h1,
@@ -801,7 +806,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform: translate(-50%, -50%);
       width: min(440px, 28.5vw);
       aspect-ratio: 1 / 1;
-      border-radius: 32px;
+      /* 대형 정사각형 비주얼: 기준 카드보다 크지만 과하게 둥글지 않게 */
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       display: block;
       opacity: 0;
@@ -816,7 +822,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       min-width: 0;
       aspect-ratio: 1 / 1;
       display: block;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       border: 0;
       background: #F1F1F1;
@@ -832,7 +838,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       inset: 0;
       height: 410px;
-      border-radius: 32px; overflow: hidden;
+      border-radius: var(--card-radius-lg); overflow: hidden;
       background: linear-gradient(160deg, #F4F8FC 0%, #F4F8FC 100%);
       opacity: 0;
       pointer-events: none;
@@ -957,7 +963,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       left: var(--l); top: var(--t);
       width: var(--w); height: var(--h);
-      border-radius: var(--r, 8px);
+      border-radius: var(--r, var(--card-radius-sm));
       overflow: hidden;
       background: var(--bg, transparent);
       opacity: var(--op, 1);
@@ -1215,7 +1221,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex; align-items: stretch;
       gap: clamp(6px, 0.7vw, 12px);
       background: #161A1E;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       padding: clamp(9px, 1.1vw, 16px);
       width: min(384px, 100%);
       margin-top: clamp(16px, 2.2vw, 40px);
@@ -1228,7 +1234,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .pill-sm {
       flex: 1 1 0;
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-      background: #fff; border-radius: 12px;
+      background: #fff; border-radius: var(--card-radius-md);
       padding: clamp(8px, 0.9vw, 14px) clamp(12px, 1.1vw, 18px);
       border: 0; cursor: pointer; font-family: inherit; text-align: left;
       transition: background .25s ease;
@@ -1355,7 +1361,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: auto;
       min-width: 0;
       aspect-ratio: 1 / 1;
-      border-radius: 12px;
+      border-radius: var(--card-radius-md);
       padding: clamp(20px, 2vw, 28px);
       position: relative;
       overflow: hidden;
@@ -1416,7 +1422,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: clamp(12px, 1.1vw, 18px);
       padding: clamp(20px, 2vw, 28px);
       background: #F1F1F1;
-      border-radius: 12px;
+      border-radius: var(--card-radius-md);
       border: none;
       cursor: pointer;
       overflow: hidden;
@@ -1506,31 +1512,26 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       inset: 0;
       height: 100%;
-      transition:
-        opacity .95s cubic-bezier(.22, 1, .36, 1),
-        transform .95s cubic-bezier(.22, 1, .36, 1);
-      will-change: opacity, transform;
+      /* 아래→위로 밀려 올라오는 느낌이 나지 않도록 위치 이동 없이 투명도만 크로스페이드한다. */
+      transition: opacity .95s cubic-bezier(.22, 1, .36, 1);
+      will-change: opacity;
       backface-visibility: hidden;
     }
     .system-flow-scene--diagram {
       z-index: 1;
       opacity: 1;
-      transform: translate3d(0, 0, 0);
     }
     .system-flow-scene--layers {
       z-index: 2;
       opacity: 0;
-      transform: translate3d(0, 42px, 0);
       pointer-events: none;
     }
     .system-flow-sequence.show-layers .system-flow-scene--diagram {
       opacity: 0;
-      transform: translate3d(0, -14px, 0);
       pointer-events: none;
     }
     .system-flow-sequence.show-layers .system-flow-scene--layers {
       opacity: 1;
-      transform: translate3d(0, 0, 0);
       pointer-events: auto;
     }
     .sec-system-diagram {
@@ -1544,7 +1545,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 100%;
       background: #F1F1F1; border-radius: 0;
       min-height: 0;
-      aspect-ratio: 3958 / 1167;              /* 왼쪽 패널(546)+오른쪽(3412) 합친 비율 — 정확히 타일링 (journey-*-v3 재수출 세로비 반영) */
+      aspect-ratio: 7908 / 2250;              /* 왼쪽 패널(1092)+오른쪽(6816) 합친 비율 — 정확히 타일링 (journey/context-*-v4 재수출 반영) */
       display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden;
       container-type: inline-size;
@@ -1553,7 +1554,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .diagram-journey-panel {
       position: absolute;
       inset: 0 auto 0 0;
-      width: 14.7485%;
+      width: 13.8088%;
       background: #2B3542;
       color: #fff;
       z-index: 1;
@@ -1675,7 +1676,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 컨테이너를 레이어 카드 회색(#F1F1F1)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
     .diagram-tabs {
-      background: #F1F1F1; border-radius: 32px;
+      background: #F1F1F1; border-radius: var(--card-radius-lg);
       display: flex; gap: clamp(6px, 0.7vw, 12px);
       padding: clamp(9px, 1.1vw, 16px);
       border: none;
@@ -1683,7 +1684,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .diagram-tab {
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
-      border-radius: 12px; padding: clamp(8px, 0.9vw, 14px) clamp(14px, 1.3vw, 22px);
+      border-radius: var(--card-radius-md); padding: clamp(8px, 0.9vw, 14px) clamp(14px, 1.3vw, 22px);
       min-width: 148px; background: transparent; text-align: left;
     }
     .diagram-tab.active { background: #fff; box-shadow: 0 1px 5px rgba(14,24,37,0.08); }
@@ -1693,13 +1694,59 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── 10. SYSTEM LAYERS ───────────────────────── */
     .sec-layers {
-      background: #161A1E;
+      background: #fff;
       width: 100%;
       padding: clamp(40px, 6vh, 68px) 0;
       min-height: 0;
       display: flex; flex-direction: column;
       justify-content: center;
+      gap: clamp(20px, 2.6vh, 36px);
     }
+    /* ── WHO/WHAT/WHERE 버튼 + 패킷 다이어그램 ── */
+    /* 처음엔 다이어그램만 뜨고, 1초 뒤(JS) 버튼이 아래에서 올라오며 다이어그램이 위로 밀려 올라간다. */
+    /* max-height 대신 grid-template-rows(0fr→1fr)로 높이를 보간해 끊김 없이 부드럽게 펼쳐지고,
+       버튼 자체는 transform/opacity(GPU 합성)만 사용해 위로 슬라이드 인 되도록 분리했다. */
+    .wf-buttons-wrap {
+      display: grid; grid-template-rows: 0fr; width: 100%;
+      transition: grid-template-rows .7s cubic-bezier(.22,1,.36,1);
+    }
+    .sec-layers.wf-in .wf-buttons-wrap { grid-template-rows: 1fr; }
+    .wf-buttons { display: flex; gap: clamp(14px, 1.6vw, 28px); width: 100%; padding: 0 var(--edge-padding);
+      min-height: 0; overflow: hidden;
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .45s ease, transform .55s cubic-bezier(.22,1,.36,1); }
+    .sec-layers.wf-in .wf-buttons { opacity: 1; transform: translateY(0); transition-delay: .18s; }
+    .wf-btn {
+      flex: 1 1 0; min-width: 0; text-align: left; cursor: pointer;
+      background: #D3D3D3; border: none; border-radius: clamp(16px, 1.8vw, 32px);
+      padding: clamp(18px, 2vw, 32px); display: flex; flex-direction: column;
+      gap: clamp(14px, 1.6vw, 24px);
+      transition: background .2s ease, transform .2s ease;
+    }
+    .wf-btn:hover { transform: translateY(-2px); }
+    .wf-btn.active { background: #FF0B6C; }
+    .wf-btn-title {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 600; font-size: clamp(22px, 2vw, 36px); letter-spacing: -0.04em;
+      color: #222; line-height: 1.5;
+    }
+    .wf-btn.active .wf-btn-title, .wf-btn.active .wf-btn-desc p { color: #fff; }
+    .wf-btn-desc p {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      font-weight: 700; font-size: clamp(12px, 0.95vw, 16px); letter-spacing: -0.02em;
+      color: #222; opacity: 0.85; line-height: 1.5; margin: 0;
+    }
+    .wf-diagram { display: flex; align-items: center; width: 100%;
+      aspect-ratio: 7908 / 2250; border-radius: 0; overflow: hidden; background: #F1F1F1; }
+    .wf-diagram-left-wrap { flex: 0 0 13.8088%; height: 100%; display: flex; }
+    .wf-diagram-left { display: block; width: 100%; height: 100%; object-fit: cover; }
+    /* 오른쪽은 두 장을 겹쳐 둔다: 스크롤로 들어온 직후엔 방금 본 컨텍스트 플로우 사진(base)이
+       그대로 이어져 보이다가, 버튼 3개가 다 올라온 뒤에야 WHO 강조본(overlay)으로 디졸브된다. */
+    .wf-diagram-right-wrap { position: relative; flex: 1 1 0; min-width: 0; height: 100%; }
+    .wf-diagram-right { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+    .wf-diagram-right--base { opacity: 1; }
+    .wf-diagram-right--overlay { opacity: 0; transition: opacity .8s ease; }
+    .sec-layers.wf-in .wf-diagram-right--overlay { opacity: 1; transition-delay: .55s; }
     .layer-visual {
       position: relative;
       width: 100%;
@@ -1731,29 +1778,30 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .layer-visual-image--database {
       background: transparent;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      padding: 0 var(--edge-padding);
       container-type: inline-size;
     }
-    .layer-visual-image--database.active { pointer-events: auto; }
+    .system-flow-sequence.show-layers .layer-visual-image--database.active { pointer-events: auto; }
     .database-cards {
-      width: 82.7%;
+      width: 100%;
       background: #161A1E;
-      padding: 2.4cqw;
+      padding: .5cqw;
       transition: background-color .28s ease;
       border-radius: 1cqw;
       display: flex;
       align-items: center;
-      gap: 0;
+      gap: 1.4cqw;
+      container-type: inline-size;
     }
     .step-chevron {
       flex: 0 0 auto;
-      width: 1.5cqw;
-      height: 2.1cqw;
+      width: 1.208cqw;
+      height: 1.751cqw;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(255,255,255,.32);
     }
     .step-chevron svg { display: block; width: 100%; height: 100%; }
     .database-card {
@@ -1761,7 +1809,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       flex: 1 1 0;
       min-width: 0;
       position: relative;
-      border-radius: 1cqw;
+      border-radius: .966cqw;
       background: transparent;
       color: #222;
       text-align: left;
@@ -1808,19 +1856,24 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transition: background-color .28s ease, color .28s ease;
       display: flex;
       flex-direction: column;
-      padding: 1.15cqw 1.3cqw 1.05cqw;
+      gap: 1.208cqw;
+      padding: 1.208cqw;
     }
     .database-card-face--back {
+      background: #D9D9D9;
       transform: rotateY(180deg);
     }
     .database-card-head {
-      align-self: flex-start;
-      padding: .5cqw 1cqw;
-      border-radius: .55cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 100%;
+      height: 2.717cqw;
+      padding: 0 .604cqw;
+      border-radius: .543cqw;
       background: #09421A;
-      color: #82FF8F;
-      line-height: 1.5;
-      letter-spacing: -.04em;
+      color: #fff;
       transition: background-color .28s ease, color .28s ease;
     }
     .database-card-back-head {
@@ -1829,80 +1882,87 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .database-card-kicker {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.16cqw;
+      font-size: 1.087cqw;
       font-weight: 600;
       line-height: 1.5;
+      letter-spacing: -.02em;
+      white-space: nowrap;
     }
     .database-card-title {
-      margin: .95cqw 0 1cqw;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.85cqw;
-      font-weight: 800;
-      line-height: 1.4;
+      font-size: 1.691cqw;
+      font-weight: 700;
+      line-height: 1.5;
       letter-spacing: -.04em;
-      color: #161A1E;
+      color: #222;
     }
     .database-card-body {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-height: 0;
       background: #F1F1F1;
-      border-radius: .75cqw;
-      padding: 1.05cqw;
+      border-radius: .665cqw;
+      padding: .966cqw;
       display: flex;
       flex-direction: column;
-      gap: .8cqw;
+      gap: .725cqw;
     }
     .database-card-note {
       margin-top: auto;
       color: rgba(34,34,34,.7);
-      font-size: .92cqw;
+      font-size: .846cqw;
       font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: -.03em;
+      line-height: 1.4;
+      letter-spacing: -.04em;
     }
     .database-card-note-mark { opacity: .8; margin-right: .1em; }
     .database-card-heading {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.28cqw;
+      font-size: 1.208cqw;
       font-weight: 600;
       line-height: 1.5;
       letter-spacing: -.04em;
       color: #222;
     }
+    .database-card-face--back .database-card-heading { font-size: 1.087cqw; }
     .database-card-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: .5cqw;
+      flex: 0 0 auto;
+      gap: .725cqw;
     }
     .database-card-tag {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 1.631cqw;
       background: #ddd;
       color: #474747;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: .82cqw;
+      font-size: .752cqw;
       font-weight: 600;
       letter-spacing: -.02em;
       text-transform: uppercase;
-      padding: .38cqw .7cqw;
-      border-radius: .18cqw;
+      padding: 0 .604cqw;
+      border-radius: .121cqw;
       white-space: nowrap;
     }
     .database-card-footer {
       align-self: flex-end;
-      margin-top: .75cqw;
+      margin-top: auto;
       display: flex;
       align-items: center;
-      gap: .3cqw;
+      gap: .604cqw;
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      font-size: 1.16cqw;
+      font-size: 1.087cqw;
       font-weight: 600;
-      letter-spacing: -.03em;
+      letter-spacing: -.04em;
       color: #222;
       opacity: .6;
     }
     .database-card-footer-arrow {
       display: block;
-      width: .55cqw;
-      height: 1.3cqw;
+      width: .36cqw;
+      height: .84cqw;
       color: #222;
     }
     .database-card-back-body p:last-child { color: #66717f; }
@@ -1916,7 +1976,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 큰 제목: 헤더 위, 선택된 레이어에 따라 텍스트만 바뀐다 */
     .layers-heading {
-      display: flex; flex-wrap: wrap; align-items: baseline; gap: clamp(12px, 1.8vw, 32px);
+      display: flex; flex-wrap: wrap; align-items: center; gap: clamp(28px, 3.6vw, 64px);
       padding: 0 var(--edge-padding);
       margin-bottom: clamp(24px, 3vw, 44px);
     }
@@ -1924,6 +1984,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: clamp(26px, 2.7vw, 42px); font-weight: 600; letter-spacing: -0.03em; color: #fff;
       white-space: nowrap;
     }
+    .layers-heading-desc { margin-top: clamp(10px, 1.2vw, 20px); }
     .layers-heading-desc {
       font-size: clamp(14px, 1.4vw, 22px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.5;
       color: rgba(255,255,255,.72);
@@ -1935,8 +1996,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       margin-bottom: clamp(16px, 2vw, 28px);
     }
     .layer-card {
-      background: rgba(241,241,241,.15); border-radius: 8px; border: none;
-      padding: clamp(8px, .9vw, 14px) clamp(16px, 1.7vw, 27px);
+      background: rgba(241,241,241,.15); border-radius: var(--card-radius-md); border: none;
+      padding: clamp(5px, .5vw, 8px) clamp(14px, 1.3vw, 20px);
       transition: background-color .28s ease, color .28s ease;
     }
     .layer-card[data-layer] { cursor: pointer; }
@@ -1946,7 +2007,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .layer-card[data-layer]:not(.faded) .layer-name { color: #09421A; }
 
     /* 레이어별 선택 팔레트: 탭·STEP 배지 색이 함께 바뀐다 (뒷면 배지는 항상 무채색 유지) */
-    .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-head {
+    .sec-layers[data-selected-layer="active"] .layer-visual-image.active .database-card-head:not(.database-card-back-head) {
       background: #FF3385;
       color: #FFCADF;
     }
@@ -1957,7 +2018,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: #B70049;
     }
 
-    .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-head {
+    .sec-layers[data-selected-layer="database"] .layer-visual-image.active .database-card-head:not(.database-card-back-head) {
       background: #0a67de;
       color: #89dff0;
     }
@@ -2000,22 +2061,22 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         gap: 8px;
         padding: 16px;
       }
-      .database-card { flex: 0 0 240px; border-radius: 18px; }
+      .database-card { flex: 0 0 240px; aspect-ratio: 516 / 346; border-radius: var(--card-radius-sm); }
       .database-card:focus-visible {
         outline-width: 2px;
         outline-offset: 3px;
       }
-      .step-chevron { width: 16px; height: 22px; }
-      .database-card-face { padding: 14px 15px 12px; }
-      .database-card-head { padding: 5px 10px; border-radius: 6px; }
-      .database-card-kicker { font-size: 11px; }
-      .database-card-title { font-size: 16px; margin: 10px 0 10px; }
+      .step-chevron { width: 9px; height: 13px; }
+      .database-card-face { padding: 9px; gap: 9px; }
+      .database-card-head { height: 21px; padding: 0 5px; border-radius: var(--card-radius-xs); }
+      .database-card-kicker { font-size: 8px; }
+      .database-card-title { font-size: 13px; }
       .database-card-body {
-        padding: 11px;
-        border-radius: 10px;
-        gap: 8px;
+        padding: 7px;
+        border-radius: var(--card-radius-xs);
+        gap: 6px;
       }
-      .database-card-note { font-size: 10px; }
+      .database-card-note { font-size: 7px; }
       .database-card-heading { font-size: 13px; }
       .database-card-tags { gap: 5px; }
       .database-card-tag { font-size: 8px; padding: 4px 8px; }
@@ -2055,7 +2116,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: 24px;
     }
     .qa-card {
-      background: #F1F1F1; border-radius: 24px;
+      background: #F1F1F1; border-radius: var(--card-radius-md);
       padding: 40px 36px; min-height: 220px;
       border: none;
       transition: background .25s ease;
@@ -2144,7 +2205,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       flex: 1 1 0;
       min-width: 0;
       height: clamp(184px, 13vw, 220px);
-      border-radius: clamp(20px, 1.7vw, 28px);
+      border-radius: var(--card-radius-md);
       padding: clamp(24px, 2vw, 32px) clamp(14px, 1.45vw, 24px) 0;
       display: block; text-decoration: none;
       transition: transform .2s ease;
@@ -2182,13 +2243,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform-origin: 0 0;
       transform: translateY(calc((1 - var(--lp, 0)) * 50vh)) scale(calc(1 - var(--lp, 0) * 0.49)); }
     .ux-bigcard { flex: 1 1 0; min-width: 0; height: clamp(150px, 11vw, 182px);
-      border-radius: clamp(20px, 1.7vw, 28px); padding: clamp(20px, 1.7vw, 28px) clamp(14px, 1.45vw, 24px) 0; }
+      border-radius: var(--card-radius-md); padding: clamp(20px, 1.7vw, 28px) clamp(14px, 1.45vw, 24px) 0; }
     .ux-bigcard .kr { display: block; font-size: clamp(16px,1.75vw,26px); font-weight: 600; letter-spacing: -0.04em; color: #161A1E; margin-bottom: clamp(12px,1.1vw,16px); line-height: 1.3; }
     .ux-bigcard .sub { display: block; font-size: clamp(12px,1.1vw,17px); font-weight: 500; line-height: 1.45; letter-spacing: -0.03em; color: #161A1E; opacity: .2; }
 
     /* tab scene (target layout) — independent 2-column flex */
     .ux-scene { position: relative; width: 100%;
-      display: flex; align-items: flex-start; gap: clamp(40px, 5vw, 90px); }
+      display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(20px, 2vw, 40px); }
     /* tabs fade in exactly where the shrinking big cards land (matched size/pos → clean handoff) */
     .ux-tabbar { opacity: clamp(0, calc((var(--p) - 0.6) * 9), 1); }
     /* panels revealed from BELOW after the cards settle, sliding up */
@@ -2209,7 +2270,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-right-holder { flex: 1 1 0; min-width: 0; }
     .ux-tabbar { display: flex; gap: clamp(10px, 1vw, 16px); }
     .ux-tab { flex: 1 1 0; min-width: 0; height: clamp(60px, 5.4vw, 82px);
-      border-radius: clamp(12px, 1vw, 16px); border: 1.5px solid transparent;
+      border-radius: var(--card-radius-md); border: 1.5px solid transparent;
       background: rgba(190,197,210,0.28); cursor: pointer; text-align: left;
       display: flex; align-items: flex-start; padding: clamp(13px, 1.4vw, 18px) clamp(12px, 1.2vw, 18px) 0;
       font-size: clamp(12px, 1.1vw, 16px); font-weight: 600; letter-spacing: -0.03em; color: #161A1E;
@@ -2223,21 +2284,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       opacity: 0; pointer-events: none;
       transition: opacity .4s ease;
     }
-    .ux-right-panel { display: flex; flex-direction: column; gap: clamp(12px, 1.2vw, 18px); }
+    /* 카드가 많은 탭(새겨듣다=6개)도 스크롤/압축 없이 한 화면에 들어오도록 2열 그리드로 배치 */
+    .ux-right-panel { display: grid; grid-template-columns: 1fr 1fr; align-content: start;
+      gap: clamp(10px, 1.1vw, 18px); }
     .ux-left-panel.active, .ux-right-panel.active { opacity: 1; pointer-events: auto; }
     .ux-left-holder { position: relative; min-height: clamp(150px, 20vh, 240px); }
-    .ux-right-holder { position: relative; min-height: clamp(400px, 52vh, 660px); }
+    .ux-right-holder { position: relative; min-height: clamp(600px, 80vh, 850px); }
     @keyframes uxBgFade { from { opacity: 0; } to { opacity: 1; } }
     .ux-logic-sticky.ux-bg-in::before { animation: uxBgFade .85s ease both; }
 
     /* compact overrides so the whole scene fits one screen */
     .ux-left-panel .stage-kr-label { margin-bottom: 10px; }
-    .ux-left-panel .stage-kr { font-size: 66px; margin-bottom: clamp(9px, 0.9vw, 14px); }
-    .ux-left-panel .stage-desc { font-size: 26px; margin-bottom: clamp(12px, 1.2vw, 19px); white-space: normal; }
+    .ux-left-panel .stage-kr { font-size: 54px; margin-bottom: clamp(9px, 0.9vw, 14px); }
+    .ux-left-panel .stage-desc { font-size: 26px; margin-bottom: clamp(12px, 1.2vw, 19px); white-space: nowrap; }
     .ux-left-panel .stage-en { font-size: clamp(14px, 1.3vw, 18px); padding: 6px 18px; }
-    .ux-right-holder .stage-logic-card { padding: clamp(16px,1.6vw,24px) clamp(20px,1.9vw,30px); border-radius: clamp(18px,1.5vw,24px); gap: clamp(8px,0.9vw,12px); }
-    .ux-right-holder .stage-logic-title { font-size: clamp(18px,1.7vw,24px); }
-    .ux-right-holder .stage-logic-desc { font-size: clamp(13px,1.05vw,15px); }
+    .ux-right-holder .stage-logic-card { padding: clamp(14px,1.4vw,22px) clamp(16px,1.6vw,26px); border-radius: var(--card-radius-lg); gap: clamp(6px,0.7vw,10px); }
+    .ux-right-holder .stage-logic-title { font-size: clamp(16px,1.4vw,20px); }
+    .ux-right-holder .stage-logic-desc { font-size: clamp(12px,0.95vw,14px); }
 
 
 
@@ -2268,7 +2331,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       top: clamp(90px, 13vh, 170px); align-items: flex-start; justify-content: center;
       min-height: 0; perspective: 1500px; transition: transform .85s cubic-bezier(.22,1,.32,1);
       --cards-y-nudge: 0px; --cards-x-nudge: 0px;
-      transform: translate(calc(var(--mv,0) * -30vw + var(--cards-x-nudge)), calc(38vh - var(--mv,0) * 36vh + var(--cards-y-nudge))) scale(calc(1 + var(--mv,0) * 0.12));
+      transform: translate(calc(var(--mv,0) * -34vw + var(--cards-x-nudge)), calc(38vh - var(--mv,0) * 36vh + var(--cards-y-nudge))) scale(calc(1 - var(--mv,0) * 0.15));
       opacity: 1; }
     .ux-logic-wrap.detail-in .uxl-cards { --cards-y-nudge: 75px; --cards-x-nudge: 80px; }
 
@@ -2310,7 +2373,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .ux-tabbar { gap: clamp(9px, 0.82vw, 16px); }
     .ux-tabbar .ux-tab {
       flex: 0 0 auto; width: clamp(80px, 6.35vw, 122px); aspect-ratio: 1; height: auto;
-      border: none; border-radius: clamp(12px, 0.9vw, 17px);
+      border: none; border-radius: var(--card-radius-md);
       background: rgba(14,24,37,0.05); color: rgba(14,24,37,0.55);
       align-items: flex-start; padding: clamp(13px,1vw,18px) clamp(11px,0.95vw,15px) 0;
       font-weight: 700; font-size: clamp(13px, 1.15vw, 22px); }
@@ -2318,7 +2381,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       background: var(--ux-tab-bg, linear-gradient(135deg, #ff0f6b 0%, #ff62a2 55%, #ffc6da 100%)) center / cover no-repeat;
       color: #fff;
     }
-    .ux-left-col { flex: 1.3 1 0; }
+    .ux-left-col { flex: 0 1 clamp(280px, 22vw, 380px); }
     /* big cards square → land cleanly on the square tabs */
     .ux-bigcard { height: auto; aspect-ratio: 1; }
     /* left: tab-matched accent title + circle arrow (no label/pill) */
@@ -2326,56 +2389,60 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       text-decoration: none; cursor: pointer; margin-bottom: clamp(16px,1.7vw,24px); }
     .ux-left-panel .stage-kr {
       margin: 0; line-height: 1.5; font-weight: 700; letter-spacing: -0.04em;
-      font-size: 66px;
+      font-size: 54px; white-space: nowrap;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       color: #111; }
     .stage-arrow { flex: 0 0 auto; width: clamp(42px,3.2vw,62px); height: clamp(42px,3.2vw,62px);
       border-radius: 50%; background: var(--ux-accent, #FB6E9C); display: inline-flex; align-items: center; justify-content: center; }
     .stage-arrow svg { width: 44%; height: 44%; }
     .stage-arrow svg path { stroke: #000; }
     .ux-left-panel .stage-desc { color: #3a4655; opacity: 1; font-weight: 500;
-      font-size: 26px; margin: 0; line-height: 1.5; }
+      font-size: 26px; margin: 0; line-height: 1.5; white-space: nowrap;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
     /* logic cards */
     .ux-right-holder .stage-logic-card {
       background: #F1F1F1;
-      border: none; border-radius: clamp(20px,1.5vw,28px);
+      border: none; border-radius: var(--card-radius-lg);
       padding: clamp(26px,2.1vw,38px) clamp(26px,2.3vw,42px) clamp(24px,1.9vw,35px); gap: clamp(12px,1.1vw,17px); }
-    .ux-right-holder .stage-logic-title { color: #161A1E; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em; }
+    .ux-right-holder .stage-logic-title { color: #161A1E; font-weight: 700; font-size: clamp(24px,2.1vw,40px); letter-spacing: -0.04em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ux-right-holder .stage-logic-tag {
       background: rgba(14,24,37,0.06); color: rgba(14,24,37,0.62); font-weight: 500;
-      font-size: clamp(14px,0.92vw,17.5px); border-radius: 19px; padding: clamp(7px,0.46vw,9px) clamp(13px,0.92vw,18px); }
-    .ux-right-holder .stage-logic-desc { color: #3a4655; opacity: 0.75; font-weight: 500; font-size: clamp(14px,1.28vw,24.5px); }
+      font-size: clamp(14px,0.92vw,17.5px); border-radius: 19px; padding: clamp(7px,0.46vw,9px) clamp(13px,0.92vw,18px);
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
+    .ux-right-holder .stage-logic-desc { color: #3a4655; opacity: 0.7; font-weight: 400; font-size: clamp(14px,1.28vw,24.5px);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; }
 
-    /* compact right-side card column */
+    /* compact right-side card column — 2열 그리드라 기존보다 넓게, 카드는 살짝 컴팩트하게 */
     @media (min-width: 900px) {
       .ux-right-holder {
-        flex: 0 1 clamp(360px, 35vw, 520px);
-      }
-      .ux-right-panel.active {
-        gap: 16px;
+        flex: 0 1 clamp(560px, 48vw, 800px);
       }
       .ux-right-holder .stage-logic-card {
-        min-height: 206px;
-        border-radius: 22px;
-        padding: 32px 34px 30px;
-        gap: 13px;
+        min-height: 220px;
+        border-radius: var(--card-radius-lg);
+        padding: 30px 24px 30px;
+        gap: 10px;
       }
       .ux-right-holder .stage-logic-title {
-        font-size: 34px;
+        font-size: 24px;
         line-height: 1.2;
         letter-spacing: -0.01em;
       }
       .ux-right-holder .stage-logic-tags {
-        gap: 9px;
+        gap: 8px;
       }
       .ux-right-holder .stage-logic-tag {
-        border-radius: 18px;
-        padding: 7px 13px;
-        font-size: 15px;
+        border-radius: 16px;
+        padding: 6px 12px;
+        font-size: 13px;
         line-height: 1.2;
       }
       .ux-right-holder .stage-logic-desc {
-        font-size: 16px;
+        font-size: 14px;
         line-height: 1.5;
+        margin-top: auto;
       }
     }
 
@@ -2430,7 +2497,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       cursor: pointer;
     }
     .stage-logic-card {
-      background: #F7F7F7; border-radius: 32px;
+      background: #F7F7F7; border-radius: var(--card-radius-lg);
       padding: 44px 48px 40px;
       display: flex; flex-direction: column; gap: 20px;
       border: 1px solid rgba(0,0,0,0.04);
@@ -2811,7 +2878,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: 20px;
     }
     .sd-info-card {
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       background: linear-gradient(155deg, #F4F8FC 0%, #F4F8FC 100%);
       min-height: 760px;
@@ -2890,7 +2957,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-main-image {
       height: 466px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background:
         linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.88) 100%),
         linear-gradient(160deg, #F4F8FC 0%, #F4F8FC 50%, #F4F8FC 100%);
@@ -2902,7 +2969,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-flow-panel {
       margin: 66px 151px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background:
         linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 127.56%),
         #F7F7F7;
@@ -2958,7 +3025,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       inset: -9px;
       border: 3.6px dashed #6e6e6e;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background: rgba(0,0,0,.05);
       opacity: .5;
       z-index: 0;
@@ -2990,7 +3057,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       flex: 1 1 0;
       min-width: 0;
       height: 250px;
-      border-radius: 24px;
+      border-radius: var(--card-radius-md);
       background: rgba(245,250,254,.72);
       padding: 36px 28px;
       display: flex;
@@ -3042,7 +3109,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-phrase {
       height: 240px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-md);
       background: linear-gradient(160deg, #F4F8FC 0%, #F4F8FC 55%, #F4F8FC 100%);
       display: flex;
       align-items: center;
@@ -3149,7 +3216,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-big-card {
       height: 900px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background: #F7F7F7;
       position: relative;
       overflow: hidden;
@@ -3186,7 +3253,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-ai-left {
       height: 900px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background: #F7F7F7;
       position: relative;
       overflow: hidden;
@@ -3204,7 +3271,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-ai-card {
       flex: 1;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       overflow: hidden;
       position: relative;
       background: #F7F7F7;
@@ -3331,7 +3398,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-principle-card {
       min-height: 267px;
-      border-radius: 24px;
+      border-radius: var(--card-radius-md);
       background: #F7F7F7;
       padding: 48px 40px 40px;
     }
@@ -3411,7 +3478,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-triple-box {
       height: 516px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background: #F7F7F7;
       display: flex;
       align-items: center;
@@ -3426,7 +3493,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-exec-card {
       height: 900px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-lg);
       background:
         radial-gradient(circle at 70% 40%, rgba(255,7,106,.14), transparent 28%),
         #F7F7F7;
@@ -3488,7 +3555,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .md-morph-pill {
       height: 240px;
-      border-radius: 32px;
+      border-radius: var(--card-radius-md);
       background: #eceef3;
       display: inline-flex;
       align-items: center;
@@ -3577,6 +3644,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       color: #161A1E; font-size: 20px; font-weight: 500; line-height: 1.2; letter-spacing: 0; text-decoration: none;
     }
     .footer-link::after { content: "↗"; color: #8390a2; font-size: 18px; font-weight: 500; line-height: 1; }
+    /* 페이지는 있지만 지금은 연결하지 않는 항목 — 다른 링크와 시각적으로 완전히 같고,
+       눌렀을 때 이동만 안 된다. */
+    .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
     /* ── RESPONSIVE ──────────────────────────────── */
@@ -4446,13 +4516,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="diagram-card">
     <div class="diagram-pair diagram-pair--journey">
       <div class="diagram-left-wrap">
-        <img class="diagram-left" src="assets/journey-left-v3.jpg" alt="정면을 바라보고 서 있는 사용자">
+        <img class="diagram-left" src="assets/journey-left-v4.png?v=20260809-1" alt="정면을 바라보고 서 있는 사용자">
       </div>
-      <img class="diagram-right" src="assets/journey-right-v3.jpg" alt="사용자 경험 플로우: 자동차·거실·세탁 공간·침실로 이어지는 이동의 흐름">
+      <img class="diagram-right" src="assets/journey-right-v4.png" alt="사용자 경험 플로우: 오전 세탁부터 오후 스피커 사용까지 이어지는 하루의 흐름">
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
-      <img class="diagram-left" src="assets/context-left-v2.png?v=20260807-2" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Cloud/Cache Memory, Preference/Environment/Intent)">
-      <img class="diagram-right" src="assets/context-right-v2.png?v=20260807-4" alt="LONG-TERM MEMORY: Passive/Active 레이어와 T1~T4 단계별 태스크·패킷 흐름">
+      <img class="diagram-left" src="assets/context-left-v3.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Packet No., Cloud/Cache Memory)">
+      <img class="diagram-right" src="assets/context-right-v3.png?v=20260809-1" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -4491,6 +4561,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); }
     });
   });
+  // 스크롤 진행도에 따라 01→02 자동 전환(system-flow-sequence의 render()에서 호출)에 쓰는 브릿지.
+  window.__skeepSelectJourneyTab = select;
 })();
 </script>
 
@@ -4498,261 +4570,38 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   11. SYSTEM LAYERS
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
-  <div class="layers-grid" role="tablist" aria-label="시스템 레이어 선택">
-    <div class="layer-card" role="tab" tabindex="0" aria-selected="true" data-layer="passive"><span class="layer-name">상시 레이어</span></div>
-    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="active"><span class="layer-name">활성 레이어</span></div>
-    <div class="layer-card faded" role="tab" tabindex="0" aria-selected="false" data-layer="database"><span class="layer-name">데이터 베이스</span></div>
-  </div>
-  <div class="layers-heading">
-    <p class="layers-heading-title" data-layers-heading-title>상시 레이어</p>
-    <p class="layers-heading-desc" data-layers-heading-desc>항상 사용자의 주변 환경을 스캔하며 가능성을 파악하고 있습니다.<br>목적이 없는 순간에도 결코 쉬지 않죠.</p>
-  </div>
-  <div class="layer-visual">
-    <div class="layer-visual-image layer-visual-image--database active" data-layer-image="passive" aria-hidden="false">
-      <div class="database-cards is-intro-pending">
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="환경 리스트 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">환경 탐색하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자의 주변 환경을 찾아 해당 목록을 리스트업하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>환경 리스트 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">환경 리스트</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자가 이동하는 동안 근처에서 감지된 모든 환경을 리스트업한 정보입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>새로운 환경에 들어서는 순간 가장 먼저 참조되어, 지금 무엇을 빌려 쓸 수 있는지를 알아봅니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="기능 리스트 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">기능 탐색하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자 주변의 환경이 할 수 있는 일을 기능 리스트업하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span><span class="database-card-tag">Cloud DB match</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>기능 리스트 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">기능 리스트</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">주변에 있는 환경이 실제로 무엇을 해줄 수 있는지를 정리한 정보입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>'무엇이 있는가'를 넘어 '그것으로 무엇을 할 수 있는가'까지 미리 파악해 둡니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="사용 가능 여부 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">상태 탐색하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">해당 환경이 지금 빌릴 수 있는 상태인지 알아보며, 환경의 사용 가능 여부를 파악하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Local sensing</span><span class="database-card-tag">standby tracking</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>사용 가능 여부 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">사용 가능 여부</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">근처에 감지된 환경이라도, 지금 이 순간 실제로 쓸 수 있는 상태인지는 별개로 확인됩니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>다른 사용자가 이미 사용 중이거나 접근할 수 없다면, 협상이 필요할 수 있음을 미리 알려줍니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+  <div class="wf-diagram">
+    <div class="wf-diagram-left-wrap">
+      <img class="wf-diagram-left" src="assets/context-left-v3.png" alt="PACKET NO. — Cloud Memory / Cache Memory">
     </div>
-    <div class="layer-visual-image layer-visual-image--database" data-layer-image="active" aria-hidden="true" inert>
-      <div class="database-cards is-intro-pending">
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="인풋 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">목적 포착하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자의 목적을 인풋을 통해 감지하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">User speech</span><span class="database-card-tag">Behavior based</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>인풋 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">인풋</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자가 자신의 목표를 말이나 텍스트로 직접 전달하거나, 행동과 상황만으로 은근히 드러내는 신호입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>이 신호가 감지되는 순간부터 SKEEP은 목적을 읽어내는 과정을 시작합니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="파싱 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">목적 분석하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자의 목적 구현을 위해 해야 할 일을 추리며 파싱하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Cloud computation</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>파싱 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">파싱</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">감지된 인풋을 바탕으로, 추상적인 목적을 실제로 처리 가능한 단위들로 나누는 과정입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>하나의 목적이 여러 개의 세부 행동으로, 다시 더 구체적인 동작으로 갈라지며 정리됩니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="실행 블록 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">실행 계획하기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자의 명령을 환경이 받아들일 수 있는 형태로 바꾸기 위해 실행 블록 구축하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Edge execution</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>실행 블록 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">실행 블록</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">목표·행동·기능이 하나로 묶여, 환경이 곧바로 실행할 수 있는 명령의 최소 단위입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>같은 목적이라도 어떤 기기를 만나느냐에 따라 실행 블록의 형태는 조금씩 달라집니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+    <div class="wf-diagram-right-wrap">
+      <img class="wf-diagram-right wf-diagram-right--base" src="assets/context-right-v3.png?v=20260809-1" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름" aria-hidden="true">
+      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who.png?v=20260809-1" alt="WHO 데이터가 하이라이트된 패킷 흐름">
     </div>
-    <div class="layer-visual-image layer-visual-image--database" data-layer-image="database" aria-hidden="true" inert>
-      <div class="database-cards is-intro-pending">
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="신원 정보 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">신원 정보 알려주기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">목적 달성에 필요한 사용자의 신원 정보를 선별하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">User speech</span><span class="database-card-tag">Behavior based</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>신원 정보 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 1</span></span>
-              <p class="database-card-title">신원 정보</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">환경이 사용자가 누구인지 알아보는 데 필요한 정보입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>스킵은 사용자가 매번 결제수단이나 로그인을 반복하지 않도록 데이터 베이스에서 사용자의 신원 정보를 관리하고 저장합니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="배경 정보 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">내역 정보 알려주기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">목적에 관련된 사용자의 태스크 내역을 선별하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Cloud computation</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>내역 정보 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 2</span></span>
-              <p class="database-card-title">배경 정보</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">사용자가 무엇을 해왔는지 지나온 테스크 내역이 자연스럽게 쌓여가는 정보입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>스킵은 사용자가 드라마를 어디까지 봤는지, 어떤 작업을 했었는지, 다음에도 이어갈 수 있도록 매 순간의 테스크를 기록하고, 환경에게 관련 내용을 선별해 전달합니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-        <span class="step-chevron" aria-hidden="true">
-          <svg viewBox="0 0 20 29"><path d="M2 2l16 12.5L2 27" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-        <article class="database-card" role="button" tabindex="0" aria-pressed="false" aria-label="선호 정보 카드 뒤집기">
-          <div class="database-card-flipper">
-            <div class="database-card-face database-card-face--front">
-              <span class="database-card-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">선호 정보 알려주기</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">목적을 수행할 때 사용자의 선호와 비선호 행동을 선별해 환경에 전달하기</p>
-                <div class="database-card-tags"><span class="database-card-tag">Personalization</span><span class="database-card-tag">Accrued</span><span class="database-card-tag">Hard limit</span></div>
-              </div>
-              <p class="database-card-footer">
-                <span>선호 정보 설명</span>
-                <svg class="database-card-footer-arrow" viewBox="0 0 9 21" aria-hidden="true"><path d="M1 1l7 9.5-7 9.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </p>
-            </div>
-            <div class="database-card-face database-card-face--back" aria-hidden="true">
-              <span class="database-card-head database-card-back-head"><span class="database-card-kicker">STEP 3</span></span>
-              <p class="database-card-title">선호 정보</p>
-              <div class="database-card-body">
-                <p class="database-card-heading">환경이 목적을 수행하는 과정에서, 사용자가 바라는 행동의 방향성을 담은 정보입니다.</p>
-                <p class="database-card-note"><span class="database-card-note-mark">*</span>사용자가 어떤 방식으로 소통하고 작업하고 싶은지, 자동화는 어디까지 맡기고 싶은지 개인의 성향을 파악해 이 정보를 환경에 전달합니다.</p>
-              </div>
-            </div>
-          </div>
-        </article>
-      </div>
+  </div>
+  <div class="wf-buttons-wrap">
+    <div class="wf-buttons" role="tablist" aria-label="패킷 데이터 카테고리 선택">
+      <button class="wf-btn active" type="button" role="tab" aria-selected="true" data-wf="who">
+        <p class="wf-btn-title">WHO</p>
+        <div class="wf-btn-desc">
+          <p>사용자가 어떤 사람인지 나타내는 맥락 카테고리 3가지로, 스킵의 장기 기억입니다.</p>
+          <p>패킷에 이 데이터가 담길때에는 각 환경이 요구하는 설정값에 맞춰 선별됩니다.</p>
+        </div>
+      </button>
+      <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="what">
+        <p class="wf-btn-title">WHAT</p>
+        <div class="wf-btn-desc">
+          <p>사용자가 스킵을 통해 무엇을 달성하고 싶은지를 담고있는 데이터입니다.</p>
+          <p>목적이 발생하면 활성화되어, 환경이 알아들을 수 있는 언어로 만들어 전달하죠.</p>
+        </div>
+      </button>
+      <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="where">
+        <p class="wf-btn-title">WHERE</p>
+        <div class="wf-btn-desc">
+          <p>사용자의 주변 환경을 상시 스캔하며 사용 가능성을 파악한 데이터입니다.</p>
+          <p>스킵은 사용자의 목적이 없는 순간에도 쉬지 않고 탐색합니다.</p>
+        </div>
+      </button>
     </div>
   </div>
 </section>
@@ -4762,55 +4611,29 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 (() => {
   const section = document.querySelector('.sec-layers');
   if (!section) return;
-  const tabs = [...section.querySelectorAll('.layer-card[data-layer]')];
-  const images = [...section.querySelectorAll('.layer-visual-image[data-layer-image]')];
-  const selectLayer = (layer) => {
-    section.dataset.selectedLayer = layer;
-    tabs.forEach((tab) => {
-      const selected = tab.dataset.layer === layer;
-      tab.classList.toggle('faded', !selected);
-      tab.setAttribute('aria-selected', String(selected));
-    });
-    images.forEach((image) => {
-      const selected = image.dataset.layerImage === layer;
-      image.classList.toggle('active', selected);
-      image.setAttribute('aria-hidden', String(!selected));
-      image.toggleAttribute('inert', !selected);
-    });
-    section.dispatchEvent(new CustomEvent('skeep:layerchange', { detail: { layer } }));
+  const btns = [...section.querySelectorAll('.wf-btn[data-wf]')];
+  const rightImg = section.querySelector('#wfDiagramRight');
+  const WF_IMAGE = {
+    who: 'assets/whoflow-who.png?v=20260809-1',
+    what: 'assets/whoflow-what.png?v=20260809-1',
+    where: 'assets/whoflow-where.png?v=20260809-1',
   };
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => selectLayer(tab.dataset.layer));
-    tab.addEventListener('keydown', (event) => {
+  const selectWf = (key) => {
+    btns.forEach((btn) => {
+      const selected = btn.dataset.wf === key;
+      btn.classList.toggle('active', selected);
+      btn.setAttribute('aria-selected', String(selected));
+    });
+    if (rightImg && WF_IMAGE[key]) rightImg.src = WF_IMAGE[key];
+  };
+  btns.forEach((btn) => {
+    btn.addEventListener('click', () => selectWf(btn.dataset.wf));
+    btn.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        selectLayer(tab.dataset.layer);
+        selectWf(btn.dataset.wf);
       }
     });
-  });
-
-  // 큰 제목/설명은 선택된 레이어에 따라 텍스트만 바뀐다.
-  const LAYER_HEADING = {
-    passive: {
-      title: '상시 레이어',
-      desc: '항상 사용자의 주변 환경을 스캔하며 가능성을 파악하고 있습니다.<br>목적이 없는 순간에도 결코 쉬지 않죠.',
-    },
-    active: {
-      title: '활성 레이어',
-      desc: '사용자의 목적이 발생하는 순간 활성화되어,<br>그 목적을 구조화하고 환경이 받아들일 수 있는 명령으로 만들어 전달하는 역할을 합니다.',
-    },
-    database: {
-      title: '데이터 베이스',
-      desc: '사용자의 맥락을 참조해, 목적 수행에 필요한 설정값과<br>사용자의 선호가 반영된 설정값을 골라 환경에 전달합니다.',
-    },
-  };
-  const headingTitle = section.querySelector('[data-layers-heading-title]');
-  const headingDesc = section.querySelector('[data-layers-heading-desc]');
-  section.addEventListener('skeep:layerchange', (event) => {
-    const info = LAYER_HEADING[event.detail.layer];
-    if (!info) return;
-    if (headingTitle) headingTitle.textContent = info.title;
-    if (headingDesc) headingDesc.innerHTML = info.desc;
   });
 })();
 </script>
@@ -4917,17 +4740,35 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
   let ticking = false;
   let showingLayers = false;
+  let journeyTab = 0;
+  const layersSection = document.querySelector('.sec-layers');
+  let wfInTimer = null;
 
   const render = () => {
     ticking = false;
     const rect = sequence.getBoundingClientRect();
     const scrollRange = Math.max(1, sequence.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, -rect.top / scrollRange));
+
+    // 01(사용자 경험 플로우) → 02(맥락 플로우): 레이어 전환 문턱(0.50) 이전, 다이어그램이 보이는 동안 스크롤만으로 전환.
+    const nextJourneyTab = journeyTab === 0 ? (progress > 0.22 ? 1 : 0) : (progress > 0.12 ? 1 : 0);
+    if (nextJourneyTab !== journeyTab) {
+      journeyTab = nextJourneyTab;
+      if (window.__skeepSelectJourneyTab) window.__skeepSelectJourneyTab(journeyTab);
+    }
+
     const nextState = showingLayers ? progress > 0.38 : progress > 0.50;
 
     if (nextState !== showingLayers) {
       showingLayers = nextState;
       sequence.classList.toggle('show-layers', showingLayers);
+      if (layersSection) {
+        if (wfInTimer) { clearTimeout(wfInTimer); wfInTimer = null; }
+        layersSection.classList.remove('wf-in');
+        if (showingLayers) {
+          wfInTimer = setTimeout(() => { layersSection.classList.add('wf-in'); }, 1000);
+        }
+      }
     }
   };
 
@@ -4967,8 +4808,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 </div>
 <style>
   .packet-donut-wrap { display: flex; justify-content: center; width: 100%; padding: clamp(96px, 10vw, 180px) var(--edge-padding) clamp(24px, 3vw, 48px); border-top: none; }
-  .packet-donut { position: relative; width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: clamp(22px, 2.2vw, 34px); overflow: hidden; background: transparent; }
-  .packet-orbit { position: absolute; inset: 0; }
+  .packet-donut { position: relative; width: min(940px, 72vw); aspect-ratio: 3 / 2; border-radius: var(--card-radius-lg); overflow: hidden; background: transparent; }
+  .packet-orbit {
+    position: absolute;
+    inset: 0;
+    /* 작은 콜라주 사진은 큰 카드 곡률과 분리한다. 화면 크기에 따라 아주 조금만
+       커져서, 모서리가 각져 보이지 않되 카드처럼 둥글어지지는 않는다. */
+    --packet-thumb-radius: clamp(3px, 0.25vw, 6px);
+  }
   .packet-orbit-img {
     position: absolute; left: 50%; top: 50%;
     width: var(--orbit-size, 92px); height: var(--orbit-size, 92px);
@@ -4977,7 +4824,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   }
   .packet-orbit-img img {
     width: 100%; height: 100%; object-fit: cover; display: block;
-    border-radius: 3px; pointer-events: auto; cursor: pointer;
+    border-radius: var(--packet-thumb-radius); pointer-events: auto; cursor: pointer;
     transition: transform .2s ease;
   }
   .packet-orbit-img:hover img { transform: scale(1.08); }
@@ -5153,7 +5000,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    border-radius: clamp(12px, 1.4vw, 22px);
+    /* 세로형 이미지 카드: 정사각형 철학 비주얼보다 한 단계 작은 곡률 */
+    border-radius: var(--card-radius-md);
   }
   .wm-peel-caption {
     margin-top: clamp(18px, 1.8vw, 28px);
@@ -5338,16 +5186,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
-        <div class="stage-title-row" data-open-detail="sensing" role="button" tabindex="0"><p class="stage-kr">새겨듣다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-        <p class="stage-desc">말하기 전, 스킵은 이미 귀 기울이고 있어요.<br>언제든 주변을 살피며 다음을 준비합니다.</p>
+        <div class="stage-title-row" data-open-detail="sensing" role="button" tabindex="0"><p class="stage-kr">한 발 먼저</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+        <p class="stage-desc">언제든 주변을 살피며 다음을 준비합니다.<br>낯선 곳이더라도 자연스럽게, 자신있게.</p>
       </div>
       <div class="ux-left-panel" data-i="1">
-        <a class="stage-title-row" href="/negotiation"><p class="stage-kr">조율하다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-        <p class="stage-desc">여럿이 함께 있어도 불편할 일은 없습니다.<br>모두의 시간이 지켜지도록, 똑부러지는 스킵.</p>
+        <a class="stage-title-row" href="/negotiation"><p class="stage-kr">자리 빌리기</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <p class="stage-desc">환경의 기능은 내 것처럼, 그 안의 사람들과는 부딪히지 않게.<br>어디든 자연스럽게 맞춰 들어갑니다.</p>
       </div>
       <div class="ux-left-panel" data-i="2">
-        <a class="stage-title-row" href="/service2"><p class="stage-kr">지켜주다</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
-        <p class="stage-desc">스키퍼블을 떠나는 순간, 나의 모든<br>흔적은 지워집니다. 철통보안 스킵.</p>
+        <a class="stage-title-row" href="/service2"><p class="stage-kr">다음을 기약하며</p><span class="stage-arrow" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 12h12.5M12.5 6l6 6-6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <p class="stage-desc">이곳엔 아무것도 남기지 않지만, 완전히 잊는 것도 아닙니다.<br>다음에 더 나은 모습으로 만나요.</p>
       </div>
       </div>
       </div>
@@ -5377,6 +5225,30 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         </div>
         <p class="stage-logic-desc">2보 전진을 위한 1보 후퇴<br>스킵의 심리스한 온앤 오프 경험</p>
       </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Parsing Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">사용자 의도 구조화</span>
+          <span class="stage-logic-tag">실행 블록의 범위 지정</span>
+        </div>
+        <p class="stage-logic-desc">톡 던진 생각, 일상적인 순간 너머<br>내 안의 진짜 목적을 파악하는 스킵</p>
+      </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Mapping Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">필요 기능 정렬</span>
+          <span class="stage-logic-tag">실행 블록 생성</span>
+        </div>
+        <p class="stage-logic-desc">수백만 개의 경로 중,<br>가장 완벽한 궤적을 찾는 알고리즘</p>
+      </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Dispatch Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">스키퍼블 활성화</span>
+          <span class="stage-logic-tag">거리재기</span>
+        </div>
+        <p class="stage-logic-desc">선명해진 스킵의 청사진<br>이제 현실로 도약할 시간</p>
+      </div>
       </div>
       <div class="ux-right-panel" data-i="1">
         <div class="stage-logic-card">
@@ -5387,6 +5259,22 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         </div>
         <p class="stage-logic-desc">경험이 끊이지 않도록 도와주는 협상<br>당신이 원하는 그대로 가장 자연스럽게</p>
       </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Borrowing Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">아이스브레이킹</span>
+          <span class="stage-logic-tag">실행 블록 처리</span>
+        </div>
+        <p class="stage-logic-desc">각자의 역할을 모아<br>하나의 흐름으로, 환경의 능력을 내 것으로</p>
+      </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">Download Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">기능 및 경험 확장</span>
+          <span class="stage-logic-tag">AI 스킬 다운로드</span>
+        </div>
+        <p class="stage-logic-desc">사용자가 익숙한 제품으로<br>새로운 가능성의 지평을 여는 기능 다운로드</p>
+      </div>
       </div>
       <div class="ux-right-panel" data-i="2">
         <div class="stage-logic-card">
@@ -5396,6 +5284,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
           <span class="stage-logic-tag">보안 시스템</span>
         </div>
         <p class="stage-logic-desc">아무 일도 없었던 것처럼<br>완벽한 리셋</p>
+      </div>
+        <div class="stage-logic-card">
+        <p class="stage-logic-title">See You Logic</p>
+        <div class="stage-logic-tags">
+          <span class="stage-logic-tag">상호작용 경험 피드백</span>
+          <span class="stage-logic-tag">개인화 학습</span>
+        </div>
+        <p class="stage-logic-desc">오늘의 경험이 내일의 기준으로<br>설명하지 않아도 알아서 척척</p>
       </div>
       </div>
       </div>
@@ -5848,13 +5744,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <div class="md-principle-cards">
       <article class="md-principle-card">
         <p class="mini">Principle 01</p>
-        <h3>도메인 컴포넌트 매칭</h3>
-        <p>현재 제어 가능한 스키퍼블의 API 명세를 동적으로 스캔하여 매칭 가능한 리소스를 선별합니다.</p>
+        <h3>적절한 후보 매칭</h3>
+        <p>현재 제어 가능한 스키퍼블 후보군을 근거로, 지금 이 목적에 적합한 리소스를 선별합니다.</p>
       </article>
       <article class="md-principle-card">
         <p class="mini">Principle 02</p>
-        <h3>물리 법칙 시뮬레이션</h3>
-        <p>실제 물리 세계의 제약 조건을 반영하여 실행할 수 있는 경로만을 초고속으로 필터링합니다.</p>
+        <h3>타당성 교차 확인</h3>
+        <p>파싱이 이미 확인한 물리적 제약을 후보군에 다시 대조하여, 실행 가능한 기능 조합만 남깁니다.</p>
       </article>
       <article class="md-principle-card">
         <p class="mini">Principle 03</p>
@@ -5919,30 +5815,27 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       <div class="footer-group">
         <p class="footer-title">About</p>
         <div class="footer-links">
-          <a class="footer-link" href="index.html">SKEEP 소개</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">SKEEP 소개</span>
           <a class="footer-link" href="index.html">전시 웹사이트</a>
-          <a class="footer-link" href="index.html">자주 묻는 질문</a>
-          <a class="footer-link" href="index.html">팀 소개</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">자주 묻는 질문</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">팀 소개</span>
         </div>
       </div>
       <div class="footer-group">
         <p class="footer-title">Experience</p>
         <div class="footer-links">
-          <a class="footer-link" href="saegyeodeutda.html">새겨듣다</a>
-          <a class="footer-link" href="saegyeodeutda.html">스며들다</a>
-          <a class="footer-link" href="/negotiation">조율하다</a>
-          <a class="footer-link" href="/principles">빌려쓰다</a>
-          <a class="footer-link" href="/service2">지켜주다</a>
-          <a class="footer-link" href="/service3">기억하다</a>
+          <a class="footer-link" href="saegyeodeutda.html">한 발 먼저</a>
+          <a class="footer-link" href="/negotiation">자리 빌리기</a>
+          <a class="footer-link" href="/service2">다음을 기약하며</a>
         </div>
       </div>
       <div class="footer-group">
         <p class="footer-title">Skeepable</p>
         <div class="footer-links">
-          <a class="footer-link" href="/principles">장소 찾기</a>
-          <a class="footer-link" href="/principles">제품 찾기</a>
-          <a class="footer-link" href="/principles">서비스 찾기</a>
-          <a class="footer-link" href="/principles">비즈니스</a>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">장소 찾기</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">제품 찾기</span>
+          <span class="footer-link footer-link--disabled" aria-disabled="true">서비스 찾기</span>
+          <a class="footer-link" href="/business">비즈니스</a>
         </div>
       </div>
     </nav>
