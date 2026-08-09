@@ -66,6 +66,12 @@ type ScrambleTextProps = {
   flickerIntensity?: number;
   flickerSpeed?: number;
   onEnterComplete?: () => void;
+  // 기본값은 자체 IntersectionObserver로 "화면에 들어오면 재생"을 판단한다.
+  // 부모가 이미 자기만의(더 안정적인, 폴백까지 갖춘) visible 판정을 갖고
+  // 있다면 그 값을 그대로 넘겨써서, 여기서 또 한 번 별도의 옵저버가
+  // 실패할 여지를 없앨 수 있다 — true/false를 주면 내부 옵저버 대신 이 값을
+  // 그대로 트리거로 쓴다.
+  active?: boolean;
 };
 
 export function ScrambleText({
@@ -86,6 +92,7 @@ export function ScrambleText({
   flickerIntensity = 60,
   flickerSpeed = 10,
   onEnterComplete,
+  active,
 }: ScrambleTextProps) {
   const Tag = tag as keyof React.JSX.IntrinsicElements;
 
@@ -156,6 +163,16 @@ export function ScrambleText({
   }, []);
 
   useEffect(() => {
+    // active가 명시적으로 주어지면(부모가 이미 가시성을 판단해 넘겨준 경우)
+    // 내부 옵저버는 아예 만들지 않고 그 값을 그대로 트리거로 쓴다.
+    if (active !== undefined) {
+      if (active && !hasPlayedRef.current) {
+        hasPlayedRef.current = true;
+        setShouldAnimate(true);
+      }
+      return;
+    }
+
     const el = containerRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
@@ -169,7 +186,7 @@ export function ScrambleText({
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [lineGroups]);
+  }, [lineGroups, active]);
 
   useEffect(() => {
     if (!shouldAnimate || lineGroups.length === 0) return;

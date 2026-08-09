@@ -27,6 +27,12 @@
   background: #fff;
 }
 
+/*
+ * 핀 레이아웃은 reduced-motion 환경에서도 유지한다.
+ * 이 요소를 relative로 바꾸면 일부 임베디드 브라우저에서 검은 최종 장면이
+ * 고정되지 않은 채 다음 섹션으로 바로 지나간다.
+ */
+
 /* scene 0~3이 전부 같은 .sceneCards 하나를 공유한다 — 단계가 넘어갈 때마다
    기존 카드까지 통째로 다시 나타나지 않도록, 이 블록 자체는 처음부터 떠
    있고 절대 다시 페이드하지 않는다. 새로 추가되는 카드만 .secondSlotCard /
@@ -655,23 +661,5 @@
   .heroVisual {
     width: 100%;
     min-height: 24vh;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .track {
-    height: auto;
-    min-height: 0;
-  }
-
-  .sticky {
-    position: relative;
-    height: auto;
-    overflow: visible;
-  }
-
-  .sceneCards {
-    position: relative;
-    min-height: 100vh;
   }
 }

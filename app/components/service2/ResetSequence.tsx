@@ -104,24 +104,37 @@ function PacketRecallSequence({
   // 화면에서 다음 단계로 영영 못 넘어가는 문제가 있었다 — 스크램블 애니메이션이
   // 정상적으로 끝나는 데 걸리는 시간보다 넉넉히 긴 시간이 지나도 넘어가지
   // 않았다면, 애니메이션 콜백과 무관하게 강제로 다음 단계로 넘긴다.
+  // (예전엔 6000ms였다 — ScrambleText 트리거 자체가 내부 옵저버에 기대던
+  // 시절엔 그 옵저버까지 실패할 여지를 감안해 넉넉히 잡았지만, 이제 위에서
+  // active={visible}로 트리거를 직접 넘겨주면서 그 경로의 실패 가능성이
+  // 없어졌다. 실제 애니메이션(~1.6~2초)보다만 여유 있으면 되므로 줄여서,
+  // 폴백이 걸리더라도 "흰 화면 나오기까지 공백이 너무 길다"는 느낌을 없앤다.)
   useEffect(() => {
     if (phase !== 0 || !visible) {
       return;
     }
 
-    const fallback = setTimeout(advance, 6000);
+    const fallback = setTimeout(advance, 3200);
     return () => clearTimeout(fallback);
   }, [phase, visible, advance]);
 
   return (
     <>
       {phase === 0 && <PacketPhotoField dissolve={dissolve} />}
+      {/* ScrambleText는 기본적으로 자기 안에서 또 하나의 IntersectionObserver로
+         "화면에 들어왔는지"를 따로 판단하는데, phase 1로 넘어갈 때는 이미
+         화면에 떠 있는 섹션 안에서 key만 바뀌며 재마운트되는 거라 그 내부
+         옵저버가 안 걸리면(무빙스타일에서 실제로 보고된 증상) 글자가 전부
+         투명한 채로 영영 안 나타난다("흰 배경만 보이고 문구가 안 나옴").
+         위에서 이미 폴백까지 갖춰 훨씬 안정적으로 판정해 둔 visible을
+         그대로 넘겨써서 내부 옵저버 자체를 안 쓰게 한다. */}
       <ScrambleText
         key={phase}
         text={phase === 0 ? "패킷 회수 중..." : "다시, 처음처럼"}
         color={phase === 0 ? "#ffffff" : "#000000"}
         className={`${styles.scramble} ${phase === 1 ? styles.scrambleBold : ""}`}
         onEnterComplete={phase === 0 ? advance : undefined}
+        active={visible}
       />
     </>
   );

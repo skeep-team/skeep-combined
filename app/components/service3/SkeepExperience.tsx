@@ -34,6 +34,19 @@ function clampedProgress(start: number, end: number, value: number) {
 }
 
 function IntentVisual() {
+  const [supportsIntentClip, setSupportsIntentClip] = useState(false);
+
+  useEffect(() => {
+    // Samsung Moving Style/Tizen renders the clipped dark label without
+    // applying the SVG clipPath, which covers the cyan base label entirely.
+    // Keep the sweep circle there, but only add the inverse label on browsers
+    // where the clip is rendered reliably.
+    const isMovingStyle = /Tizen|SMART-TV|SmartTV|Maple/i.test(
+      window.navigator.userAgent
+    );
+    setSupportsIntentClip(!isMovingStyle);
+  }, []);
+
   return (
     <div className={styles.intentStage}>
       <svg
@@ -75,16 +88,18 @@ function IntentVisual() {
             repeatCount="indefinite"
           />
         </circle>
-        <text
-          className={styles.intentSvgLabel}
-          x="360"
-          y="233"
-          fill="#2E2D32"
-          clipPath="url(#intent-sweep-clip)"
-          aria-hidden="true"
-        >
-          INTENT
-        </text>
+        {supportsIntentClip && (
+          <text
+            className={styles.intentSvgLabel}
+            x="360"
+            y="233"
+            fill="#2E2D32"
+            clipPath="url(#intent-sweep-clip)"
+            aria-hidden="true"
+          >
+            INTENT
+          </text>
+        )}
       </svg>
     </div>
   );

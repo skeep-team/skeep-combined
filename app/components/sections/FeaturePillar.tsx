@@ -44,11 +44,17 @@ function QuestionCard({
 
   return (
     <Reveal delay={delay}>
-      <div
+      {/* 그냥 div+onClick이었더니, 프로토타입 미리보기(무빙스타일) 쪽에서
+         버튼/링크가 아닌 요소의 클릭은 자기 자신의 화면 전환(핫스팟)으로
+         집어삼켜서 카드를 눌렀는데 엉뚱한 곳으로 이동해버렸다. 진짜
+         <button>으로 바꿔 클릭이 이 카드 것이라는 걸 명확히 한다. */}
+      <button
+        type="button"
         className={invertBg ? `${styles.question} ${styles.questionInvert}` : styles.question}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         onClick={() => setClicked((c) => !c)}
+        aria-expanded={answer ? expanded : undefined}
       >
         <span className={styles.qLabel}>{label}</span>
         <p className={styles.qText}>{text}</p>
@@ -65,7 +71,7 @@ function QuestionCard({
             </div>
           </div>
         )}
-      </div>
+      </button>
     </Reveal>
   );
 }

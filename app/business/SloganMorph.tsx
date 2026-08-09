@@ -160,9 +160,9 @@ export default function SloganMorph() {
         <div className={styles.bg} aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`${BASE_PATH}/business/slogan/business-future-rocket.png`}
+            src={`${BASE_PATH}/business/slogan/business-future-rocket.jpg`}
             alt=""
-            loading="lazy"
+            loading="eager"
             decoding="async"
           />
         </div>

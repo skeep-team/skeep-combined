@@ -124,9 +124,15 @@ export default function EnterprisePricingFlip() {
     window.addEventListener("resize", update);
     update();
 
+    // 안전장치: B2C 패널(ExperiencePricingFlip)과 같은 이유로, scroll
+    // 이벤트만으로는 무빙스타일 등 일부 환경에서 놓치는 경우가 있다.
+    // 주기적으로 다시 재서 실제 위치와 어긋나 있으면 바로잡는다.
+    const pollTimer = window.setInterval(update, 250);
+
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      window.clearInterval(pollTimer);
     };
   }, []);
 

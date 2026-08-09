@@ -151,9 +151,19 @@ export default function ExperiencePricingFlip() {
     window.addEventListener("resize", update);
     update();
 
+    // 안전장치: 무빙스타일 등 일부 환경에서 scroll 이벤트 전달이 간헐적으로
+    //끊기는 사례가 이 세션에서 반복 확인됐다(IntersectionObserver뿐 아니라
+    // 여기서는 순수 scroll 리스너 자체가 대상). 이 섹션은 330vh짜리 핀 구간
+    // 전체가 --bridge/--expand/--reveal 세 값에 걸려 있어서, 이벤트를
+    // 하나라도 놓치면 사진이 회색 배경인 채로 멈추거나 짝 카드가 안
+    // 사라지거나 패널이 안 펼쳐진 채로 남는다. 이벤트와 별개로 실제 스크롤
+    // 위치를 주기적으로 다시 재서, 값이 실제 위치와 어긋나 있으면 바로잡는다.
+    const pollTimer = window.setInterval(update, 250);
+
     return () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      window.clearInterval(pollTimer);
     };
   }, []);
 

@@ -3344,10 +3344,21 @@
       margin-top: clamp(-180px, -8vw, -96px);
     }
     .pill-detail {
-      display: inline-block; background: #000; border-radius: 100px;
-      padding: 16px 30px; font-size: 32px; font-weight: 600; line-height: 1.1;
-      letter-spacing: -0.04em; color: #fff; cursor: default;
+      display: inline-flex; align-items: center; gap: 14px;
+      background: #000; border-radius: 100px;
+      padding: 16px 26px 16px 30px; font-size: 32px; font-weight: 600; line-height: 1.1;
+      letter-spacing: -0.04em; color: #fff; cursor: pointer;
+      text-decoration: none; transition: opacity .2s ease, transform .2s ease;
     }
+    .pill-detail:hover { opacity: 0.85; }
+    .pill-detail:active { transform: scale(0.97); }
+    .pill-detail-arrow {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; flex: 0 0 auto; border-radius: 50%;
+      background: #fff; color: #000; font-size: 18px; line-height: 1;
+      transition: transform .2s ease;
+    }
+    .pill-detail:hover .pill-detail-arrow { transform: translateX(3px); }
 
     /* ── 8. SKEEP AI™ BANNER ── */
     .sec-ai-banner.fi { transition: opacity 1.5s ease, transform 1.5s ease; }
@@ -4044,13 +4055,13 @@
       <div class="sd-walk-row">
         <div class="sd-walk-box" aria-hidden="true"></div>
         <img loading="lazy" class="sd-walk-shadow" id="walk-shadow" src="assets/walk-shadow.svg" alt="">
-        <img loading="lazy" class="sd-walk-person is-walk-final-person" data-foot-x="0.554" src="assets/walk-person-1.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.png" alt="">
-        <img loading="lazy" class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.png" alt="">
+        <img loading="lazy" class="sd-walk-person is-walk-final-person" data-foot-x="0.554" src="assets/walk-person-1.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.webp" alt="">
+        <img loading="lazy" class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.webp" alt="">
         <div class="sd-walk-final-title" aria-hidden="true">Input Logic</div>
       </div>
       <div class="sd-walk-caption">
@@ -5275,7 +5286,7 @@
     </div>
   </div>
 </section>
-<div class="pill-btn-wrap fi"><span class="pill-detail">자세한 파싱 원리</span></div>
+<div class="pill-btn-wrap fi"><a class="pill-detail" href="https://inky-bar-798.notion.site/SKEEP-Technology-3ac465012ace80ac8653c94eb436d29a" target="_blank" rel="noopener noreferrer">자세한 파싱 원리<span class="pill-detail-arrow" aria-hidden="true">→</span></a></div>
 
 <!-- ══ 8. SKEEP AI™ BANNER ══ -->
 <section class="sec-ai-banner fi">

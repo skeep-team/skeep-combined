@@ -171,13 +171,61 @@ export default function HeroIntro() {
       }
     };
 
+    /* 밴드 모션("끊 ▮ 임없는 도전 정신")이 다 펼쳐지기 전에 스크롤로 이 구간을
+       지나쳐 버리면, sticky가 풀리며 모션이 끝나기도 전에 다음 섹션이 밀고
+       올라온다 — 그래서 재생 중(step 2, bandState가 done이 아닐 때)에는
+       아래 방향 스크롤만 막는다. 위로 되돌아가는 건 그대로 둔다. */
+    const isBandLocked = () =>
+      section.dataset.step === "2" && section.dataset.bandState !== "done";
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.deltaY > 0 && isBandLocked()) {
+        event.preventDefault();
+      }
+    };
+
+    let touchStartY: number | null = null;
+
+    const onTouchStart = (event: TouchEvent) => {
+      touchStartY = event.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (touchStartY == null) {
+        return;
+      }
+
+      const currentY = event.touches[0]?.clientY ?? touchStartY;
+
+      if (touchStartY - currentY > 0 && isBandLocked()) {
+        event.preventDefault();
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const down =
+        event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ";
+
+      if (down && isBandLocked()) {
+        event.preventDefault();
+      }
+    };
+
     window.addEventListener("scroll", requestRender, { passive: true });
     window.addEventListener("resize", requestRender);
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("keydown", onKeyDown);
     render();
 
     return () => {
       window.removeEventListener("scroll", requestRender);
       window.removeEventListener("resize", requestRender);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("keydown", onKeyDown);
 
       if (frame) {
         window.cancelAnimationFrame(frame);

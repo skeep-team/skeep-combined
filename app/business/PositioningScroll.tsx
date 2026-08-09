@@ -9,9 +9,9 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
    마지막 전환은 가운데 카드 선택·확대·히어로 노출을 하나의 짧은 동작으로 묶는다. */
 const forwardThresholds = [0.14, 0.28, 0.44];
 const reverseThresholds = [0.08, 0.22, 0.38];
-/* 세 장이 다 펼쳐진 장면(scene 3)을 충분히 보고 지나가도록, 모핑은 한참 뒤에 시작한다.
-   앞서 0.575에서 시작할 때는 scene 3이 열리자마자 히어로로 넘어가 버렸다. */
-const morphRange = [0.78, 0.95];
+/* 세 장이 다 펼쳐진 장면을 충분히 보여준 뒤 히어로로 전환하되,
+   검은 최종 장면도 약 한 화면 동안 sticky 상태로 머물게 한다. */
+const morphRange = [0.7, 0.82];
 
 function ramp(value: number, [start, end]: number[]) {
   return Math.min(1, Math.max(0, (value - start) / (end - start)));

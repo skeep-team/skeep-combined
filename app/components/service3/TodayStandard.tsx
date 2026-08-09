@@ -4,20 +4,20 @@ import styles from "./TodayStandard.module.css";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 // 경량화: today-standard-bg.mp4(원형 사진들이 왼쪽으로 흐르는 마퀴) 대신
-// 실제 사진(컬러 오버레이가 이미 합성된 원형 PNG) + CSS 애니메이션
+// 실제 사진(컬러 블록이 이미 합성된 사각 JPEG) + CSS 애니메이션
 // (무빙스타일 호환 + 항상 재생).
 const PHOTOS = [
-  { src: "washer.png", alt: "세탁기 안을 들여다보는 가족" },
-  { src: "kiosk.png", alt: "공항 키오스크를 사용하는 사람" },
-  { src: "gym.png", alt: "헬스장 내부" },
-  { src: "basketball.png", alt: "농구공을 든 손목의 스마트워치" },
-  { src: "headphones.png", alt: "헤드폰을 끼고 누워있는 사람" },
-  { src: "office.png", alt: "사무실 내부" },
+  { src: "washer-v2.jpg", alt: "세탁기 안을 들여다보는 가족" },
+  { src: "kiosk-v2.jpg", alt: "공항 키오스크를 사용하는 사람" },
+  { src: "office-v2.jpg", alt: "사무실 내부" },
+  { src: "basketball-v2.jpg", alt: "농구공을 든 손목의 스마트워치" },
+  { src: "headphones-v2.jpg", alt: "헤드폰을 끼고 누워있는 사람" },
+  { src: "gym-v2.jpg", alt: "헬스장 내부" },
 ] as const;
 
-function PhotoCircle({ photo }: { photo: (typeof PHOTOS)[number] }) {
+function PhotoTile({ photo }: { photo: (typeof PHOTOS)[number] }) {
   return (
-    <div className={styles.circle}>
+    <div className={styles.tile}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`${BASE_PATH}/service3/today-standard-collage/${photo.src}`}
@@ -47,10 +47,10 @@ export function TodayStandard() {
         <div className={styles.marqueeWrap} aria-hidden="true">
           <div className={styles.track}>
             {PHOTOS.map((photo, i) => (
-              <PhotoCircle photo={photo} key={`a${i}`} />
+              <PhotoTile photo={photo} key={`a${i}`} />
             ))}
             {PHOTOS.map((photo, i) => (
-              <PhotoCircle photo={photo} key={`b${i}`} />
+              <PhotoTile photo={photo} key={`b${i}`} />
             ))}
           </div>
         </div>

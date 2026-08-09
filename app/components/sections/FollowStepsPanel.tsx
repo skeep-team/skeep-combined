@@ -79,15 +79,16 @@ export function FollowStepsPanel() {
 
   return (
     <div className={styles.followPanel}>
-      <div className={styles.followSteps}>
+      <div className={styles.followSteps} role="tablist" aria-label="SKEEP following 단계">
         {FOLLOW_STEPS.map(([number, title, english], index) => (
           <button
             type="button"
+            role="tab"
             key={number}
             className={index === activeStep ? styles.followStepActive : styles.followStep}
             data-step={index}
             onClick={() => setActiveStep(index)}
-            aria-pressed={index === activeStep}
+            aria-selected={index === activeStep}
           >
             <span>{number}</span>
             <h3>{title}</h3>

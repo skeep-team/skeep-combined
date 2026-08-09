@@ -333,6 +333,18 @@ export default function UsageSequence({
     return () => observer.disconnect();
   }, []);
 
+  /* preload="auto"를 줘도 화면 밖에 있는 동안은 브라우저가 실제 네트워크
+     요청을 뒤로 미루는 경우가 많다(특히 느린 환경). 워치 영상은 이 판이 뷰포트에
+     들어오고도 말풍선(0.55s)+퇴장(0.3s) 뒤에야 재생을 시작하는데, 그때까지
+     버퍼링이 못 따라오면 opacity는 이미 다 올라왔는데 첫 프레임이 아직 없어
+     "테두리만 남은" 빈 원으로 보인다. 뷰포트에 들어오는 즉시 load()를 걸어
+     버퍼링에 최대한 여유를 준다. */
+  useEffect(() => {
+    if (environmentUsageShown) {
+      watchVideoRef.current?.load();
+    }
+  }, [environmentUsageShown]);
+
   /* 검은 패널이 먼저 자리를 잡은 뒤 내부 말풍선을 별도로 켠다. 패널과 내부
      그래픽이 같은 프레임에 visible이 되면 내부 상승 모션이 패널 페이드에
      가려지므로 짧은 시차를 둔다. */
@@ -404,6 +416,8 @@ export default function UsageSequence({
       return () => window.clearTimeout(timer);
     }
 
+    let fallbackTimer = 0;
+
     if (video) {
       video.pause();
       video.currentTime = 0;
@@ -415,7 +429,17 @@ export default function UsageSequence({
           }
         }, 160);
       });
+
+      // onEnded 하나에만 기대면, 무빙스타일처럼 느린 환경에서 영상이 버퍼링에
+      // 밀려 끝까지 재생을 못 하고 멈춰버릴 때 ended가 영영 안 와서 말풍선↔영상
+      // 사이클 전체가 멈춰버린다("반복이 안 된다"). 영상 길이(~3초)보다 넉넉히
+      // 잡은 타이머로 무조건 다음 단계로 넘어가게 안전장치를 둔다.
+      fallbackTimer = window.setTimeout(() => {
+        setUsageArtworkPhase("watchExit");
+      }, 4200);
     }
+
+    return () => window.clearTimeout(fallbackTimer);
   }, [activeUsageIndex, environmentArtworkReady, usageArtworkPhase]);
 
   useEffect(() => {
@@ -523,6 +547,10 @@ export default function UsageSequence({
                     ref={watchVideoRef}
                     className={`${styles.usageArtwork} ${styles.usageArtworkCard}`}
                     src={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch.mp4`}
+                    /* 재생이 늦어져도(느린 환경) 첫 프레임을 미리 정지 이미지로
+                       깔아 둬서, 실제 영상 프레임이 뜨기 전까지 빈 원 대신 이
+                       장면이 보이게 한다. */
+                    poster={`${BASE_PATH}/blueprint/usage/luggage-arrival-watch-poster.webp`}
                     data-visible={environmentArtworkReady && usageArtworkPhase === "watch"}
                     muted
                     playsInline
@@ -548,7 +576,7 @@ export default function UsageSequence({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className={styles.usageConversationBackground}
-                    src={`${BASE_PATH}/blueprint/usage/conversation-background-v5.png`}
+                    src={`${BASE_PATH}/blueprint/usage/conversation-background-v6.svg`}
                     alt=""
                     width={1924}
                     height={1266}

@@ -595,8 +595,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       /* 예전엔 top/bottom을 0→-33.333%로 트랜지션해 박스를 60vh→100vh로 실제로
          키웠는데, top/bottom은 레이아웃(리플로우) 속성이라 무빙스타일 같은 약한
          기기에서 1.4초 내내 매 프레임 리플로우가 걸려 화면이 찌글거렸다 —
-         박스 자체는 처음부터 100vh로 고정해 두고(레이아웃은 한 번만 계산),
-         clip-path로 보이는 영역만 60%→100%로 넓혀 같은 그림을 리플로우 없이 낸다. */
+         박스 자체는 처음부터 100vh로 고정해 두고(레이아웃은 한 번만 계산) 둔다. */
       top: -33.333%;
       bottom: -33.333%;
       left: 0;
@@ -609,25 +608,41 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       /* background-size는 cover(박스 크기에 따라 매번 재계산) 대신 뷰포트 기준
-         고정값(100vw auto)을 쓴다 — clip-path로 보이는 영역이 60vh→100vh로 넓어져도
-         사진 자체의 배율은 그대로 유지되고, 원래 잘려있던 위아래가 더 드러나기만 한다. */
+         고정값(100vw auto)을 쓴다 — 사진 자체의 배율은 처음부터 끝까지 그대로다. */
       background: #000 url('assets/cinema-man-laughing-bg.jpeg?v=20260807-0203') center center / 100vw auto no-repeat;
-      /* 박스 로컬 좌표 기준 20%~80%만 보이게 가둬 원래의 60vh짜리 모습과 똑같이 시작한다. */
-      clip-path: inset(20% 0 20% 0);
-      /* 카드가 다 뒤집힐 때까지(.78s)는 첫 사진과 똑같은 크기로 가만히 있다가,
-         뒤집기가 끝난 뒤에야(transition-delay: .78s) 화면 전체(100vh)를 드러내도록
-         clip 영역이 천천히 넓어진다. 슬로모션처럼 길게 늘어지며 감속하는 ease-out. */
-      transition: clip-path 1.4s cubic-bezier(.16,1,.3,1) .78s;
     }
-    .skeeeep-sticky.is-flipped .skeeeep-video-bg {
-      clip-path: inset(0 0 0 0);
+    /* "사진 세로폭이 늘어나는" 연출: clip-path 트랜지션 대신, 위아래를 가리고 있는
+       검정 바를 transform: scaleY로 걷어내는 방식을 쓴다. 이 박스는 동시에
+       rotateX(180deg) 3D 회전도 걸려 있는데, clip-path 애니메이션을 3D 회전과 같은
+       레이어에 같이 걸었더니 무빙스타일 등 약한 GPU에서 애니메이션이 아예 재생되지
+       않거나(그래서 늘어나는 효과가 안 보임) 사진이 찢어져 보이는 문제가 있었다 —
+       transform은 두 요소 모두 GPU 합성만으로 처리되는 가장 기본적인 속성이라
+       훨씬 안전하다. 사진 자체(위 background)는 처음부터 그대로 있고, 그 위를
+       덮은 바만 사라지며 "드러나는" 것처럼 보이는 원리는 같다. */
+    .skeeeep-video-letterbox {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 20%;
+      background: #000;
+      pointer-events: none;
+      transition: transform 1.4s cubic-bezier(.16,1,.3,1) .78s;
+    }
+    .skeeeep-video-letterbox--top {
+      top: 0;
+      transform-origin: top;
+    }
+    .skeeeep-video-letterbox--bottom {
+      bottom: 0;
+      transform-origin: bottom;
+    }
+    .skeeeep-sticky.is-flipped .skeeeep-video-letterbox {
+      transform: scaleY(0);
     }
     .skeeeep-ring-bg,
-    .skeeeep-video-bg {
+    .skeeeep-video-bg,
+    .skeeeep-video-letterbox {
       will-change: transform;
-    }
-    .skeeeep-video-bg {
-      will-change: transform, clip-path;
     }
     .skeeeep-video-bg video {
       position: absolute;
@@ -1527,9 +1542,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       position: absolute;
       inset: 0;
       height: 100%;
-      /* 아래→위로 밀려 올라오는 느낌이 나지 않도록 위치 이동 없이 투명도만 크로스페이드한다. */
-      transition: opacity .95s cubic-bezier(.22, 1, .36, 1);
-      will-change: opacity;
       backface-visibility: hidden;
     }
     .system-flow-scene--diagram {
@@ -1538,8 +1550,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .system-flow-scene--layers {
       z-index: 2;
-      opacity: 0;
+      opacity: 1;
       pointer-events: none;
+      background: transparent;
     }
     .system-flow-sequence.show-layers .system-flow-scene--diagram {
       /* opacity는 그대로 1 유지 — 밑에 항상 불투명하게 깔려 있는 배경 역할.
@@ -1550,7 +1563,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: none;
     }
     .system-flow-sequence.show-layers .system-flow-scene--layers {
-      opacity: 1;
       pointer-events: auto;
     }
     .sec-system-diagram {
@@ -1573,6 +1585,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: flex; align-items: center; justify-content: center;
       position: relative; overflow: hidden;
       container-type: inline-size;
+      transform: translate3d(0, 0, 0);
+      transition: transform .7s cubic-bezier(.22,1,.36,1);
+    }
+    .system-flow-sequence.wf-expanded .diagram-card {
+      transform: translate3d(0, clamp(-70px, -8vh, -30px), 0);
     }
     .diagram-card.show-context { background: #fff; }   /* 02 배경 흰색 */
     .diagram-journey-panel {
@@ -1585,7 +1602,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 그래픽 안에 있던 USER JOURNEY 문구를 독립된 섹션 헤더로 올린다. */
     .diagram-journey-copy {
-      position: absolute; top: clamp(14px, 2.2vh, 28px); left: 0;
+      position: absolute; top: clamp(72px, 9.5vh, 128px); left: 0;
       width: 100%;
       padding: 0 var(--edge-padding);
       display: flex;
@@ -1670,7 +1687,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       grid-template-columns: 546fr 3412fr;
       border-radius: inherit; overflow: hidden;
       opacity: 1;
-      transition: opacity .45s ease;
     }
     .diagram-pair img {
       display: block;
@@ -1712,7 +1728,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 컨테이너를 레이어 카드 회색(#F1F1F1)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
     .diagram-tabs {
-      position: absolute; bottom: clamp(40px, 6vh, 68px); left: 50%;
+      position: absolute; bottom: clamp(64px, 8.8vh, 100px); left: 50%;
       transform: translateX(-50%);
       background: #F1F1F1; border-radius: var(--card-radius-lg);
       display: flex; gap: clamp(6px, 0.7vw, 12px);
@@ -1732,7 +1748,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 
     /* ── 10. SYSTEM LAYERS ───────────────────────── */
     .sec-layers {
-      background: #fff;
+      background: transparent;
       width: 100%; height: 100%;
       /* wf-diagram은 diagram-card와 똑같이(flex row + align-items:center) 뷰포트
          정중앙에 놓인다 — gap/가변 패딩에 기대지 않으므로 버튼 유무와 무관하게
@@ -1749,18 +1765,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* 처음엔 다이어그램만 뜨고, 1초 뒤(JS) 버튼이 아래에서 올라오며 다이어그램이 위로 밀려 올라간다. */
     .wf-buttons-wrap {
       position: absolute; left: 0; width: 100%; bottom: clamp(40px, 6vh, 68px);
-      /* max-height 대신 grid-template-rows(0fr→1fr)로 높이를 보간해 끊김 없이 부드럽게 펼쳐진다.
-         absolute라 wf-diagram의 레이아웃과는 완전히 분리되어 있어, 얘가 커져도
-         wf-diagram을 다시 그리게 만들지 않는다(리레이아웃 비용 없음). */
-      display: grid; grid-template-rows: 0fr;
-      transition: grid-template-rows .7s cubic-bezier(.22,1,.36,1);
+      pointer-events: none;
     }
-    .sec-layers.wf-in .wf-buttons-wrap { grid-template-rows: 1fr; }
+    .sec-layers.wf-in .wf-buttons-wrap { pointer-events: auto; }
     .wf-buttons { display: flex; gap: clamp(14px, 1.6vw, 28px); width: 100%; padding: 0 var(--edge-padding);
-      min-height: 0; overflow: hidden;
-      opacity: 0; transform: translateY(28px);
-      transition: opacity .45s ease, transform .55s cubic-bezier(.22,1,.36,1); }
-    .sec-layers.wf-in .wf-buttons { opacity: 1; transform: translateY(0); transition-delay: .18s; }
+      opacity: 0; visibility: hidden; transform: translate3d(0, 28px, 0);
+      transition: opacity .45s ease, transform .55s cubic-bezier(.22,1,.36,1), visibility 0s .55s; }
+    .sec-layers.wf-in .wf-buttons {
+      opacity: 1; visibility: visible; transform: translate3d(0, 0, 0);
+      transition-delay: .18s, .18s, 0s;
+    }
     .wf-btn {
       flex: 1 1 0; min-width: 0; text-align: left; cursor: pointer;
       background: #D3D3D3; border: none; border-radius: clamp(16px, 1.8vw, 32px);
@@ -1783,12 +1797,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .wf-diagram { width: 100%;
       display: flex; align-items: center;
-      aspect-ratio: 7908 / 2250; border-radius: 0; overflow: hidden; background: #F1F1F1;
+      aspect-ratio: 7908 / 2250; border-radius: 0; overflow: hidden; background: transparent;
       /* 버튼이 뜰 때 위로 밀려 올라가는 효과: 리레이아웃을 부르는 gap/margin 대신
          transform만 써서 GPU 합성으로 처리 — 큰 이미지를 매 프레임 다시 그리지 않는다. */
       transform: translateY(0);
       transition: transform .7s cubic-bezier(.22,1,.36,1);
-      will-change: transform;
     }
     .sec-layers.wf-in .wf-diagram {
       transform: translateY(clamp(-70px, -8vh, -30px));
@@ -1799,7 +1812,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
        그대로 이어져 보이다가, 버튼 3개가 다 올라온 뒤에야 WHO 강조본(overlay)으로 디졸브된다. */
     .wf-diagram-right-wrap { position: relative; flex: 1 1 0; min-width: 0; height: 100%; }
     .wf-diagram-right { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
-    .wf-diagram-right--base { opacity: 1; }
     .wf-diagram-right--overlay { opacity: 0; transition: opacity .8s ease; }
     .sec-layers.wf-in .wf-diagram-right--overlay { opacity: 1; transition-delay: .55s; }
     .layer-visual {
@@ -2512,7 +2524,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         gap: 10px;
       }
       .ux-right-holder .stage-logic-title {
-        font-size: 24px;
+        font-size: 27px;
         line-height: 1.2;
         letter-spacing: -0.01em;
       }
@@ -2522,11 +2534,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .ux-right-holder .stage-logic-tag {
         border-radius: 16px;
         padding: 6px 12px;
-        font-size: 13px;
+        font-size: 14.5px;
         line-height: 1.2;
       }
       .ux-right-holder .stage-logic-desc {
-        font-size: 14px;
+        font-size: 15.5px;
         line-height: 1.5;
         margin-top: auto;
       }
@@ -2713,7 +2725,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-pill-row {
       display: grid;
-      grid-template-columns: 8fr 5fr 3fr;
+      /* Input/Pause는 원이어야 하는데 fr(비율)로 폭을 주면 화면이 넓어질수록
+         칸 폭이 높이(300px)보다 커져 계란형으로 보였다. 두 칸은 높이와
+         같은 고정폭(300px)으로 박아 항상 정원이 되게 하고, Sensing만 남는
+         폭을 가져가는 1fr로 둔다. */
+      grid-template-columns: 1fr 300px 300px;
       gap: 0;
       width: 100%;
     }
@@ -2731,9 +2747,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-pink { color: #6E6E6E; }
     .sd-sensing-scene {
-      min-height: 1060px;
+      height: 220vh;
       position: relative;
-      padding-top: 150px;
+      padding: 0;
+    }
+    .sd-sensing-sticky {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      min-height: 760px;
+      padding: 150px var(--edge-padding) clamp(56px, 8vw, 116px);
+      overflow: hidden;
     }
     .sd-compass {
       width: 646px;
@@ -2813,11 +2838,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sd-clock-row img:nth-child(3) { opacity: .6; }
     .sd-clock-row img:nth-child(4) { opacity: .4; }
     .sd-orbit-scroll {
-      height: 360vh;
+      height: 220vh;
       padding: 0;
       position: relative;
-      margin-top: 180px;
-      margin-bottom: 160px;
+      margin-top: 0;
+      margin-bottom: 0;
       overflow: visible;
     }
     .sd-orbit-sticky {
@@ -4093,7 +4118,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <div class="skeeeep-flip-scene" aria-hidden="true">
       <div class="skeeeep-flip-card" id="skeeeepFlipCard">
         <div class="skeeeep-ring-bg" id="skeeeepRingBg"></div>
-        <div class="skeeeep-video-bg"></div>
+        <div class="skeeeep-video-bg">
+          <div class="skeeeep-video-letterbox skeeeep-video-letterbox--top"></div>
+          <div class="skeeeep-video-letterbox skeeeep-video-letterbox--bottom"></div>
+        </div>
       </div>
     </div>
     <!-- Originkit ZoomTextTunnel 이식(순수 CSS transition + JS 타이머, framer-motion
@@ -4221,14 +4249,36 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   // 스크롤로 이 섹션에 들어오는 순간부터 세도록 IntersectionObserver로 시작 시점을
   // 잡는다 — setTimeout 기반이라 게이팅 없이 그냥 페이지 로드부터 돌리면, 사용자가
   // 늦게 스크롤해 도착했을 때 이미 다 끝나고(심하면 플립까지 되고) 있을 수 있다.
+  let ztStarted = false;
+  const ztStart = () => {
+    if (ztStarted) return;
+    ztStarted = true;
+    step();
+  };
+
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) { io.disconnect(); step(); }
+      if (entries[0].isIntersecting) { io.disconnect(); ztStart(); }
     }, { threshold: 0.3 });
     io.observe(section);
   } else {
-    step();
+    ztStart();
   }
+
+  // 안전장치: 무빙스타일 등 일부 기기는 IntersectionObserver 콜백이 아예 안 걸리는
+  // 경우가 있다 — 이 섹션은 이 콜백 하나에 문구 애니메이션·카드 플립까지 전부
+  // 걸려 있어서, 안 걸리면 SKEEP 문구가 멈춘 채로 영영 다음 단계로 못 간다.
+  // observer와 별개로 스크롤/리사이즈마다 실제 위치를 직접 재서 시작한다.
+  const ztCheckPosition = () => {
+    if (ztStarted) return;
+    const rect = section.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.3) {
+      ztStart();
+    }
+  };
+  window.addEventListener('scroll', ztCheckPosition, { passive: true });
+  window.addEventListener('resize', ztCheckPosition);
+  ztCheckPosition();
 })();
 </script>
 
@@ -4602,13 +4652,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   <div class="diagram-card">
     <div class="diagram-pair diagram-pair--journey">
       <div class="diagram-left-wrap">
-        <img class="diagram-left" src="assets/journey-left-v4.webp?v=20260809-1" alt="정면을 바라보고 서 있는 사용자">
+        <img class="diagram-left" src="assets/journey-left-v4-display.jpg?v=20260809-3" alt="정면을 바라보고 서 있는 사용자">
       </div>
-      <img class="diagram-right" src="assets/journey-right-v4.webp" alt="사용자 경험 플로우: 오전 세탁부터 오후 스피커 사용까지 이어지는 하루의 흐름">
+      <img class="diagram-right" src="assets/journey-right-v4-display.jpg?v=20260810-2" alt="사용자 경험 플로우: 오전 세탁부터 오후 스피커 사용까지 이어지는 하루의 흐름">
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
-      <img class="diagram-left" src="assets/context-left-v3.webp" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Packet No., Cloud/Cache Memory)">
-      <img class="diagram-right" src="assets/context-right-v3.webp?v=20260809-2" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름">
+      <img class="diagram-left" src="assets/context-left-v3-display.jpg?v=20260809-3" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Packet No., Cloud/Cache Memory)">
+      <img class="diagram-right" src="assets/context-right-v3-display.jpg?v=20260809-3" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -4638,22 +4688,35 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     'SKEEP이 인지하는 맥락의 흐름',
   ];
   let activeIndex = 0;
-  // 방금 선택된 쪽(incoming)만 opacity를 0으로 순간 리셋했다가 1로 다시 트랜지션시켜
-  // 기존(outgoing, 항상 opacity:1 유지) 이미지 위에 자연스럽게 얹히듯 디졸브시킨다.
-  // 두 장이 동시에 반투명해지는 구간이 없어서 카드 배경이 비쳐 보이는 깜빡임이 없다.
+  let pairAnimation = null;
+  if (pairJourney) pairJourney.style.visibility = 'visible';
+  if (pairContext) pairContext.style.visibility = 'hidden';
+  // Web Animations API로 합성 레이어의 opacity만 바꾼다. 예전 방식의 offsetWidth
+  // 강제 리플로우를 없애 Moose 안에서도 탭 전환 시작이 즉시 반응하도록 한다.
   const crossfadeTo = (incoming, outgoing) => {
     if (!incoming || incoming === outgoing) return;
+    if (pairAnimation) pairAnimation.cancel();
+    incoming.getAnimations().forEach((animation) => animation.cancel());
+    outgoing?.getAnimations().forEach((animation) => animation.cancel());
+    incoming.style.visibility = 'visible';
     incoming.style.zIndex = '3';
-    incoming.style.transition = 'none';
-    incoming.style.opacity = '0';
-    incoming.style.pointerEvents = 'auto';
-    void incoming.offsetWidth; // force reflow so the opacity:0 reset paints before animating
-    incoming.style.transition = 'opacity .45s ease';
     incoming.style.opacity = '1';
+    incoming.style.pointerEvents = 'auto';
     if (outgoing) {
       outgoing.style.zIndex = '1';
       outgoing.style.pointerEvents = 'none';
+      outgoing.style.visibility = 'visible';
     }
+    const animation = incoming.animate(
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 450, easing: 'ease', fill: 'none' },
+    );
+    pairAnimation = animation;
+    animation.onfinish = () => {
+      if (pairAnimation !== animation) return;
+      if (outgoing) outgoing.style.visibility = 'hidden';
+      pairAnimation = null;
+    };
   };
   const select = (i) => {
     if (i === activeIndex && (pairJourney || pairContext)) return;
@@ -4682,12 +4745,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 ═══════════════════════ -->
 <section class="sec-layers system-flow-scene system-flow-scene--layers" data-system-flow-layers data-selected-layer="passive">
   <div class="wf-diagram">
-    <div class="wf-diagram-left-wrap">
-      <img class="wf-diagram-left" src="assets/context-left-v3.webp" alt="PACKET NO. — Cloud Memory / Cache Memory">
-    </div>
+    <div class="wf-diagram-left-wrap" aria-hidden="true"></div>
     <div class="wf-diagram-right-wrap">
-      <img class="wf-diagram-right wf-diagram-right--base" src="assets/context-right-v3.webp?v=20260809-2" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름" aria-hidden="true">
-      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who.webp?v=20260809-2" alt="WHO 데이터가 하이라이트된 패킷 흐름">
+      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who-display.jpg?v=20260809-3" alt="WHO 데이터가 하이라이트된 패킷 흐름">
     </div>
   </div>
   <div class="wf-buttons-wrap">
@@ -4725,10 +4785,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const btns = [...section.querySelectorAll('.wf-btn[data-wf]')];
   const rightImg = section.querySelector('#wfDiagramRight');
   const WF_IMAGE = {
-    who: 'assets/whoflow-who.webp?v=20260809-2',
-    what: 'assets/whoflow-what.webp?v=20260809-2',
-    where: 'assets/whoflow-where.webp?v=20260809-2',
+    who: 'assets/whoflow-who-display.jpg?v=20260809-3',
+    what: 'assets/whoflow-what-display.jpg?v=20260809-3',
+    where: 'assets/whoflow-where-display.jpg?v=20260809-3',
   };
+  const preloadWfImages = () => {
+    Object.values(WF_IMAGE).forEach((src) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = src;
+    });
+  };
+  if ('requestIdleCallback' in window) requestIdleCallback(preloadWfImages, { timeout: 1500 });
+  else setTimeout(preloadWfImages, 300);
   const selectWf = (key) => {
     btns.forEach((btn) => {
       const selected = btn.dataset.wf === key;
@@ -4894,8 +4963,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       if (layersSection) {
         if (wfInTimer) { clearTimeout(wfInTimer); wfInTimer = null; }
         layersSection.classList.remove('wf-in');
+        sequence.classList.remove('wf-expanded');
         if (showingLayers) {
-          wfInTimer = setTimeout(() => { layersSection.classList.add('wf-in'); }, 1000);
+          wfInTimer = setTimeout(() => {
+            layersSection.classList.add('wf-in');
+            sequence.classList.add('wf-expanded');
+            wfInTimer = null;
+          }, 1000);
         }
       }
     }
@@ -5643,10 +5717,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   </section>
 
   <section class="sd-section sd-sensing-scene sd-bg-deep">
-    <img class="sd-compass" src="assets/sensing-compass.png" alt="탐지를 상징하는 나침반 모티프">
-    <h2 class="sd-sensing-title">Sensing Logic</h2>
-    <div class="sd-vline"></div>
-    <p class="sd-caption-right">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
+    <div class="sd-sensing-sticky">
+      <img class="sd-compass" src="assets/sensing-compass.png" alt="탐지를 상징하는 나침반 모티프">
+      <h2 class="sd-sensing-title">Sensing Logic</h2>
+      <div class="sd-vline"></div>
+      <p class="sd-caption-right">24시간 조용히 찰나를 준비하는 일<br>당신이 경험하는 모든 시간이 곧 스킵의 시간</p>
+    </div>
   </section>
 
   <section class="sd-orbit-scroll sd-bg-grad" data-sd-orbit>

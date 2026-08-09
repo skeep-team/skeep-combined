@@ -13,6 +13,11 @@ const groups = [
       { label: "전시 웹사이트", href: `${BASE_PATH}/pages/index.html` },
       { label: "자주 묻는 질문", href: `${BASE_PATH}/pages/index.html`, disabled: true },
       { label: "팀 소개", href: `${BASE_PATH}/pages/index.html`, disabled: true },
+      {
+        label: "SKEEP 테크놀로지",
+        href: "https://inky-bar-798.notion.site/SKEEP-Technology-3ac465012ace80ac8653c94eb436d29a",
+        external: true,
+      },
     ],
   },
   {
@@ -58,7 +63,14 @@ export function Footer() {
                       {link.label}
                     </span>
                   ) : (
-                    <a className={styles.link} href={link.href} key={link.label}>
+                    <a
+                      className={styles.link}
+                      href={link.href}
+                      key={link.label}
+                      {...("external" in link && link.external
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
                       {link.label}
                     </a>
                   )

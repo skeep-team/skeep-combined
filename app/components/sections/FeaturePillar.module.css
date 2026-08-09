@@ -83,6 +83,14 @@
 }
 
 .question {
+  /* div에서 button으로 바뀐 만큼 브라우저 기본 버튼 스타일을 지운다. */
+  appearance: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+
   background: var(--color-bg-soft);
   border-radius: var(--radius-md);
   padding: clamp(24px, 2.6vw, 48px) clamp(20px, 2.2vw, 40px) clamp(20px, 2vw, 40px);
