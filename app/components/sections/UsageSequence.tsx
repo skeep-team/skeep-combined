@@ -20,12 +20,7 @@ type UsageArtworkPhase = "bubble" | "bubbleExit" | "watch" | "watchExit";
 
 const MORE_SLIDES = [
   {
-    frames: [
-      "more-long-click.png",
-      "more-long-click-1.png",
-      "more-long-click-2.png",
-      "more-long-click-3.png",
-    ],
+    frames: ["more-long-click.png"],
     alt: "Long click interaction",
   },
   {
@@ -131,27 +126,42 @@ function MoreCarousel() {
               aria-hidden={index !== activeIndex}
               data-voice-phase={index === 2 ? voicePhase : undefined}
             >
-              {slide.frames.map((frame, frameIndex) => {
-                const isActiveFrame =
-                  frameIndex === (index === activeIndex ? activeFrame : 0);
+              {index === 0 ? (
+                /* PAIRING/ANCHOR/PASSPORT 탭이 크로스페이드로 순환하는 실제 화면
+                   녹화 그대로. 정적 프레임으로는 흉내낼 수 없는 전환이라
+                   기기 프레임까지 통째로 영상으로 얹는다. */
+                <video
+                  className={styles.moreCarouselFrame}
+                  data-active
+                  src={`${BASE_PATH}/blueprint/usage/more-long-click-card.webm`}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                />
+              ) : (
+                slide.frames.map((frame, frameIndex) => {
+                  const isActiveFrame =
+                    frameIndex === (index === activeIndex ? activeFrame : 0);
 
-                return (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    className={styles.moreCarouselFrame}
-                    data-active={isActiveFrame}
-                    src={`${BASE_PATH}/blueprint/usage/${frame}`}
-                    alt={isActiveFrame ? slide.alt : ""}
-                    width={index === 0 || index === 1 ? 1924 : 2886}
-                    height={index === 0 || index === 1 ? 1266 : 1899}
-                    draggable={false}
-                    key={frame}
-                  />
-                );
-              })}
+                  return (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      className={styles.moreCarouselFrame}
+                      data-active={isActiveFrame}
+                      src={`${BASE_PATH}/blueprint/usage/${frame}`}
+                      alt={isActiveFrame ? slide.alt : ""}
+                      width={index === 1 ? 1924 : 2886}
+                      height={index === 1 ? 1266 : 1899}
+                      draggable={false}
+                      key={frame}
+                    />
+                  );
+                })
+              )}
               {index === 0 && (
-                /* voice 배지와 같은 위치·양식의 태그 — 프레임 이미지엔 더 이상
-                   태그가 박혀 있지 않아 여기서 얹는다. */
                 <div className={styles.moreVoiceHud} aria-hidden="true">
                   <span className={styles.moreVoicePill}>long click</span>
                 </div>
@@ -449,7 +459,11 @@ export default function UsageSequence({
             data-index={index}
           >
             <div
-              className={styles.usagePanel}
+              className={
+                section.eyebrow === "More"
+                  ? `${styles.usagePanel} ${styles.usagePanelMore}`
+                  : styles.usagePanel
+              }
               ref={index === 0 ? environmentUsageRef : undefined}
               data-reveal={index === 0 ? (environmentUsageShown ? "shown" : "hidden") : undefined}
             >

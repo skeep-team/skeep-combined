@@ -827,6 +827,12 @@
   background: #000000;
 }
 
+/* More 카드 녹화 영상은 원본 프레임 그대로(1498x1220) 쓴다 —
+   판 비율을 영상 비율에 맞춰, 잘라내거나 여백을 만들지 않는다. */
+.usagePanelMore {
+  aspect-ratio: 1498 / 1220;
+}
+
 /* "환경 사용 알람"(첫 덩이)의 판/카피가 뷰포트에 처음 들어올 때 아래에서 위로
    떠오르며 한 번만 나타난다. data-reveal은 index===0일 때만 JS가 붙인다. */
 .usagePanel[data-reveal="hidden"],

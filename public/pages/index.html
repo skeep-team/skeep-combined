@@ -1527,7 +1527,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: none;
     }
     .system-flow-sequence.show-layers .system-flow-scene--diagram {
-      opacity: 0;
+      /* opacity는 그대로 1 유지 — 밑에 항상 불투명하게 깔려 있는 배경 역할.
+         이전엔 여기서도 0으로 같이 페이드아웃시켰는데, 두 흰 배경 씬이 동시에
+         반투명해지면서 겹쳐 보여 전환 중간에 화면이 하얗게 번쩍이는 문제가 있었다.
+         이제는 layers 씬만 0→1로 그 위에 얹히듯 페이드인되고, diagram 씬은
+         끝까지 불투명하게 유지되다가 layers가 완전히 덮으면서 자연히 가려진다. */
       pointer-events: none;
     }
     .system-flow-sequence.show-layers .system-flow-scene--layers {
@@ -1535,11 +1539,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       pointer-events: auto;
     }
     .sec-system-diagram {
-      background: #fff; width: 100%;
-      padding: clamp(14px, 2.2vh, 28px) 0 clamp(40px, 6vh, 68px);   /* 위쪽 여백을 줄여 상단 두 줄을 위로 올림 */
-      display: flex; flex-direction: column;
-      justify-content: center;
-      align-items: center; gap: clamp(28px, 3.6vh, 46px);   /* 텍스트-그래픽, 그래픽-토글 사이 간격 확대 */
+      background: #fff; width: 100%; height: 100%;
+      /* diagram-card는 제목/탭 유무와 무관하게 뷰포트 정중앙에 놓인다(flex 중앙정렬).
+         레이어 씬(wf-diagram)도 동일한 방식으로 정중앙 정렬되므로,
+         두 씬이 크로스페이드될 때 사진 위치가 절대 어긋나지 않는다.
+         transform 기반 중앙정렬 대신 flex를 쓰는 이유: opacity 트랜지션 중인 부모
+         아래에서 top:50%+transform 조합이 크롬 레이어 승격 타이밍과 부딪혀
+         전환마다 화면이 깜빡이는 문제가 있었다.
+         (position은 .system-flow-scene의 absolute를 그대로 사용 — 여기서 다시
+         선언하면 캐스케이드 순서상 relative로 덮어써져 전체 핀 레이아웃이 깨진다.) */
+      display: flex; align-items: center; justify-content: center;
     }
     .diagram-card {
       width: 100%;
@@ -1561,6 +1570,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 그래픽 안에 있던 USER JOURNEY 문구를 독립된 섹션 헤더로 올린다. */
     .diagram-journey-copy {
+      position: absolute; top: clamp(14px, 2.2vh, 28px); left: 0;
       width: 100%;
       padding: 0 var(--edge-padding);
       display: flex;
@@ -1568,7 +1578,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       align-items: center;
       text-align: center;
       gap: clamp(8px, 1vh, 14px);
-      flex: 0 0 auto;
+      opacity: 1;
+      /* opacity는 CSS 트랜지션이 아니라 JS(render())에서 스크롤 진행도에 맞춰
+         매 프레임 직접 계산해 넣는다 — 클래스 토글 + 고정 시간 트랜지션 방식은
+         스크롤 속도에 따라 트랜지션이 화면 밖(주의 밖)에서 다 끝나버려 "띡" 하고
+         사라지는 것처럼 보였다. 스크롤 위치에 1:1로 붙여야 어떤 속도로 스크롤해도
+         항상 눈에 보이는 만큼만 자연스럽게 옅어진다. */
     }
     .diagram-journey-title {
       font-family: 'Elza Cond', "Helvetica Now Display", 'Pretendard', sans-serif;
@@ -1639,6 +1654,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       display: grid;
       grid-template-columns: 546fr 3412fr;
       border-radius: inherit; overflow: hidden;
+      opacity: 1;
       transition: opacity .45s ease;
     }
     .diagram-pair img {
@@ -1655,9 +1671,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       height: 100%;
       min-width: 0;
     }
-    .diagram-pair--context { opacity: 0; pointer-events: none; }
-    .diagram-card.show-context .diagram-pair--journey { opacity: 0; pointer-events: none; }
-    .diagram-card.show-context .diagram-pair--context { opacity: 1; pointer-events: auto; }
+    /* 01↔02 전환: 두 장을 동시에 반투명하게 만들면 카드 배경(흰/회색)이 비쳐 보여
+       화면이 잠깐 하얗게 번쩍인다. 그래서 두 장 모두 평소엔 opacity:1(완전 불투명)을
+       유지하고, z-index로만 어느 쪽이 위인지 정한다. 탭을 누르면 JS(select())가
+       방금 선택된 쪽만 opacity를 0으로 순간 리셋한 뒤 1로 다시 트랜지션시켜, 기존
+       이미지 위에 새 이미지가 자연스럽게 얹히듯 디졸브되고, 기존 이미지는 끝까지
+       불투명한 채로 아래 깔려 있다가 그대로 가려진다. */
+    .diagram-pair--journey { z-index: 2; pointer-events: auto; }
+    .diagram-pair--context { z-index: 1; pointer-events: none; }
     .diagram-tab { cursor: pointer; transition: background .2s ease, box-shadow .2s ease; }
     .diagram-card-content {
       display: flex; flex-direction: column;
@@ -1676,11 +1697,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     /* 컨테이너를 레이어 카드 회색(#F1F1F1)에 맞춤 + 흰 선택 카드 + 핑크 번호 */
     .diagram-tabs {
+      position: absolute; bottom: clamp(40px, 6vh, 68px); left: 50%;
+      transform: translateX(-50%);
       background: #F1F1F1; border-radius: var(--card-radius-lg);
       display: flex; gap: clamp(6px, 0.7vw, 12px);
       padding: clamp(9px, 1.1vw, 16px);
       border: none;
-      margin-top: 0;
+      opacity: 1;    /* JS(render())가 스크롤 진행도에 맞춰 매 프레임 opacity를 직접 갱신한다 */
     }
     .diagram-tab {
       display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
@@ -1695,11 +1718,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* ── 10. SYSTEM LAYERS ───────────────────────── */
     .sec-layers {
       background: #fff;
-      width: 100%;
+      width: 100%; height: 100%;
       padding: clamp(40px, 6vh, 68px) 0;
-      min-height: 0;
-      display: flex; flex-direction: column;
-      justify-content: center;
+      /* wf-diagram은 버튼이 뜨기 전엔 diagram-card와 정확히 같은 위치(뷰포트 정중앙)에
+         가만히 있는다 — gap이 0이고 wf-buttons-wrap도 0fr(높이 0)이라 사실상
+         wf-diagram 혼자 flex 그룹을 이뤄 diagram-card와 동일한 수식으로 정중앙에
+         온다(패딩이 위아래로 같아서 중심점이 안 밀린다). gap을 미리 깔아두면
+         버튼이 뜨기 전에도 그만큼 아래 여백이 더 생겨 diagram-card보다 살짝 위로
+         밀린 위치가 되므로, gap 자체를 0→값으로 애니메이션해 버튼이 실제로
+         펼쳐질 때만 그 간격이 생기게 한다.
+         버튼이 올라오기 시작하면(wf-in) grid-template-rows와 gap이 함께 커지면서
+         flex 그룹 전체 높이가 늘어나고, 그 중앙정렬 때문에 wf-diagram이 자연스럽게
+         위로 밀려 올라간다(의도된 동작). */
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 0;
+      transition: gap .7s cubic-bezier(.22,1,.36,1);
+    }
+    .sec-layers.wf-in {
       gap: clamp(20px, 2.6vh, 36px);
     }
     /* ── WHO/WHAT/WHERE 버튼 + 패킷 다이어그램 ── */
@@ -1736,7 +1771,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-weight: 700; font-size: clamp(12px, 0.95vw, 16px); letter-spacing: -0.02em;
       color: #222; opacity: 0.85; line-height: 1.5; margin: 0;
     }
-    .wf-diagram { display: flex; align-items: center; width: 100%;
+    .wf-diagram { width: 100%;
+      display: flex; align-items: center;
       aspect-ratio: 7908 / 2250; border-radius: 0; overflow: hidden; background: #F1F1F1; }
     .wf-diagram-left-wrap { flex: 0 0 13.8088%; height: 100%; display: flex; }
     .wf-diagram-left { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -2044,6 +2080,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         margin-top: 48px;
         pointer-events: auto;
       }
+      /* 데스크톱 전용 정중앙 절대배치를 모바일에서 되돌려 원래의 세로 스택 흐름으로 복원 */
+      .sec-system-diagram, .sec-layers {
+        display: flex; flex-direction: column; align-items: center;
+        gap: clamp(20px, 5vw, 36px);
+        height: auto;
+      }
+      .diagram-journey-copy, .diagram-tabs, .wf-buttons-wrap {
+        position: static;
+        width: 100%;
+        transform: none;
+      }
+      .diagram-tabs { width: auto; }
       .layer-visual {
         aspect-ratio: auto;
         height: 248px;
@@ -4522,7 +4570,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     </div>
     <div class="diagram-pair diagram-pair--context" aria-hidden="true">
       <img class="diagram-left" src="assets/context-left-v3.png" alt="CONTEXT FLOW — SKEEP이 인지하는 맥락의 흐름 (Packet No., Cloud/Cache Memory)">
-      <img class="diagram-right" src="assets/context-right-v3.png?v=20260809-1" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름">
+      <img class="diagram-right" src="assets/context-right-v3.png?v=20260809-2" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름">
     </div>
   </div>
   <div class="diagram-tabs" role="tablist">
@@ -4542,6 +4590,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const tabs = document.querySelectorAll('.sec-system-diagram .diagram-tab');
   const title = document.querySelector('.sec-system-diagram .diagram-journey-title');
   const desc = document.querySelector('.sec-system-diagram .diagram-journey-desc');
+  const pairJourney = card?.querySelector('.diagram-pair--journey');
+  const pairContext = card?.querySelector('.diagram-pair--context');
   if (!card || !tabs.length) return;
   // 탭(01/02)에 따라 제목/설명글도 같이 바뀐다 — 02(맥락 플로우) 선택 시 제목이 Context Flow로.
   const JOURNEY_TITLE = ['User Journey', 'Context Flow'];
@@ -4549,11 +4599,34 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     '사용자가 경험하는 이동의 흐름',
     'SKEEP이 인지하는 맥락의 흐름',
   ];
+  let activeIndex = 0;
+  // 방금 선택된 쪽(incoming)만 opacity를 0으로 순간 리셋했다가 1로 다시 트랜지션시켜
+  // 기존(outgoing, 항상 opacity:1 유지) 이미지 위에 자연스럽게 얹히듯 디졸브시킨다.
+  // 두 장이 동시에 반투명해지는 구간이 없어서 카드 배경이 비쳐 보이는 깜빡임이 없다.
+  const crossfadeTo = (incoming, outgoing) => {
+    if (!incoming || incoming === outgoing) return;
+    incoming.style.zIndex = '3';
+    incoming.style.transition = 'none';
+    incoming.style.opacity = '0';
+    incoming.style.pointerEvents = 'auto';
+    void incoming.offsetWidth; // force reflow so the opacity:0 reset paints before animating
+    incoming.style.transition = 'opacity .45s ease';
+    incoming.style.opacity = '1';
+    if (outgoing) {
+      outgoing.style.zIndex = '1';
+      outgoing.style.pointerEvents = 'none';
+    }
+  };
   const select = (i) => {
+    if (i === activeIndex && (pairJourney || pairContext)) return;
     tabs.forEach((t, k) => t.classList.toggle('active', k === i));
     card.classList.toggle('show-context', i === 1);
     if (title) title.textContent = JOURNEY_TITLE[i];
     if (desc) desc.innerHTML = JOURNEY_DESC[i];
+    if (pairJourney && pairContext) {
+      crossfadeTo(i === 1 ? pairContext : pairJourney, i === 1 ? pairJourney : pairContext);
+    }
+    activeIndex = i;
   };
   tabs.forEach((tab, i) => {
     tab.addEventListener('click', () => select(i));
@@ -4575,8 +4648,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       <img class="wf-diagram-left" src="assets/context-left-v3.png" alt="PACKET NO. — Cloud Memory / Cache Memory">
     </div>
     <div class="wf-diagram-right-wrap">
-      <img class="wf-diagram-right wf-diagram-right--base" src="assets/context-right-v3.png?v=20260809-1" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름" aria-hidden="true">
-      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who.png?v=20260809-1" alt="WHO 데이터가 하이라이트된 패킷 흐름">
+      <img class="wf-diagram-right wf-diagram-right--base" src="assets/context-right-v3.png?v=20260809-2" alt="WHO/WHAT/WHERE 단계별 목적·실행블록·환경 흐름" aria-hidden="true">
+      <img class="wf-diagram-right wf-diagram-right--overlay" id="wfDiagramRight" src="assets/whoflow-who.png?v=20260809-2" alt="WHO 데이터가 하이라이트된 패킷 흐름">
     </div>
   </div>
   <div class="wf-buttons-wrap">
@@ -4614,9 +4687,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   const btns = [...section.querySelectorAll('.wf-btn[data-wf]')];
   const rightImg = section.querySelector('#wfDiagramRight');
   const WF_IMAGE = {
-    who: 'assets/whoflow-who.png?v=20260809-1',
-    what: 'assets/whoflow-what.png?v=20260809-1',
-    where: 'assets/whoflow-where.png?v=20260809-1',
+    who: 'assets/whoflow-who.png?v=20260809-2',
+    what: 'assets/whoflow-what.png?v=20260809-2',
+    where: 'assets/whoflow-where.png?v=20260809-2',
   };
   const selectWf = (key) => {
     btns.forEach((btn) => {
@@ -4742,6 +4815,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   let showingLayers = false;
   let journeyTab = 0;
   const layersSection = document.querySelector('.sec-layers');
+  const journeyCopyEl = document.querySelector('.diagram-journey-copy');
+  const diagramTabsEl = document.querySelector('.diagram-tabs');
   let wfInTimer = null;
 
   const render = () => {
@@ -4749,6 +4824,22 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     const rect = sequence.getBoundingClientRect();
     const scrollRange = Math.max(1, sequence.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, -rect.top / scrollRange));
+
+    // 레이어 씬으로 넘어가기 직전 구간에서 제목/토글을 스크롤 위치에 정확히 맞춰
+    // (트랜지션 없이) 매 프레임 직접 옅어지게 한다 — 클래스 토글 + 고정시간
+    // 트랜지션 방식은 빠르게 스크롤하면 화면 밖에서 끝나버려 "띡" 사라지는
+    // 것처럼 보였다. 스크롤을 얼마나 빠르게 하든 항상 보이는 만큼만 옅어진다.
+    const chromeFadeStart = 0.40, chromeFadeEnd = 0.50;
+    const chromeT = Math.min(1, Math.max(0, (progress - chromeFadeStart) / (chromeFadeEnd - chromeFadeStart)));
+    const chromeOpacity = 1 - chromeT;
+    if (journeyCopyEl) {
+      journeyCopyEl.style.opacity = String(chromeOpacity);
+      journeyCopyEl.style.pointerEvents = chromeOpacity < 0.05 ? 'none' : 'auto';
+    }
+    if (diagramTabsEl) {
+      diagramTabsEl.style.opacity = String(chromeOpacity);
+      diagramTabsEl.style.pointerEvents = chromeOpacity < 0.05 ? 'none' : 'auto';
+    }
 
     // 01(사용자 경험 플로우) → 02(맥락 플로우): 레이어 전환 문턱(0.50) 이전, 다이어그램이 보이는 동안 스크롤만으로 전환.
     const nextJourneyTab = journeyTab === 0 ? (progress > 0.22 ? 1 : 0) : (progress > 0.12 ? 1 : 0);
