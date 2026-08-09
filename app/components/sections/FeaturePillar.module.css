@@ -114,6 +114,17 @@
 }
 
 .answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows .45s cubic-bezier(.22, 1, .36, 1), opacity .25s ease;
+}
+.answer[data-expanded] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.answerInner {
+  min-height: 0;
   overflow: hidden;
 }
 

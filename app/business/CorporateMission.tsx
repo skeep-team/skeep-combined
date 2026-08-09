@@ -8,19 +8,19 @@ const CARDS = [
     label: "For Users",
     title: "Continuity",
     body: ["사용자 경험을 위한", "스킵의 약속"],
-    image: "continuity-card.png",
+    image: "continuity-card.webp",
   },
   {
     label: "For Partners",
     title: "Neutrality",
     body: ["시장과 파트너를 향한", "스킵의 중립적인 태도"],
-    image: "neutrality-card.png",
+    image: "neutrality-card.webp",
   },
   {
     label: "For Ecosystem",
     title: "Sustainability",
     body: ["미래 인프라를 향한", "스킵의 책임 의식"],
-    image: "sustainability-card.png",
+    image: "sustainability-card.webp",
   },
 ] as const;
 

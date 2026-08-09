@@ -73,58 +73,30 @@
   object-fit: cover;
 }
 
-/* 경량화: intent-bg.mp4 대신 CSS 애니메이션 (무빙스타일 호환 + 항상 재생).
-   같은 색의 원을 mix-blend-mode: difference로 겹치면, 크림 배경 위에서는
-   검게(difference(크림,크림)=검정), 검정 글자 위에서는 밝게
-   (difference(검정,크림)=크림) 보여 글자를 훑고 지나가며 반전시키는
-   효과가 난다. */
+/* 무스 브라우저는 `clip-path: circle(calc(clamp(...)))`의 보간 과정에서
+   클리핑 레이어 전체를 누락시킨다. 도형과 반전 텍스트를 한 SVG 안에 두고
+   동일한 원 좌표를 SMIL로 움직여 합성 레이어 없이 같은 효과를 만든다. */
 .intentStage {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   background: #2E2D32;
 }
-.intentLabel {
-  margin: 0;
-  font-size: clamp(52px, 11vw, 108px);
+
+.intentArtwork {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.intentSvgLabel {
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif;
+  font-size: 108px;
   font-weight: 500;
   letter-spacing: 0;
-  color: #89DFF0;
+  text-anchor: middle;
+  dominant-baseline: central;
   user-select: none;
-}
-/* 반전(스포트라이트) 효과: mix-blend-mode:difference는 텍스트가 순수 검정일 때만
-   "제 색 그대로 드러나고 배경 위에서는 검게 사라지는" 트릭이 성립한다. 지금은
-   텍스트가 하늘색이라 diff 결과가 두 색의 중간톤이 되어 반전처럼 안 보이므로,
-   배경/텍스트 색을 그대로 뒤바꾼 복제 레이어를 원 모양 clip-path로 스윕시켜
-   실제 색 스왑을 재현한다. */
-.intentInvertLayer {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #89DFF0;
-  clip-path: circle(calc(clamp(160px, 34vw, 300px) / 2) at -20% 50%);
-  animation: intentSweep 3.6s cubic-bezier(.5, 0, .5, 1) infinite alternate;
-  pointer-events: none;
-}
-.intentInvertLabel {
-  margin: 0;
-  font-size: clamp(52px, 11vw, 108px);
-  font-weight: 500;
-  letter-spacing: 0;
-  color: #2E2D32;
-  user-select: none;
-}
-@keyframes intentSweep {
-  0%   { clip-path: circle(calc(clamp(160px, 34vw, 300px) / 2) at -20% 50%); }
-  100% { clip-path: circle(calc(clamp(160px, 34vw, 300px) / 2) at 120% 50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .intentInvertLayer { animation: none; clip-path: circle(calc(clamp(160px, 34vw, 300px) / 2) at 50% 50%); }
 }
 
 .caption {

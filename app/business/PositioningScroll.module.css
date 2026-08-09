@@ -134,6 +134,11 @@
   align-items: stretch;
   gap: clamp(20px, 1.4vw, 30px);
   width: 100%;
+  /* grid-template-columns/gap 트랜지션은 리페인트가 아니라 리플로우라(트랙 폭이
+     매 프레임 재계산되며 안의 텍스트/카드까지 다시 배치됨) 무빙스타일처럼 약한
+     기기에선 버벅여 보인다. index.html의 .sq-morph와 같은 방식으로 contain을
+     둬서 이 그리드 박스 안에서만 레이아웃/페인트가 재계산되게 가둔다. */
+  contain: layout paint;
   transition:
     grid-template-columns var(--card-expand-duration) var(--card-expand-ease),
     gap var(--card-expand-duration) var(--card-expand-ease),
@@ -293,6 +298,15 @@
 
 .sequence[data-scene="3"] .morphSlot .valueCard {
   height: clamp(260px, 29.4vw, 560px);
+  /* 위 주석은 "커질 때는 아래 규칙의 긴 시간을 쓴다"고 되어있었지만 실제로는
+     그 긴 시간 규칙이 없어서 항상 240ms(되돌아올 때용 짧은 시간)로만 자랐다.
+     그 결과 양옆 카드/그리드는 950ms로 천천히 움직이는데 가운데 카드만
+     240ms만에 다 자라버려 "먼저 움직이는" 것처럼 보였다. 커지는 방향에는
+     명시적으로 --card-expand-duration(950ms)을 준다. */
+  transition:
+    height var(--card-expand-duration) var(--card-expand-ease),
+    border-radius var(--card-expand-duration) var(--card-expand-ease),
+    background-color var(--card-expand-duration) var(--card-expand-ease);
 }
 
 .morphSlot .valueCardTop,
@@ -304,10 +318,18 @@
   transition: opacity 0s linear;
 }
 
+/* --center-fade는 0(등장 구간)~1(히어로로 접히는 구간) 사이만 실제로 움직인다.
+   그런데 opacity 0s linear로 두면 값이 1(=투명도 그대로)인 등장 구간에서도
+   트랜지션 자체가 없어서, 양옆 카드는 max-height와 함께 280ms 페이드인 되는데
+   가운데만 페이드 없이 즉시 나타나 "먼저 튀는" 것처럼 보였다. 양옆과 같은
+   opacity 트랜지션을 쓰게 하고, 접히는 구간에서 --center-fade가 프레임마다
+   바뀌는 건 이미 JS에서 한 번 이즈(currentMorph)된 값이라 280ms를 더 얹어도
+   heroPanel의 --hero-reveal(120ms 트랜지션, 아래 heroPanel 규칙)처럼 밀리는
+   느낌 없이 자연스럽다. */
 .morphSlot .valueCard > .valueCollapse {
   transition:
     max-height var(--card-expand-duration) var(--card-expand-ease),
-    opacity 0s linear;
+    opacity 280ms ease 80ms;
 }
 
 .sequence[data-expanded="true"] .morphSlot .valueCard {
@@ -315,6 +337,10 @@
   min-height: 100%;
   border-radius: 0;
   background: #070707;
+  transition:
+    height var(--card-expand-duration) var(--card-expand-ease),
+    border-radius var(--card-expand-duration) var(--card-expand-ease),
+    background-color var(--card-expand-duration) var(--card-expand-ease);
 }
 
 .morphSlot .heroPanel {

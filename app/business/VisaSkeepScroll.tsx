@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./VisaSkeepScroll.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -12,7 +12,7 @@ const items = [
   {
     letter: "P",
     category: "Political",
-    image: `${BASE_PATH}/business/pestel/s-social.jpg`,
+    image: `${BASE_PATH}/business/pestel/s-social-card.webp`,
     title: "빅테크 진영의\nAI 파이 나누기와\n폐쇄적 생태계 구축",
     description:
       "세상의 수많은 서비스와 제품 경험을 한 기업의 생태계로 독점하는 것은 불가능하죠. 독점적인 파이를 차지하려는 플랫폼 간의 폐쇄적인 진영 싸움은 기술의 유기적인 융합보다 사용자 경험의 파편화를 이끌어왔습니다.",
@@ -20,7 +20,7 @@ const items = [
   {
     letter: "E",
     category: "Economic",
-    image: `${BASE_PATH}/business/pestel/e-economic.jpg`,
+    image: `${BASE_PATH}/business/pestel/e-economic-card.webp`,
     title: "AI 데이터 인프라\n중복 투자와\n고정비 지출 심화",
     description:
       "폐쇄적 생태계 확장의 이면에는 각 진영의 장벽 안에 고립된 데이터의 비효율이 자리하고 있죠. 기업들은 그들의 가치를 유지의 맥락 속에 매끄럽게 전달하지 못하고 비즈니스 기회와 고객 경험 혁신에서 한계를 느껴 왔습니다.",
@@ -28,7 +28,7 @@ const items = [
   {
     letter: "S",
     category: "Social",
-    image: `${BASE_PATH}/business/pestel/s-background.jpg`,
+    image: `${BASE_PATH}/business/pestel/s-background-card.webp`,
     title: "스크린을 넘어\n연속적 사용 경험을\n요구하는 사용자",
     description:
       "화면 속에 갇힌 인터랙션에 피로감을 느낀 유저들은 이제 스크린 밖 일상 자체를 소비하기 시작했습니다. 그러나 진영 간의 장벽에 가로막혀 일상의 동선마다 번번이 단절되는 불연속적인 경험은 유저들에게 깊은 피로감을 선사했죠.",
@@ -36,7 +36,7 @@ const items = [
   {
     letter: "T",
     category: "Technological",
-    image: `${BASE_PATH}/business/pestel/t-background.jpg`,
+    image: `${BASE_PATH}/business/pestel/t-background-card.webp`,
     title: "물리적 세계로\n확장하기 시작하는\nA2A 생태계",
     description:
       "멀티모달 AI와 에이전트 기술은 더 이상 화면 안에 머물지 않습니다. 다양한 기기와 환경을 넘나들며 자율적으로 이동하고 소통하는 A2A 생태계로의 전환이 이미 시작되었습니다.",
@@ -44,7 +44,7 @@ const items = [
   {
     letter: "E",
     category: "Environmental",
-    image: `${BASE_PATH}/business/pestel/e-background.png`,
+    image: `${BASE_PATH}/business/pestel/e-background-card.webp`,
     title: "AI가 촉발한\n데이터 센터의\n전력난과 과부하",
     description:
       "폭발적으로 증가하는 멀티모달 연산은 글로벌 데이터 인프라에 전례 없는 과부하를 유발해왔죠. 무분별한 클라우드 리소스의 낭비를 줄이고, 생태계 전체의 연산 효율을 극대화하는 지속 가능한 인프라로의 전환은 필수적입니다.",
@@ -52,7 +52,7 @@ const items = [
   {
     letter: "L",
     category: "Legal",
-    image: `${BASE_PATH}/business/pestel/l-background.jpg`,
+    image: `${BASE_PATH}/business/pestel/l-background-card.webp`,
     title: "에이전트 경험의\n독점 규제와 표준\n프로토콜의 필요성",
     description:
       "일부 빅테크가 사용자를 독점하는 것에 대한 제도적 규제가 전 세계적으로 강화되고 있습니다. 서로 다른 진영 간의 장벽을 허물고 데이터와 에이전트를 자유롭게 상호 호환시킬 표준 프로토콜 규격이 필연적으로 요구되는 시점입니다.",
@@ -85,19 +85,80 @@ function cardIndexAt(progress: number) {
 export default function VisaSkeepScroll() {
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  const firstCardRectsRef = useRef<Array<DOMRect | null>>([]);
+  const cardAnimationsRef = useRef<Animation[]>([]);
+  const activeIndexRef = useRef<number | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hasUserInteractedRef = useRef(false);
   const isOpen = activeIndex !== null;
 
+  /* 카드의 실제 폭은 상태가 바뀌는 순간 한 번만 계산한다. 이전/다음 위치의
+     차이는 transform으로 되감아 재생하므로, 무스가 매 프레임 여섯 카드의
+     레이아웃과 이미지 크롭을 다시 계산하지 않아도 된다. */
+  const updateActiveIndex = useCallback((next: number | null) => {
+    if (next === activeIndexRef.current) return;
+
+    firstCardRectsRef.current = cardRefs.current.map((card) =>
+      card ? card.getBoundingClientRect() : null,
+    );
+    activeIndexRef.current = next;
+    setActiveIndex(next);
+  }, []);
+
+  useLayoutEffect(() => {
+    const firstRects = firstCardRectsRef.current;
+    if (!firstRects.some(Boolean)) return;
+    firstCardRectsRef.current = [];
+
+    cardAnimationsRef.current.forEach((animation) => animation.cancel());
+    cardAnimationsRef.current = [];
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    cardRefs.current.forEach((card, index) => {
+      const first = firstRects[index];
+      if (!card || !first || first.width <= 0) return;
+
+      const last = card.getBoundingClientRect();
+      if (last.width <= 0) return;
+
+      const deltaX = first.left - last.left;
+      const scaleX = first.width / last.width;
+
+      if (Math.abs(deltaX) < 0.5 && Math.abs(scaleX - 1) < 0.002) return;
+
+      const animation = card.animate(
+        [
+          {
+            transformOrigin: "left center",
+            transform: `translate3d(${deltaX}px, 0, 0) scaleX(${scaleX})`,
+          },
+          {
+            transformOrigin: "left center",
+            transform: "translate3d(0, 0, 0) scaleX(1)",
+          },
+        ],
+        {
+          duration: 420,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+          fill: "none",
+        },
+      );
+
+      cardAnimationsRef.current.push(animation);
+    });
+  }, [activeIndex]);
+
   /* 직접 누르면 그때부터는 스크롤이 선택을 바꾸지 않는다. */
   const handleSelect = (index: number) => {
     hasUserInteractedRef.current = true;
-    setActiveIndex(index);
+    updateActiveIndex(index);
   };
 
   const handleBack = () => {
     hasUserInteractedRef.current = true;
-    setActiveIndex(null);
+    updateActiveIndex(null);
   };
 
   useEffect(() => {
@@ -125,7 +186,7 @@ export default function VisaSkeepScroll() {
 
         if (next !== cardIndex) {
           cardIndex = next;
-          setActiveIndex(next);
+          updateActiveIndex(next);
         }
       }
 
@@ -176,7 +237,7 @@ export default function VisaSkeepScroll() {
         window.cancelAnimationFrame(frame);
       }
     };
-  }, []);
+  }, [updateActiveIndex]);
 
   return (
     <section
@@ -195,11 +256,20 @@ export default function VisaSkeepScroll() {
               return (
                 <article
                   key={`${item.category}-${index}`}
+                  ref={(node) => {
+                    cardRefs.current[index] = node;
+                  }}
                   className={`${styles.card} ${item.image ? styles.cardWithImage : ""} ${isActive ? styles.cardActive : ""}`}
                 >
                   {item.image && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img className={styles.cardImage} src={item.image} alt="" />
+                    <img
+                      className={styles.cardImage}
+                      src={item.image}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
                   )}
                   <button
                     className={styles.selectButton}

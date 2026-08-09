@@ -208,7 +208,7 @@ export default function HeroIntro() {
                 <div key={face} className={styles.cubeFace} data-face={face}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`${BASE_PATH}/business/hero-words/word-${source}.jpg`}
+                    src={`${BASE_PATH}/business/hero-words/word-${source}.webp`}
                     alt=""
                     loading="eager"
                     decoding="async"

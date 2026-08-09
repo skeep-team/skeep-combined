@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { Reveal } from "../ui/Reveal";
 import styles from "./FeaturePillar.module.css";
@@ -54,18 +53,17 @@ function QuestionCard({
         <span className={styles.qLabel}>{label}</span>
         <p className={styles.qText}>{text}</p>
         {answer && (
-          <motion.div
-            className={styles.answer}
-            initial={false}
-            animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
-            transition={{
-              height: { type: "spring", stiffness: 380, damping: 26, mass: 0.9 },
-              opacity: { duration: 0.2 },
-            }}
-          >
-            <span className={styles.aLabel}>A.</span>
-            <AnswerText text={answer} />
-          </motion.div>
+          // height:"auto"를 프레이머모션 스프링으로 애니메이션하면 매 프레임
+          // JS가 직접 픽셀 높이를 계산해서 넣어야 해서 리레이아웃 비용이 크다
+          // (카드가 그리드 안에 있어 옆 카드까지 다시 배치됨) — 클릭할 때마다
+          // 버벅이던 원인. CSS grid-template-rows(0fr→1fr) 트랜지션으로 바꿔서
+          // 브라우저 자체 애니메이션 엔진이 처리하게 한다.
+          <div className={styles.answer} data-expanded={expanded || undefined}>
+            <div className={styles.answerInner}>
+              <span className={styles.aLabel}>A.</span>
+              <AnswerText text={answer} />
+            </div>
+          </div>
         )}
       </div>
     </Reveal>

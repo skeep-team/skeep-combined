@@ -36,10 +36,56 @@ function clampedProgress(start: number, end: number, value: number) {
 function IntentVisual() {
   return (
     <div className={styles.intentStage}>
-      <p className={styles.intentLabel}>INTENT</p>
-      <div className={styles.intentInvertLayer} aria-hidden="true">
-        <p className={styles.intentInvertLabel}>INTENT</p>
-      </div>
+      <svg
+        className={styles.intentArtwork}
+        viewBox="0 0 720 466"
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label="원이 INTENT 문구를 지나며 색상을 반전시키는 그래픽"
+      >
+        <defs>
+          <clipPath id="intent-sweep-clip" clipPathUnits="userSpaceOnUse">
+            <circle cx="-150" cy="233" r="150">
+              <animate
+                attributeName="cx"
+                values="-150;870;-150"
+                keyTimes="0;0.5;1"
+                dur="7.2s"
+                calcMode="spline"
+                keySplines="0.5 0 0.5 1;0.5 0 0.5 1"
+                repeatCount="indefinite"
+              />
+            </circle>
+          </clipPath>
+        </defs>
+
+        <rect width="720" height="466" fill="#2E2D32" />
+        <text className={styles.intentSvgLabel} x="360" y="233" fill="#89DFF0">
+          INTENT
+        </text>
+
+        <circle cx="-150" cy="233" r="150" fill="#89DFF0">
+          <animate
+            attributeName="cx"
+            values="-150;870;-150"
+            keyTimes="0;0.5;1"
+            dur="7.2s"
+            calcMode="spline"
+            keySplines="0.5 0 0.5 1;0.5 0 0.5 1"
+            repeatCount="indefinite"
+          />
+        </circle>
+        <text
+          className={styles.intentSvgLabel}
+          x="360"
+          y="233"
+          fill="#2E2D32"
+          clipPath="url(#intent-sweep-clip)"
+          aria-hidden="true"
+        >
+          INTENT
+        </text>
+      </svg>
     </div>
   );
 }

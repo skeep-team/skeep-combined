@@ -75,8 +75,13 @@ function PacketRecallSequence({
   visible: boolean;
 }) {
   const [dissolve, setDissolve] = useState(false);
+  const advancedRef = useRef(false);
 
   const advance = useCallback(() => {
+    if (advancedRef.current) {
+      return;
+    }
+    advancedRef.current = true;
     setTimeout(() => setPhase(1), HOLD_MS);
   }, [setPhase]);
 
@@ -92,6 +97,21 @@ function PacketRecallSequence({
     const timer = setTimeout(() => setDissolve(true), 300);
     return () => clearTimeout(timer);
   }, [phase, visible]);
+
+  // 안전장치: ScrambleText의 onEnterComplete는 ResizeObserver/폰트 로딩
+  // 타이밍에 기대는 복잡한 애니메이션이라, 무빙스타일처럼 약한/오래된
+  // 브라우저 엔진에서 드물게 콜백이 아예 안 걸려 "패킷 회수 중..." 검정
+  // 화면에서 다음 단계로 영영 못 넘어가는 문제가 있었다 — 스크램블 애니메이션이
+  // 정상적으로 끝나는 데 걸리는 시간보다 넉넉히 긴 시간이 지나도 넘어가지
+  // 않았다면, 애니메이션 콜백과 무관하게 강제로 다음 단계로 넘긴다.
+  useEffect(() => {
+    if (phase !== 0 || !visible) {
+      return;
+    }
+
+    const fallback = setTimeout(advance, 6000);
+    return () => clearTimeout(fallback);
+  }, [phase, visible, advance]);
 
   return (
     <>
@@ -130,6 +150,37 @@ export function ResetSequence() {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // 안전장치: 일부 기기(무빙스타일 등)에서 IntersectionObserver 콜백이 아예
+  // 안 걸리는 경우가 있어(원인 불명, 재현은 안 되지만 사용자 보고 기준),
+  // "패킷 회수 중..." 검정 화면에서 영영 안 넘어가는 문제가 생겼다.
+  // observer와 무관하게 스크롤/리사이즈 때마다 실제 위치를 직접 재보고,
+  // 화면에 들어와 있으면 visible을 켠다 — 둘 중 뭐가 됐든 하나만 걸리면 된다.
+  useEffect(() => {
+    if (visible) {
+      return;
+    }
+
+    const checkPosition = () => {
+      const el = sectionRef.current;
+      if (!el) {
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.8 && rect.bottom > window.innerHeight * 0.2;
+      if (inView) {
+        setVisible(true);
+      }
+    };
+
+    checkPosition();
+    window.addEventListener("scroll", checkPosition, { passive: true });
+    window.addEventListener("resize", checkPosition);
+    return () => {
+      window.removeEventListener("scroll", checkPosition);
+      window.removeEventListener("resize", checkPosition);
+    };
+  }, [visible]);
 
   return (
     <section ref={sectionRef} className={styles.section} data-phase={phase}>

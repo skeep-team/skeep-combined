@@ -156,19 +156,16 @@ export default function EnterprisePricingFlip() {
         <div className={styles.stage}>
           <div className={styles.panel} data-open={open}>
           <div className={styles.panelBg} aria-hidden="true">
-            <picture>
-              <source
-                srcSet={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.webp`}
-                type="image/webp"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.png`}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </picture>
+            {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
+                <picture>/webp 소스 협상을 제대로 처리 못 해 사진 대신 빈 회색
+                박스만 보이는 문제가 있었다. JPEG는 협상 없이 바로 로드된다. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.jpg`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
           </div>
 
           <div className={styles.control} aria-hidden="true">

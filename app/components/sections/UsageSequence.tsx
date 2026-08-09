@@ -40,6 +40,48 @@ function MoreCarousel() {
   const [activeFrame, setActiveFrame] = useState(0);
   const [voicePhase, setVoicePhase] = useState(0);
   const pointerStartX = useRef<number | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const moreVideoRef = useRef<HTMLVideoElement>(null);
+
+  /* 이 영상은 예전에 autoPlay+preload="auto"로 화면 밖에 있어도(스크롤로 아직
+     안 온 상태여도) 바로 다운로드/재생됐다 — 같은 컴포넌트 안의 다른 영상들과
+     동시에 대역폭·디코딩 자원을 다퉈서 정작 필요할 때(스크롤로 들어온 순간)
+     영상들이 버벅이거나 재생을 놓치는 원인이 됐다. IntersectionObserver로
+     실제로 화면에 보일 때만, 그리고 이 슬라이드가 활성 상태일 때만 재생한다. */
+  useEffect(() => {
+    const root = rootRef.current;
+    const video = moreVideoRef.current;
+
+    if (!root || !video) {
+      return;
+    }
+
+    let visible = false;
+
+    const sync = () => {
+      if (visible && activeIndex === 0) {
+        if (video.paused) {
+          video.muted = true;
+          video.play().catch(() => {});
+        }
+      } else if (!video.paused) {
+        video.pause();
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0]?.isIntersecting ?? false;
+        sync();
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(root);
+    sync();
+
+    return () => observer.disconnect();
+  }, [activeIndex]);
 
   useEffect(() => {
     const frameCount = MORE_SLIDES[activeIndex].frames.length;
@@ -78,6 +120,7 @@ function MoreCarousel() {
 
   return (
     <div
+      ref={rootRef}
       className={styles.moreCarousel}
       role="region"
       aria-roledescription="carousel"
@@ -131,14 +174,14 @@ function MoreCarousel() {
                    녹화 그대로. 정적 프레임으로는 흉내낼 수 없는 전환이라
                    기기 프레임까지 통째로 영상으로 얹는다. */
                 <video
+                  ref={moreVideoRef}
                   className={styles.moreCarouselFrame}
                   data-active
                   src={`${BASE_PATH}/blueprint/usage/more-long-click-card.webm`}
-                  autoPlay
                   muted
                   loop
                   playsInline
-                  preload="auto"
+                  preload="metadata"
                   aria-hidden="true"
                 />
               ) : (
@@ -332,9 +375,15 @@ export default function UsageSequence({
     }
 
     if (usageArtworkPhase === "bubble") {
+      // 말풍선(1.4s) + 퇴장(0.82s) = 2.22초를 다 기다려야 영상이 시작됐는데,
+      // 이 스텝(step 0)이 실제로 활성 상태로 남아있는 스크롤 구간(usageTrack
+      // 300vh 중 0~34%, 약 68vh)은 보통 스크롤 속도로 1~2초 안에 지나가 버린다.
+      // 그래서 영상이 시작도 못 해보고 사용자가 다음 스텝으로 넘어가 버려서
+      // "영상이 안 뜬다"는 문제가 생겼다 — 인트로를 훨씬 짧게 줄여 영상이
+      // 최대한 빨리 시작되게 한다.
       const timer = window.setTimeout(() => {
         setUsageArtworkPhase("bubbleExit");
-      }, 1400);
+      }, 550);
 
       return () => window.clearTimeout(timer);
     }
@@ -342,7 +391,7 @@ export default function UsageSequence({
     if (usageArtworkPhase === "bubbleExit") {
       const timer = window.setTimeout(() => {
         setUsageArtworkPhase("watch");
-      }, 820);
+      }, 300);
 
       return () => window.clearTimeout(timer);
     }
@@ -499,23 +548,22 @@ export default function UsageSequence({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     className={styles.usageConversationBackground}
-                    src={`${BASE_PATH}/blueprint/usage/conversation-background-v4.png`}
+                    src={`${BASE_PATH}/blueprint/usage/conversation-background-v5.png`}
                     alt=""
                     width={1924}
                     height={1266}
                     aria-hidden="true"
                   />
-                  {/* 원본 영상에서 알파채널로 추출한 흰색 상태 모션만 재생한다. */}
+                  {/* 새 프레임의 화면 중앙 하단에 작은 상태 모션을 재생한다. */}
                   <div className={styles.usageStatusMorph}>
                     <video
                       ref={videoRef}
                       className={styles.usageStatusMorphDot}
-                      src={`${BASE_PATH}/blueprint/usage/conversation-icon-alpha.webm`}
-                      autoPlay
+                      src={`${BASE_PATH}/blueprint/usage/conversation-icon-dark.mp4`}
                       muted
                       loop
                       playsInline
-                      preload="auto"
+                      preload="metadata"
                       aria-hidden="true"
                     />
                   </div>

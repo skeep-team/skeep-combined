@@ -407,6 +407,7 @@
 
 /* 우측 텍스트 컬럼(eyebrow+제목+칩+본문 묶음) 전체 — row의 아래쪽에 붙는다. */
 .outputTextColumn {
+  --output-copy-gap: clamp(20px, 1.8vw, 28px);
   flex: 1 1 40%;
   max-width: 40%;
   min-width: 0;
@@ -417,7 +418,7 @@
   transform: translateY(clamp(16px, 1.6vw, 40px));
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 1.4vw, 22px);
+  gap: var(--output-copy-gap);
 }
 
 /* 단계별로 바뀌는 eyebrow + 제목. */
@@ -425,7 +426,7 @@
   position: relative;
   width: 100%;
   flex: 0 0 auto;
-  min-height: clamp(58px, 5.2vw, 88px);
+  min-height: clamp(66px, 5.8vw, 100px);
   text-align: left;
 }
 
@@ -450,12 +451,12 @@
 
 .outputTitle > span {
   color: var(--blueprint-accent);
-  font-size: clamp(15px, 1.7vw, 24px);
+  font-size: clamp(16px, 1.8vw, 26px);
   font-weight: 600;
 }
 
 .outputTitle h3 {
-  font-size: clamp(22px, 3vw, 40px);
+  font-size: clamp(24px, 3.2vw, 44px);
   line-height: 1.3;
   letter-spacing: -0.03em;
 }
@@ -472,7 +473,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(18px, 1.8vw, 28px);
+  gap: var(--output-copy-gap);
   text-align: left;
 }
 
@@ -504,7 +505,7 @@
   background: #494949;
   color: #ffffff;
   border-radius: 999px;
-  font-size: clamp(13px, 1.15vw, 18px);
+  font-size: clamp(14px, 1.25vw, 20px);
   line-height: 1.1;
 }
 
@@ -519,7 +520,7 @@
   align-self: stretch;
   white-space: pre-line;
   text-align: left;
-  font-size: clamp(14px, 1.48vw, 19px);
+  font-size: clamp(15px, 1.6vw, 21px);
   line-height: 1.5;
   letter-spacing: -0.03em;
 }
@@ -870,15 +871,16 @@
   pointer-events: none;
 }
 
-/* 제공 이미지의 폰 화면 중앙 하단에 투명 상태 모션을 맞춘다. */
+/* 제공 이미지의 화면 중앙 하단에 작은 상태 모션을 맞춘다. */
 .usageStatusMorphDot {
   position: absolute;
   left: 50%;
   top: 66%;
-  width: 19%;
-  aspect-ratio: 156 / 144;
+  width: 24%;
+  aspect-ratio: 1;
   transform: translate(-50%, -50%);
   object-fit: contain;
+  mix-blend-mode: lighten;
   pointer-events: none;
 }
 
@@ -975,7 +977,7 @@
 }
 
 .moreVoiceMessageFirst {
-  top: 29%;
+  top: 32%;
   right: 8%;
   left: auto;
   max-width: 45%;
@@ -984,7 +986,7 @@
 }
 
 .moreVoiceMessageSecond {
-  top: 37%;
+  top: 43%;
   left: 8%;
   max-width: none;
   width: max-content;
@@ -996,9 +998,9 @@
   color: #69c9ff;
 }
 
-/* 두 번째 말풍선이 뜨면 첫 번째가 시안의 최종 위치(19.4%)로 자리를 당긴다. */
+/* 두 번째 말풍선이 뜨면 첫 번째가 자리를 당긴다. */
 .moreCarouselSlide[data-voice-phase="2"] .moreVoiceMessageFirst {
-  top: 19.4%;
+  top: 24%;
 }
 
 .moreVoiceHud {
@@ -1023,7 +1025,7 @@
 
 .moreSkeepBadge {
   position: absolute;
-  top: 66%;
+  top: 71%;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1033,19 +1035,19 @@
 }
 
 .moreSkeepIcon {
-  width: clamp(56px, 6.1vw, 88px);
-  height: clamp(56px, 6.1vw, 88px);
+  width: clamp(42px, 4.6vw, 66px);
+  height: clamp(42px, 4.6vw, 66px);
   border-radius: 50%;
   background: #303030;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(3px, 0.35vw, 5px);
+  gap: clamp(2px, 0.26vw, 4px);
 }
 
 .moreSkeepIcon span {
   display: block;
-  width: clamp(2px, 0.22vw, 3px);
+  width: clamp(1.5px, 0.17vw, 2.25px);
   border-radius: 1px;
   background: #d9d9d9;
   height: 22%;
