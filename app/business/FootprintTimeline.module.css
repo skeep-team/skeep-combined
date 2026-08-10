@@ -4,6 +4,17 @@
   grid-template-columns: clamp(88px, 8.6vw, 165px) minmax(0, 1fr);
   gap: clamp(24px, 2.6vw, 50px);
   padding: 0 8.33vw 8vw;
+  /* 기본 body 폰트(Helvetica Now Display)가 영문/숫자를 우선 그려서 "2027" 같은
+     연도나 본문 속 "AI" 등이 한글과 다른 서체로 보였다 — 이 섹션 전체를
+     Pretendard로 고정해 영문·숫자·한글이 같은 서체로 통일되게 한다. */
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.timeline .copy h3,
+.timeline .copy h3 *,
+.timeline .copy > p:last-child,
+.timeline .copy > p:last-child * {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 /* 항목들과 같이 굴러가다가, 연표 구간에서만 화면에 붙는다. */

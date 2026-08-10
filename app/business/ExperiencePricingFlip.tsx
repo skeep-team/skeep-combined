@@ -32,7 +32,7 @@ const plans: Plan[] = [
     price: "$0/mo",
     name: "Basic",
     tagline: "미래로 가는 위대한 첫 걸음",
-    body: "직접 지시한 명령을 정확히 수행하며,\n동시에 최대 3개의 환경을 스킵합니다.",
+    body: "직접 지시한 명령을 정확히 수행하며, 동시에 최대 3개의 환경을 스킵합니다.",
     specs: [
       "스폰서 우선 매핑 및 광고 있음*",
       "모든 스키퍼블*",
@@ -47,7 +47,7 @@ const plans: Plan[] = [
     price: "$29/mo",
     name: "Plus",
     tagline: "미래를 여는 가능성의 마스터키",
-    body: "굳이 말하지 않아도 나의 목적을 알아\n채고, 동시에 5개 환경을 스킵합니다.",
+    body: "굳이 말하지 않아도 나의 목적을 알아채고, 동시에 5개 환경을 스킵합니다.",
     specs: [
       "사용자 선호 우선 매핑*",
       "모든 스키퍼블",
@@ -62,7 +62,7 @@ const plans: Plan[] = [
     price: "$99/mo",
     name: "Pro",
     tagline: "미래를 완성하는 완벽한 청사진",
-    body: "무제한 연결과 사용자 지정 앵커로\n제약 없는 완벽한 경험을 제공합니다.",
+    body: "무제한 연결과 사용자 지정 앵커로 제약 없는 완벽한 경험을 제공합니다.",
     specs: [
       "사용자 선호 우선 매핑",
       "모든 스키퍼블",
@@ -206,7 +206,8 @@ export default function ExperiencePricingFlip() {
                       <p className={styles.cardTagline}>{plan.tagline}</p>
                       <p className={styles.cardBody}>{lines(plan.body)}</p>
                       <span className={styles.flipHint}>
-                        자세히 보기<span className={styles.flipHintArrow}>›</span>
+                        <span className={styles.flipHintLabel}>자세히 보기</span>
+                        <span className={styles.flipHintArrow}>›</span>
                       </span>
                     </div>
 

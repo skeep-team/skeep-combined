@@ -67,10 +67,5 @@ button {
   background: none;
 }
 
-@media (pointer: fine) {
-  *,
-  button,
-  a {
-    cursor: none;
-  }
-}
+/* 전시 기간: 커스텀 커서(점)는 opacity 0으로 숨겼으니, PC 기본 OS 커서는
+   그대로 보이게 둔다 (예전엔 여기서 cursor:none으로 OS 커서까지 지웠었음). */

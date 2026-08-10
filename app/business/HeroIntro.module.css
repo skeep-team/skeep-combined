@@ -203,7 +203,9 @@
 .sequence[data-step="1"] .copy h2,
 .sequence[data-step="2"] .copy h2 {
   font-size: clamp(16px, 1.8vw, 28px);
-  font-weight: 500;
+  /* 무빙스타일의 큰 화면에서는 단계 전환 시 600→500의 즉시 변경이
+     크기 애니메이션과 겹치며 굵기가 튀어 보이므로 처음 굵기를 유지한다. */
+  font-weight: 600;
   opacity: 0.7;
 }
 

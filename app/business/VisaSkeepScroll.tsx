@@ -83,6 +83,14 @@ export default function VisaSkeepScroll() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const hasUserInteractedRef = useRef(false);
   const isOpen = activeIndex !== null;
+  /* 카드 폭이 다 자라기 전에 상세 텍스트가 보이면 줄바꿈이 매 프레임 달라져
+     "밀리는" 것처럼 보인다(아래 useLayoutEffect의 FLIP 코멘트 참고). 예전엔
+     CSS animation-delay를 FLIP의 duration(420ms)과 같은 숫자로 하드코딩해
+     맞췄는데, 두 값이 실제로 항상 정확히 동시에 끝난다는 보장이 없다(느린
+     기기·프레임 드랍 등으로 어긋나면 다시 같은 증상이 재현된다). 대신 FLIP
+     애니메이션의 실제 종료(animation.finished)를 기다렸다가 자바스크립트로
+     직접 텍스트를 드러내서, 두 애니메이션이 항상 정확히 동기화되게 한다. */
+  const [detailReady, setDetailReady] = useState(false);
 
   /* 카드의 실제 폭은 상태가 바뀌는 순간 한 번만 계산한다. 이전/다음 위치의
      차이는 transform으로 되감아 재생하므로, 무스가 매 프레임 여섯 카드의
@@ -99,13 +107,27 @@ export default function VisaSkeepScroll() {
 
   useLayoutEffect(() => {
     const firstRects = firstCardRectsRef.current;
-    if (!firstRects.some(Boolean)) return;
+    const activeIdx = activeIndexRef.current;
+
+    if (!firstRects.some(Boolean)) {
+      // 캡처된 "이전" 상태가 없다(최초 마운트 등) — 기다릴 폭 전환이 없으니
+      // 바로 드러낸다.
+      setDetailReady(activeIdx !== null);
+      return;
+    }
+
     firstCardRectsRef.current = [];
 
     cardAnimationsRef.current.forEach((animation) => animation.cancel());
     cardAnimationsRef.current = [];
+    setDetailReady(false);
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDetailReady(activeIdx !== null);
+      return;
+    }
+
+    let activeCardAnimated = false;
 
     cardRefs.current.forEach((card, index) => {
       const first = firstRects[index];
@@ -139,6 +161,19 @@ export default function VisaSkeepScroll() {
 
       cardAnimationsRef.current.push(animation);
 
+      if (index === activeIdx) {
+        activeCardAnimated = true;
+        // 폭 전환(FLIP)이 실제로 끝난 뒤에만 상세 텍스트를 드러낸다 — 카드가
+        // 아직 좁을 때 텍스트가 보이면 줄바꿈이 프레임마다 달라져 "밀리는"
+        // 것처럼 보인다(느린 기기일수록 하드코딩된 지연값과 실제 종료 시점이
+        // 어긋나기 쉽다).
+        animation.finished
+          .then(() => {
+            if (activeIndexRef.current === activeIdx) setDetailReady(true);
+          })
+          .catch(() => {});
+      }
+
       /* FLIP을 카드 전체에 걸면 내부의 큰 P·E·S·T·E·L도 scaleX를 그대로
          받아 무빙스타일의 낮은 프레임에서 글자가 가로로 늘어나는 순간이 눈에
          띈다. 같은 프레임에 역스케일을 적용해 카드 폭/사진 크롭 애니메이션은
@@ -167,6 +202,12 @@ export default function VisaSkeepScroll() {
         cardAnimationsRef.current.push(letterAnimation);
       }
     });
+
+    if (activeIdx !== null && !activeCardAnimated) {
+      // 활성 카드의 폭이 이미 변화 없이 그대로였다(전환할 게 없었다) — 기다릴
+      // 필요 없이 바로 드러낸다.
+      setDetailReady(true);
+    }
   }, [activeIndex]);
 
   /* 직접 누르면 그때부터는 스크롤이 선택을 바꾸지 않는다. */
@@ -189,8 +230,43 @@ export default function VisaSkeepScroll() {
 
     let frame = 0;
     let folded = false;
+    let foldTimer = 0;
     let cardIndex: number | null | undefined;
     let scene: "visa" | "skeep" = "visa";
+
+    const applyFold = (nextFolded: boolean) => {
+      const foldValue = nextFolded ? "1" : "0";
+
+      if (section.style.getPropertyValue("--fold") !== foldValue) {
+        section.style.setProperty("--fold", foldValue);
+      }
+
+      section.dataset.folded = nextFolded ? "true" : "false";
+    };
+
+    const hideCopyThenFold = () => {
+      if (foldTimer || section.dataset.folded === "true") return;
+
+      section.dataset.foldPhase = "hiding";
+      foldTimer = window.setTimeout(() => {
+        foldTimer = 0;
+
+        if (!folded) return;
+
+        applyFold(true);
+        section.dataset.foldPhase = "folded";
+      }, 240);
+    };
+
+    const unfold = () => {
+      if (foldTimer) {
+        window.clearTimeout(foldTimer);
+        foldTimer = 0;
+      }
+
+      applyFold(false);
+      section.dataset.foldPhase = "visible";
+    };
 
     const render = () => {
       frame = 0;
@@ -212,16 +288,10 @@ export default function VisaSkeepScroll() {
 
       if (!folded && progress >= foldForward) {
         folded = true;
+        hideCopyThenFold();
       } else if (folded && progress <= foldReverse) {
         folded = false;
-      }
-
-      /* 접는 건 CSS 전환에 맡기고, 여기서는 접힘 여부만 넘긴다. */
-      const foldValue = folded ? "1" : "0";
-
-      if (section.style.getPropertyValue("--fold") !== foldValue) {
-        section.style.setProperty("--fold", foldValue);
-        section.dataset.folded = folded ? "true" : "false";
+        unfold();
       }
 
       const next =
@@ -256,6 +326,10 @@ export default function VisaSkeepScroll() {
       if (frame) {
         window.cancelAnimationFrame(frame);
       }
+
+      if (foldTimer) {
+        window.clearTimeout(foldTimer);
+      }
     };
   }, [updateActiveIndex]);
 
@@ -265,6 +339,7 @@ export default function VisaSkeepScroll() {
       className={styles.sequence}
       data-scene="visa"
       data-folded="false"
+      data-fold-phase="visible"
       aria-label="시장 환경 분석과 에이전트 생태계의 필요성"
     >
       <div ref={stickyRef} className={styles.sticky}>
@@ -322,7 +397,11 @@ export default function VisaSkeepScroll() {
                       </button>
 
                       <div className={styles.detailFade}>
-                        <div className={styles.detail}>
+                        <div
+                          className={`${styles.detail} ${
+                            detailReady ? styles.detailVisible : ""
+                          }`}
+                        >
                           <div className={styles.detailHeading}>
                             <span className={styles.category}>
                               {item.category}

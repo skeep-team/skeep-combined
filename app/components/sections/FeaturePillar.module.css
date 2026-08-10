@@ -68,6 +68,7 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(14px, 1.8vw, 24px);
   font-weight: 400;
   letter-spacing: -0.03em;
@@ -108,6 +109,7 @@
 }
 
 .qLabel {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(11px, 1.15vw, 19px);
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -116,6 +118,7 @@
 }
 
 .qText {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(12px, 1.4vw, 26px);
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -138,6 +141,7 @@
 }
 
 .aLabel {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   display: block;
   font-size: clamp(13px, 1.45vw, 26px);
   font-weight: 600;
@@ -147,6 +151,7 @@
 }
 
 .aText {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(11px, 1.3vw, 22px);
   font-weight: 400;
   letter-spacing: -0.04em;

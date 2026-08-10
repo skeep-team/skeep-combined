@@ -124,6 +124,7 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -139,4 +140,3 @@
   display: block;
   transition: opacity 0.1s linear, transform 0.1s linear;
 }
-

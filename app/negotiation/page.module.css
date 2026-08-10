@@ -20,9 +20,11 @@
   text-transform: uppercase;
 }
 
-.page,
-.page * {
+.page {
   font-family: "Elza Condensed Medium Negotiation", var(--font-pretendard), sans-serif !important;
+}
+
+.page * {
   /* 빌려쓰다(principles) 병합: 그 페이지 전용으로 쓰던 자간 미세조정을 그대로 가져왔다. */
   letter-spacing: -0.01em !important;
 }
@@ -33,4 +35,5 @@
 .page select,
 .page textarea {
   text-transform: uppercase;
+  font-family: inherit;
 }

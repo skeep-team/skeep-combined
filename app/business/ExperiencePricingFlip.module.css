@@ -79,12 +79,14 @@
   z-index: 1;
   padding: clamp(20px, 2.2vw, 34px);
   color: #fff;
+  /* 사진 맨 아래에 딱 붙어 답답해 보여서 살짝 위로 띄운다. */
+  transform: translateY(-1.4vw);
 }
 
 .kicker {
   margin: 0 0 clamp(6px, 0.6vw, 10px);
   opacity: 0.7;
-  font-size: clamp(11px, 0.9vw, 14px);
+  font-size: clamp(13px, 1.05vw, 17px);
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -92,7 +94,7 @@
 
 .title {
   margin: 0 0 clamp(10px, 1vw, 16px);
-  font-size: clamp(28px, 2.8vw, 40px);
+  font-size: clamp(34px, 3.2vw, 48px);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -101,7 +103,7 @@
 .lede {
   margin: 0;
   opacity: 0.85;
-  font-size: clamp(12px, 1vw, 15px);
+  font-size: clamp(14px, 1.15vw, 18px);
   line-height: 1.5;
   letter-spacing: -0.02em;
 }
@@ -126,12 +128,29 @@
 
 .bridgeStatement h2 {
   margin: 0;
-  display: grid;
-  gap: 0.15em;
   font-size: clamp(28px, 3vw, 44px);
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.28;
   letter-spacing: -0.03em;
+}
+
+.bridgeStatement h2 strong,
+.bridgeStatement h2 span {
+  display: block;
+}
+
+/* 굵은 첫 줄(strong) 바로 아래 회색 두 줄(span)은 display:grid로 균일한
+   gap을 줬을 때 실측 간격은 동일했는데도(개발자도구로 확인), 굵은 줄
+   다음이 유독 좁아 보였다 — line-height가 만드는 줄 상자 높이는 같아도
+   굵은 글자가 가는 회색 글자보다 시각적 밀도가 높아서 착시가 생긴다.
+   레이아웃을 grid 대신 margin으로 바꿔 굵은 줄 다음에만 살짝 더 여백을
+   줘서 착시를 상쇄한다. */
+.bridgeStatement h2 strong {
+  margin-bottom: 0.12em;
+}
+
+.bridgeStatement h2 span:first-of-type {
+  margin-bottom: 0.06em;
 }
 
 .bridgeStatement h2 strong {
@@ -145,7 +164,7 @@
 
 .bridgeStatement p {
   margin: clamp(28px, 3vw, 44px) 0 0;
-  color: #a7a7a7;
+  color: rgba(0, 0, 0, 0.8);
   font-size: clamp(14px, 1.25vw, 18px);
   line-height: 1.6;
   letter-spacing: -0.02em;
@@ -218,14 +237,14 @@
 .cardPrice {
   margin: 0 0 clamp(6px, 0.6vw, 10px);
   color: #6e6e6e;
-  font-size: clamp(14px, 1.2vw, 17px);
+  font-size: clamp(15px, 1.3vw, 19px);
   font-weight: 400;
   text-transform: uppercase;
 }
 
 .cardName {
   margin: 0 0 clamp(10px, 1vw, 16px);
-  font-size: clamp(21px, 1.9vw, 28px);
+  font-size: clamp(28px, 2.45vw, 36px);
   font-weight: 600;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -233,7 +252,7 @@
 
 .cardTagline {
   margin: 0 0 clamp(16px, 1.5vw, 24px);
-  font-size: clamp(13px, 1.15vw, 16px);
+  font-size: clamp(15px, 1.35vw, 19px);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -241,25 +260,34 @@
 .cardBody {
   margin: 0;
   opacity: 0.5;
-  font-size: clamp(12px, 1.05vw, 14px);
+  font-size: clamp(14px, 1.25vw, 17px);
   line-height: 1.5;
   letter-spacing: -0.02em;
 }
 
 .flipHint {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
   margin-top: auto;
   padding-top: clamp(14px, 1.2vw, 20px);
   color: #000;
   opacity: 0.4;
-  font-size: clamp(11px, 0.95vw, 13px);
+  font-size: clamp(13px, 1.15vw, 15px);
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.flipHintLabel {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .flipHintArrow {
-  margin-left: 0.35em;
-  text-decoration: none;
+  margin-left: 0.28em;
+  font-size: 1.7em;
+  font-weight: 400;
+  line-height: 0.75;
 }
 
 .cardRule {
@@ -282,7 +310,7 @@
   padding: clamp(10px, 0.95vw, 14px) clamp(14px, 1.2vw, 18px);
   border-radius: var(--radius-md);
   background: #f1f1f1;
-  font-size: clamp(11px, 0.95vw, 14px);
+  font-size: clamp(13px, 1.1vw, 16px);
   line-height: 1.35;
 }
 
@@ -302,8 +330,23 @@
 .notes {
   margin: 0;
   color: var(--color-text-muted);
-  font-size: clamp(10px, 0.85vw, 12px);
+  font-size: clamp(12px, 1.05vw, 14px);
   line-height: 1.6;
+}
+
+/* 제목 계층은 Elza를 유지하고, 실제 설명·가격·각주·조작 문구는
+   비즈니스 페이지의 전역 Elza !important 규칙보다 우선해 Pretendard로 쓴다. */
+.sequence .lede,
+.sequence .bridgeStatement p,
+.sequence .cardBody,
+.sequence .flipHint,
+.sequence .spec,
+.sequence .notes {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.sequence .cardPrice {
+  font-family: "Elza Condensed Medium Business", var(--font-pretendard), "Pretendard", sans-serif !important;
 }
 
 /* Samsung Moving Style/Tizen은 preserve-3d + backface-visibility 조합에서

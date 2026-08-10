@@ -202,9 +202,11 @@
 
 .category {
   display: block;
+  font-family: var(--font-elza), "Elza Condensed", "Helvetica Now Display", sans-serif;
   font-size: clamp(16px, 1.05vw, 22px);
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
 }
 
 .title {
@@ -225,15 +227,24 @@
   transition: opacity 380ms ease;
 }
 
+/* 열린 카드의 폭을 줄이기 전에 글부터 완전히 지운다. 폭과 글을 동시에
+   움직이면 줄바꿈이 매 프레임 달라져 글자가 찌그러져 접히는 것처럼 보인다. */
+.sequence[data-fold-phase="hiding"] .backButton,
+.sequence[data-fold-phase="hiding"] .detailFade {
+  opacity: 0;
+  transition-duration: 180ms;
+}
+
 .detailFade {
   position: absolute;
   inset: 0;
-  transform: translate3d(calc(var(--fold) * -20px), 0, 0);
   pointer-events: none;
-  transition:
-    opacity 380ms ease,
-    transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  /* 접힌 VISA 장면에서 다시 카드가 펼쳐질 때, 예전엔 이 레이어가 -20px에서
+     제자리로 슬라이드하며 들어왔는데(translate3d(calc(var(--fold)*-20px)...),
+     그 이동 중에 안쪽 글줄도 같이 밀려 보였다 — 자리 이동 없이 그 자리에서
+     그냥 나타나도록 opacity만 남긴다. */
+  transition: opacity 380ms ease;
+  will-change: opacity;
 }
 
 .backButton {
@@ -270,12 +281,19 @@
   /* 최소 폭을 두면 카드보다 넓어져 오른쪽이 잘린다. 카드 폭에 맞춰 줄어들게 둔다. */
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
   gap: clamp(24px, 3.4vw, 88px);
-  align-items: end;
-  /* 카드가 다 커지고 나서야(FLIP 420ms) 고정된 크기로 한 번에
-     뜬다 — 폭이 바뀌는 도중에 보이면 글줄이 프레임마다 다시 흘러 지금처럼
-     "늘어나는" 것처럼 보인다. 지연값은 반드시 FLIP 전환 시간과 같이
-     움직여야 한다. */
-  animation: detailIn 480ms 420ms both ease-out;
+  align-items: start;
+  /* 카드가 다 커지고 나서야 고정된 크기로 한 번에 뜬다 — 폭이 바뀌는
+     도중에 보이면 글줄이 프레임마다 다시 흘러 "밀리는" 것처럼 보인다.
+     예전엔 이 지연을 FLIP 전환 시간(420ms)과 같은 숫자로 하드코딩해서
+     맞췄는데, 실제 FLIP 종료 시점과 어긋나면 같은 증상이 재현됐다 —
+     이제 .detailVisible 클래스를 FLIP 애니메이션의 실제 종료(JS의
+     animation.finished) 시점에 맞춰 붙여줘서 항상 정확히 동기화된다. */
+  opacity: 0;
+  transition: opacity 480ms ease-out;
+}
+
+.detail.detailVisible {
+  opacity: 1;
 }
 
 .detailHeading {
@@ -299,15 +317,8 @@
   line-height: 1.6;
   letter-spacing: -0.035em;
   word-break: keep-all;
-}
-
-@keyframes detailIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  /* 카테고리 라벨이 아니라 실제 제목의 윗선보다 살짝 아래에서 시작한다. */
+  padding-top: clamp(42px, 3.1vw, 58px);
 }
 
 /* ---------- VISA ---------- */
@@ -433,6 +444,7 @@
 .visaDescription {
   margin-top: clamp(36px, 4vh, 58px);
   color: #111;
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(17px, 1.3vw, 27px);
   font-weight: 450;
   line-height: 1.65;
@@ -444,6 +456,12 @@
 
 .skeepWord {
   color: #6E6E6E;
+}
+
+.headline .skeepWord {
+  font-family: var(--font-t1glicky), "T1 Glicky", var(--font-pretendard), sans-serif;
+  font-style: normal;
+  font-weight: 400;
 }
 
 @media (max-width: 980px) {
@@ -474,6 +492,7 @@
 
   .description {
     font-size: 17px;
+    padding-top: 0;
   }
 
   .visaCopy {

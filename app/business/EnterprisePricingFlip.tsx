@@ -28,7 +28,7 @@ const cards: Card[] = [
     eyebrow: "Custom Pricing",
     title: "Skeep SIS™",
     subtitle: "전용 미들웨어 인프라",
-    body: "SDK* 연동으로 자체 인프라 구축 비용을 스킵하고, 전 세계의\n에이전틱 생태계와 자사 서비스, 제품, 공간을 연결합니다.",
+    body: "SDK* 연동으로 자체 인프라 구축 비용을 스킵하고, 전 세계의 에이전틱 생태계와 자사 서비스, 제품, 공간을 연결합니다.",
     note: "*Skeepable Development Kit: 파트너사의 제품·서비스·공간을 즉시 스키퍼블로 전환시키는 무상 배포형 표준 개발 키트",
     fees: [
       {
@@ -58,7 +58,7 @@ const cards: Card[] = [
     eyebrow: "Custom Pricing",
     title: "Skeep Insights",
     subtitle: "사용자 데이터 기반 전략 컨설팅",
-    body: "사용자 데이터 분석으로 실제 전환되는 실행 블록을 짚어내고,\n실제 사용자 니즈가 높은 기능에 기업의 자원을 집중시킵니다.",
+    body: "사용자 데이터 분석으로 실제 전환되는 실행 블록을 짚어내고, 실제 사용자 니즈가 높은 기능에 기업의 자원을 집중시킵니다.",
     note: "*실행블록: 사용자의 목적을 조도 조절·음악 재생·항공권 예약 등 각 서비스 및 제품 고유의 기능으로 변환하는 조건부 실행 단위",
     fees: [
       {
@@ -203,7 +203,8 @@ export default function EnterprisePricingFlip() {
                       <p className={styles.cardBody}>{lines(card.body)}</p>
                       <p className={styles.cardNote}>{card.note}</p>
                       <span className={styles.flipHint}>
-                        자세히 보기<span className={styles.flipHintArrow}>›</span>
+                        <span className={styles.flipHintLabel}>자세히 보기</span>
+                        <span className={styles.flipHintArrow}>›</span>
                       </span>
                     </div>
 

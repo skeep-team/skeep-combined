@@ -42,6 +42,7 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
   flex: 1 1 0;
   max-width: 1008px;
   font-size: clamp(14px, 1.6vw, 24px);
@@ -49,6 +50,7 @@
   letter-spacing: -0.03em;
   line-height: 1.4;
   color: var(--color-text-muted);
+  padding-top: clamp(7px, 0.65vw, 12px);
 }
 
 /* 경량화: anchor-environment.mp4 대신 순수 CSS 컨베이어(무빙스타일 호환 +

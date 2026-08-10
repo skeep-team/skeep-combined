@@ -303,7 +303,10 @@
     }
     .sd-pink { color: #6E6E6E; }
     .sd-sensing-scene {
-      height: 800vh;
+      /* 800vh는 화면 8배 분량을 스크롤해야 이 장면이 끝나서 체감상 너무 길었다 —
+         애니메이션은 전부 progress = -rect.top / (offsetHeight - innerHeight)
+         비율 기반이라 높이만 줄여도 로직 변경 없이 그대로 작동한다. */
+      height: 320vh;
       position: relative;
       background: #fff;
       padding: 0;
@@ -635,7 +638,7 @@
     .sd-clock-row img:nth-child(4) { opacity: .4; }
     .sd-tick {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 64px;
       width: calc(100% - 240px);
@@ -666,6 +669,7 @@
       font-size: clamp(14px,1.8vw,24px);
       line-height: 1.5;
       letter-spacing: -0.03em;
+      padding-top: clamp(7px, .65vw, 12px);
     }
     .sd-scene-eyebrow {
       font-size: clamp(32px, 4.5vw, 48px);
@@ -685,7 +689,11 @@
       bottom: clamp(48px, 6.5vw, 96px);
     }
     .sd-walk-scene {
-      height: 500vh;
+      /* 500vh → 도보 7명 + pre-final/final 상태까지 자동 재생되는데도
+         수동 스크롤 구간이 지나치게 길었다. scrollRange는 JS에서
+         (offsetHeight - innerHeight)로 매번 다시 읽으므로 높이만 줄여도
+         걸음 전환/최종 리빌 로직은 그대로 작동한다. */
+      height: 100vh;
       position: relative;
       background: #fff;
       margin-top: 160px;
@@ -956,10 +964,11 @@
       font-size: clamp(14px,1.8vw,24px);
       line-height: 1.5;
       letter-spacing: -0.03em;
-      margin-top: clamp(42px, 4.8vw, 86px);
+      padding-top: 0;
     }
     .sd-input-summary > p {
-      margin-top: clamp(112px, 7vw, 150px);
+      /* kicker 한 줄 + 28px gap 다음에 오는 실제 큰 제목을 기준으로 맞춘다. */
+      margin-top: calc(clamp(23.4px, 2.86vw, 41.6px) + 28px + clamp(7px, .65vw, 12px)) !important;
     }
     .sd-card-list {
       display: grid;
@@ -2892,7 +2901,8 @@
     .parsing-desc-right {
       font-size: clamp(15px,1.7vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.02em; max-width: 643px;
-      text-align: right; align-self: flex-end;
+      text-align: right; align-self: flex-start;
+      margin-top: clamp(7px, .65vw, 12px);
       opacity: 1;
     }
 
@@ -3821,11 +3831,11 @@
     .sec-skip-banner {
       width: 100%; padding: clamp(36px, 4vw, 64px) var(--edge-padding);
       margin-top: clamp(8px, 2vw, 28px);
-      display: flex; align-items: center; justify-content: space-between; gap: 48px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 48px;
     }
     .skip-banner-t { font-size: clamp(28px,3.4vw,52px); font-weight: 600; line-height: 1.35; letter-spacing: -0.04em; flex-shrink: 0; }
     .skip-banner-t .dim { color: rgba(0, 0, 0, .5); }
-    .skip-banner-desc { font-size: clamp(13px,1.25vw,19px); font-weight: 400; line-height: 1.55; letter-spacing: -0.025em; text-align: right; max-width: 680px; }
+    .skip-banner-desc { font-size: clamp(13px,1.25vw,19px); font-weight: 400; line-height: 1.55; letter-spacing: -0.025em; text-align: right; max-width: 680px; padding-top: clamp(7px, .65vw, 12px); }
 
     /* ── 15. MORPHING DETAIL ── */
     .morphing-detail-left.fi { transition: opacity 1.5s ease, transform 1.5s ease; }
@@ -3868,7 +3878,7 @@
     .ai-grad-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.5; letter-spacing: -0.03em; margin-bottom: 48px; }
     .ai-grad-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 48px; margin-bottom: 80px; }
     .ai-grad-h { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; flex-shrink: 0; }
-    .ai-grad-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 839px; }
+    .ai-grad-p { font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 839px; padding-top: clamp(7px, .65vw, 12px); }
     .ai-grad-cards { display: flex; gap: 40px; padding-bottom: 116px; }
     .ai-grad-card {
       flex: 1; background: rgba(255,255,255,0.7); border-radius: var(--card-radius-lg);
@@ -3990,6 +4000,40 @@
       .ai-grad-card { flex: 1 1 100%; }
       .sec-morphing-bridge { flex-direction: column; }
       .morphing-bridge-text { white-space: normal; }
+    }
+
+    /* 본문 서체 규칙: 설명 문장 안의 RIS, A2A, 숫자 등도 한글과 함께
+       Pretendard로 렌더링한다. Logic/Principle 같은 제목·라벨은 제외한다. */
+    :where(
+      .sd-body,
+      .sd-caption-scroll,
+      .sd-scroll-card p,
+      .sd-text-right p:not(.sd-scene-eyebrow),
+      .sd-tick > p,
+      .sd-walk-caption p,
+      .sd-input-summary > p,
+      .sd-card-text > p,
+      .sd-summary-hero-body > p,
+      .sd-flow-side > p:not(.label),
+      .sd-flow-caption-text,
+      .sd-summary-copy > p,
+      .sd-summary-box > p:not(.kicker),
+      .full-card-desc,
+      .two-left-p,
+      .logic-card-sub,
+      .parsing-desc-right,
+      .detail-desc,
+      .pr-body,
+      .ai-figma-p,
+      .feat-card-p,
+      .exec-p,
+      .skip-banner-desc,
+      .morphing-detail-p,
+      .mic-body,
+      .pv-desc,
+      .footer-copy
+    ) {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif !important;
     }
   </style>
 </head>
@@ -5346,7 +5390,6 @@
     </div>
   </div>
 </section>
-<div class="pill-btn-wrap fi"><a class="pill-detail" href="https://inky-bar-798.notion.site/SKEEP-Technology-3ac465012ace80ac8653c94eb436d29a" target="_blank" rel="noopener noreferrer">자세한 파싱 원리<span class="pill-detail-arrow" aria-hidden="true">→</span></a></div>
 
 <!-- ══ 8. SKEEP AI™ BANNER ══ -->
 <section class="sec-ai-banner fi">

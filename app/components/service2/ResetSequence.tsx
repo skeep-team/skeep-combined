@@ -6,15 +6,16 @@ import styles from "./ResetSequence.module.css";
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 // How long "패킷 회수 중..." holds, fully typed-in, before switching over
-// to "다시, 처음처럼". (예전엔 1400ms — 너무 빨리 넘어간다는 피드백으로 늘림.)
-const HOLD_MS = 3600;
+// to "다시, 처음처럼". (예전엔 1400ms → 너무 빨리 넘어간다는 피드백으로 3600ms까지
+// 늘렸다가, 이번엔 반대로 전체 인터랙션이 느리다는 피드백으로 다시 줄임.)
+const HOLD_MS = 2000;
 
 // 사진이 나타난 뒤 회수(dissolve)를 시작하기까지의 대기 시간. 문구가 다
 // 타이핑될 시간을 준다.
-const DISSOLVE_DELAY_MS = 1200;
+const DISSOLVE_DELAY_MS = 800;
 
 // "다시, 처음처럼"이 다 뜬 뒤 처음(패킷 회수)으로 되돌아가기까지 대기 시간.
-const LOOP_HOLD_MS = 5000;
+const LOOP_HOLD_MS = 2600;
 
 // Figma(node 8400:22615, "지켜주다" 패킷 회수 배치)의 좌표를 그대로 옮겼다.
 // 원본 프레임은 3085x1494px — 그 프레임 대비 %로 환산해 반응형으로도 같은
@@ -148,10 +149,12 @@ function PacketRecallSequence({
   phase,
   setPhase,
   visible,
+  onPlaybackComplete,
 }: {
   phase: number;
   setPhase: (phase: number) => void;
   visible: boolean;
+  onPlaybackComplete?: () => void;
 }) {
   const [dissolve, setDissolve] = useState(false);
   const advancedRef = useRef(false);
@@ -173,13 +176,17 @@ function PacketRecallSequence({
       return;
     }
     loopedRef.current = true;
+    // "다시, 처음처럼"까지 다 뜬 시점 = 한 바퀴 재생이 끝난 시점. 이때 스크롤
+    // 잠금을 풀어줘서, 그 전까지는 아무리 빨리 스크롤해도 이 섹션을 못
+    // 빠져나가게(=화면이 잘린 채로 재생되는 일이 없게) 한다.
+    onPlaybackComplete?.();
     setTimeout(() => {
       setDissolve(false);
       advancedRef.current = false;
       loopedRef.current = false;
       setPhase(0);
     }, LOOP_HOLD_MS);
-  }, [setPhase]);
+  }, [setPhase, onPlaybackComplete]);
 
   // TypeOnText는 active(=visible)가 true여야 재생을 시작하는데, 사진은 전엔
   // 컴포넌트가 마운트되자마자(=페이지 로드 즉시, 스크롤로 도착하기 한참
@@ -241,6 +248,9 @@ export function ResetSequence() {
   const [phase, setPhase] = useState(0);
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const [locked, setLocked] = useState(false);
+  const lockYRef = useRef(0);
+  const completedRef = useRef(false);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -292,6 +302,101 @@ export function ResetSequence() {
     };
   }, [visible]);
 
+  // 이 섹션이 "실제로 화면을 거의 채운" 순간에만 스크롤을 잠근다 — 위 visible은
+  // 타이핑 애니메이션을 늦지 않게 미리 시작시키려고 일부러 뷰포트 80% 앞에서도
+  // 켜지는(=아직 바로 위 섹션이 화면에 보이는 시점일 수 있는) 느슨한 신호라,
+  // 그걸 그대로 잠금 트리거로 쓰면 이 섹션이 뜨기도 전에 이전 섹션 화면에서
+  // 스크롤이 멈춰버린다("이 부분에서 멈추잖아" 버그). 잠금은 섹션 상단이
+  // 뷰포트 상단 근처까지 온(=거의 다 들어온) 훨씬 엄격한 시점에만 건다.
+  useEffect(() => {
+    if (completedRef.current || locked) {
+      return;
+    }
+
+    // 빠른 트랙패드 플링/휠은 한 번에 큰 폭으로 스크롤을 밀어버려서, 'scroll'
+    // 이벤트가 뜨는 시점엔 이미 이 섹션을 한참 지나쳐 있을 수 있다(그 상태에서
+    // 그냥 window.scrollY를 잠금 위치로 잡으면 "너무 아래로 내려간" 채로
+    // 얼어버린다). 그래서 현재 위치가 아니라, 섹션 상단이 뷰포트 상단에 오는
+    // "제자리" 스크롤 값을 계산해 그쪽으로 즉시 보정한 뒤 그 위치를 잠근다.
+    let raf = 0;
+
+    const checkLockPoint = () => {
+      raf = 0;
+      const el = sectionRef.current;
+      if (!el) {
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= window.innerHeight * 0.15) {
+        const correctedY = Math.max(0, window.scrollY + rect.top);
+        lockYRef.current = correctedY;
+        if (Math.abs(window.scrollY - correctedY) > 1) {
+          window.scrollTo(0, correctedY);
+        }
+        setLocked(true);
+        return;
+      }
+      raf = window.requestAnimationFrame(checkLockPoint);
+    };
+
+    raf = window.requestAnimationFrame(checkLockPoint);
+    window.addEventListener("resize", checkLockPoint);
+    return () => {
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+      }
+      window.removeEventListener("resize", checkLockPoint);
+    };
+  }, [locked]);
+
+  useEffect(() => {
+    if (!locked) {
+      return;
+    }
+
+    const holdScroll = () => {
+      if (Math.abs(window.scrollY - lockYRef.current) > 1) {
+        window.scrollTo(0, lockYRef.current);
+      }
+    };
+    const preventScroll = (event: Event) => {
+      event.preventDefault();
+      holdScroll();
+    };
+    const preventKeyScroll = (event: KeyboardEvent) => {
+      if (["PageDown", "PageUp", "ArrowDown", "ArrowUp", " ", "Home", "End"].includes(event.key)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+    window.addEventListener("keydown", preventKeyScroll);
+    window.addEventListener("scroll", holdScroll, { passive: true });
+
+    // 트랙패드 관성(모멘텀) 스크롤은 최초의 한 번을 제외하면 'wheel' 이벤트로
+    // 오지 않고 브라우저가 알아서 계속 스크롤을 흘려보낸다 — preventDefault로도
+    // 못 막고, 'scroll' 이벤트 보정도 프레임 사이 간격 때문에 몇 픽셀씩
+    // 새어나갈 수 있다. rAF로 매 프레임 직접 위치를 강제해 확실히 묶어둔다.
+    let rafId = requestAnimationFrame(function loop() {
+      holdScroll();
+      rafId = requestAnimationFrame(loop);
+    });
+
+    return () => {
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+      window.removeEventListener("keydown", preventKeyScroll);
+      window.removeEventListener("scroll", holdScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, [locked]);
+
+  const handlePlaybackComplete = useCallback(() => {
+    completedRef.current = true;
+    setLocked(false);
+  }, []);
+
   return (
     <section ref={sectionRef} className={styles.sequence}>
       {/* 스크롤 중에 이 섹션의 검정/흰 배경과 다음 섹션이 화면에 반씩 걸쳐
@@ -299,7 +404,12 @@ export function ResetSequence() {
          내용은 position:sticky로 화면에 고정해두고 바깥 .sequence를 100vh
          보다 조금 더 크게 잡아 그만큼 더 오래 붙어 있게 한다. */}
       <div className={styles.sticky} data-phase={phase}>
-        <PacketRecallSequence phase={phase} setPhase={setPhase} visible={visible} />
+        <PacketRecallSequence
+          phase={phase}
+          setPhase={setPhase}
+          visible={visible}
+          onPlaybackComplete={handlePlaybackComplete}
+        />
       </div>
     </section>
   );

@@ -18,7 +18,9 @@
 }
 
 .cursorVisible {
-  opacity: 1;
+  /* 전시 기간 동안만 커스텀 커서를 숨김 — opacity만 0으로 바꿔 두면
+     전시 끝난 뒤 1로 되돌리기만 하면 원상복구됨 */
+  opacity: 0;
 }
 
 .cursorFlip {

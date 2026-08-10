@@ -55,7 +55,9 @@
     /* requestAnimationFrame이 직접 스크롤을 보간하는 동안에는 native smooth를 끈다. */
     html.sk-programmatic-scroll { scroll-behavior: auto; }
     html.hero-scroll-locked,
-    html.hero-scroll-locked body {
+    html.hero-scroll-locked body,
+    html.agent-sequence-locked,
+    html.agent-sequence-locked body {
       overscroll-behavior: none;
     }
     body {
@@ -82,7 +84,9 @@
       text-transform: uppercase;
     }
 
-    body.hero-scroll-locked {
+    html.agent-sequence-locked,
+    body.hero-scroll-locked,
+    body.agent-sequence-locked {
       overflow: hidden;
     }
     body::after {
@@ -771,11 +775,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: clamp(18px,2.2vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.03em; text-transform: uppercase;
       color: #6E6E6E; flex-shrink: 0; white-space: nowrap;
-      padding-top: 4px;
+      padding-top: 0;
     }
     .summary-desc {
       font-size: clamp(15px,1.7vw,32px); font-weight: 600; line-height: 1.3;
       letter-spacing: -0.02em; max-width: 1008px; color: #161A1E;
+      padding-top: clamp(6px, .55vw, 10px);
     }
 
     /* ── 5. PHILOSOPHY SLIDES ────────────────────── */
@@ -961,11 +966,14 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       mask-image: radial-gradient(ellipse 72% 68% at 50% 50%,
         transparent 0%, transparent 50%, rgba(0,0,0,.18) 64%, rgba(0,0,0,.72) 84%, #000 100%);
     }
-    /* Samsung Moving Style/Tizen은 10장의 사진 레이어가 동시에 transform 되는 동안
-       화면 전체 backdrop-filter까지 매 프레임 다시 샘플링해 정착 구간이 끊겨 보인다.
-       이동 중에만 동일한 가장자리 영역을 가벼운 정적 오버레이로 대체하고, 모든 카드가
-       멈춘 뒤 원래 블러를 복원한다. 카드 위치·크기·이징·최종 화면은 그대로 유지된다. */
-    .agent-photo-bg.is-moving-style.camera-moving:not(.motion-complete)::after {
+    /* 10장의 사진 레이어가 동시에 transform 되는 동안 화면 전체 backdrop-filter까지
+       매 프레임 다시 샘플링해야 해서(뒤에서 계속 바뀌는 배경을 블러링하는 건 GPU에
+       훨씬 비싸다) 무빙스타일뿐 아니라 일반 PC/브라우저에서도 카메라 패닝 구간이
+       덜컥거려 보였다 — 원래는 무빙스타일 전용 예외였는데, 같은 문제라 모든
+       환경에 동일하게 적용한다. 이동 중에만 동일한 가장자리 영역을 가벼운 정적
+       오버레이로 대체하고, 모든 카드가 멈춘 뒤 원래 블러를 복원한다. 카드 위치·
+       크기·이징·최종 화면은 그대로 유지된다. */
+    .agent-photo-bg.camera-moving:not(.motion-complete)::after {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
       -webkit-mask-image: none;
@@ -984,28 +992,23 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28);
       will-change: transform;
     }
-    .agent-photo-bg.is-moving-style .agent-photo-stage,
-    .agent-photo-bg.is-moving-style .agent-photo-piece {
+    .agent-photo-stage,
+    .agent-photo-piece {
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       contain: layout paint;
     }
-    .agent-photo-bg.camera-moving .agent-photo-stage {
-      /* 정지→이동→정지→이동→정지로 3번 멈추던 걸 하나의 연속된 드리프트로 —
-         구간마다 속도가 0으로 꺾이지 않도록 홀드 키프레임을 없애고, 애니메이션
-         전체에 단일 ease-in-out 커브만 적용한다. */
-      animation: agentPhotoCamera 2.8s cubic-bezier(.45,0,.55,1) both;
-    }
+    /* 카메라가 화면을 훑는 동안(agentPhotoCamera)엔 매 프레임 실제로 뷰가 계속
+       바뀌기 때문에, 스크롤 진입 타이밍에 따라 사용자가 "어느 프레임에" 이
+       섹션을 보게 되는지가 매번 달라 보였다 — 시작이 스크롤마다 달라지는 것처럼
+       느껴진 진짜 원인이다. 팬을 걷어내고, 고정된 줌인 상태(0% 키프레임과 동일한
+       정적 transform)에서 바로 scattering 전환(아래, 항상 동일한 시작→끝)으로
+       넘어가게 해서 진입 상태를 항상 동일하게 만든다. */
     .agent-photo-bg.camera-moving.scattering .agent-photo-stage {
       animation: agentPhotoSettle 1.65s cubic-bezier(.22,1,.36,1) both;
     }
-    @keyframes agentPhotoCamera {
-      0%   { transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28); }
-      50%  { transform: translate(-50%, -50%) translate3d(-5%, 6%, 0) scale(1.28); }
-      100% { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
-    }
     @keyframes agentPhotoSettle {
-      from { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
+      from { transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28); }
       to   { transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(1); }
     }
     .agent-photo-piece {
@@ -1392,9 +1395,20 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       width: 700px; flex-shrink: 1; min-width: 0;
       opacity: 0;
       transform: translateY(56px);
+      /* 예전엔 opacity/transform을 매 스크롤 프레임마다 progress 값 그대로
+         인라인 스타일로 찍어서, 스크롤을 조금씩 움직일 때마다 카드가 그만큼만
+         반응하는 스크러빙(scrubbing)이었다 — 사용자가 "슉 되게" 요청한 대로,
+         진입 임계값을 넘는 순간 .is-revealed 클래스 하나만 토글하고 나머지는
+         이 transition이 한 번에 처리하게 바꿨다(사이트 공통 .fi/.vis 관례와 동일). */
+      transition: opacity .6s ease, transform .6s ease;
       will-change: opacity, transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+    }
+    .agent-q-col.is-revealed,
+    .agent-principles-col.is-revealed {
+      opacity: 1;
+      transform: none;
     }
     /* 일반 PC에서는 기존 700px을 유지한다. 가로 2000px 이상의 넓은 화면에서만
        오른쪽 카드 컬럼을 조금 넓혀 두 컬럼 사이의 과도한 빈 공간을 줄인다.
@@ -1574,16 +1588,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sec-system-intro {
       background: #fff; width: 100%;
       padding: clamp(56px, 10vw, 119px) var(--edge-padding);
-      display: flex; align-items: flex-end;
+      display: flex; align-items: flex-start;
       justify-content: space-between; gap: 64px;
     }
     .sys-left { display: flex; flex-direction: column; gap: 20px; }
     .sys-label { font-size: clamp(18px,2.2vw,32px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #6E6E6E; }
     .sys-title { font-size: clamp(24px,4vw,54px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #161A1E; }
     .sys-right  {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
       letter-spacing: -0.03em; max-width: 672px; flex-shrink: 0;
       color: rgba(0,0,0,.55);
+      /* 작은 영문 라벨이 아니라 실제 큰 제목의 상단을 기준으로 맞춘다. */
+      margin-top: clamp(58px, 4vw, 80px);
     }
 
     /* ── 9. SYSTEM DIAGRAM ───────────────────────── */
@@ -1812,6 +1829,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-weight: 500; font-size: clamp(12px, 0.95vw, 16px); letter-spacing: -0.02em;
       color: #222; opacity: 0.85; line-height: 1.5; margin: 0;
+      /* 기본값은 글자 단위로 아무데서나 줄바꿈해 "스킵의"→"스킵"/"의",
+         "데이터입니다"→"데이"/"터입니다"처럼 단어 중간이 잘린다 —
+         띄어쓰기 단위로만 줄바꿈되게 고정 */
+      word-break: keep-all;
     }
     .wf-diagram { width: 100%;
       display: flex; flex-direction: column;
@@ -2203,6 +2224,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       gap: 24px;
     }
     .qa-card {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       background: #F1F1F1; border-radius: var(--card-radius-md);
       padding: 40px 36px; min-height: 220px;
       border: none;
@@ -2286,7 +2308,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sec-ux-intro {
       background: #fff; width: 100%;
       padding: clamp(56px, 10vw, 119px) var(--edge-padding);
-      display: flex; align-items: flex-end;
+      display: flex; align-items: flex-start;
       justify-content: space-between; gap: 64px;
       border-top: none;
     }
@@ -2297,7 +2319,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .ux-label { font-size: clamp(16px,1.8vw,24px); font-weight: 600; letter-spacing: -0.03em; text-transform: uppercase; color: #6E6E6E; white-space: nowrap; }
     .ux-title { font-size: clamp(22px,3.2vw,42px); font-weight: 600; line-height: 1.3; letter-spacing: -0.03em; color: #161A1E; word-break: keep-all; }
-    .ux-right  { font-size: clamp(14px,1.5vw,20px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 680px; flex: 1 1 0; min-width: 0; color: rgba(0,0,0,.55); }
+    .ux-right  { font-size: clamp(14px,1.5vw,20px); font-weight: 400; line-height: 1.5; letter-spacing: -0.03em; max-width: 680px; flex: 1 1 0; min-width: 0; color: rgba(0,0,0,.55); margin-top: clamp(52px, 3.6vw, 70px); }
 
     /* ── UX LOGIC STAGE OVERVIEW ─────────────────── */
     .sec-ux-overview { background: #fff; width: 100%; padding: 0 var(--edge-padding) clamp(56px, 8vw, 84px); overflow: hidden; }
@@ -2585,6 +2607,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       letter-spacing: -0.03em; margin-bottom: 24px; color: #161A1E;
     }
     .stage-desc {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(14px,1.8vw,24px); font-weight: 400; line-height: 1.5;
       letter-spacing: -0.03em; color: rgba(0,0,0,0.55);
       margin: 0 0 24px; white-space: nowrap;
@@ -2623,6 +2646,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       padding: 10px 20px; border-radius: 24px; white-space: nowrap;
     }
     .stage-logic-desc {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       font-size: clamp(13px,1.6vw,26px); font-weight: 500; line-height: 1.5;
       letter-spacing: -0.03em; color: #161A1E; opacity: 0.4;
     }
@@ -2845,7 +2869,12 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sd-clock-row img:nth-child(3) { opacity: .6; }
     .sd-clock-row img:nth-child(4) { opacity: .4; }
     .sd-orbit-scroll {
-      height: 220vh;
+      /* 예전 220vh는 스크롤 진행률을 채우기까지 화면 1.2배 분량을 더 내려야 해서
+         체감상 스크롤이 너무 길었다 — 한 번의 스크롤(휠/트랙패드 한 동작)로도
+         다음 장면까지 자연스럽게 넘어가도록 스크롤 가능 구간을 크게 줄인다.
+         애니메이션은 여전히 순수 스크롤 진행률(progress) 기반이라 높이만 바꿔도
+         로직 변경 없이 그대로 작동한다. */
+      height: 90vh;
       padding: 0;
       position: relative;
       margin-top: 0;
@@ -2907,7 +2936,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-tick {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 64px;
     }
@@ -2926,6 +2955,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: clamp(14px,1.8vw,24px);
       line-height: 1.5;
       letter-spacing: -0.03em;
+      padding-top: clamp(7px, .65vw, 12px);
     }
     .sd-walk {
       padding-top: 40px;
@@ -2989,6 +3019,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       font-size: clamp(14px,1.8vw,24px);
       line-height: 1.5;
       letter-spacing: -0.03em;
+      padding-top: clamp(7px, .65vw, 12px);
     }
     .sd-card-list {
       display: grid;
@@ -3241,7 +3272,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
     .sd-phrase.dim { opacity: .22; }
     .sd-pause-title {
-      margin-top: 217px;
+      margin-top: 56px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -3256,7 +3287,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sd-principles {
       display: flex;
       flex-direction: column;
-      gap: 120px;
+      gap: 40px;
       margin-left: auto;
       width: 600px;
     }
@@ -3768,6 +3799,55 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .footer-link--disabled { cursor: default; pointer-events: none; }
     .footer-copy { color: #8390a2; font-size: 18px; font-weight: 500; line-height: normal; letter-spacing: -0.03em; }
 
+    /* 본문 서체 규칙: 설명문·질문/답변·주석 안의 영문과 숫자까지 Pretendard로 통일한다.
+       섹션명과 카드 제목처럼 디스플레이 역할인 영문은 기존 서체를 유지한다. */
+    .hero-body,
+    .summary-desc,
+    .agent-sub,
+    .principle-mini-title,
+    .principle-mini-title .thin,
+    .principle-mini-note,
+    .q-card,
+    .q-card .q-num,
+    .q-card .q-text,
+    .q-answer,
+    .sys-right,
+    .diagram-journey-desc,
+    .layer-en,
+    .layer-desc,
+    .packet-desc,
+    .qa-card,
+    .qa-card .qn,
+    .qa-card .qt,
+    .qa-answer,
+    .sk-desc,
+    .ux-right,
+    .ux-overview-sub,
+    .ux-bigcard .sub,
+    .stage-desc,
+    .stage-logic-desc,
+    .sd-body,
+    .sd-caption-right,
+    .sd-text-right p,
+    .sd-tick p,
+    .sd-walk-caption p,
+    .sd-input-summary p,
+    .sd-card-text p,
+    .sd-active p,
+    .sd-flow-side p,
+    .sd-flow-caption-text,
+    .sd-flow-card span,
+    .md-big-copy p,
+    .md-ai-card-text p,
+    .md-principle-body,
+    .md-principle-card p,
+    .md-ability p,
+    .md-morph-word p,
+    .md-last-item p,
+    .footer-copy {
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+    }
+
     /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 1400px) {
       .sec-hero, .sec-skeep-in,
@@ -3813,7 +3893,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       .agent-q-col, .agent-principles-col { width: 100%; }
       .principle-row { grid-template-columns: 1fr; }
       .sec-system-intro, .sec-ux-intro { flex-direction: column; }
-      .sys-right, .ux-right { max-width: 100%; }
+      .sys-right, .ux-right { max-width: 100%; margin-top: 0; }
       .layers-grid { grid-template-columns: 1fr; }
       .qa-grid { grid-template-columns: 1fr; }
       .stage-row { flex-direction: column; }
@@ -4794,22 +4874,19 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       <button class="wf-btn active" type="button" role="tab" aria-selected="true" data-wf="who">
         <p class="wf-btn-title">WHO</p>
         <div class="wf-btn-desc">
-          <p>사용자가 어떤 사람인지 나타내는 맥락 카테고리 3가지로,<br>스킵의 장기 기억입니다.</p>
-          <p>패킷에 이 데이터가 담길때에는 각 환경이 요구하는 설정값에 맞춰 선별됩니다.</p>
+          <p>사용자가 어떤 사람인지 나타내는 맥락 카테고리 3가지로, 스킵의 장기 기억입니다. 패킷에 이 데이터가 담길때에는 각 환경이 요구하는 설정값에 맞춰 선별됩니다.</p>
         </div>
       </button>
       <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="what">
         <p class="wf-btn-title">WHAT</p>
         <div class="wf-btn-desc">
-          <p>사용자가 스킵을 통해 무엇을 달성하고 싶은지를<br>담고있는 데이터입니다.</p>
-          <p>목적이 발생하면 활성화되어, 환경이 알아들을 수 있는 언어로 만들어 전달하죠.</p>
+          <p>사용자가 스킵을 통해 무엇을 달성하고 싶은지를 담고있는 데이터입니다. 목적이 발생하면 활성화되어, 환경이 알아들을 수 있는 언어로 만들어 전달하죠.</p>
         </div>
       </button>
       <button class="wf-btn" type="button" role="tab" aria-selected="false" data-wf="where">
         <p class="wf-btn-title">WHERE</p>
         <div class="wf-btn-desc">
-          <p>사용자의 주변 환경을 상시 스캔하며 사용 가능성을<br>파악한 데이터입니다.</p>
-          <p>스킵은 사용자의 목적이 없는 순간에도 쉬지 않고 탐색합니다.</p>
+          <p>사용자의 주변 환경을 상시 스캔하며 사용 가능성을 파악한 데이터입니다. 스킵은 사용자의 목적이 없는 순간에도 쉬지 않고 탐색합니다.</p>
         </div>
       </button>
     </div>
@@ -5106,7 +5183,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     <div class="qa-card fi d5">
       <span class="qn">Q5.</span>
       <p class="qt">Skeep 에이전트 생태계에서<br>Packet은 어떻게 이동하나요?</p>
-        <div class="qa-answer"><div class="qa-answer-inner"><span class="qa-a">A.</span><p class="qa-atext">사용자가 공간을 이동할 때마다 패킷은 물리적·맥락적으로 가장 가까운 앵커 디바이스로 자동으로 모핑하며 이동합니다. 사용자가 따로 무언가를 할 필요가 없습니다.</p></div></div>
+        <div class="qa-answer"><div class="qa-answer-inner"><span class="qa-a">A.</span><p class="qa-atext">사용자나 스킵이 특정 환경을 활성화 할 때마다, 패킷은 SKEEP 클라우드에서 해당 환경으로 자동 전달됩니다.</p></div></div>
     </div>
     <div class="qa-card fi d6">
       <span class="qn">Q6.</span>
@@ -5372,14 +5449,13 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
      만드는 1px 이음선을 없앤다. transform 보정 대신 실제 레이아웃을 겹친다. */
   .sq-morph-seg + .sq-morph-seg { margin-left: -1px; }
   .sq-card-txt { position: absolute; inset: 0; padding: clamp(14px, 1.5vw, 30px);
-    display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: .5em;
     opacity: 0; pointer-events: none; transition: opacity .5s ease .25s;
     font-family: 'Pretendard','Apple SD Gothic Neo',sans-serif; }
   .sq-morph.grown .sq-card-txt { opacity: 1; }
   .sq-card-txt b { font-weight: 700; font-size: clamp(15px, 1.6vw, 30px); color: var(--card-txt, #14161a);
-    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: .35em; }
-  .sq-card-txt i { font-style: normal; font-family: 'Elza Cond', 'Pretendard', sans-serif; font-weight: 500; font-size: clamp(11px, 1.02vw, 18px);
-    color: var(--card-txt, rgba(0,0,0,.5)); opacity: .82; line-height: 1.5; letter-spacing: -0.02em; }
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0; }
   .sq-morph.is-in { width: var(--bar-w); height: var(--bar-h); gap: 0; border-radius: 0; }
   .sq-morph.is-in.split {
     width: calc(var(--bar-w) + (var(--big-w) - var(--bar-w)) * var(--big));
@@ -5420,18 +5496,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     </div>
     <div class="uxl-cards">
       <div class="sq-morph" aria-hidden="true">
-        <span class="sq-morph-seg seg1"><span class="sq-card-txt"><b>새겨듣다</b><i>Sensing<br>Input<br>Pause</i></span></span>
-        <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>조율하다</b><i>Negotiation</i></span></span>
-        <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>지켜주다</b><i>Keep</i></span></span>
+        <span class="sq-morph-seg seg1"><span class="sq-card-txt"><b>인식과 준비</b></span></span>
+        <span class="sq-morph-seg seg2"><span class="sq-card-txt"><b>경험 및 상호작용</b></span></span>
+        <span class="sq-morph-seg seg3"><span class="sq-card-txt"><b>종료와 개인화</b></span></span>
       </div>
     </div>
 
     <div class="ux-scene">
       <div class="ux-left-col">
       <div class="ux-tabbar" role="tablist" aria-label="UX Logic 단계">
-        <button class="ux-tab" type="button" data-i="0" data-accent="#FF6B3D" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">새겨듣다</button>
-        <button class="ux-tab" type="button" data-i="1" data-accent="#D9FF60" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">조율하다</button>
-        <button class="ux-tab" type="button" data-i="2" data-accent="#8BDFEF" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">지켜주다</button>
+        <button class="ux-tab" type="button" data-i="0" data-accent="#FF6B3D" data-card-bg="../인트로/네모1.png" data-state-bg="../인트로/네모배경1.png">인식과 준비</button>
+        <button class="ux-tab" type="button" data-i="1" data-accent="#D9FF60" data-card-bg="../인트로/네모3.png" data-state-bg="../인트로/네모배경3.png">경험 및 상호작용</button>
+        <button class="ux-tab" type="button" data-i="2" data-accent="#8BDFEF" data-card-bg="../인트로/네모5.png" data-state-bg="../인트로/네모배경5.png">종료와 개인화</button>
       </div>
       <div class="ux-left-holder">
       <div class="ux-left-panel" data-i="0">
@@ -6863,6 +6939,49 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let agentTicking = false;
     let agentIntroStartedAt = null;
     let agentMetrics = null;
+    let agentSequenceLocked = false;
+    let agentSequenceLockY = 0;
+    const reduceAgentMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // 카메라 패닝 구간(2.8s)을 없앴다 — 진입 시점의 스크롤 타이밍에 따라 매번
+    // 다른 프레임에서 이 섹션을 "만나게" 되던 근본 원인이었다(팬이 계속 뷰를
+    // 바꾸는 중이라 언제 멈추든 그 순간의 모습이 다 달랐다). 이제 화면이 다
+    // 차는 즉시 정지된 줌인 상태에서 scattering(사진들이 흩어진 자리로 정착)
+    // 으로 바로 들어가므로, 시작 모습이 스크롤과 무관하게 항상 동일하다.
+    const AGENT_CAMERA_DURATION_MS = 0;
+    const AGENT_TITLE_DELAY_MS = reduceAgentMotion ? 80 : 1050;
+    const AGENT_TITLE_DURATION_MS = reduceAgentMotion ? 240 : 720;
+    // Scattered-card settling (including the final 405ms stagger) is
+    // the longest part of this intro. Keep the page fixed until it is complete.
+    const AGENT_SEQUENCE_DURATION_MS = Math.max(
+      AGENT_CAMERA_DURATION_MS + 2150,
+      AGENT_CAMERA_DURATION_MS + AGENT_TITLE_DELAY_MS + AGENT_TITLE_DURATION_MS + 240
+    );
+
+    function lockAgentSequence() {
+      if (agentSequenceLocked || !agentMetrics) return;
+      agentSequenceLocked = true;
+      agentSequenceLockY = Math.round(agentMetrics.sectionTop);
+      // A wheel/trackpad gesture can cross the sticky boundary in one frame.
+      // Snap back once, then native overflow locking handles every input type.
+      // html은 전역으로 scroll-behavior:smooth라서, 이 보정 없이 scrollTo를 부르면
+      // 브라우저 네이티브 smooth-scroll 애니메이션이 시작되고, 바로 다음 줄에서
+      // overflow:hidden으로 잠가버리면 그 애니메이션이 중간에 잘리면서 화면이
+      // 한 번 덜컥 튀어 보였다 — sk-programmatic-scroll로 이 한 번의 보정만
+      // scroll-behavior:auto(즉시 이동)로 바꿔 애니메이션 자체가 안 생기게 한다.
+      document.documentElement.classList.add('sk-programmatic-scroll');
+      window.scrollTo(0, agentSequenceLockY);
+      document.documentElement.classList.remove('sk-programmatic-scroll');
+      document.documentElement.classList.add('agent-sequence-locked');
+      document.body.classList.add('agent-sequence-locked');
+    }
+
+    function unlockAgentSequence() {
+      if (!agentSequenceLocked) return;
+      document.body.classList.remove('agent-sequence-locked');
+      document.documentElement.classList.remove('agent-sequence-locked');
+      agentSequenceLocked = false;
+      requestAgentUpdate();
+    }
 
     // ── 그리드 배경 (정적) — 격자선만 표시, 터치 인터랙션 없음 ──
     const agentGrid = document.createElement('div');
@@ -7001,29 +7120,36 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const isFilled =
         relativeTop <= 0 &&
         relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
-      const reduceAgentMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const CAMERA_DURATION_MS = reduceAgentMotion ? 0 : 2800;
-      const TITLE_DELAY_AFTER_SCATTER_MS = reduceAgentMotion ? 80 : 1050;
-      const TITLE_DURATION_MS = reduceAgentMotion ? 240 : 720;
       if (agentIntroStartedAt === null && isFilled) {
+        // agentMetrics는 이 섹션에 처음 도달하기 훨씬 전(스크립트 로드 시점)에 한 번
+        // 측정되고, 그 뒤로는 resize/폰트 로드 때만 다시 잰다 — 그런데 여기까지
+        // 내려오는 동안 위쪽의 다른 섹션들(레이지 이미지, .fi 리빌 애니메이션 등)이
+        // 문서 높이를 조금씩 바꿔서, 스크롤을 얼마나/어떻게 했느냐에 따라 sectionTop이
+        // 그때그때 다르게 어긋나 있었다 — 잠금 위치(agentSequenceLockY)가 매번 조금씩
+        // 달라지면서 사진 콜라주가 "시작 지점"부터 다른 상태로 보이던 원인이다.
+        // 시퀀스를 시작/잠그기 직전에 한 번 더 정확히 재측정해서 항상 같은 지점에서
+        // 시작하게 한다.
+        measureAgent();
         agentIntroStartedAt = now;
+        lockAgentSequence();
         agentPhotoBg.classList.add('camera-moving');
         agentPhotoBg.classList.add('is-visible');   // 화면이 다 찬 순간 디졸브(opacity 0→1)로 시작
         titleScrambleEnter();
       }
       const sequenceElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
-      if (sequenceElapsed >= CAMERA_DURATION_MS) agentPhotoBg.classList.add('scattering');
+      if (sequenceElapsed >= AGENT_CAMERA_DURATION_MS) agentPhotoBg.classList.add('scattering');
       /* 마지막 카드의 405ms 스태거까지 끝난 다음 고비용 가장자리 블러를 되돌린다.
          복원은 움직임이 완전히 멈춘 뒤라 정착 애니메이션 프레임을 방해하지 않는다. */
-      if (sequenceElapsed >= CAMERA_DURATION_MS + 2150) {
+      if (sequenceElapsed >= AGENT_CAMERA_DURATION_MS + 2150) {
         agentPhotoBg.classList.add('motion-complete');
       }
-      const introElapsed = sequenceElapsed - CAMERA_DURATION_MS - TITLE_DELAY_AFTER_SCATTER_MS;
-      const titleIn = smooth(introElapsed / TITLE_DURATION_MS);
-      const subIn = smooth((introElapsed - 160) / TITLE_DURATION_MS);
+      if (sequenceElapsed >= AGENT_SEQUENCE_DURATION_MS) unlockAgentSequence();
+      const introElapsed = sequenceElapsed - AGENT_CAMERA_DURATION_MS - AGENT_TITLE_DELAY_MS;
+      const titleIn = smooth(introElapsed / AGENT_TITLE_DURATION_MS);
+      const subIn = smooth((introElapsed - 160) / AGENT_TITLE_DURATION_MS);
       const move = smooth((progress - 0.50) / 0.30);
       const pillsIn = smooth((progress - 0.68) / 0.20);
-      const questionsIn = clamp01((progress - 0.74) / 0.20);
+      const questionsRevealed = progress >= 0.74;
       const bgDrift = smooth((progress - 0.36) / 0.42);
       // progress는 섹션이 실제로 화면을 꽉 채우고 고정(sticky)되기 전까지는 0에 머문다 —
       // 그 값을 그대로 페이드인에 써서, 화면이 다 차기 전에는 영상이 보이지 않다가
@@ -7071,12 +7197,11 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       agentPills.style.opacity = pillsIn;
       agentPills.style.transform = `translate3d(${agentMetrics.pillShift * (1 - move)}px, ${(1 - pillsIn) * 32}px, 0)`;
       agentViews.forEach(view => {
-        view.style.opacity = questionsIn;
-        view.style.transform = `translate3d(0, ${(1 - questionsIn) * 56}px, 0)`;
+        view.classList.toggle('is-revealed', questionsRevealed);
       });
       if (
         agentIntroStartedAt !== null &&
-        sequenceElapsed < CAMERA_DURATION_MS + TITLE_DELAY_AFTER_SCATTER_MS + TITLE_DURATION_MS + 240
+        sequenceElapsed < AGENT_SEQUENCE_DURATION_MS + 80
       ) requestAgentUpdate();
     }
 

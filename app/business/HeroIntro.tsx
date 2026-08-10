@@ -46,6 +46,8 @@ export default function HeroIntro() {
     let revealTimer = 0;
     let exitTimer = 0;
     let swapTimer = 0;
+    let lockedScrollY: number | null = null;
+    let lockRaf = 0;
     /* 카피가 뒤바뀐 1단계는 최소 1초는 머물러야 한다 — 가만히 있어도, 빠르게
        더 스크롤해도 마찬가지다. 1초를 채우기 전에는 2단계(밴드)로 못 넘어간다. */
     let swapReady = false;
@@ -80,6 +82,7 @@ export default function HeroIntro() {
       ).matches;
 
       section.dataset.bandState = "ready";
+      startScrollHold();
       revealTimer = window.setTimeout(() => {
         section.dataset.bandState = "playing";
       }, reduceMotion ? 0 : 80);
@@ -130,6 +133,29 @@ export default function HeroIntro() {
         step -= 1;
       }
 
+      /* 1단계 카피를 최소 1초 보여 주는 동안 큰 휠/트랙패드 입력이 sticky의
+         끝까지 관성으로 흘러가면 다음 흰 섹션이 먼저 보인다. 2단계 진입선을
+         넘긴 순간부터는 같은 뷰포트 안의 진입선에 붙잡아 두고, 타이머가 끝나면
+         그 자리에서 밴드 장면으로 교체한다. */
+      const swapGateHeld =
+        step === 1 &&
+        !swapReady &&
+        progress >= forwardThresholds[1];
+
+      section.dataset.swapHold = swapGateHeld ? "true" : "false";
+
+      if (swapGateHeld) {
+        const sectionTop = window.scrollY + rect.top;
+        const holdY =
+          sectionTop + distance * (forwardThresholds[1] + 0.015);
+
+        if (Math.abs(window.scrollY - holdY) > 2) {
+          window.scrollTo({ top: holdY, behavior: "auto" });
+        }
+
+        startScrollHold();
+      }
+
       if (step < 1) {
         swapReady = false;
 
@@ -161,6 +187,19 @@ export default function HeroIntro() {
       }
 
       if (step === 2) {
+        /* 무빙스타일의 큰 휠 입력은 scroll 이벤트가 단계 값을 갱신하기 전에
+           sticky 끝을 한 번에 넘어갈 수 있다. 그러면 다음 흰 섹션이 먼저
+           올라온 뒤 밴드가 화면 밖에서 재생된다. 밴드 첫 진입 때 진행도가
+           이미 크게 넘어갔다면 sticky 안의 밴드 시작 지점으로 즉시 되돌려,
+           보던 화면 제자리에서 인터랙션이 이어지게 한다. */
+        if (!bandPlayed && progress > forwardThresholds[1] + 0.08) {
+          const sectionTop = window.scrollY + rect.top;
+          const bandStartY =
+            sectionTop + distance * (forwardThresholds[1] + 0.015);
+
+          window.scrollTo({ top: bandStartY, behavior: "auto" });
+        }
+
         playBandOnce();
       }
     };
@@ -171,15 +210,47 @@ export default function HeroIntro() {
       }
     };
 
-    /* 밴드 모션("끊 ▮ 임없는 도전 정신")이 다 펼쳐지기 전에 스크롤로 이 구간을
-       지나쳐 버리면, sticky가 풀리며 모션이 끝나기도 전에 다음 섹션이 밀고
-       올라온다 — 그래서 재생 중(step 2, bandState가 done이 아닐 때)에는
-       아래 방향 스크롤만 막는다. 위로 되돌아가는 건 그대로 둔다. */
-    const isBandLocked = () =>
-      section.dataset.step === "2" && section.dataset.bandState !== "done";
+    /* 카피의 최소 노출 시간을 기다리는 전환선과 밴드 재생 구간 모두 같은
+       sticky 화면 안에서 끝나야 한다. 아래 방향만 잠그고 위로 되돌아가는
+       동작은 그대로 허용한다. */
+    const isSequenceLocked = () =>
+      section.dataset.swapHold === "true" ||
+      (section.dataset.step === "2" && section.dataset.bandState !== "done");
+
+    /* 트랙패드 관성(모멘텀) 스크롤은 최초의 한 번을 빼면 'wheel' 이벤트로 오지
+       않고 브라우저가 알아서 흘려보낸다 — 그래서 위 onWheel의 preventDefault만
+       으로는 빠르게 훑을 때 이 구간을 그냥 지나쳐 버렸다("탁 안 걸리고 그
+       상태로 인터랙션되네" 버그). 재생이 시작되는 순간의 스크롤 위치를 붙잡아
+       두고, 재생이 끝날 때까지 매 프레임 그 위치로 강제 복귀시킨다. */
+    const releaseScrollHold = () => {
+      lockedScrollY = null;
+      if (lockRaf) {
+        window.cancelAnimationFrame(lockRaf);
+        lockRaf = 0;
+      }
+    };
+
+    const startScrollHold = () => {
+      if (lockedScrollY !== null) {
+        return;
+      }
+      lockedScrollY = window.scrollY;
+
+      const hold = () => {
+        if (!isSequenceLocked()) {
+          releaseScrollHold();
+          return;
+        }
+        if (lockedScrollY !== null && Math.abs(window.scrollY - lockedScrollY) > 1) {
+          window.scrollTo(0, lockedScrollY);
+        }
+        lockRaf = window.requestAnimationFrame(hold);
+      };
+      lockRaf = window.requestAnimationFrame(hold);
+    };
 
     const onWheel = (event: WheelEvent) => {
-      if (event.deltaY > 0 && isBandLocked()) {
+      if (event.deltaY > 0 && isSequenceLocked()) {
         event.preventDefault();
       }
     };
@@ -197,7 +268,7 @@ export default function HeroIntro() {
 
       const currentY = event.touches[0]?.clientY ?? touchStartY;
 
-      if (touchStartY - currentY > 0 && isBandLocked()) {
+      if (touchStartY - currentY > 0 && isSequenceLocked()) {
         event.preventDefault();
       }
     };
@@ -206,7 +277,7 @@ export default function HeroIntro() {
       const down =
         event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ";
 
-      if (down && isBandLocked()) {
+      if (down && isSequenceLocked()) {
         event.preventDefault();
       }
     };
@@ -234,6 +305,7 @@ export default function HeroIntro() {
       window.clearTimeout(revealTimer);
       window.clearTimeout(exitTimer);
       window.clearTimeout(swapTimer);
+      releaseScrollHold();
     };
   }, []);
 

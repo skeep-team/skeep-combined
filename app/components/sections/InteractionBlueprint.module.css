@@ -65,6 +65,7 @@
 }
 
 .manifesto p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: var(--type-body);
   font-weight: 500;
   line-height: 1.4;
@@ -115,6 +116,7 @@
 }
 
 .summaryCopy p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: var(--type-body);
   font-weight: 400;
   line-height: 1.5;
@@ -180,6 +182,7 @@
 }
 
 .sectionHeader > p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: var(--type-body);
   font-weight: 400;
   line-height: 1.5;
@@ -192,7 +195,7 @@
   width: min(100%, 1760px);
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
@@ -204,9 +207,12 @@
 }
 
 .sectionHeaderSplit > p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   flex: 0 1 620px;
   max-width: 680px;
   text-align: left;
+  /* eyebrow가 아니라 큰 제목 상단보다 살짝 아래에서 설명을 시작한다. */
+  margin-top: clamp(58px, 4vw, 80px);
 }
 
 .featureCards {
@@ -250,6 +256,7 @@
 }
 
 .featureCardBody {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   white-space: pre-line;
   /* 카드 3열 나열용으로 공용 --type-card-label보다 살짝 축소한 전용 크기 */
   font-size: clamp(11px, 1.15vw, 19px);
@@ -324,6 +331,7 @@
 }
 
 .principleCopy p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: clamp(10px, 1.05vw, 18px);
   line-height: 1.5;
   letter-spacing: -0.03em;
@@ -509,6 +517,7 @@
 }
 
 .soundPanel > p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   /* align-items:center라 그냥 두면 글자 폭만큼만 줄어들어 문장 중간에서
      또 줄바꿈된다 — 패널 폭 전체로 늘려야 \n이 실제 문장 경계에서만 끊는다. */
   align-self: stretch;
@@ -631,6 +640,7 @@
 }
 
 .followDetail p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   margin-top: 16px;
   white-space: pre-line;
   color: rgba(255, 255, 255, 0.82);
@@ -640,6 +650,7 @@
 }
 
 .followDetail small {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   display: block;
   margin-top: 16px;
   color: rgba(255, 255, 255, 0.42);
@@ -1161,6 +1172,7 @@
 }
 
 .usageCopy p {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   white-space: pre-line;
   font-size: var(--type-body);
   font-weight: 400;
@@ -1169,6 +1181,7 @@
 }
 
 .usageNote {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
   display: block;
   color: rgba(0, 0, 0, 0.4);
   font-size: var(--type-card-label);
@@ -1178,6 +1191,14 @@
 }
 
 @media (max-width: 900px) {
+  .sectionHeaderSplit {
+    flex-direction: column;
+  }
+
+  .sectionHeaderSplit > p {
+    margin-top: 0;
+  }
+
   .usagePin {
     gap: clamp(96px, 18vw, 160px);
   }

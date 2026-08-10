@@ -159,6 +159,10 @@
     minmax(0, 0fr);
   gap: 0;
   height: 100%;
+  /* 히어로로 넘어가는 순간엔 옆 카드가 접히고 가운데가 커지는 "펼쳐지는"
+     움직임 대신, 그 자리에서 바로 최종 레이아웃으로 스냅하고 opacity
+     (--side-fade/--center-fade/--hero-reveal)만으로 디졸브되게 한다. */
+  transition: none;
 }
 
 .sceneCards .progressGrid > .valueCard,
@@ -343,10 +347,10 @@
   min-height: 100%;
   border-radius: 0;
   background: #070707;
-  transition:
-    height var(--card-expand-duration) var(--card-expand-ease),
-    border-radius var(--card-expand-duration) var(--card-expand-ease),
-    background-color var(--card-expand-duration) var(--card-expand-ease);
+  /* 카드가 자라나는 "펼쳐지는" 효과 대신, 최종 크기로 바로 스냅하고
+     내용물은 --center-fade/--hero-reveal의 opacity 크로스페이드로만
+     그 자리에서 디졸브되게 한다. */
+  transition: none;
 }
 
 .morphSlot .heroPanel {
@@ -355,7 +359,12 @@
   margin: auto;
   opacity: var(--hero-reveal);
   pointer-events: none;
-  transition: none;
+  /* --hero-reveal는 JS에서 이미 0 또는 1로만 딱 떨어지는 값이라(스크롤
+     위치에 실시간으로 묶인 중간값이 아니다 — 그래서 예전에 무빙스타일에서
+     스크롤을 멈추면 60~80% 반투명 상태로 얼어붙던 문제와는 다른 얘기다),
+     여기에 opacity 트랜지션을 걸어도 다시 그 문제가 재현되지 않는다.
+     0/1 스냅이 너무 갑작스러워 보여서 부드럽게 디졸브되도록 시간을 준다. */
+  transition: opacity 900ms ease;
 }
 
 .sequence[data-expanded="true"] .morphSlot .heroPanel {

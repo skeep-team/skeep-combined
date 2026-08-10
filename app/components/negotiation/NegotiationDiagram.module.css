@@ -23,12 +23,14 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-size: clamp(14px, 1.8vw, 24px);
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.6;
   color: var(--color-text-muted);
   max-width: 640px;
+  padding-top: clamp(7px, 0.65vw, 12px);
 }
 
 .diagramWrap {

@@ -173,6 +173,7 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
   display: flex;
   flex-direction: column;
   font-size: clamp(14px, 1.8vw, 24px);

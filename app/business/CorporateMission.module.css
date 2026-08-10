@@ -27,6 +27,10 @@
   font-family: var(--font-elza), "Helvetica Now Display", var(--font-pretendard), sans-serif;
 }
 
+.header > span {
+  padding-top: clamp(6px, 0.55vw, 11px);
+}
+
 .headerMark {
   width: clamp(92px, 7vw, 140px);
   height: clamp(82px, 9vh, 126px);

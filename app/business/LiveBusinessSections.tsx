@@ -227,15 +227,6 @@ export function BusinessClosing() {
           세상의 장벽을 허물어온 ‘스킵’은 에이전트 경험의 결승점이 아닙니다. 그저 다가올 미래에 상식이 될,<br />
           사용자 경험의 새로운 기준점을 가장 먼저 가져와 모두를 위한 출발점으로 제시했을 뿐이죠.
         </p>
-        <a
-          className={styles.closingLink}
-          href="https://inky-bar-798.notion.site/SKEEP-Technology-3ac465012ace80ac8653c94eb436d29a"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>SKEEP TECHNOLOGY</span>
-          <span className={styles.closingLinkArrow} aria-hidden="true">→</span>
-        </a>
         <small>Copyright © 2031 Skeep Inc. All rights Reserved.</small>
       </div>
     </footer>
