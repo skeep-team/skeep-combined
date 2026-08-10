@@ -1,64 +1,136 @@
-/* B2C 요금제 시퀀스. 좌표는 전부 원본 시안(1920px 폭) px 그대로다.
-   시안에서 두 카드 행(160~1760, y 860~1560)과 요금제 패널(160~1760, y 1760~2460)은
-   왼쪽 모서리와 높이(700)가 같고 폭만 790 → 1600으로 다르다. 그래서 별개의 두 블록이 아니라
-   같은 패널이 가로로 펼쳐지는 것으로 잇는다. */
+/* B2C 요금제. 예전엔 스크롤 진행도에 맞춰 clip-path로 패널이 펼쳐지고 카드가
+   3D로 뒤집히는 정교한 시퀀스였는데, 그 clip-path + 3D rotateX 조합이
+   무빙스타일에서 아예 렌더링되지 않아(패널이 처음부터 다 펼쳐진 채 빈 검정
+   박스로 보임) 반복해서 문제가 됐다. clip-path·패널 확장은 걷어냈지만,
+   사진이 문구 구간 동안은 왼쪽에 고정돼 있다가 카드 행이 다 올라와 사진과
+   윗선이 맞으면 그때부터 같이 스크롤되는 동작은 그대로 살렸다 — 이건 순수
+   position:sticky 하나로 되는 동작이라 스크롤 이벤트 JS는 필요 없다. 카드
+   뒤집기(자세히 보기)는 클릭으로 개별 토글한다. */
 .sequence {
-  --px: calc(100vw / 1920);
-  --stage-top: 3vh;
-  /* 세 상태를 쓴다. --bridge가 먼저 켜져 짝 카드→문구로 바뀌고,
-     스크롤을 더 내려야 --expand/--reveal이 켜져 패널이 실제로 펼쳐진다. */
-  /* 첫 페인트부터 Experience 카드 + 오른쪽 브릿지 문구 상태로 시작한다.
-     JS가 실행되기 전 잠깐 Enterprise 카드가 비치는 현상도 방지한다. */
-  --bridge: 1;
-  --expand: 0;
-  --reveal: 0;
-
-  position: relative;
-  /* 패널 높이(700) + 펼치기 여유 + 세 번의 뒤집기 여유.
-     핀이 풀릴 때까지 실제로 굴러가는 거리는 (여유 - 100vh)다. */
-  height: calc(700 * var(--px) + 330vh);
+  padding-block: clamp(72px, 8vw, 140px);
   background: #fff;
 }
 
-.sticky {
-  position: sticky;
-  top: var(--business-tabbar-h, 0px);
-  height: calc(100vh - var(--business-tabbar-h, 0px));
-  overflow: hidden;
+.stage {
+  /* 이 페이지 공용 .canvas가 line-height:0을 강제해서(이미지 전용 구간 대비),
+     여기 텍스트 요소들에 각자 line-height를 안 걸면 줄 높이가 0으로 찌그러져
+     다음 줄과 겹쳐 보인다 — 여기서 한 번에 정상값으로 되돌린다. */
   line-height: normal;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(28px, 4vw, 72px);
+  width: min(100%, 1600px);
+  margin-inline: auto;
+  padding-inline: var(--edge-padding);
 }
 
-/* Enterprise 시퀀스의 브릿지 문구와 같은 자리지만, 여긴 짝 카드가 그 자리를
-   먼저 차지하고 있어서 처음부터 보이면 안 된다. 짝 카드가 지워지는 --bridge
-   단계에만 떠 있다가, 패널이 실제로 펼쳐지는 --expand 단계에서 다시 사라진다. */
-.bridgeStatement {
+/* 왼쪽 사진 카드. 문구 구간에서는 화면 위쪽에 고정(position:sticky)돼
+   있다가, 오른쪽 카드 행이 아래에서 올라와 이 사진과 윗선(top 오프셋)이
+   같아지는 순간 자연스럽게 풀려 카드와 나란히 같이 스크롤된다 — sticky는
+   "그 이상 위로는 못 간다"는 제약일 뿐이라 정렬되는 순간 자체가 곧 풀리는
+   순간이라 튀어 보이지 않는다. 높이는 카드 행 실측값(--match-height, JS가
+   채워준다)에 맞춘다. */
+.introCard {
+  position: sticky;
+  /* 탭바 바로 밑에 딱 붙지 않고, 문구 제목(나만의 세계를...)과 눈높이가
+     맞도록 여유를 더 준다. */
+  top: calc(var(--business-tabbar-h, 0px) + clamp(40px, 4vw, 72px));
+  flex: 0 0 clamp(240px, 22vw, 380px);
+  width: clamp(240px, 22vw, 380px);
+  height: var(--match-height, clamp(440px, 34vw, 540px));
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #000;
+}
+
+.introCardBg {
   position: absolute;
-  top: calc(3vh + 8 * var(--px));
-  right: calc(145 * var(--px));
-  z-index: 0;
-  width: calc(810 * var(--px));
-  text-align: right;
-  opacity: clamp(0, calc(var(--bridge) - var(--expand)), 1);
-  will-change: opacity;
-  transition: opacity 0.34s ease;
+  inset: 0;
 }
 
-.bridgeStatement h2,
-.bridgeStatement p {
+.introCardBg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.introCardBg::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 70%;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 8, 10, 0) 0%,
+    rgba(6, 8, 10, 0.86) 100%
+  );
+}
+
+.introCardCopy {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  padding: clamp(20px, 2.2vw, 34px);
+  color: #fff;
+}
+
+.kicker {
+  margin: 0 0 clamp(6px, 0.6vw, 10px);
+  opacity: 0.7;
+  font-size: clamp(11px, 0.9vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 0 clamp(10px, 1vw, 16px);
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.lede {
   margin: 0;
+  opacity: 0.85;
+  font-size: clamp(12px, 1vw, 15px);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+}
+
+/* introCard의 sticky는 이 .rightColumn 박스 안에서만 붙어 있을 수 있다.
+   문구~카드 사이 간격을 넉넉히 둬서, 카드 행이 아래에서 올라와 사진과
+   윗선이 맞을 때까지는 사진이 화면 위쪽에 고정돼 있게 한다. 카드 아래엔
+   여유를 더 두지 않는다(더 두면 정렬된 뒤에도 사진만 계속 고정돼 있어
+   어색해진다 — 정렬되는 순간 바로 풀려서 같이 스크롤돼야 한다). */
+.rightColumn {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(200px, 30vh, 420px);
+  padding-top: clamp(8px, 1vw, 20px);
+}
+
+.bridgeStatement {
+  max-width: 900px;
 }
 
 .bridgeStatement h2 {
+  margin: 0;
   display: grid;
-  font-size: calc(60 * var(--px));
+  gap: 0.15em;
+  font-size: clamp(28px, 3vw, 44px);
   font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: -0.055em;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
 }
 
 .bridgeStatement h2 strong {
   color: #000;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .bridgeStatement h2 span {
@@ -66,422 +138,47 @@
 }
 
 .bridgeStatement p {
-  margin-top: calc(245 * var(--px));
+  margin: clamp(28px, 3vw, 44px) 0 0;
   color: #a7a7a7;
-  font-size: calc(24 * var(--px));
-  font-weight: 400;
-  line-height: 1.55;
-  letter-spacing: -0.04em;
+  font-size: clamp(14px, 1.25vw, 18px);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
 }
 
-/* 무대 자체는 배경이 없다. 두 카드가 각자 칠하고, 그 사이 20px 틈으로 페이지 배경이 비친다. */
-.stage {
-  position: absolute;
-  left: 0;
-  top: var(--stage-top);
-  width: calc(1600 * var(--px));
-  height: calc(700 * var(--px));
-  margin-inline: calc(160 * var(--px));
-  color: #000;
-  font-family: var(--font-pretendard), sans-serif;
-  letter-spacing: -0.04em;
-}
-
-/* 펼쳐지는 패널이 왼쪽부터 덮어 나가는, 오른쪽의 짝 카드.
-   패널이 자라기 전, 브릿지 문구가 뜨는 시점(--bridge)에 먼저 디졸브되어
-   자리를 비켜준다 — 그래야 문구가 이 카드에 가리지 않고 뜬다. */
-.peer {
-  position: absolute;
-  left: calc(810 * var(--px));
-  top: 0;
-  width: calc(790 * var(--px));
-  height: calc(700 * var(--px));
-  border-radius: var(--radius-xl);
-  background: #e7eaf0;
-  opacity: calc(1 - var(--bridge));
-  will-change: opacity;
-  transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* 카드(790)에서 패널(1600)로 자라는 건 폭을 바꾸는 게 아니라 오른쪽을 잘라 두었다가
-   푸는 것이다. 레이아웃이 다시 계산되지 않아 안쪽 글줄이 흐르지 않는다.
-   예전엔 이 자르기를 .panel 자체의 clip-path로 걸었는데, 이 패널 안에 3D
-   rotateX로 뒤집히는 요금제 카드(.faces)가 같이 있다 보니 무빙스타일에서
-   clip-path가 아예 적용되지 않고 패널이 처음부터 1600 전체 폭으로 펼쳐진
-   채(오른쪽은 아직 아무 내용도 없어 그냥 새까맣게) 보이는 문제가 있었다.
-   그래서 자르기는 별도의 overflow:hidden 래퍼(.panelClip)로 옮기고,
-   .panel 자신은 항상 1600 전체 폭을 유지해 안쪽 절대좌표 자식들이 그대로
-   맞게 둔다. */
-.panelClip {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: calc((790 + 810 * var(--expand)) * var(--px));
-  height: calc(700 * var(--px));
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  contain: layout paint;
-  will-change: width;
-  /* 사진(.panelBg)이 opacity로 완전히 사라지는 데 0.5s가 걸린다 — 실제로
-     펼쳐지는 움직임은 그게 다 끝난 뒤에야 시작하도록 같은 0.5s만큼 지연을
-     둔다. 사진이 사라지는 도중에 패널이 같이 벌어지면 사진이 걷히는
-     모습이 옆으로 새는 것처럼 겹쳐 보인다. */
-  transition: width 0.62s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
-}
-
-.panel {
-  position: relative;
-  width: calc(1600 * var(--px));
-  height: calc(700 * var(--px));
-  /* 사진이 덮여 있는 동안(카드 상태)에도 이 색이 그대로 사진 밑에 깔려 있다.
-     사진이 사라지는 순간에만 색을 바꾸면(예전엔 밝은 회색 #e7eaf0였다) 사진이
-     옅어지는 동안 그 회색이 비쳐 보였다 — 처음부터 펼쳐진 뒤와 같은 색으로
-     둬서 사진이 사라져도 색이 안 바뀌고 그대로 이어진다. */
-  background-color: #161A1E;
-}
-
-/* 카드/패널 사진 배경 + 아래에서 올라오는 검정 딤(글자 가독성용) */
-.peerBg {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* 패널은 접힘(790)일 때가 항상 먼저 보이는 폭이라, 사진 자체를 그 폭 기준으로
-   커버시켜 인물이 접힌 카드 안에서 중심에 오게 한다. 펼쳐진 뒤(1600)엔 이 좁은
-   스트립 오른쪽으로 요금제 카드들이 덮고 지나가므로 그대로 둬도 이질감이 없다. */
-/* 패널이 접힘(790)→펼침(1600)으로 자라는 것과 같은 박자로 사진도 같이 넓어진다.
-   cover가 폭에 맞춰 다시 계산되면서 자연스럽게 더 넓은 구도가 드러난다. */
-.panelBg {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: calc(790 * var(--px));
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-  /* 예전엔 폭을 790→1600으로 늘려 사진이 같이 넓어지는 것처럼 보이게 했는데,
-     width는 레이아웃(리플로우) 속성이라 무빙스타일에서 펼쳐지는 내내 매 프레임
-     다시 계산되어 찌글거렸다 — 어차피 펼쳐지면 위 딤(::before)이 진하게
-     깔리고 요금제 카드가 대부분 덮어서 사진이 넓어지는 게 잘 보이지도 않는다.
-     그래서 폭은 처음 크기로 고정해 두고, 펼쳐지면 그냥 opacity로 지운다. */
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
-
-.sequence[data-revealed="true"] .panelBg {
-  opacity: 0;
-}
-
-.panelBg picture,
-.panelBg img,
-.peerBg picture,
-.peerBg img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.panelBg img {
-  object-position: 50% center;
-}
-
-.panelBg::after,
-.peerBg::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  height: 82%;
-  background: linear-gradient(
-    to bottom,
-    rgba(6, 8, 10, 0) 0%,
-    rgba(6, 8, 10, 0.86) 100%
-  );
-  pointer-events: none;
-}
-
-/* 펼쳐지면 흰 카드가 뜨게 사진을 훨씬 진하게 눌러줘야 하는데, 크기가 자라며
-   나타나면 어색해서 같은 자리·같은 크기로 깔아두고 오퍼시티로만 디졸브시킨다.
-   뒤집히기(data-open) 전, 펼쳐지는 중간 단계부터 이미 적용되어야 해서 data-revealed로 건다. */
-.panelBg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(4, 5, 7, 0.6) 0%,
-    rgba(4, 5, 7, 0.94) 100%
-  );
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-
-.sequence[data-revealed="true"] .panelBg::before {
-  opacity: 1;
-}
-
-/* ---------- 왼쪽 열: 알약 ↔ 되돌아가기 화살표 ---------- */
-
-.control {
-  position: absolute;
-  left: calc(42 * var(--px));
-  top: calc(50 * var(--px));
-  height: calc(70 * var(--px));
-}
-
-.pill,
-.back {
-  position: absolute;
-  left: 0;
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: calc(70 * var(--px));
-  border-radius: 999px;
-  transition:
-    opacity 0.42s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.pill {
-  width: calc(269 * var(--px));
-  background: #66717f;
-  color: #fff;
-  font-size: calc(24 * var(--px));
-  font-weight: 600;
-  opacity: var(--reveal);
-}
-
-.back {
-  width: calc(70 * var(--px));
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  opacity: 0;
-  transform: scale(0.86);
-}
-
-.back img {
-  display: block;
-  width: calc(34.9 * var(--px));
-  height: calc(30.4 * var(--px));
-  opacity: 0.7;
-  filter: invert(1);
-}
-
-.panel[data-open="true"] .pill {
-  opacity: 0;
-  transform: scale(0.92);
-  pointer-events: none;
-}
-
-.panel[data-open="true"] .back {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ---------- 왼쪽 열: 카피 ---------- */
-
-/* 같은 문구지만 카드일 때와 패널일 때 세로 위치와 줄바꿈 폭이 달라서, 흘려보내지 않고
-   두 벌을 겹쳐 두고 크로스페이드한다. 도중에 글줄이 다시 흐르며 튀는 걸 피하려는 것이다. */
-.introCard,
-.introPanel,
-.peerIntro {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.peerIntro {
-  /* 펼쳐지는 패널의 오른쪽 경계가 문구에 닿기 전에 먼저 완전히 지운다.
-     늦게 페이드하면 경계에 가려진 글자 조각이 겹쳐 보인다. */
-  opacity: clamp(0, calc(1 - (var(--expand) * 16)), 1);
-  will-change: opacity;
-  transition: opacity 0.34s ease;
-}
-
-/* 카드와 패널에서 같은 좌표를 공유한 채 투명도만 교대한다. */
-.introCard {
-  opacity: clamp(0, calc((0.88 - var(--reveal)) * 10), 1);
-  transition: opacity 0.34s ease;
-}
-
-.introPanel {
-  opacity: clamp(0, calc((var(--reveal) - 0.84) * 10), 1);
-  transition: opacity 0.34s ease;
-}
-
-.kicker,
-.title,
-.lede {
-  position: absolute;
-  left: calc(50 * var(--px));
-  margin: 0;
-}
-
-.kicker {
-  color: rgba(255, 255, 255, 0.72);
-  font-size: calc(24 * var(--px));
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.title {
-  color: #fff;
-  font-size: calc(50 * var(--px));
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.lede {
-  color: rgba(255, 255, 255, 0.86);
-  font-size: calc(24 * var(--px));
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-/* 접힘/펼침 상태가 바뀌어도 텍스트 기준선은 움직이지 않는다. */
-.introCard .kicker,
-.introPanel .kicker,
-.peerIntro .kicker {
-  top: calc(334 * var(--px));
-}
-
-.introCard .title,
-.introPanel .title,
-.peerIntro .title {
-  top: calc(373 * var(--px));
-}
-
-.introCard .lede,
-.introPanel .lede,
-.peerIntro .lede {
-  top: calc(524 * var(--px));
-  width: calc(340 * var(--px));
-}
-
-/* "사용자와 연결하고, 그 데이터로 전략까지"가 340px에서 한 글자 모자라 줄이
-   갈라진다. 이 카드만 폭을 살짝 넓혀 의도한 3줄(<br/> 위치)대로 떨어지게 한다. */
-.peerIntro .lede {
-  width: calc(400 * var(--px));
-}
-
-.panel[data-open="true"] .introPanel {
-  opacity: 0;
-  transform: translateY(calc(-12 * var(--px)));
-  pointer-events: none;
-}
-
-.introPanel,
-.axisRule,
-.axis,
-.notes {
-  transition:
-    opacity 0.42s ease,
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* 항목 축은 카드 안 스펙 타일과 같은 높이에 서야 해서 좌표를 카드 기준(50 + 154/133)에 맞춘다. */
-.axisRule {
-  position: absolute;
-  left: calc(52 * var(--px));
-  top: calc(183 * var(--px));
-  width: calc(360 * var(--px));
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 100%
-  );
-  opacity: 0;
-}
-
-.axis {
-  position: absolute;
-  left: calc(42 * var(--px));
-  top: calc(204 * var(--px));
+.cardsPanel {
   display: flex;
   flex-direction: column;
-  gap: calc(10 * var(--px));
-  width: calc(370 * var(--px));
-  opacity: 0;
+  gap: clamp(20px, 2vw, 32px);
 }
 
-.panel[data-open="true"] .axisRule,
-.panel[data-open="true"] .axis {
-  opacity: 1;
-}
-
-.axisItem {
-  display: flex;
-  align-items: center;
-  height: calc(54 * var(--px));
-  padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
-    calc(20 * var(--px));
-  border-radius: var(--radius-md);
-  background: #f1f1f1;
-  font-size: calc(20 * var(--px));
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.notes {
-  position: absolute;
-  left: calc(50 * var(--px));
-  top: calc(560 * var(--px));
-  width: calc(377 * var(--px));
-  margin: 0;
-  color: rgba(255, 255, 255, 0.62);
-  font-size: calc(10 * var(--px));
-  font-weight: 400;
-  line-height: 1.45;
-  opacity: 0;
-}
-
-.panel[data-open="true"] .notes {
-  opacity: 0.5;
-}
-
-/* ---------- 카드 ---------- */
-
-/* 세 요금제는 카드별 순차 노출 없이 같은 순간에 완성된 상태로 나타난다. */
 .cards {
-  position: absolute;
-  left: calc(460 * var(--px));
-  top: calc(50 * var(--px));
   display: flex;
-  gap: calc(24 * var(--px));
-  width: calc(1095 * var(--px));
-  opacity: var(--reveal);
-  transform: translate3d(
-    0,
-    calc((1 - var(--reveal)) * 22 * var(--px)),
-    0
-  );
-  will-change: opacity, transform;
-  /* 검정 영역(.panelClip)이 다 펼쳐지는 데 사진 페이드(0.5s) + width 전환(0.62s) =
-     1.12s가 걸린다 — 카드는 그게 다 끝난 뒤에야 나타나도록 같은 만큼 지연을
-     둔다. 먼저 나타나면 아직 좁은 패널 밖으로 카드가 삐져나온 것처럼 보인다. */
-  transition:
-    opacity 0.48s ease 1.12s,
-    transform 0.62s cubic-bezier(0.22, 1, 0.36, 1) 1.12s;
+  flex-wrap: wrap;
+  gap: clamp(14px, 1.4vw, 22px);
 }
 
+/* 카드는 버튼이다 — 클릭/탭/리모컨 선택으로 뒤집는다(무빙스타일은 호버가
+   없는 환경이라 클릭 토글이 맞다). 높이를 고정하지 않고 앞/뒷면 중 더 큰
+   쪽 콘텐츠에 맞춰 자동으로 늘어나야 내용이 잘리지 않는다 — 앞/뒷면을
+   position:absolute로 겹치면 부모가 콘텐츠 높이를 못 읽으므로, 대신 grid로
+   같은 셀에 겹쳐서(grid는 겹친 자식 중 가장 큰 것에 맞춰 트랙 크기를 정한다)
+   flip 효과는 유지하면서 카드 높이가 콘텐츠를 따라가게 한다. */
 .card {
-  flex: 1 0 0;
-  min-width: 0;
-  height: calc(600 * var(--px));
-  perspective: calc(1800 * var(--px));
+  position: relative;
+  flex: 1 1 220px;
+  min-width: 200px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1800px;
 }
 
 .faces {
-  position: relative;
+  display: grid;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
@@ -493,187 +190,114 @@
 }
 
 .face {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 2vw, 32px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-xl);
+  background: #fff;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  transition: background-color 0.42s ease;
 }
 
 .rear {
   transform: rotateY(180deg);
 }
 
-.card[data-tone="a"] .face {
-  background: #d0d7e0;
-}
-
-.card[data-tone="b"] .face {
-  background: #c4ccd7;
-}
-
-.card[data-tone="c"] .face {
-  background: #a5b0bf;
-}
-
-/* 펼쳐지면 사진 딤이 훨씬 진해지는 대신, 카드는 톤 구분 없이 전부 흰 배경으로 뜬다.
-   뒤집히기(data-open) 전, 펼쳐지는 중간 단계부터 이미 적용되어야 해서 data-revealed로 건다. */
-.sequence[data-revealed="true"] .card[data-tone="a"] .face,
-.sequence[data-revealed="true"] .card[data-tone="b"] .face,
-.sequence[data-revealed="true"] .card[data-tone="c"] .face {
-  background: #fff;
-}
-
-/* 뒤집힌 뒷면(스펙 비교)만 살짝 더 어두운 회색으로, 안의 스펙 타일(#F1F1F1)과 구분되게. */
-.sequence[data-revealed="true"] .card[data-tone="a"] .rear,
-.sequence[data-revealed="true"] .card[data-tone="b"] .rear,
-.sequence[data-revealed="true"] .card[data-tone="c"] .rear {
-  background: #d9d9d9;
-}
-
-/* ---------- 카드 앞면 ---------- */
-
-/* 줄바꿈은 시안 그대로 <br>로만 낸다. 카드 폭에 맡기면 시안과 다르게 흐른다.
-   아래 여백값은 시안 PNG에서 잰 글자 잉크 위치를 Pretendard 세로 메트릭으로
-   박스 좌표로 되돌려 계산한 것이다(잉크 기준 340/385/457/530). */
-.frontBody {
-  position: absolute;
-  left: calc(34 * var(--px));
-  right: 0;
-  bottom: calc(67.8 * var(--px));
-  white-space: nowrap;
-}
-
-.frontPrice {
-  margin: 0 0 calc(9.7 * var(--px));
-  color: #6E6E6E;
-  font-size: calc(19 * var(--px));
+/* 영문은 페이지 공용 Elza Condensed 폰트를 쓰는데(부모 .page의 !important
+   규칙으로 상속), <button>은 브라우저 기본 스타일이 text-transform을
+   상속 대신 자체 기본값(none)으로 리셋해 버려서 대문자 변환은 따로 걸어야
+   한다. */
+.cardPrice {
+  margin: 0 0 clamp(6px, 0.6vw, 10px);
+  color: #6e6e6e;
+  font-size: clamp(14px, 1.2vw, 17px);
   font-weight: 400;
-  line-height: 1.2;
+  text-transform: uppercase;
 }
 
-.card[data-tone="c"] .frontPrice,
-.card[data-tone="c"] .rearPrice {
-  color: #6E6E6E;
-}
-
-.frontName {
-  margin: 0 0 calc(20.1 * var(--px));
-  font-size: calc(40 * var(--px));
+.cardName {
+  margin: 0 0 clamp(10px, 1vw, 16px);
+  font-size: clamp(21px, 1.9vw, 28px);
   font-weight: 600;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
-.frontTagline {
-  margin: 0 0 calc(42.2 * var(--px));
-  font-size: calc(19 * var(--px));
+.cardTagline {
+  margin: 0 0 clamp(16px, 1.5vw, 24px);
+  font-size: clamp(13px, 1.15vw, 16px);
   font-weight: 600;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
-/* 본문은 카드 배경 위 검정 50%다. 카드 톤마다 회색이 달라져야 해서 고정 hex를 쓰지 않는다. */
-.frontText {
+.cardBody {
   margin: 0;
   opacity: 0.5;
-  font-size: calc(16 * var(--px));
-  font-weight: 400;
-  line-height: 1.45;
+  font-size: clamp(12px, 1.05vw, 14px);
+  line-height: 1.5;
+  letter-spacing: -0.02em;
 }
 
-/* ---------- 카드 뒷면 ---------- */
-
-.rearPrice,
-.rearName {
-  position: absolute;
-  left: calc(34 * var(--px));
-  margin: 0;
-  font-size: calc(24 * var(--px));
-  line-height: 1.2;
-}
-
-.rearPrice {
-  top: calc(44 * var(--px));
-  color: #6E6E6E;
-  font-weight: 400;
-}
-
-.rearName {
-  top: calc(77 * var(--px));
+.flipHint {
+  margin-top: auto;
+  padding-top: clamp(14px, 1.2vw, 20px);
+  color: #000;
+  opacity: 0.4;
+  font-size: clamp(11px, 0.95vw, 13px);
   font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.rearRule {
-  position: absolute;
-  left: 50%;
-  top: calc(133 * var(--px));
-  width: calc(282 * var(--px));
+.cardRule {
   height: 1px;
-  transform: translateX(-50%);
-  background: #a5b0bf;
+  margin-bottom: clamp(14px, 1.2vw, 20px);
+  background: #e5e5e5;
 }
 
 .specs {
-  position: absolute;
-  left: calc(34 * var(--px));
-  top: calc(154 * var(--px));
   display: flex;
   flex-direction: column;
-  gap: calc(10 * var(--px));
-  width: calc(282 * var(--px));
+  gap: clamp(8px, 0.8vw, 12px);
 }
 
 .spec {
   display: flex;
   align-items: center;
-  height: calc(54 * var(--px));
-  overflow: hidden;
-  padding: calc(13 * var(--px)) calc(65 * var(--px)) calc(16 * var(--px))
-    calc(20 * var(--px));
+  justify-content: space-between;
+  gap: clamp(8px, 1vw, 14px);
+  padding: clamp(10px, 0.95vw, 14px) clamp(14px, 1.2vw, 18px);
   border-radius: var(--radius-md);
   background: #f1f1f1;
-  font-size: calc(20 * var(--px));
-  font-weight: 500;
-  line-height: 1.45;
-  white-space: nowrap;
+  font-size: clamp(11px, 0.95vw, 14px);
+  line-height: 1.35;
 }
 
 .spec span {
-  opacity: 0.8;
+  opacity: 0.65;
 }
 
-/* 제일 진한 카드(Pro)만 스펙 글자를 100%로 둔다. */
-.card[data-tone="c"] .spec span {
-  opacity: 1;
+.spec strong {
+  font-weight: 500;
+  text-align: right;
 }
 
 .specOff {
   opacity: 0.4;
 }
 
-.rearText {
-  position: absolute;
-  left: calc(34 * var(--px));
-  top: calc(505 * var(--px));
-  width: calc(284 * var(--px));
+.notes {
   margin: 0;
-  opacity: 0.5;
-  font-size: calc(20 * var(--px));
-  font-weight: 400;
-  line-height: 1.45;
+  color: var(--color-text-muted);
+  font-size: clamp(10px, 0.85vw, 12px);
+  line-height: 1.6;
 }
 
 /* Samsung Moving Style/Tizen은 preserve-3d + backface-visibility 조합에서
    카드의 앞·뒷면을 모두 누락해 검정 패널만 남기는 경우가 있다. 이 기기에서는
-   같은 두 면을 제자리에 겹친 채 opacity로 교대하고, 패널 확장과 동시에 카드를
-   표시해 중간 검정 프레임이 보이지 않게 한다. */
-.sequence[data-moving-style="true"] .cards {
-  transition:
-    opacity 0.18s linear,
-    transform 0.18s linear;
-}
-
+   같은 두 면을 제자리에 겹친 채 opacity로 교대한다. */
 .sequence[data-moving-style="true"] .faces,
 .sequence[data-moving-style="true"] .card[data-flipped="true"] .faces {
   transform: none;
@@ -684,7 +308,7 @@
 .sequence[data-moving-style="true"] .face {
   backface-visibility: visible;
   -webkit-backface-visibility: visible;
-  transition: opacity 0.18s linear, background-color 0.18s ease;
+  transition: opacity 0.18s linear;
 }
 
 .sequence[data-moving-style="true"] .rear {
@@ -700,69 +324,36 @@
   opacity: 1;
 }
 
-/* 펼치기도 뒤집기도 없이, 처음부터 다 펼쳐진 패널만 보여준다. */
 @media (prefers-reduced-motion: reduce) {
-  .sequence {
-    height: calc(700 * var(--px));
+  .faces {
+    transition: none;
   }
+}
 
-  .sticky {
-    position: relative;
-    top: 0;
-  }
-
+@media (max-width: 860px) {
   .stage {
-    opacity: 1;
-    transform: none;
+    flex-direction: column;
   }
 
-  .panelClip {
-    width: calc(1600 * var(--px));
-  }
-
-  .panel {
-    --reveal: 1;
-  }
-
-  .peer,
   .introCard {
-    display: none;
+    position: static;
+    width: 100%;
+    flex: none;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
-  .faces,
-  .pill,
-  .back,
-  .introPanel,
-  .axisRule,
-  .axis,
-  .notes {
-    transition: opacity 0.2s linear;
+  .rightColumn {
+    gap: clamp(56px, 12vw, 96px);
+  }
+}
+
+@media (max-width: 560px) {
+  .cards {
+    flex-direction: column;
   }
 
-  .card[data-flipped="true"] .faces {
-    transform: none;
-  }
-
-  .panel[data-open="true"] .introPanel {
-    transform: none;
-  }
-
-  .face {
-    backface-visibility: visible;
-    -webkit-backface-visibility: visible;
-    transition: opacity 0.2s linear;
-  }
-
-  .rear {
-    transform: none;
-    opacity: 0;
-  }
-
-  .card[data-flipped="true"] .front {
-    opacity: 0;
-  }
-
-  .card[data-flipped="true"] .rear {
-    opacity: 1;
+  .card {
+    min-width: 0;
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Reveal } from "../components/ui/Reveal";
 import styles from "./ExperiencePricingFlip.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -11,12 +12,12 @@ type Plan = {
   name: string;
   tagline: string;
   body: string;
-  /* 왼쪽 항목 축과 같은 순서. 마지막 칸이 "미포함"이면 타일 전체를 흐리게 둔다. */
+  /* 왼쪽 항목 축과 같은 순서. 마지막 칸이 "미포함"이면 타일을 흐리게 둔다. */
   specs: string[];
   specOffFrom?: number;
 };
 
-/* 왼쪽 열의 비교축. 카드 안 스펙 타일과 1:1로 줄이 맞는다. */
+/* 카드 뒷면 스펙 타일의 라벨. */
 const axis = [
   "스폰서 및 광고",
   "지원 환경",
@@ -43,7 +44,7 @@ const plans: Plan[] = [
   },
   {
     tone: "b",
-    price: "$9/mo",
+    price: "$29/mo",
     name: "Plus",
     tagline: "미래를 여는 가능성의 마스터키",
     body: "굳이 말하지 않아도 나의 목적을 알아\n채고, 동시에 5개 환경을 스킵합니다.",
@@ -58,7 +59,7 @@ const plans: Plan[] = [
   },
   {
     tone: "c",
-    price: "$29/mo",
+    price: "$99/mo",
     name: "Pro",
     tagline: "미래를 완성하는 완벽한 청사진",
     body: "무제한 연결과 사용자 지정 앵커로\n제약 없는 완벽한 경험을 제공합니다.",
@@ -80,20 +81,6 @@ const notes = [
   "*앵커: 사용자가 직접 지정하는 환경 관리 에이전트로, 추가 결제로 확장 가능합니다.",
 ];
 
-/* 두 카드(Experience/Enterprise)가 나란히 붙어 있어서 브릿지 문구를 놓을 빈 자리가
-   없다. 예전엔 진입 직후 잠깐(0~8%) 두 카드가 나란한 모습부터 보여준 뒤에야
-   짝 카드(peer)를 지우고 문구가 뜨는 중간 단계(--bridge)로 넘어갔는데, 그 첫
-   장면을 아예 건너뛰고 싶다는 피드백으로 0으로 낮췄다 — 섹션에 들어오는
-   순간 곧바로 브릿지 상태(문구 뜬 상태)부터 시작한다. 스크롤을 더 내려야
-   패널이 실제로 펼쳐지는 건 그대로다(--expand/--reveal). */
-const bridgeAt = 0;
-const revealAt = 0.24;
-
-/* 카드가 뒤집히는 지점. 되돌아오는 지점은 조금 앞에 둬서 경계에서 떨리지 않게 한다. */
-/* 카드를 하나씩 돌리지 않고, 이 지점을 넘으면 전부 한꺼번에 뒤집는다. */
-const flipForward = 0.48;
-const flipReverse = 0.42;
-
 function lines(text: string) {
   return text.split("\n").map((line, index) => (
     <span key={line}>
@@ -105,84 +92,84 @@ function lines(text: string) {
 
 export default function ExperiencePricingFlip() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [flipped, setFlipped] = useState(0);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const introCardRef = useRef<HTMLDivElement>(null);
+  const [flipped, setFlipped] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const section = sectionRef.current;
+    // Samsung Moving Style/Tizen은 preserve-3d + backface-visibility 조합에서
+    // 카드의 앞·뒷면을 모두 누락해 검정 패널만 남기는 경우가 있다(이 세션에서
+    // 반복 확인됨) — 이 기기에서는 3D 회전 대신 opacity 크로스페이드로 뒤집는다.
+    if (sectionRef.current) {
+      sectionRef.current.dataset.movingStyle = String(
+        /Tizen|SMART-TV|SmartTV|Maple/i.test(window.navigator.userAgent),
+      );
+    }
+  }, []);
 
-    if (!section) {
+  useEffect(() => {
+    // 왼쪽 사진 카드 높이를 오른쪽 카드 패널(카드 행 + 하단 각주) 전체
+    // 높이에 맞춘다 — sticky가 풀리는 시점은 introCard의 아랫변이 형제
+    // .rightColumn(문구+카드패널을 담은 박스)의 아랫변과 맞춰질 때라,
+    // 카드 "행"만 재면(각주 높이가 빠져) 풀린 뒤에 사진이 카드 윗선보다
+    // 아래로 처져 보인다 — 그래서 카드 행의 부모(cardsPanel, 각주까지
+    // 포함한 전체)를 잰다.
+    const cardsPanel = cardsRef.current?.parentElement;
+    const intro = introCardRef.current;
+
+    if (!cardsPanel || !intro) {
       return;
     }
 
-    section.dataset.movingStyle = String(
-      /Tizen|SMART-TV|SmartTV|Maple/i.test(window.navigator.userAgent),
-    );
-
-    let count = 0;
-    let bridged = false;
-    let revealed = false;
-
-    const update = () => {
-      const rect = section.getBoundingClientRect();
-      const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / distance));
-      const nextBridged = progress >= bridgeAt;
-      const nextRevealed = progress >= revealAt;
-
-      if (bridged !== nextBridged) {
-        bridged = nextBridged;
-        section.style.setProperty("--bridge", bridged ? "1" : "0");
-      }
-
-      if (revealed !== nextRevealed) {
-        revealed = nextRevealed;
-        const value = revealed ? "1" : "0";
-
-        section.style.setProperty("--expand", value);
-        section.style.setProperty("--reveal", value);
-        // 흰 카드/진한 딤은 뒤집히는 순간(data-open)이 아니라 패널이 펼쳐지는
-        // 순간부터 같이 켜져야 해서, flip과 별개로 reveal 상태를 노출한다.
-        section.setAttribute("data-revealed", String(revealed));
-      }
-
-      if (count === 0 && progress >= flipForward) {
-        count = plans.length;
-      } else if (count > 0 && progress <= flipReverse) {
-        count = 0;
-      }
-
-      setFlipped((previous) => (previous === count ? previous : count));
+    const sync = () => {
+      intro.style.setProperty("--match-height", `${cardsPanel.offsetHeight}px`);
     };
 
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    update();
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(cardsPanel);
 
-    // 안전장치: 무빙스타일 등 일부 환경에서 scroll 이벤트 전달이 간헐적으로
-    //끊기는 사례가 이 세션에서 반복 확인됐다(IntersectionObserver뿐 아니라
-    // 여기서는 순수 scroll 리스너 자체가 대상). 이 섹션은 330vh짜리 핀 구간
-    // 전체가 --bridge/--expand/--reveal 세 값에 걸려 있어서, 이벤트를
-    // 하나라도 놓치면 사진이 회색 배경인 채로 멈추거나 짝 카드가 안
-    // 사라지거나 패널이 안 펼쳐진 채로 남는다. 이벤트와 별개로 실제 스크롤
-    // 위치를 주기적으로 다시 재서, 값이 실제 위치와 어긋나 있으면 바로잡는다.
-    const pollTimer = window.setInterval(update, 250);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      window.clearInterval(pollTimer);
-    };
+    return () => observer.disconnect();
   }, []);
 
-  const open = flipped > 0;
+  const toggleFlip = (name: string) => {
+    setFlipped((previous) => ({ ...previous, [name]: !previous[name] }));
+  };
 
   return (
-    <section
-      ref={sectionRef}
-      className={styles.sequence}
-      aria-label="Skeep Experience 요금제"
-    >
-      <div className={styles.sticky}>
+    <section ref={sectionRef} className={styles.sequence} aria-label="Skeep Experience 요금제">
+      <div className={styles.stage}>
+        <div className={styles.introCard} ref={introCardRef}>
+          <div className={styles.introCardBg} aria-hidden="true">
+            {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
+                <picture>/webp 소스 협상을 제대로 처리 못 해 사진 대신 빈 회색
+                박스만 보이는 문제가 있었다. JPEG는 협상 없이 바로 로드된다. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${BASE_PATH}/business/pricing/pricing-experience-bg.jpg`}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div className={styles.introCardCopy}>
+            <p className={styles.kicker}>B2C Business</p>
+            <p className={styles.title}>
+              Skeep
+              <br />
+              Experience
+            </p>
+            <p className={styles.lede}>
+              시공간의 제약 없이 나의 정체성을
+              <br />
+              기억하고, 끊임 없는 일상을 완성하는
+              <br />
+              맞춤형 스킵 구독 솔루션
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.rightColumn}>
         <div className={styles.bridgeStatement}>
           <h2>
             <strong>나만의 세계를 만들어가는 법</strong>
@@ -190,109 +177,59 @@ export default function ExperiencePricingFlip() {
             <span>그냥, 스킵하거나</span>
           </h2>
           <p>
-            소비자는 이제 특정 브랜드의 에이전트 생태계에<br />
-            얽매이지 않고 모든 에이전트와 내 성향을 공유 할 수 있죠.<br />
-            내 맥락을 안전하게 들고 다니는 SKEEP이,<br />
+            소비자는 이제 특정 브랜드의 에이전트 생태계에
+            <br />
+            얽매이지 않고 모든 에이전트와 내 성향을 공유 할 수 있죠.
+            <br />
+            내 맥락을 안전하게 들고 다니는 SKEEP이,
+            <br />
             어떤 에이전트를 만나든 나를 대신 소개해주니까요.
           </p>
         </div>
 
-        <div className={styles.stage}>
-          {/* 펼쳐지는 패널이 왼쪽부터 덮어 나가는, 오른쪽의 짝 카드 */}
-          <div className={styles.peer} aria-hidden="true">
-            <div className={styles.peerBg} aria-hidden="true">
-              {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
-                  <picture>/webp 소스 협상을 제대로 처리 못 해 사진 대신 빈 회색
-                  박스만 보이는 문제가 있었다. JPEG는 협상 없이 바로 로드된다. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${BASE_PATH}/business/pricing/pricing-enterprise-bg.jpg`}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+        <Reveal className={styles.cardsPanel}>
+            <div className={styles.cards} ref={cardsRef}>
+              {plans.map((plan) => (
+                <button
+                  type="button"
+                  key={plan.name}
+                  className={styles.card}
+                  data-tone={plan.tone}
+                  data-flipped={Boolean(flipped[plan.name])}
+                  aria-pressed={Boolean(flipped[plan.name])}
+                  onClick={() => toggleFlip(plan.name)}
+                >
+                  <div className={styles.faces}>
+                    <div className={`${styles.face} ${styles.front}`}>
+                      <p className={styles.cardPrice}>{plan.price}</p>
+                      <p className={styles.cardName}>{plan.name}</p>
+                      <p className={styles.cardTagline}>{plan.tagline}</p>
+                      <p className={styles.cardBody}>{lines(plan.body)}</p>
+                      <span className={styles.flipHint}>자세히 보기</span>
+                    </div>
 
-            <div className={styles.peerIntro}>
-              <p className={styles.kicker}>B2B Business</p>
-              <p className={styles.title}>
-                Skeep
-                <br />
-                Enterprise
-              </p>
-              {/* 옆의 Experience 카드와 줄 수를 맞춘다. */}
-              <p className={styles.lede}>
-                기업 간 경계를 넘어 모든 생태계의
-                <br />
-                사용자와 연결하고, 그 데이터로 전략까지
-                <br />
-                제시하는 파트너 솔루션
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.panelClip}>
-          <div className={styles.panel} data-open={open}>
-            <div className={styles.panelBg} aria-hidden="true">
-              {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
-                  <picture>/webp 소스 협상을 제대로 처리 못 해 사진 대신 빈 회색
-                  박스만 보이는 문제가 있었다. JPEG는 협상 없이 바로 로드된다. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${BASE_PATH}/business/pricing/pricing-experience-bg.jpg`}
-                alt=""
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-
-            <div className={styles.control} aria-hidden="true">
-              <span className={styles.pill}>요금제 자세히 알아보기</span>
-              <span className={styles.back}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`${BASE_PATH}/business/flip/arrow-left.svg`} alt="" />
-              </span>
-            </div>
-
-            <div className={styles.introCard} aria-hidden="true">
-              <p className={styles.kicker}>B2C Business</p>
-              <p className={styles.title}>
-                Skeep
-                <br />
-                Experience
-              </p>
-              {/* 펼친 뒤와 줄 수가 달라지면 전환할 때 눈에 띄어서, 카드일 때도 세 줄로 맞춘다. */}
-              <p className={styles.lede}>
-                시공간의 제약 없이 나의 정체성을
-                <br />
-                기억하고, 끊임 없는 일상을 완성하는
-                <br />
-                맞춤형 스킵 구독 솔루션
-              </p>
-            </div>
-
-            <div className={styles.introPanel}>
-              <p className={styles.kicker}>B2C Business</p>
-              <p className={styles.title}>
-                Skeep
-                <br />
-                Experience
-              </p>
-              <p className={styles.lede}>
-                시공간의 제약 없이 나의 정체성을
-                <br />
-                기억하고, 끊임 없는 일상을 완성하는
-                <br />
-                맞춤형 스킵 구독 솔루션
-              </p>
-            </div>
-
-            <div className={styles.axisRule} />
-            <div className={styles.axis}>
-              {axis.map((item) => (
-                <div key={item} className={styles.axisItem}>
-                  {item}
-                </div>
+                    <div className={`${styles.face} ${styles.rear}`}>
+                      <p className={styles.cardPrice}>{plan.price}</p>
+                      <p className={styles.cardName}>{plan.name}</p>
+                      <div className={styles.cardRule} />
+                      <div className={styles.specs}>
+                        {plan.specs.map((spec, index) => (
+                          <div
+                            key={spec}
+                            className={`${styles.spec} ${
+                              plan.specOffFrom !== undefined && index >= plan.specOffFrom
+                                ? styles.specOff
+                                : ""
+                            }`}
+                          >
+                            <span>{axis[index]}</span>
+                            <strong>{spec}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </button>
               ))}
             </div>
             <p className={styles.notes}>
@@ -303,54 +240,8 @@ export default function ExperiencePricingFlip() {
                 </span>
               ))}
             </p>
-
-            <div className={styles.cards}>
-              {plans.map((plan, index) => (
-                <div
-                  key={plan.name}
-                  className={styles.card}
-                  data-tone={plan.tone}
-                  data-flipped={index < flipped}
-                >
-                  <div className={styles.faces}>
-                    <div className={`${styles.face} ${styles.front}`}>
-                      <div className={styles.frontBody}>
-                        <p className={styles.frontPrice}>{plan.price}</p>
-                        <p className={styles.frontName}>{plan.name}</p>
-                        <p className={styles.frontTagline}>{plan.tagline}</p>
-                        <p className={styles.frontText}>{lines(plan.body)}</p>
-                      </div>
-                    </div>
-
-                    <div className={`${styles.face} ${styles.rear}`}>
-                      <p className={styles.rearPrice}>{plan.price}</p>
-                      <p className={styles.rearName}>{plan.name}</p>
-                      <div className={styles.rearRule} />
-                      <div className={styles.specs}>
-                        {plan.specs.map((spec, specIndex) => (
-                          <div
-                            key={spec}
-                            className={`${styles.spec} ${
-                              plan.specOffFrom !== undefined &&
-                              specIndex >= plan.specOffFrom
-                                ? styles.specOff
-                                : ""
-                            }`}
-                          >
-                            <span>{spec}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <p className={styles.rearText}>{lines(plan.body)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          </div>
+          </Reveal>
         </div>
-
       </div>
     </section>
   );

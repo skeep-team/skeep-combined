@@ -1413,6 +1413,17 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-sticky.is-moving-style .agent-principles-col {
       width: min(1040px, 56vw);
     }
+    /* 01은 3행, 02는 2행이라 정사각 카드 규칙을 그대로 쓰면 02의 전체 높이가
+       PC와 무빙스타일 모두에서 지나치게 길어진다. 01의 실제 높이를 JS로 받아
+       02 전체 높이에 그대로 쓰고, 그 안을 두 행으로 균등 분할한다. */
+    .agent-q-col {
+      height: var(--agent-q-height, min(640px, 60vh));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+    }
+    .agent-q-col .q-card {
+      min-height: 0;
+      aspect-ratio: auto;
+    }
     .agent-view-hidden { display: none !important; }
     .agent-principles-col {
       justify-content: flex-start;
@@ -7103,6 +7114,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     function setAgentTab(tab) {
+      /* 02를 열기 직전에는 01이 아직 화면에 있으므로 이때 높이를 한 번만 읽는다.
+         스크롤 프레임과 무관한 클릭 시점의 단일 측정이라 무빙스타일 성능에도
+         영향을 주지 않으면서 두 탭의 위·아래 경계를 정확히 맞출 수 있다. */
+      if (tab === 'questions' && questions && principles) {
+        const principlesHeight = principles.getBoundingClientRect().height;
+        if (principlesHeight > 0) {
+          questions.style.setProperty('--agent-q-height', `${principlesHeight.toFixed(1)}px`);
+        }
+      }
       activeAgentTab = tab;
       agentTabs.forEach(button => {
         const active = button.dataset.agentTab === tab;

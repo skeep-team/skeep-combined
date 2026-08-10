@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Reveal } from "../components/ui/Reveal";
 import styles from "./EnterprisePricingFlip.module.css";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -74,69 +75,58 @@ const cards: Card[] = [
   },
 ];
 
-/* B2C 패널과 같은 순서: 진입 시 전체 구조를 한 번에 보여준 뒤 뒤집힌다. */
-const revealAt = 0.08;
-/* 카드를 하나씩 돌리지 않고, 이 지점을 넘으면 전부 한꺼번에 뒤집는다. */
-const flipForward = 0.48;
-const flipReverse = 0.42;
+function lines(text: string) {
+  return text.split("\n").map((line, index) => (
+    <span key={line}>
+      {index > 0 ? <br /> : null}
+      {line}
+    </span>
+  ));
+}
 
 export default function EnterprisePricingFlip() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [flipped, setFlipped] = useState(0);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const introCardRef = useRef<HTMLDivElement>(null);
+  const [flipped, setFlipped] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    const section = sectionRef.current;
+    // Samsung Moving Style/Tizen은 preserve-3d + backface-visibility 조합에서
+    // 카드의 앞·뒷면을 모두 누락해 검정 패널만 남기는 경우가 있다(이 세션에서
+    // 반복 확인됨) — 이 기기에서는 3D 회전 대신 opacity 크로스페이드로 뒤집는다.
+    if (sectionRef.current) {
+      sectionRef.current.dataset.movingStyle = String(
+        /Tizen|SMART-TV|SmartTV|Maple/i.test(window.navigator.userAgent),
+      );
+    }
+  }, []);
 
-    if (!section) {
+  useEffect(() => {
+    // 왼쪽 사진 카드 높이를 오른쪽 카드 패널 전체 높이에 맞춘다 — sticky가
+    // 풀리는 시점은 introCard의 아랫변이 형제 .rightColumn의 아랫변과
+    // 맞춰질 때라, 카드 "행"만 재면 풀린 뒤에 사진이 카드 윗선보다 아래로
+    // 처져 보인다. 카드 행의 부모(cardsPanel)를 재서 맞춘다.
+    const cardsPanel = cardsRef.current?.parentElement;
+    const intro = introCardRef.current;
+
+    if (!cardsPanel || !intro) {
       return;
     }
 
-    let count = 0;
-    let revealed = false;
-
-    const update = () => {
-      const rect = section.getBoundingClientRect();
-      const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, -rect.top / distance));
-      const nextRevealed = progress >= revealAt;
-
-      if (revealed !== nextRevealed) {
-        revealed = nextRevealed;
-        const value = revealed ? "1" : "0";
-
-        section.style.setProperty("--expand", value);
-        section.style.setProperty("--reveal", value);
-        // B2C 패널과 같은 방식: 사진 딤/확장은 뒤집히는 순간(data-open)이 아니라
-        // 패널이 펼쳐지는 순간부터 같이 켜져야 해서 reveal 상태를 노출한다.
-        section.setAttribute("data-revealed", String(revealed));
-      }
-
-      if (count === 0 && progress >= flipForward) {
-        count = cards.length;
-      } else if (count > 0 && progress <= flipReverse) {
-        count = 0;
-      }
-
-      setFlipped((previous) => (previous === count ? previous : count));
+    const sync = () => {
+      intro.style.setProperty("--match-height", `${cardsPanel.offsetHeight}px`);
     };
 
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    update();
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(cardsPanel);
 
-    // 안전장치: B2C 패널(ExperiencePricingFlip)과 같은 이유로, scroll
-    // 이벤트만으로는 무빙스타일 등 일부 환경에서 놓치는 경우가 있다.
-    // 주기적으로 다시 재서 실제 위치와 어긋나 있으면 바로잡는다.
-    const pollTimer = window.setInterval(update, 250);
-
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      window.clearInterval(pollTimer);
-    };
+    return () => observer.disconnect();
   }, []);
 
-  const open = flipped > 0;
+  const toggleFlip = (title: string) => {
+    setFlipped((previous) => ({ ...previous, [title]: !previous[title] }));
+  };
 
   return (
     <section
@@ -144,25 +134,9 @@ export default function EnterprisePricingFlip() {
       className={styles.sequence}
       aria-label="Skeep Enterprise 솔루션 요금 구조"
     >
-      <div className={styles.sticky}>
-        <div className={styles.bridgeStatement}>
-          <h2>
-            <strong>모든 사용자를 유혹하는 법</strong>
-            <span>처음부터 다시 만들거나</span>
-            <span>그냥, 스킵하거나</span>
-          </h2>
-          <p>
-            스킵의 파트너사는 사용자 데이터를 확보하기 위해 막대한<br />
-            에이전틱 생태계를 직접 구축할 필요가 없죠. 독보적인 SIS™<br />
-            아키텍처가 파트너사의 비즈니스를 전 세계 에이전틱 생태계와<br />
-            연결해주고, Skeep Insights가 전략까지 제시해주니까요.
-          </p>
-        </div>
-
-        <div className={styles.stage}>
-          <div className={styles.panelClip}>
-          <div className={styles.panel} data-open={open}>
-          <div className={styles.panelBg} aria-hidden="true">
+      <div className={styles.stage}>
+        <div className={styles.introCard} ref={introCardRef}>
+          <div className={styles.introCardBg} aria-hidden="true">
             {/* <picture>+webp 대신 단일 <img> — 무빙스타일 등 일부 브라우저 엔진이
                 <picture>/webp 소스 협상을 제대로 처리 못 해 사진 대신 빈 회색
                 박스만 보이는 문제가 있었다. JPEG는 협상 없이 바로 로드된다. */}
@@ -174,33 +148,7 @@ export default function EnterprisePricingFlip() {
               decoding="async"
             />
           </div>
-
-          <div className={styles.control} aria-hidden="true">
-            <span className={styles.pill}>솔루션 자세히 알아보기</span>
-            <span className={styles.back}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${BASE_PATH}/business/flip/arrow-left.svg`} alt="" />
-            </span>
-          </div>
-
-          <div className={styles.introCard} aria-hidden="true">
-            <p className={styles.kicker}>B2B Business</p>
-            <p className={styles.title}>
-              Skeep
-              <br />
-              Enterprise
-            </p>
-            {/* 펼친 뒤와 줄 수가 달라지면 전환할 때 눈에 띄어서, 카드일 때도 세 줄로 맞춘다. */}
-            <p className={styles.lede}>
-              기업 간 경계를 넘어 모든 생태계의
-              <br />
-              사용자와 연결하고, 그 데이터로 전략
-              <br />
-              까지 제시하는 파트너 솔루션
-            </p>
-          </div>
-
-          <div className={styles.introPanel}>
+          <div className={styles.introCardCopy}>
             <p className={styles.kicker}>B2B Business</p>
             <p className={styles.title}>
               Skeep
@@ -215,53 +163,67 @@ export default function EnterprisePricingFlip() {
               까지 제시하는 파트너 솔루션
             </p>
           </div>
+        </div>
 
-          <div className={styles.cards}>
-            {cards.map((card, index) => (
-              <div
-                key={card.title}
-                className={styles.card}
-                data-tone={card.tone}
-                data-flipped={index < flipped}
-              >
-                <div className={styles.faces}>
-                  <div className={`${styles.face} ${styles.front}`}>
-                    <div className={styles.frontBody}>
-                      <p className={styles.frontEyebrow}>{card.eyebrow}</p>
-                      <p className={styles.frontTitle}>{card.title}</p>
-                      <p className={styles.frontSubtitle}>{card.subtitle}</p>
-                      <p className={styles.frontText}>
-                        {card.body.split("\n").map((line, lineIndex) => (
-                          <span key={line}>
-                            {lineIndex > 0 ? <br /> : null}
-                            {line}
-                          </span>
+        <div className={styles.rightColumn}>
+        <div className={styles.bridgeStatement}>
+          <h2>
+            <strong>모든 사용자를 유혹하는 법</strong>
+            <span>처음부터 다시 만들거나</span>
+            <span>그냥, 스킵하거나</span>
+          </h2>
+          <p>
+            스킵의 파트너사는 사용자 데이터를 확보하기 위해 막대한
+            <br />
+            에이전틱 생태계를 직접 구축할 필요가 없죠. 독보적인 SIS™
+            <br />
+            아키텍처가 파트너사의 비즈니스를 전 세계 에이전틱 생태계와
+            <br />
+            연결해주고, Skeep Insights가 전략까지 제시해주니까요.
+          </p>
+        </div>
+
+          <Reveal className={styles.cardsPanel}>
+            <div className={styles.cards} ref={cardsRef}>
+              {cards.map((card) => (
+                <button
+                  type="button"
+                  key={card.title}
+                  className={styles.card}
+                  data-tone={card.tone}
+                  data-flipped={Boolean(flipped[card.title])}
+                  aria-pressed={Boolean(flipped[card.title])}
+                  onClick={() => toggleFlip(card.title)}
+                >
+                  <div className={styles.faces}>
+                    <div className={`${styles.face} ${styles.front}`}>
+                      <p className={styles.cardEyebrow}>{card.eyebrow}</p>
+                      <p className={styles.cardTitle}>{card.title}</p>
+                      <p className={styles.cardSubtitle}>{card.subtitle}</p>
+                      <p className={styles.cardBody}>{lines(card.body)}</p>
+                      <p className={styles.cardNote}>{card.note}</p>
+                      <span className={styles.flipHint}>요금 자세히 보기</span>
+                    </div>
+
+                    <div className={`${styles.face} ${styles.rear}`}>
+                      <p className={styles.cardEyebrow}>{card.eyebrow}</p>
+                      <p className={styles.cardTitle}>{card.title}</p>
+                      <div className={styles.cardRule} />
+                      <div className={styles.fees}>
+                        {card.fees.map((fee) => (
+                          <div key={fee.title} className={styles.fee}>
+                            <p className={styles.feeLabel}>{fee.label}</p>
+                            <p className={styles.feeTitle}>{fee.title}</p>
+                            <p className={styles.feeBody}>{fee.body}</p>
+                          </div>
                         ))}
-                      </p>
-                      <p className={styles.frontNote}>{card.note}</p>
+                      </div>
                     </div>
                   </div>
-
-                  <div className={`${styles.face} ${styles.rear}`}>
-                    <p className={styles.rearEyebrow}>{card.eyebrow}</p>
-                    <p className={styles.rearTitle}>{card.title}</p>
-                    <div className={styles.rule} />
-                    <div className={styles.fees}>
-                      {card.fees.map((fee) => (
-                        <div key={fee.title} className={styles.fee}>
-                          <p className={styles.feeLabel}>{fee.label}</p>
-                          <p className={styles.feeTitle}>{fee.title}</p>
-                          <p className={styles.feeBody}>{fee.body}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          </div>
-          </div>
+                </button>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
