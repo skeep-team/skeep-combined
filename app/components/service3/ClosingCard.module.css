@@ -46,7 +46,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.66);
+  background: rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
 
@@ -70,6 +70,7 @@
 }
 
 .body {
+  font-family: var(--font-pretendard), "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-size: clamp(14px, 1.8vw, 24px);
   font-weight: 400;
   letter-spacing: -0.03em;

@@ -43,7 +43,7 @@ export function EnvironmentLayers() {
       </Reveal>
       <Reveal delay={0.05} className={styles.textBlock}>
         <h2 className={styles.heading}>
-          환경 활성화
+          활성화 환경
           <br />: Skeep on
         </h2>
         <p className={styles.body}>
