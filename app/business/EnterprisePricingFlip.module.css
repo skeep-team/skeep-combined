@@ -15,9 +15,15 @@
   display: flex;
   align-items: flex-start;
   gap: clamp(28px, 4vw, 72px);
-  width: min(100%, 1600px);
-  margin-inline: auto;
-  padding-inline: var(--edge-padding);
+  /* width:min(100%,1600px) + padding-inline:var(--edge-padding)(vw 기반
+     clamp) 조합은 일반 PC 화면폭에서는 우연히 VALUE PROPOSITION 캔버스
+     섹션(.canvasGrid, 좌우 8.33% 인셋)과 여백이 비슷해 보였지만, 무빙스타일처럼
+     매우 넓은 뷰포트에서는 1600px 캡이 만드는 auto 마진과 clamp가 160px에서
+     막힌 패딩이 겹쳐 여백이 지나치게 벌어졌다. 캔버스 섹션과 똑같이 폭
+     제한 없이 좌우 8.33% 퍼센트 패딩만 쓰면 뷰포트 폭에 관계없이 항상 같은
+     비율로 맞고, 카드도 넓어진 만큼 비례해서 커진다. */
+  width: 100%;
+  padding-inline: 8.33%;
 }
 
 /* 왼쪽 사진 카드. 문구 구간에서는 화면 위쪽에 고정(position:sticky)돼
