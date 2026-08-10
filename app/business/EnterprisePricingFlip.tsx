@@ -202,7 +202,9 @@ export default function EnterprisePricingFlip() {
                       <p className={styles.cardSubtitle}>{card.subtitle}</p>
                       <p className={styles.cardBody}>{lines(card.body)}</p>
                       <p className={styles.cardNote}>{card.note}</p>
-                      <span className={styles.flipHint}>요금 자세히 보기</span>
+                      <span className={styles.flipHint}>
+                        자세히 보기<span className={styles.flipHintArrow}>›</span>
+                      </span>
                     </div>
 
                     <div className={`${styles.face} ${styles.rear}`}>

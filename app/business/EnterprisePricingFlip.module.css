@@ -248,6 +248,11 @@
   text-underline-offset: 3px;
 }
 
+.flipHintArrow {
+  margin-left: 0.35em;
+  text-decoration: none;
+}
+
 .cardRule {
   height: 1px;
   margin-bottom: clamp(16px, 1.4vw, 22px);

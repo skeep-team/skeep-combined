@@ -205,7 +205,9 @@ export default function ExperiencePricingFlip() {
                       <p className={styles.cardName}>{plan.name}</p>
                       <p className={styles.cardTagline}>{plan.tagline}</p>
                       <p className={styles.cardBody}>{lines(plan.body)}</p>
-                      <span className={styles.flipHint}>자세히 보기</span>
+                      <span className={styles.flipHint}>
+                        자세히 보기<span className={styles.flipHintArrow}>›</span>
+                      </span>
                     </div>
 
                     <div className={`${styles.face} ${styles.rear}`}>
