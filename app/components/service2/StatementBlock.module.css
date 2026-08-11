@@ -6,6 +6,10 @@
   justify-content: center;
   padding: clamp(56px, 8vw, 84px) var(--edge-padding);
   overflow: hidden;
+  /* 이 컴포넌트가 탭바가 있는 페이지(negotiation/service2)에서 탭 클릭
+     대상으로 쓰일 때, 고정된 탭바에 상단이 가리지 않게 한다. 탭바가 없는
+     페이지에서는 --section-tabbar-h가 정의돼 있지 않아 0px로 무해하다. */
+  scroll-margin-top: var(--section-tabbar-h, 0px);
 }
 
 .video {

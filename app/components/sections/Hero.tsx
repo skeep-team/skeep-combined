@@ -122,7 +122,7 @@ function useTypewriter(words: string[], enabled: boolean) {
   return { text, wordIndex };
 }
 
-export function Hero() {
+export function Hero({ id }: { id?: string } = {}) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [introSettled, setIntroSettled] = useState(false);
   const [cubeReady, setCubeReady] = useState(false);
@@ -234,7 +234,7 @@ export function Hero() {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
 
   return (
-    <div ref={wrapperRef} className={styles.wrapper}>
+    <div ref={wrapperRef} id={id} className={styles.wrapper}>
       <div className={styles.section}>
         <div
           className={`${styles.introPoster} ${

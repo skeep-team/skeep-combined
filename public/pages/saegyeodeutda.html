@@ -312,6 +312,7 @@
       background: #fff;
       padding: 0;
       margin-top: 180px;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
     }
     .sd-sensing-sticky {
       position: sticky;
@@ -1096,6 +1097,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
       gap: clamp(12px, 1.6vw, 22px);
       overflow: hidden;
       position: sticky;
@@ -1163,6 +1165,7 @@
       padding: 120px 0;
       position: relative;
       background: #fff;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
     }
     .sd-flow-fadein { opacity: 0; transform: translateY(28px); transition: opacity .85s ease, transform .85s ease; }
     .sd-flow-fadein.vis { opacity: 1; transform: none; }
@@ -2892,6 +2895,7 @@
       background: #fff; width: 100%;
       padding: clamp(80px, 12vh, 200px) var(--edge-padding);
       display: flex; align-items: flex-start; justify-content: space-between; gap: 48px;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
     }
     .parsing-num {
       font-size: 40px; font-weight: 600; line-height: 1.4; letter-spacing: -0.04em;
@@ -3575,6 +3579,7 @@
       flex-direction: column;
       align-items: center;
       overflow: hidden;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
     }
     .mapping-assembly-head {
       display: flex;
@@ -3750,6 +3755,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      scroll-margin-top: var(--section-tabbar-h, 0px);
     }
     .morphing-bridge-text {
       width: 100%;
@@ -4038,9 +4044,97 @@
     ) {
       font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif !important;
     }
+
+    /* ── 섹션 탭바 ── business 페이지(app/business/BusinessTabs.tsx)와 같은
+       모양·동작을 정적 페이지용으로 옮긴 것. */
+    /* fixed로 둬서 문서 흐름에 공간을 차지하지 않는다 — sticky였다면 맨 처음
+       엘리먼트로 95px를 항상 예약해서 표지(sd-hero) 영상/카피가 그만큼 잘려
+       보였다. 표지 구간에서는 opacity로 감추고, 표지를 완전히 지나면(아래
+       스크립트가 .sd-hero의 bottom<=0을 감지) is-visible을 달아 드러낸다. */
+    .section-tabbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: #ffffff;
+      display: flex;
+      align-items: flex-start;
+      height: 95px;
+      padding-block: 24px 0;
+      padding-inline: 8.333vw 3.1vw;
+      line-height: normal;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .section-tabbar.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .section-tabbar { transition: none; }
+    }
+    .section-tabbar-inner {
+      display: flex;
+      width: 100%;
+    }
+    .section-tab {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin: 0;
+      padding: 0 0 0 clamp(10px, 1.05vw, 22px);
+      border: 0;
+      border-left: 1px solid #e6e8ec;
+      background: none;
+      font-family: 'Elza Cond', 'Pretendard', sans-serif;
+      font-size: clamp(13px, 1.6vw, 22px);
+      font-weight: 700;
+      line-height: 1.16;
+      letter-spacing: -0.02em;
+      text-align: left;
+      text-transform: uppercase;
+      color: #c7cad1;
+      cursor: pointer;
+      transition: color 0.24s ease;
+    }
+    .section-tab:first-child { padding-left: 0; border-left: 0; }
+    .section-tab:hover { color: #8b9099; }
+    .section-tab[data-active="true"],
+    .section-tab[data-active="true"]:hover { color: #111111; }
+    .section-tab:focus-visible { outline: 2px solid #ff076a; outline-offset: 6px; }
+    @media (prefers-reduced-motion: reduce) {
+      .section-tab { transition: none; }
+    }
   </style>
 </head>
 <body>
+
+<div class="section-tabbar" id="sectionTabbar" data-section-tabbar>
+  <nav class="section-tabbar-inner" aria-label="인식과 준비 섹션">
+    <button type="button" class="section-tab" data-tab-id="sensing-scene-scroll">
+      <span>Sensing</span><span>Logic</span>
+    </button>
+    <button type="button" class="section-tab" data-tab-id="inputHeroSec">
+      <span>Input</span><span>Logic</span>
+    </button>
+    <button type="button" class="section-tab" data-tab-id="flowScrollSec">
+      <span>Pause</span><span>Logic</span>
+    </button>
+    <button type="button" class="section-tab" data-tab-id="parsing-logic">
+      <span>Parsing</span><span>Logic</span>
+    </button>
+    <button type="button" class="section-tab" data-tab-id="mapping-assembly">
+      <span>Mapping</span><span>Logic</span>
+    </button>
+    <button type="button" class="section-tab" data-tab-id="dispatch-logic">
+      <span>Dispatch</span><span>Logic</span>
+    </button>
+  </nav>
+</div>
 
 <section class="sd-hero">
   <div class="sd-hero-bg"></div>
@@ -5390,7 +5484,7 @@
 </section>
 
 <!-- ══ 6. PARSING INTRO ══ -->
-<section class="sec-parsing-intro" data-parsing-intro>
+<section class="sec-parsing-intro" id="parsing-logic" data-parsing-intro>
   <div style="display:flex;flex-direction:column;gap:12px;">
     <p class="parsing-num" data-parsing-num>01</p>
     <p class="parsing-big" data-parsing-big>Parsing</p>
@@ -5956,7 +6050,7 @@
 </section>
 
 <!-- ══ 14. MORPHING BRIDGE ══ -->
-<section class="sec-morphing-bridge fi">
+<section class="sec-morphing-bridge fi" id="dispatch-logic">
   <p class="morphing-bridge-text">
     선명해진 스킵의 청사진, 이제 현실로 도약할 시간
   </p>
@@ -7423,6 +7517,70 @@
   <p class="footer-copy">© 2026 SKEEP. All rights reserved.</p>
 </footer>
 
+<script>
+  /* 섹션 탭바: app/business/BusinessTabs.tsx와 동일한 동작(활성 탭 추적,
+     높이를 --section-tabbar-h로 발행, 클릭 시 스크롤)을 정적 페이지용으로
+     옮긴 것. */
+  (() => {
+    const bar = document.getElementById('sectionTabbar');
+    if (!bar) return;
+
+    const tabs = [...bar.querySelectorAll('[data-tab-id]')];
+    const coverSection = document.querySelector('.sd-hero');
+
+    const publishHeight = () => {
+      document.documentElement.style.setProperty(
+        '--section-tabbar-h',
+        `${Math.round(bar.getBoundingClientRect().height)}px`
+      );
+    };
+    publishHeight();
+    new ResizeObserver(publishHeight).observe(bar);
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+
+      /* 표지(sd-hero)가 화면에 조금이라도 남아있는 동안은 탭바를 감춘다 —
+         표지를 완전히 지나야(bottom <= 0) 드러난다. */
+      const pastCover = coverSection
+        ? coverSection.getBoundingClientRect().bottom <= 0
+        : true;
+      bar.classList.toggle('is-visible', pastCover);
+
+      const line = bar.getBoundingClientRect().bottom + 1;
+      let current = tabs[0]?.dataset.tabId;
+      for (const tab of tabs) {
+        const section = document.getElementById(tab.dataset.tabId);
+        if (section && section.getBoundingClientRect().top <= line) {
+          current = tab.dataset.tabId;
+        }
+      }
+      tabs.forEach((tab) => {
+        const active = tab.dataset.tabId === current;
+        tab.dataset.active = active ? 'true' : 'false';
+        if (active) tab.setAttribute('aria-current', 'true');
+        else tab.removeAttribute('aria-current');
+      });
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = document.getElementById(tab.dataset.tabId);
+        target?.scrollIntoView({
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      });
+    });
+  })();
+</script>
 <script src="../site-index.js"></script>
 </body>
 </html>

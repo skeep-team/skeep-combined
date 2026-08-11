@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import styles from "./Business.module.css";
-import BusinessTabs from "./BusinessTabs";
+import { SectionTabs, type SectionTab } from "../components/layout/SectionTabs";
 import CorporateMission from "./CorporateMission";
 import EnterprisePricingFlip from "./EnterprisePricingFlip";
 import ExperiencePricingFlip from "./ExperiencePricingFlip";
@@ -23,6 +23,15 @@ export const metadata: Metadata = {
   title: "Skeep Business",
   description: "Skeep의 비즈니스 모델과 확장 가능성을 소개합니다.",
 };
+
+const businessTabs: SectionTab[] = [
+  { id: "corporate-mission", line1: "Corporate", line2: "Mission" },
+  { id: "market-imperative", line1: "Market", line2: "Imperative" },
+  { id: "core-positioning", line1: "Core", line2: "Positioning" },
+  { id: "business-portfolio", line1: "Business", line2: "Portfolio" },
+  { id: "value-proposition", line1: "Value", line2: "Proposition" },
+  { id: "our-footprint", line1: "Our", line2: "Footprint" },
+];
 
 export default function BusinessPage() {
   return (
@@ -49,7 +58,11 @@ export default function BusinessPage() {
           />
         </ScrollFadeIn>
 
-        <BusinessTabs />
+        <SectionTabs
+          tabs={businessTabs}
+          cssVar="--business-tabbar-h"
+          ariaLabel="비즈니스 섹션"
+        />
 
         <CorporateMission />
         <SectionHeader

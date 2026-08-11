@@ -2,12 +2,14 @@ import { Reveal } from "../ui/Reveal";
 import styles from "./StatementBlock.module.css";
 
 export function StatementBlock({
+  id,
   heading,
   body,
   background = "#F1F1F1",
   video,
   image,
 }: {
+  id?: string;
   heading: string[];
   body?: string[];
   background?: string;
@@ -17,6 +19,7 @@ export function StatementBlock({
   const hasMedia = Boolean(video || image);
   return (
     <section
+      id={id}
       className={styles.section}
       style={{ background: hasMedia ? undefined : background }}
     >

@@ -1,0 +1,98 @@
+/* app/business/BusinessTabs.module.css를 일반화한 버전. business는 6칸을
+   1920px 시안 기준 고정 vw로 맞췄지만, 페이지마다 탭 개수가 다르므로(2~6개)
+   여기서는 flex로 남은 폭을 균등하게 나눈다. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  height: 95px;
+  padding-block: 24px 0;
+  padding-inline: 8.333vw 3.1vw;
+  line-height: normal;
+  transition: opacity 0.4s ease;
+}
+
+/* 특정 스크롤 구간(예: business 페이지의 SloganMorph 핀 구간)이 화면을 다 덮는
+   동안 탭바를 감추고 싶을 때, 그 구간 컴포넌트가 html에 이 속성을 단다. */
+:global(html[data-section-tabbar-hidden="true"]) .bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* hideUntilPastFirst=true일 때만 적용. sticky 대신 fixed로 둬서 숨긴 동안
+   문서 흐름에 95px를 예약하지 않는다 — 그래야 표지(첫 섹션)가 페이지 로드
+   시점부터 그 높이만큼 잘리지 않고 화면 꼭대기부터 온전히 보인다. */
+.hideUntilPastFirst {
+  position: fixed;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.hideUntilPastFirst.isVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hideUntilPastFirst {
+    transition: none;
+  }
+}
+
+.inner {
+  display: flex;
+  width: 100%;
+}
+
+.tab {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0 0 0 clamp(10px, 1.05vw, 22px);
+  border: 0;
+  border-left: 1px solid #e6e8ec;
+  background: none;
+  font-family: var(--font-elza), var(--font-pretendard), sans-serif;
+  font-size: clamp(14px, 1.6vw, 22px);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  text-align: left;
+  /* 버튼은 UA 스타일이 text-transform을 끊어서 .page의 대문자 규칙이 여기까지 안 왔다. */
+  text-transform: uppercase;
+  color: #c7cad1;
+  cursor: pointer;
+  transition: color 0.24s ease;
+}
+
+.tab:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.tab:hover {
+  color: #8b9099;
+}
+
+.tab[data-active="true"],
+.tab[data-active="true"]:hover {
+  color: #111111;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #ff076a;
+  outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab {
+    transition: none;
+  }
+}

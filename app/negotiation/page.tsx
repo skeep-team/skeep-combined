@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import styles from "./page.module.css";
+import { SectionTabs, type SectionTab } from "../components/layout/SectionTabs";
 import { StatementBlock } from "../components/service2/StatementBlock";
 import { AnchorEnvironment } from "../components/negotiation/AnchorEnvironment";
 import { EnvironmentLayers } from "../components/negotiation/EnvironmentLayers";
@@ -26,10 +27,26 @@ export const metadata: Metadata = {
   description: "충돌이 생긴 순간부터, 합의에 이를 때까지.",
 };
 
+/* index.html의 UX LOGIC 섹션(경험 및 상호작용 탭, data-i="1")에 이미 정리된
+   4개 카드 제목을 그대로 가져왔다 — 그 섹션이 이 페이지 전체의 공식 목차다. */
+const negotiationTabs: SectionTab[] = [
+  { id: "negotiation-logic", line1: "Negotiation", line2: "Logic" },
+  { id: "borrowing-logic", line1: "Borrowing", line2: "Logic" },
+  { id: "interaction-blueprint", line1: "Interaction", line2: "Logic" },
+  { id: "download-logic", line1: "Download", line2: "Logic" },
+];
+
 export default function NegotiationPage() {
   return (
     <main className={styles.page}>
+      <SectionTabs
+        tabs={negotiationTabs}
+        cssVar="--section-tabbar-h"
+        ariaLabel="경험 및 상호작용 섹션"
+        hideUntilPastFirst
+      />
       <StatementBlock
+        id="negotiation-logic"
         heading={["당신이 원하는 그대로", "가장 자연스럽게"]}
         image={`${BASE_PATH}/negotiation/statement-bg.poster.jpg`}
       />
@@ -43,13 +60,14 @@ export default function NegotiationPage() {
 
       {/* 빌려쓰다(principles) 병합: 이 아래는 원래 /principles 라우트였다.
           위쪽 조율하다 섹션과 같은 .page(Elza 대문자) 스타일을 그대로 공유한다. */}
-      <Hero />
+      <Hero id="borrowing-logic" />
       <IcebreakSkip />
       <RoleFlow />
       <InteractionBlueprint />
       <Detour />
       <Principles />
       <FeaturePillar
+        id="download-logic"
         eyebrow="Service"
         heading="하나의 서비스, 더 다채로운 가능성"
         body={"필요한 AI 스킬과 워크플로우를 불러와,\n지금 하던 일을 끊김 없이 이어갑니다."}

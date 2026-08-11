@@ -122,9 +122,9 @@ export default function SloganMorph() {
       const root = document.documentElement;
 
       if (covered) {
-        root.dataset.businessTabs = "hidden";
-      } else if (root.dataset.businessTabs) {
-        delete root.dataset.businessTabs;
+        root.dataset.sectionTabbarHidden = "true";
+      } else if (root.dataset.sectionTabbarHidden) {
+        delete root.dataset.sectionTabbarHidden;
       }
     };
 
@@ -150,7 +150,7 @@ export default function SloganMorph() {
         window.clearTimeout(timer);
       }
 
-      delete document.documentElement.dataset.businessTabs;
+      delete document.documentElement.dataset.sectionTabbarHidden;
     };
   }, []);
 

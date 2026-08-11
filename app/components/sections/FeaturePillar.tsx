@@ -6,6 +6,7 @@ import { Reveal } from "../ui/Reveal";
 import styles from "./FeaturePillar.module.css";
 
 export type FeaturePillarProps = {
+  id?: string;
   eyebrow: string;
   heading: string;
   body: string;
@@ -104,6 +105,7 @@ function QuestionCard({
 }
 
 export function FeaturePillar({
+  id,
   eyebrow,
   heading,
   body,
@@ -114,7 +116,10 @@ export function FeaturePillar({
   invertBg,
 }: FeaturePillarProps) {
   return (
-    <section className={invertBg ? `${styles.section} ${styles.sectionInvert}` : styles.section}>
+    <section
+      id={id}
+      className={invertBg ? `${styles.section} ${styles.sectionInvert}` : styles.section}
+    >
       <div
         className={
           imagePosition === "right"

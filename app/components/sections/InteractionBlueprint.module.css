@@ -13,6 +13,7 @@
   --blueprint-accent: #9fa1a2;
   color: var(--blueprint-text);
   background: #ffffff;
+  scroll-margin-top: var(--section-tabbar-h, 0px);
 }
 
 .featureSection,
