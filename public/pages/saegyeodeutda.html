@@ -305,8 +305,9 @@
     .sd-sensing-scene {
       /* 800vh는 화면 8배 분량을 스크롤해야 이 장면이 끝나서 체감상 너무 길었다 —
          애니메이션은 전부 progress = -rect.top / (offsetHeight - innerHeight)
-         비율 기반이라 높이만 줄여도 로직 변경 없이 그대로 작동한다. */
-      height: 320vh;
+         비율 기반이라 높이만 줄여도 로직 변경 없이 그대로 작동한다.
+         무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 더 줄였다. */
+      height: 288vh;
       position: relative;
       background: #fff;
       padding: 0;
@@ -1081,7 +1082,8 @@
     }
     .input-hero-scroll {
       position: relative;
-      height: 150vh;
+      /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+      height: 135vh;
       margin-top: clamp(640px, 75vh, 1120px);
     }
     .sd-summary-hero {
@@ -1155,7 +1157,8 @@
       max-width: 620px;
     }
     .sd-flow-scroll {
-      height: 270vh;
+      /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+      height: 243vh;
       margin: 160px 0;
       padding: 120px 0;
       position: relative;
@@ -4934,6 +4937,9 @@
     let sceneTop = 0;
     let sceneHeight = 0;
     let scrollRange = 0;
+    let scrollLocked = false;
+    let previousHtmlOverflow = '';
+    let previousBodyOverflow = '';
 
     // Geometry is stable while the walkers advance. Cache it on layout changes
     // instead of forcing synchronous layout reads after every filter update.
@@ -4969,8 +4975,35 @@
     applyActive(current);
 
     function isPinned() {
-      const scrollBottom = window.scrollY + window.innerHeight;
-      return window.scrollY >= sceneTop - .5 && scrollBottom < sceneTop + sceneHeight - .5;
+      /* 파란 장면이 화면 아래에 일부만 걸렸을 때 재생이 시작되지 않게 한다.
+         scene 상단이 viewport 상단에 거의 닿은 순간만 시작/고정 구간으로 본다. */
+      const rect = scene.getBoundingClientRect();
+      return rect.top <= 24 &&
+        rect.bottom >= window.innerHeight * .45;
+    }
+
+    function snapToSceneStart() {
+      const previousBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, sceneTop);
+      document.documentElement.style.scrollBehavior = previousBehavior;
+    }
+
+    function lockSceneScroll() {
+      if (scrollLocked) return;
+      snapToSceneStart();
+      previousHtmlOverflow = document.documentElement.style.overflow;
+      previousBodyOverflow = document.body.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      scrollLocked = true;
+    }
+
+    function unlockSceneScroll() {
+      if (!scrollLocked) return;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.style.overflow = previousBodyOverflow;
+      scrollLocked = false;
     }
 
     // Advance one person per gated scroll gesture, and nudge real scroll
@@ -4994,7 +5027,8 @@
       window.setTimeout(() => {
         walkComplete = true;
         stepping = false;
-      }, 260);
+        unlockSceneScroll();
+      }, 1500);
     }
 
     function advanceStep() {
@@ -5052,6 +5086,9 @@
       if (autoStarted || walkComplete) return;
       if (isPinned()) {
         autoStarted = true;
+        /* 빠른 휠/무빙스타일 관성으로 시작점을 몇 px 지나쳐도 장면 전체가
+           정확히 viewport에 들어온 위치에서 시퀀스를 시작한다. */
+        lockSceneScroll();
         window.setTimeout(autoAdvanceLoop, 200);
       }
     }
@@ -5065,7 +5102,16 @@
     maybeStartAuto();
 
     window.addEventListener('wheel', e => {
-      if (e.deltaY > 0 && isPinned()) gateForward(e);
+      if (e.deltaY <= 0) return;
+      if (autoStarted && !walkComplete) {
+        e.preventDefault();
+        snapToSceneStart();
+        return;
+      }
+      if (isPinned()) {
+        e.preventDefault();
+        maybeStartAuto();
+      }
     }, { passive: false });
 
     let touchStartY = null;
@@ -5076,14 +5122,18 @@
       if (touchStartY === null || !isPinned()) return;
       const dy = touchStartY - e.touches[0].clientY;
       if (dy > 8) {
-        gateForward(e);
+        e.preventDefault();
+        if (!autoStarted) maybeStartAuto();
+        snapToSceneStart();
         touchStartY = e.touches[0].clientY;
       }
     }, { passive: false });
 
     window.addEventListener('keydown', e => {
       if ((e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ') && isPinned()) {
-        gateForward(e);
+        e.preventDefault();
+        if (!autoStarted) maybeStartAuto();
+        snapToSceneStart();
       }
     });
   })();
@@ -7351,7 +7401,7 @@
         <p class="footer-title">About</p>
         <div class="footer-links">
           <span class="footer-link footer-link--disabled" aria-disabled="true">SKEEP 소개</span>
-          <a class="footer-link" href="index.html">전시 웹사이트</a>
+          <a class="footer-link" href="https://www.everyelse.com/projects/skeep" target="_blank" rel="noopener noreferrer">전시 웹사이트</a>
           <span class="footer-link footer-link--disabled" aria-disabled="true">자주 묻는 질문</span>
           <span class="footer-link footer-link--disabled" aria-disabled="true">팀 소개</span>
         </div>

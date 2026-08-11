@@ -357,7 +357,8 @@
 
 .outputSequence {
   position: relative;
-  height: 300vh;
+  /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+  height: 270vh;
   margin-top: clamp(64px, 8.3vw, 160px);
 }
 

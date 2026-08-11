@@ -6,9 +6,11 @@
 
   position: relative;
   /* 카드 여섯 장을 차례로 넘기고, 접고, Skeep 장면까지 가야 해서 여유가 길다.
-     짧으면 한 장당 스크롤이 한 칸도 안 돼서 순식간에 지나간다. */
-  height: 620vh;
-  min-height: 3600px;
+     짧으면 한 장당 스크롤이 한 칸도 안 돼서 순식간에 지나간다. 무빙스타일
+     리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다(내부 단계
+     임계값은 전부 0~1 진행률 비율이라 그대로 맞는다). */
+  height: 560vh;
+  min-height: 3250px;
   line-height: 1.5;
   background: #fff;
 }
@@ -466,8 +468,8 @@
 
 @media (max-width: 980px) {
   .sequence {
-    height: 240vh;
-    min-height: 1200px;
+    height: 216vh;
+    min-height: 1080px;
   }
 
   .scene,

@@ -8,8 +8,9 @@
   --shift: calc(34 * var(--px));
 
   position: relative;
-  /* 붙잡아 두는 한 화면 + 넘길 지점까지 굴릴 여유 */
-  height: 200vh;
+  /* 붙잡아 두는 한 화면 + 넘길 지점까지 굴릴 여유 — 무빙스타일 리모컨에서
+     손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+  height: 180vh;
   background: #fff;
 }
 

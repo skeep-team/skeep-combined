@@ -526,7 +526,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .sec-skeeeep {
       background: #000;
       width: 100%;
-      height: 230vh;
+      /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+      height: 207vh;
       min-height: 0;
       position: relative;
       padding: 0;
@@ -787,7 +788,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .phil-scroll {
       background: #fff;
       width: 100%;
-      min-height: 300vh;
+      /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+      min-height: 270vh;
       position: relative;
       margin-top: 180px;
       border-top: none;
@@ -917,7 +919,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     /* ── 7. MIGRATABLE AGENT DETAIL ──────────────── */
     .sec-agent-detail {
       background: #fff; width: 100%;
-      height: 360vh;
+      /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+      height: 324vh;
       padding: 0;
       position: relative;
       margin-top: 160px;
@@ -937,6 +940,15 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       --agent-bg-y: 0px;
       isolation: isolate;
       transition: background-color .45s ease;
+    }
+    /* 빠른 스크롤에서도 시퀀스의 처음과 끝이 같은 뷰포트 좌표를 사용한다.
+       잠금 중에는 sticky 계산에 의존하지 않고 화면 자체를 고정한다. */
+    html.agent-sequence-locked .agent-sticky {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 40;
     }
     .agent-sticky.is-light {
       background: #fff;
@@ -998,17 +1010,21 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       backface-visibility: hidden;
       contain: layout paint;
     }
-    /* 카메라가 화면을 훑는 동안(agentPhotoCamera)엔 매 프레임 실제로 뷰가 계속
-       바뀌기 때문에, 스크롤 진입 타이밍에 따라 사용자가 "어느 프레임에" 이
-       섹션을 보게 되는지가 매번 달라 보였다 — 시작이 스크롤마다 달라지는 것처럼
-       느껴진 진짜 원인이다. 팬을 걷어내고, 고정된 줌인 상태(0% 키프레임과 동일한
-       정적 transform)에서 바로 scattering 전환(아래, 항상 동일한 시작→끝)으로
-       넘어가게 해서 진입 상태를 항상 동일하게 만든다. */
+    /* 화면은 fixed로 고정한 채 콜라주 내부 카메라만 좌우·상하로 훑고 최종
+       오버뷰 위치에 정착한다. 빠른 스크롤에서도 뷰포트 기준점은 움직이지 않는다. */
+    .agent-photo-bg.camera-moving:not(.scattering) .agent-photo-stage {
+      animation: agentPhotoCamera 2.8s cubic-bezier(.45,0,.55,1) both;
+    }
     .agent-photo-bg.camera-moving.scattering .agent-photo-stage {
       animation: agentPhotoSettle 1.65s cubic-bezier(.22,1,.36,1) both;
     }
+    @keyframes agentPhotoCamera {
+      0%   { transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28); }
+      50%  { transform: translate(-50%, -50%) translate3d(-5%, 6%, 0) scale(1.28); }
+      100% { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
+    }
     @keyframes agentPhotoSettle {
-      from { transform: translate(-50%, -50%) translate3d(6%, 4%, 0) scale(1.28); }
+      from { transform: translate(-50%, -50%) translate3d(4%, -5%, 0) scale(1.28); }
       to   { transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(1); }
     }
     .agent-photo-piece {
@@ -1022,8 +1038,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       transform:
         translate3d(var(--cluster-x), var(--cluster-y), 0)
         rotate(var(--cluster-r, 0deg));
-      transition:
-        transform 1.65s cubic-bezier(.22,1,.36,1);
+      transition: transform 1.65s cubic-bezier(.22,1,.36,1);
       will-change: opacity, transform;
     }
     .agent-photo-piece img {
@@ -1034,15 +1049,18 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     .agent-photo-bg.scattering .agent-photo-piece {
       transform: translate3d(0,0,0) rotate(0deg);
     }
+    @media (prefers-reduced-motion: reduce) {
+      .agent-photo-stage {
+        animation: none !important;
+        transform: translate(-50%, -50%);
+      }
+      .agent-photo-piece { transition: none; }
+      .agent-photo-bg.scattering .agent-photo-piece { transform: none; }
+    }
     /* 디테일(밝은) 뷰에서는 사진 배경 숨김 → 흰 배경 위 탭 콘텐츠 */
     .agent-sticky.is-light .agent-photo-bg {
       opacity: 0;
       transition: opacity .45s ease;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .agent-photo-stage { animation: none !important; transform: translate(-50%, -50%); }
-      .agent-photo-piece { transition: none; }
-      .agent-photo-bg.scattering .agent-photo-piece { transform: none; }
     }
     .agent-flow {
       display: none;   /* 새 배경 이미지(#83)에 사진이 이미 포함 → 기기 타일 숨김 */
@@ -2344,7 +2362,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     }
 
     /* ── UX Logic — big-cards suck-in → tab scene ── */
-    .ux-logic-wrap { position: relative; height: 460vh; --p: 0; --lp: 0; margin-top: clamp(48px, 8vh, 160px); }
+    /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+    .ux-logic-wrap { position: relative; height: 414vh; --p: 0; --lp: 0; margin-top: clamp(48px, 8vh, 160px); }
     .ux-logic-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden;
       display: flex; align-items: flex-start; padding: clamp(90px, 13vh, 170px) var(--edge-padding) 0; }
 
@@ -2777,8 +2796,9 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       letter-spacing: -0.03em;
     }
     .sd-pink { color: #6E6E6E; }
+    /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
     .sd-sensing-scene {
-      height: 220vh;
+      height: 198vh;
       position: relative;
       padding: 0;
     }
@@ -2958,17 +2978,54 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       padding-top: clamp(7px, .65vw, 12px);
     }
     .sd-walk {
-      padding-top: 40px;
-      padding-bottom: 40px;
+      min-height: 532px;
+      padding: 40px clamp(24px, 7vw, 144px);
       overflow: hidden;
+      background: #A5E0F0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
-    .sd-walk-strip {
+    .sd-walk-track {
       width: 100%;
-      height: 532px;
-      border-radius: 0;
-      object-fit: cover;
-      opacity: .55;
+      max-width: 1680px;
+      height: 420px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(10px, 2vw, 38px);
+      position: relative;
+    }
+    .sd-walk-person {
+      width: clamp(110px, 9vw, 178px);
+      height: 100%;
+      min-width: 0;
+      flex: 0 1 clamp(110px, 9vw, 178px);
+      object-fit: contain;
+      object-position: bottom center;
       display: block;
+      position: relative;
+      z-index: 2;
+      filter: grayscale(1) saturate(.12) brightness(.94) contrast(.96);
+      transform: translateZ(0) scale(1);
+      transform-origin: bottom center;
+      transition: filter .5s ease, transform .5s cubic-bezier(.22, 1, .36, 1);
+      will-change: filter, transform;
+    }
+    .sd-walk-person.is-active {
+      filter: grayscale(0);
+      transform: translateZ(0) scale(1.04);
+    }
+    .sd-walk-shadow {
+      position: absolute;
+      left: 0;
+      bottom: -12px;
+      width: 218px;
+      height: 34px;
+      z-index: 1;
+      pointer-events: none;
+      transform: translateX(-50%);
+      transition: left .42s cubic-bezier(.22, 1, .36, 1), opacity .25s ease;
     }
     .sd-walk-caption {
       text-align: center;
@@ -4587,7 +4644,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
 <!-- ═══════════════════════
   6. MIGRATABLE AGENT
 ═══════════════════════ -->
-<section class="sec-agent-detail fi" data-agent-scroll>
+<section class="sec-agent-detail" data-agent-scroll>
   <div class="agent-sticky">
     <video class="agent-bg-video" src="assets/input-hero-bg.mp4" poster="assets/input-hero-bg-poster.jpg" autoplay loop muted playsinline aria-hidden="true"></video>
     <div class="agent-flow" data-agent-flow aria-hidden="true">
@@ -4715,7 +4772,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
               <p>직접 상호작용<span class="thin">*</span> 중인</p>
               <p>환경에서 소통한다.</p>
             </div>
-            <p class="principle-mini-note">*상호작용 중인 환경에서 인터렉션 함.</p>
+            <p class="principle-mini-note">*상호작용 중인 환경에서 인터랙션 함.</p>
           </article>
           <article class="principle-mini-card type-c">
             <div class="principle-mini-title">
@@ -5805,7 +5862,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
   </section>
 
   <section class="sd-section sd-walk">
-    <img class="sd-walk-strip" src="assets/sensing-walk-strip.png" alt="스킵 센싱과 함께 이어지는 보행 시퀀스">
+    <div class="sd-walk-track" data-walk-track aria-label="스킵 센싱과 함께 이어지는 보행 시퀀스">
+      <img class="sd-walk-shadow" data-walk-shadow src="assets/walk-shadow.svg" alt="" aria-hidden="true">
+      <img class="sd-walk-person" data-foot-x="0.554" src="assets/walk-person-1.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.489" src="assets/walk-person-2.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.474" src="assets/walk-person-3.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.494" src="assets/walk-person-4.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.407" src="assets/walk-person-5.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.506" src="assets/walk-person-6-heel-fixed.webp" alt="">
+      <img class="sd-walk-person" data-foot-x="0.507" src="assets/walk-person-7.webp" alt="">
+    </div>
   </section>
 
   <section class="sd-section sd-walk-caption">
@@ -6151,7 +6217,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         <p class="footer-title">About</p>
         <div class="footer-links">
           <span class="footer-link footer-link--disabled" aria-disabled="true">SKEEP 소개</span>
-          <a class="footer-link" href="index.html">전시 웹사이트</a>
+          <a class="footer-link" href="https://www.everyelse.com/projects/skeep" target="_blank" rel="noopener noreferrer">전시 웹사이트</a>
           <span class="footer-link footer-link--disabled" aria-disabled="true">자주 묻는 질문</span>
           <span class="footer-link footer-link--disabled" aria-disabled="true">팀 소개</span>
         </div>
@@ -6938,24 +7004,28 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     let activeAgentTab = 'principles';
     let agentTicking = false;
     let agentIntroStartedAt = null;
+    let agentIntroPending = false;
     let agentMetrics = null;
     let agentSequenceLocked = false;
     let agentSequenceLockY = 0;
     const reduceAgentMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // 카메라 패닝 구간(2.8s)을 없앴다 — 진입 시점의 스크롤 타이밍에 따라 매번
-    // 다른 프레임에서 이 섹션을 "만나게" 되던 근본 원인이었다(팬이 계속 뷰를
-    // 바꾸는 중이라 언제 멈추든 그 순간의 모습이 다 달랐다). 이제 화면이 다
-    // 차는 즉시 정지된 줌인 상태에서 scattering(사진들이 흩어진 자리로 정착)
-    // 으로 바로 들어가므로, 시작 모습이 스크롤과 무관하게 항상 동일하다.
-    const AGENT_CAMERA_DURATION_MS = 0;
-    const AGENT_TITLE_DELAY_MS = reduceAgentMotion ? 80 : 1050;
-    const AGENT_TITLE_DURATION_MS = reduceAgentMotion ? 240 : 720;
+    // 뷰포트를 먼저 fixed로 고정한 뒤 내부 카메라 패닝을 재생한다. 스크롤 속도와
+    // 무관하게 항상 같은 시작 프레임에서 출발하면서 기존 시점 이동은 유지된다.
+    const AGENT_CAMERA_DURATION_MS = reduceAgentMotion ? 0 : 2800;
+    const AGENT_TITLE_DELAY_MS = reduceAgentMotion ? 60 : 420;
+    const AGENT_TITLE_DURATION_MS = reduceAgentMotion ? 200 : 480;
     // Scattered-card settling (including the final 405ms stagger) is
     // the longest part of this intro. Keep the page fixed until it is complete.
     const AGENT_SEQUENCE_DURATION_MS = Math.max(
       AGENT_CAMERA_DURATION_MS + 2150,
       AGENT_CAMERA_DURATION_MS + AGENT_TITLE_DELAY_MS + AGENT_TITLE_DURATION_MS + 240
     );
+
+    function snapAgentSequenceToStart() {
+      document.documentElement.classList.add('sk-programmatic-scroll');
+      window.scrollTo(0, agentSequenceLockY);
+      document.documentElement.classList.remove('sk-programmatic-scroll');
+    }
 
     function lockAgentSequence() {
       if (agentSequenceLocked || !agentMetrics) return;
@@ -6968,11 +7038,33 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       // overflow:hidden으로 잠가버리면 그 애니메이션이 중간에 잘리면서 화면이
       // 한 번 덜컥 튀어 보였다 — sk-programmatic-scroll로 이 한 번의 보정만
       // scroll-behavior:auto(즉시 이동)로 바꿔 애니메이션 자체가 안 생기게 한다.
-      document.documentElement.classList.add('sk-programmatic-scroll');
-      window.scrollTo(0, agentSequenceLockY);
-      document.documentElement.classList.remove('sk-programmatic-scroll');
       document.documentElement.classList.add('agent-sequence-locked');
       document.body.classList.add('agent-sequence-locked');
+      snapAgentSequenceToStart();
+    }
+
+    function beginAgentSequenceAtSettledPosition() {
+      if (agentIntroPending || agentIntroStartedAt !== null) return;
+      agentIntroPending = true;
+      measureAgent();
+      lockAgentSequence();
+
+      /* Moving Style은 overflow 잠금과 scrollTo가 같은 프레임에 실행되면 sticky의
+         이전 위치를 한두 프레임 더 그린다. 그 상태에서 콜라주를 표시하면 시작 화면만
+         위로 밀려 보인다. 두 프레임 동안 완성 지점을 다시 고정하고, sticky가 top:0에
+         정착한 다음에만 첫 장면을 표시해 시작/끝 좌표를 완전히 동일하게 만든다. */
+      requestAnimationFrame(() => {
+        snapAgentSequenceToStart();
+        requestAnimationFrame(() => {
+          snapAgentSequenceToStart();
+          agentIntroPending = false;
+          agentIntroStartedAt = performance.now();
+          agentPhotoBg.classList.add('camera-moving');
+          agentPhotoBg.classList.add('is-visible');
+          titleScrambleEnter();
+          requestAgentUpdate();
+        });
+      });
     }
 
     function unlockAgentSequence() {
@@ -6995,16 +7087,16 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     // ── 배경 사진 레이어: 진입 시 아래→위로 페이드인 (한 번만) ──
     // 피그마(8400:6406) 카드 9장 그대로 — 좌표는 프레임(1925×1053) 기준 %로 환산.
     const AGENT_PHOTO_PIECES = [
-      { src: 'agent-photo-126.jpg', l: 25.56, t: 3.61,  w: 12.26, h: 30.01, r: 6.4, bg: '#f1f1f1', op: 1, cx: 0,   cy: 0,   cr: 0 },
-      { src: 'agent-photo-132b.jpg', l: 83.58, t: 58.02, w: 13.43, h: 24.55, r: 7,   bg: '#f1f1f1', op: 1, cx: .2,  cy: -20, cr: 0 },
-      { src: 'agent-photo-119.jpg', l: 67.95, t: 4.94,  w: 11.84, h: 29.06, r: 7,   bg: '#ffcadf', op: 1, cx: 3,   cy: -4,  cr: 0 },
+      { src: 'agent-photo-126.jpg', l: 25.56, t: 3.61,  w: 12.26, h: 30.01, r: 6.4, bg: '#f1f1f1', op: 1, cx: 0,    cy: 0,    cr: 0 },
+      { src: 'agent-photo-132b.jpg', l: 83.58, t: 58.02, w: 13.43, h: 24.55, r: 7,   bg: '#f1f1f1', op: 1, cx: .2,   cy: -20,  cr: 0 },
+      { src: 'agent-photo-119.jpg', l: 67.95, t: 4.94,  w: 11.84, h: 29.06, r: 7,   bg: '#ffcadf', op: 1, cx: 3,    cy: -4,   cr: 0 },
       { src: 'agent-photo-120.jpg', l: 13.92, t: 58.88, w: 13.25, h: 24.23, r: 8,   bg: '#f1f1f1', op: 1, cx: 23.4, cy: 10.5, cr: 0 },
-      { src: 'agent-photo-122.jpg', l: 58.46, t: 72.29, w: 13.58, h: 24.82, r: 8,   bg: '#09421a', op: 1, cx: 14,  cy: -7,  cr: 0 },
-      { src: 'agent-photo-132.jpg', l: 4.21,  t: 36.56, w: 17.51, h: 25.55, r: 8,   bg: 'transparent', op: 1, cx: 11, cy: 0,   cr: 0 },
-      { src: 'agent-photo-123.jpg', l: 35.22, t: 6.55,  w: 17.09, h: 24.03, r: 8,   bg: '#e7ff96', op: 1, cx: 11, cy: 10, cr: 0 },
-      { src: 'agent-photo-121.jpg', l: 70.86, t: 20.42, w: 17.82, h: 28.20, r: 7,   bg: '#f1f1f1', op: 1, cx: -22, cy: 8,  cr: 0 },
+      { src: 'agent-photo-122.jpg', l: 58.46, t: 72.29, w: 13.58, h: 24.82, r: 8,   bg: '#09421a', op: 1, cx: 14,   cy: -7,   cr: 0 },
+      { src: 'agent-photo-132.jpg', l: 4.21,  t: 36.56, w: 17.51, h: 25.55, r: 8,   bg: 'transparent', op: 1, cx: 11, cy: 0, cr: 0 },
+      { src: 'agent-photo-123.jpg', l: 35.22, t: 6.55,  w: 17.09, h: 24.03, r: 8,   bg: '#e7ff96', op: 1, cx: 11,   cy: 10,   cr: 0 },
+      { src: 'agent-photo-121.jpg', l: 70.86, t: 20.42, w: 17.82, h: 28.20, r: 7,   bg: '#f1f1f1', op: 1, cx: -22,  cy: 8,    cr: 0 },
       { src: 'agent-photo-124.jpg', l: 42.03, t: 64.86, w: 20.62, h: 24.50, r: 6.65, bg: '#ff6b3d', op: 1, cx: -3, cy: -4.5, cr: 0 },
-      { src: 'agent-photo-133.jpg', l: 11.79, t: 12.25, w: 6.75,  h: 12.35, r: 4,   bg: '#f1f1f1', op: 1, cx: -7, cy: 2, cr: 0 },
+      { src: 'agent-photo-133.jpg', l: 11.79, t: 12.25, w: 6.75,  h: 12.35, r: 4,   bg: '#f1f1f1', op: 1, cx: -7,   cy: 2,    cr: 0 },
     ];
     const agentPhotoBg = document.createElement('div');
     agentPhotoBg.className = 'agent-photo-bg';
@@ -7022,7 +7114,6 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     AGENT_PHOTO_PIECES.forEach((p, pieceIndex) => {
       const piece = document.createElement('div');
       piece.className = 'agent-photo-piece';
-      // 10장이 정확히 같은 타이밍에 동시에 흩어지면 기계적으로 보인다 — 살짝 스태거를 준다.
       piece.style.transitionDelay = (pieceIndex * 45) + 'ms';
       piece.style.setProperty('--l', p.l + '%');
       piece.style.setProperty('--t', p.t + '%');
@@ -7075,6 +7166,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       }));
       const subWidth = lineMetrics.reduce((max, line) => Math.max(max, line.width), 0);
       const leftWidth = agentLeft.offsetWidth;
+      const titleWidth = agentTitle.offsetWidth;
+      const titleLeft = agentTitle.offsetLeft;
       const pillsWidth = agentPills.offsetWidth;
       const baseWidth = Math.max(leftWidth, subWidth, pillsWidth);
       const introTitleScale = 1.06;
@@ -7095,6 +7188,8 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         sectionHeight: agentScroll.offsetHeight,
         baseWidth,
         leftWidth,
+        titleWidth,
+        titleLeft,
         pillsWidth,
         centerX,
         centerY:
@@ -7120,7 +7215,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const isFilled =
         relativeTop <= 0 &&
         relativeTop + agentMetrics.sectionHeight > window.innerHeight * 0.12;
-      if (agentIntroStartedAt === null && isFilled) {
+      if (agentIntroStartedAt === null && !agentIntroPending && isFilled) {
         // agentMetrics는 이 섹션에 처음 도달하기 훨씬 전(스크립트 로드 시점)에 한 번
         // 측정되고, 그 뒤로는 resize/폰트 로드 때만 다시 잰다 — 그런데 여기까지
         // 내려오는 동안 위쪽의 다른 섹션들(레이지 이미지, .fi 리빌 애니메이션 등)이
@@ -7129,12 +7224,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
         // 달라지면서 사진 콜라주가 "시작 지점"부터 다른 상태로 보이던 원인이다.
         // 시퀀스를 시작/잠그기 직전에 한 번 더 정확히 재측정해서 항상 같은 지점에서
         // 시작하게 한다.
-        measureAgent();
-        agentIntroStartedAt = now;
-        lockAgentSequence();
-        agentPhotoBg.classList.add('camera-moving');
-        agentPhotoBg.classList.add('is-visible');   // 화면이 다 찬 순간 디졸브(opacity 0→1)로 시작
-        titleScrambleEnter();
+        beginAgentSequenceAtSettledPosition();
       }
       const sequenceElapsed = agentIntroStartedAt === null ? -1 : now - agentIntroStartedAt;
       if (sequenceElapsed >= AGENT_CAMERA_DURATION_MS) agentPhotoBg.classList.add('scattering');
@@ -7163,6 +7253,10 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       const leftViewportX =
         agentMetrics.stickyPaddingLeft +
         (agentMetrics.centerX - agentMetrics.stickyPaddingLeft) * (1 - move);
+      const titleCenterX =
+        (window.innerWidth - agentMetrics.titleWidth) / 2 -
+        leftViewportX -
+        agentMetrics.titleLeft;
       const detailClean = smooth((move - 0.12) / 0.38);
       const flowOpacity = titleIn * (1 - smooth((progress - 0.36) / 0.20));
 
@@ -7183,7 +7277,7 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
       agentTitle.style.setProperty('--agent-black-opacity', move.toFixed(3));
       agentSticky.style.setProperty('--agent-bg-opacity', titleIn * 0.58 * (1 - bgDrift * 0.58) * (1 - detailClean));
       agentSticky.style.setProperty('--agent-bg-y', `${bgDrift * 180}px`);
-      agentTitle.style.transform = `translate3d(0, ${(1 - titleIn) * 22}px, 0) scale(${titleScale})`;
+      agentTitle.style.transform = `translate3d(${titleCenterX * (1 - move)}px, ${(1 - titleIn) * 22}px, 0) scale(${titleScale})`;
       agentLeft.style.transform = `translate3d(${(agentMetrics.centerX - agentMetrics.stickyPaddingLeft) * (1 - move)}px, ${agentMetrics.centerY * (1 - move)}px, 0)`;
       agentLines.forEach((line, index) => {
         const lineMetric = agentMetrics.lineMetrics[index];
@@ -7469,6 +7563,70 @@ body.hero-float-ready:not(.hero-intro-unlocked) .pill-arrow-2 {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stop(); else start();
     });
+  })();
+</script>
+<script>
+  /* Sensing walk — restore the lightweight right-to-left color spotlight.
+     It is timer-driven only while the band is visible, so Moving Style does not
+     need to process the effect on every scroll event. */
+  (function () {
+    const track = document.querySelector('[data-walk-track]');
+    if (!track) return;
+    const people = Array.from(track.querySelectorAll('.sd-walk-person'));
+    const shadow = track.querySelector('[data-walk-shadow]');
+    if (!people.length || !shadow) return;
+
+    let activeIndex = people.length - 1;
+    let timer = null;
+    let visible = false;
+
+    function placeShadow(index) {
+      const person = people[index];
+      const footX = Number(person.dataset.footX || .5);
+      shadow.style.left = (person.offsetLeft + person.offsetWidth * footX) + 'px';
+    }
+
+    function activate(index) {
+      people.forEach((person, personIndex) => {
+        person.classList.toggle('is-active', personIndex === index);
+      });
+      activeIndex = index;
+      placeShadow(index);
+    }
+
+    function stop() {
+      if (timer !== null) {
+        window.clearTimeout(timer);
+        timer = null;
+      }
+    }
+
+    function step() {
+      if (!visible) return;
+      activate(activeIndex <= 0 ? people.length - 1 : activeIndex - 1);
+      timer = window.setTimeout(step, 620);
+    }
+
+    function start() {
+      stop();
+      activeIndex = people.length - 1;
+      activate(activeIndex);
+      timer = window.setTimeout(step, 520);
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      if (visible) start();
+      else stop();
+    }, { threshold: .35 });
+
+    observer.observe(track);
+    window.addEventListener('resize', () => placeShadow(activeIndex), { passive: true });
+    window.addEventListener('load', () => placeShadow(activeIndex), { once: true });
+    people.forEach(person => {
+      if (!person.complete) person.addEventListener('load', () => placeShadow(activeIndex), { once: true });
+    });
+    activate(activeIndex);
   })();
 </script>
 <script src="../site-index.js"></script>

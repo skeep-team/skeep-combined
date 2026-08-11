@@ -10,7 +10,11 @@ const groups = [
     title: "About",
     links: [
       { label: "SKEEP 소개", href: `${BASE_PATH}/pages/index.html`, disabled: true },
-      { label: "전시 웹사이트", href: `${BASE_PATH}/pages/index.html` },
+      {
+        label: "전시 웹사이트",
+        href: "https://www.everyelse.com/projects/skeep",
+        external: true,
+      },
       { label: "자주 묻는 질문", href: `${BASE_PATH}/pages/index.html`, disabled: true },
       { label: "팀 소개", href: `${BASE_PATH}/pages/index.html`, disabled: true },
     ],

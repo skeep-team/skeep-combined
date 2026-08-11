@@ -1,6 +1,7 @@
 .sequence {
   position: relative;
-  height: 260vh;
+  /* 무빙스타일 리모컨에서 손가락을 덜 움직여도 되도록 원래보다 10% 줄였다. */
+  height: 234vh;
   background: #e7eaf0;
 }
 
