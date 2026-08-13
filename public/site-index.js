@@ -84,13 +84,49 @@
     if (!visible) setOpen(false, false);
   }
 
-  compact.addEventListener('click', function () { setOpen(true, false); });
+  // 일부 TV/프로젝터 브라우저(무빙스타일 등)는 터치·리모컨 입력에서 표준
+  // click 이벤트를 합성해주지 않는다(위 wheel→scroll 보조 입력과 같은 이유).
+  // click과 touchend를 둘 다 걸고, 같은 동작이 두 번 겹쳐 오면(일반 터치
+  // 브라우저는 touchend 다음 click이 또 온다) 짧은 시간 안의 재발화만 무시한다.
+  function bindActivate(el, handler) {
+    var lastFired = 0;
+    function fire(event) {
+      var now = Date.now();
+      if (now - lastFired < 500) return;
+      lastFired = now;
+      handler(event);
+    }
+    el.addEventListener('click', fire);
+    el.addEventListener('touchend', fire, { passive: true });
+  }
+
+  bindActivate(compact, function () { setOpen(true, false); });
   nav.addEventListener('click', function (event) {
     if (event.target.closest('[aria-disabled="true"]')) event.preventDefault();
   });
   document.addEventListener('pointerdown', function (event) {
     if (open && !nav.contains(event.target)) setOpen(false, false);
   });
+  // pointerdown이 안 잡히는 기기 대비: 바깥을 터치로 눌러도 닫히도록 보강.
+  document.addEventListener('touchstart', function (event) {
+    if (open && !nav.contains(event.target)) setOpen(false, false);
+  }, { passive: true });
+
+  // 펼침 목록의 링크도 같은 이유로 click이 안 올 수 있어 touchend로도 이동시킨다.
+  var links = nav.querySelectorAll('.skeep-site-index__link[href]');
+  for (var i = 0; i < links.length; i++) {
+    (function (link) {
+      bindActivate(link, function (event) {
+        event.preventDefault();
+        var href = link.getAttribute('href');
+        if (link.target === '_blank') {
+          window.open(href, '_blank', 'noopener');
+        } else {
+          window.location.href = href;
+        }
+      });
+    })(links[i]);
+  }
   document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape' && open) setOpen(false, true);
   });
